@@ -13,6 +13,7 @@ from asgiref.sync import (
     sync_to_async,
 )
 from django.conf import settings
+from django.http import HttpRequest
 from django.utils.module_loading import import_string
 
 from debug_toolbar import settings as dt_settings
@@ -20,7 +21,12 @@ from debug_toolbar.toolbar import DebugToolbar
 from debug_toolbar.utils import clear_stack_trace_caches, is_processable_html_response
 
 
-def show_toolbar(request):
+from ._stubs import GetResponse
+
+_HTML_TYPES = ("text/html", "application/xhtml+xml")
+
+
+def show_toolbar(request: HttpRequest):
     """
     Default function to determine whether to show the toolbar on a given page.
     """
@@ -108,7 +114,7 @@ class DebugToolbarMiddleware:
     sync_capable = True
     async_capable = True
 
-    def __init__(self, get_response):
+    def __init__(self, get_response: GetResponse):
         self.get_response = get_response
         # If get_response is a coroutine function, turns us into async mode so
         # a thread is not consumed during a whole request.
