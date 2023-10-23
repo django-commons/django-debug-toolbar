@@ -11,6 +11,7 @@ from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.dispatch import Signal
+from django.http import HttpRequest
 from django.template import TemplateSyntaxError
 from django.template.loader import render_to_string
 from django.urls import include, path, re_path, resolve
@@ -23,13 +24,15 @@ from debug_toolbar.store import get_store
 
 logger = logging.getLogger(__name__)
 
+from ._stubs import GetResponse
+
 
 class DebugToolbar:
     # for internal testing use only
     _created = Signal()
     store = None
 
-    def __init__(self, request, get_response, request_id=None):
+    def __init__(self, request: HttpRequest, get_response: GetResponse):
         self.request = request
         self.config = dt_settings.get_config().copy()
         panels = []
