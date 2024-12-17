@@ -591,6 +591,7 @@
 } /* Literal.String */
 #djDebug .highlight .w {
     color: #888888;
+    white-space: pre;
 } /* Text.Whitespace */
 #djDebug .highlight .il {
     color: var(--djdt-font-color);
