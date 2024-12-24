@@ -43,8 +43,10 @@ contributed by the community.
 The current stable version of the Debug Toolbar is 5.0.0-alpha. It works on
 Django ≥ 4.2.0.
 
-The Debug Toolbar does not currently support `Django's asynchronous views
-<https://docs.djangoproject.com/en/dev/topics/async/>`_.
+The Debug Toolbar has experimental support for `Django's asynchronous views
+<https://docs.djangoproject.com/en/dev/topics/async/>`_. Please note that
+the Debug Toolbar still lacks the capability for handling concurrent requests.
+If you find any issues, please report them on the `issue tracker`_.
 
 Documentation, including installation and configuration instructions, is
 available at https://django-debug-toolbar.readthedocs.io/.
@@ -56,3 +58,4 @@ The Django Debug Toolbar was originally created by Rob Hudson <rob@cogit8.org>
 in August 2008 and was further developed by many contributors_.
 
 .. _contributors: https://github.com/django-commons/django-debug-toolbar/graphs/contributors
+.. _issue tracker: https://github.com/django-commons/django-debug-toolbar/issues

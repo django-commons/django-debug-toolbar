@@ -245,11 +245,12 @@ And for Apache:
 Django Channels & Async
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The Debug Toolbar currently doesn't support Django Channels or async projects.
-If you are using Django channels and you are having issues getting panels to
-load, please review the documentation for the configuration option
-:ref:`RENDER_PANELS <RENDER_PANELS>`.
+The Debug Toolbar currently has experimental support for Django Channels and
+async projects. The Debug Toolbar is compatible with the following exceptions:
 
+- Concurrent requests aren't supported
+- ``TimerPanel``, ``RequestPanel`` and ``ProfilingPanel`` can't be used
+  in async contexts.
 
 HTMX
 ^^^^

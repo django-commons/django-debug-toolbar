@@ -8,6 +8,7 @@ Pending
 * Removed support for Python 3.8 as it has reached end of life.
 * Converted to Django Commons PyPI release process.
 * Fixed a crash which occurred when using non-``str`` static file values.
+* Documented experimental async support.
 
 5.0.0-alpha (2024-09-01)
 ------------------------
