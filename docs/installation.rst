@@ -195,15 +195,41 @@ option.
 Troubleshooting
 ---------------
 
-On some platforms, the Django ``runserver`` command may use incorrect content
-types for static assets. To guess content types, Django relies on the
-:mod:`mimetypes` module from the Python standard library, which itself relies
-on the underlying platform's map files. If you find improper content types for
-certain files, it is most likely that the platform's map files are incorrect or
-need to be updated. This can be achieved, for example, by installing or
-updating the ``mailcap`` package on a Red Hat distribution, ``mime-support`` on
-a Debian distribution, or by editing the keys under ``HKEY_CLASSES_ROOT`` in
-the Windows registry.
+If the toolbar doesn't appear, check your browser's development console for
+errors. These errors can often point to one of the issues discussed in the
+section below. Note that the toolbar only shows up for pages with an HTML body
+tag, which is absent in the templates of the Django Polls tutorial.
+
+Incorrect MIME type for toolbar.js
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When this error occurs, the development console shows an error similar to:
+
+.. code-block:: text
+
+    Loading module from “http://127.0.0.1:8000/static/debug_toolbar/js/toolbar.js” was blocked because of a disallowed MIME type (“text/plain”).
+
+On some platforms (commonly on Windows O.S.), the Django ``runserver``
+command may use incorrect content types for static assets. To guess content
+types, Django relies on the :mod:`mimetypes` module from the Python standard
+library, which itself relies on the underlying platform's map files.
+
+The easiest workaround is to add the following to your ``settings.py`` file.
+This forces the MIME type for ``.js`` files:
+
+.. code-block:: python
+
+    import mimetypes
+    mimetypes.add_type("application/javascript", ".js", True)
+
+Alternatively, you can try to fix your O.S. configuration. If you find improper
+content types for certain files, it is most likely that the platform's map
+files are incorrect or need to be updated. This can be achieved, for example:
+
+- On Red Hat distributions, install or update the ``mailcap`` package.
+- On Debian distributions, install or update the ``mime-support`` package.
+- On Windows O.S., edit the keys under ``HKEY_CLASSES_ROOT`` in the Windows
+  registry.
 
 Cross-Origin Request Blocked
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
