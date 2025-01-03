@@ -47,6 +47,7 @@ class DebugToolbar:
         self.stats = {}
         self.server_timing_stats = {}
         self.store_id = None
+        self.middleware_time = 0
         self._created.send(request, toolbar=self)
 
     # Manage panels
