@@ -7,6 +7,7 @@ from django import http
 from django.core import signing
 from django.db.models.query import QuerySet, RawQuerySet
 from django.template import RequestContext, Template
+from django.templatetags.static import static
 from django.test.signals import template_rendered
 from django.test.utils import instrumented_test_render
 from django.urls import path
@@ -225,3 +226,9 @@ class TemplatesPanel(Panel):
                 "context_processors": context_processors,
             }
         )
+
+    @property
+    def scripts(self):
+        scripts = super().scripts
+        scripts.append(static("debug_toolbar/js/copy_context.js"))
+        return scripts
