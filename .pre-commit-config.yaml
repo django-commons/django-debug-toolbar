@@ -14,7 +14,7 @@ repos:
     hooks:
     -   id: doc8
 -   repo: https://github.com/adamchainz/django-upgrade
-    rev: 1.22.2
+    rev: 1.23.1
     hooks:
     -   id: django-upgrade
         args: [--target-version, "4.2"]
@@ -32,19 +32,19 @@ repos:
         args:
         - --trailing-comma=es5
 -   repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v9.19.0
+    rev: v9.20.0
     hooks:
     -   id: eslint
         additional_dependencies:
-            - "eslint@v9.18.0"
-            - "@eslint/js@v9.18.0"
+            - "eslint@v9.20.0"
+            - "@eslint/js@v9.20.0"
             - "globals"
         files: \.js?$
         types: [file]
         args:
         - --fix
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.9.4'
+    rev: 'v0.9.6'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
