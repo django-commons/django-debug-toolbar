@@ -5,6 +5,7 @@ Pending
 -------
 
 * Added Django 5.2 to the tox matrix.
+* Updated package metadata to include well-known labels.
 
 5.0.1 (2025-01-13)
 ------------------
