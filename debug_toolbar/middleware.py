@@ -6,7 +6,12 @@ import re
 import socket
 from functools import cache
 
-from asgiref.sync import iscoroutinefunction, markcoroutinefunction
+from asgiref.sync import (
+    async_to_sync,
+    iscoroutinefunction,
+    markcoroutinefunction,
+    sync_to_async,
+)
 from django.conf import settings
 from django.utils.module_loading import import_string
 
@@ -47,7 +52,12 @@ def show_toolbar(request):
 
 
 @cache
-def get_show_toolbar():
+def show_toolbar_func_or_path():
+    """
+    Fetch the show toolbar callback from settings
+
+    Cached to avoid importing multiple times.
+    """
     # If SHOW_TOOLBAR_CALLBACK is a string, which is the recommended
     # setup, resolve it to the corresponding callable.
     func_or_path = dt_settings.get_config()["SHOW_TOOLBAR_CALLBACK"]
@@ -55,6 +65,23 @@ def get_show_toolbar():
         return import_string(func_or_path)
     else:
         return func_or_path
+
+
+def get_show_toolbar(async_mode):
+    """
+    Get the callback function to show the toolbar.
+
+    Will wrap the function with sync_to_async or
+    async_to_sync depending on the status of async_mode
+    and whether the underlying function is a coroutine.
+    """
+    show_toolbar = show_toolbar_func_or_path()
+    is_coroutine = iscoroutinefunction(show_toolbar)
+    if is_coroutine and not async_mode:
+        show_toolbar = async_to_sync(show_toolbar)
+    elif not is_coroutine and async_mode:
+        show_toolbar = sync_to_async(show_toolbar)
+    return show_toolbar
 
 
 class DebugToolbarMiddleware:
@@ -82,7 +109,8 @@ class DebugToolbarMiddleware:
         if self.async_mode:
             return self.__acall__(request)
         # Decide whether the toolbar is active for this request.
-        show_toolbar = get_show_toolbar()
+        show_toolbar = get_show_toolbar(async_mode=self.async_mode)
+
         if not show_toolbar(request) or DebugToolbar.is_toolbar_request(request):
             return self.get_response(request)
         toolbar = DebugToolbar(request, self.get_response)
@@ -103,8 +131,9 @@ class DebugToolbarMiddleware:
 
     async def __acall__(self, request):
         # Decide whether the toolbar is active for this request.
-        show_toolbar = get_show_toolbar()
-        if not show_toolbar(request) or DebugToolbar.is_toolbar_request(request):
+        show_toolbar = get_show_toolbar(async_mode=self.async_mode)
+
+        if not await show_toolbar(request) or DebugToolbar.is_toolbar_request(request):
             response = await self.get_response(request)
             return response
 
