@@ -23,7 +23,7 @@ along independently using the slides and GitHub repository.
 Mastering Django Debug Toolbar: Efficient Debugging and Optimization Techniques
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This tutorial by **Bob Berderbos** provides an in-depth look at effectively
+This tutorial by **Bob Belderbos** provides an in-depth look at effectively
 using Django Debug Toolbar to debug Django applications, covering installation,
 configuration, and practical usage.
 
