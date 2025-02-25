@@ -1,6 +1,9 @@
 Resources
 =========
 
+This section includes resources that can be used to learn more about
+the Django Debug Toolbar.
+
 Tutorials
 ---------
 
@@ -60,7 +63,7 @@ Want to Add Your Content Here?
 
 Have a great tutorial or talk about Django Debug Toolbar? We'd love to
 showcase it! If your content helps developers improve their debugging skills,
-follow our :doc:contributing guidelines <contributing> to submit it.
+follow our :doc:`contributing guidelines <contributing>` to submit it.
 
 To ensure relevant and accessible content, please check the following
 before submitting:
