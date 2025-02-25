@@ -36,8 +36,8 @@ repos:
     hooks:
     -   id: eslint
         additional_dependencies:
-            - "eslint@v9.20.0"
-            - "@eslint/js@v9.20.0"
+            - "eslint@v9.21.0"
+            - "@eslint/js@v9.21.0"
             - "globals"
         files: \.js?$
         types: [file]
