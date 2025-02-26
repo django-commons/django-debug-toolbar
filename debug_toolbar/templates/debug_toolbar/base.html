@@ -1,10 +1,10 @@
 {% load i18n static %}
 {% block css %}
-<link{% if toolbar.request.csp_nonce %} nonce="{{ toolbar.request.csp_nonce }}"{% endif %} rel="stylesheet" href="{% static 'debug_toolbar/css/print.css' %}" media="print">
-<link{% if toolbar.request.csp_nonce %} nonce="{{ toolbar.request.csp_nonce }}"{% endif %} rel="stylesheet" href="{% static 'debug_toolbar/css/toolbar.css' %}">
+<link{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} rel="stylesheet" href="{% static 'debug_toolbar/css/print.css' %}" media="print">
+<link{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} rel="stylesheet" href="{% static 'debug_toolbar/css/toolbar.css' %}">
 {% endblock %}
 {% block js %}
-<script{% if toolbar.request.csp_nonce %} nonce="{{ toolbar.request.csp_nonce }}"{% endif %} type="module" src="{% static 'debug_toolbar/js/toolbar.js' %}" async></script>
+<script{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} type="module" src="{% static 'debug_toolbar/js/toolbar.js' %}" async></script>
 {% endblock %}
 <div id="djDebug" class="djdt-hidden" dir="ltr"
      {% if not toolbar.should_render_panels %}
