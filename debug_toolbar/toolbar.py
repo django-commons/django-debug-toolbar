@@ -65,6 +65,20 @@ class DebugToolbar:
         """
         return [panel for panel in self._panels.values() if panel.enabled]
 
+    @property
+    def csp_nonce(self):
+        """
+        Look up the Content Security Policy nonce if there is one.
+
+        This is built specifically for django-csp, which may not always
+        have a nonce associated with the request. Use the private attribute
+        because the lazy object wrapped value can generate a nonce by
+        accessing it. This isn't ideal when the toolbar is injecting context
+        into the response because it may set a nonce that is not used with
+        other assets.
+        """
+        return getattr(self.request, "_csp_nonce", None)
+
     def get_panel_by_id(self, panel_id):
         """
         Get the panel with the given id, which is the class name by default.

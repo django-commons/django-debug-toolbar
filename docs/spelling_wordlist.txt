@@ -15,6 +15,7 @@ backends
 backported
 checkbox
 contrib
+csp
 dicts
 django
 fallbacks

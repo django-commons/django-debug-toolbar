@@ -42,6 +42,11 @@ def regular_view(request, title):
     return render(request, "basic.html", {"title": title})
 
 
+def csp_view(request):
+    """Use request.csp_nonce to inject it into the headers"""
+    return render(request, "basic.html", {"title": f"CSP {request.csp_nonce}"})
+
+
 def template_response_view(request, title):
     return TemplateResponse(request, "basic.html", {"title": title})
 

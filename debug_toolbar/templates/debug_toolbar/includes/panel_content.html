@@ -8,7 +8,7 @@
     </div>
     <div class="djDebugPanelContent">
       {% if toolbar.should_render_panels %}
-        {% for script in panel.scripts %}<script{% if toolbar.request.csp_nonce %} nonce="{{ toolbar.request.csp_nonce }}"{% endif %} type="module" src="{{ script }}" async></script>{% endfor %}
+        {% for script in panel.scripts %}<script{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} type="module" src="{{ script }}" async></script>{% endfor %}
         <div class="djdt-scroll">{{ panel.content }}</div>
       {% else %}
         <div class="djdt-loader"></div>

@@ -25,6 +25,7 @@ urlpatterns = [
     path("redirect/", views.redirect_view),
     path("ajax/", views.ajax_view),
     path("login_without_redirect/", LoginView.as_view(redirect_field_name=None)),
+    path("csp_view/", views.csp_view),
     path("admin/", admin.site.urls),
     path("__debug__/", include("debug_toolbar.urls")),
 ]

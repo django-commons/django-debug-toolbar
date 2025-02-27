@@ -11,6 +11,7 @@ Pending
   or ``async_to_sync`` to allow sync/async compatibility.
 * Make ``require_toolbar`` decorator compatible to async views.
 * Added link to contributing documentation in ``CONTRIBUTING.md``.
+* Rely on django-csp's private attribute for nonce, ``request._csp_nonce``.
 
 5.0.1 (2025-01-13)
 ------------------

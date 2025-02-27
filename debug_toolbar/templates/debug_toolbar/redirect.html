@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <title>Django Debug Toolbar Redirects Panel: {{ status_line }}</title>
-    <script{% if toolbar.request.csp_nonce %} nonce="{{ toolbar.request.csp_nonce }}"{% endif %} type="module" src="{% static 'debug_toolbar/js/redirect.js' %}" async></script>
+    <script{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} type="module" src="{% static 'debug_toolbar/js/redirect.js' %}" async></script>
   </head>
   <body>
     <h1>{{ status_line }}</h1>
