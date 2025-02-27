@@ -13,7 +13,7 @@ from debug_toolbar.toolbar import DebugToolbar
 
 from .base import IntegrationTestCase
 
-MIDDLEWARE_CSP_BEFORE = settings.MIDDLEWARE[:]
+MIDDLEWARE_CSP_BEFORE = settings.MIDDLEWARE.copy()
 MIDDLEWARE_CSP_BEFORE.insert(
     MIDDLEWARE_CSP_BEFORE.index("debug_toolbar.middleware.DebugToolbarMiddleware"),
     "csp.middleware.CSPMiddleware",
