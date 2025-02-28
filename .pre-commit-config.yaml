@@ -23,26 +23,10 @@ repos:
     hooks:
     -   id: rst-backticks
     -   id: rst-directive-colons
--   repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
+-   repo: https://github.com/biomejs/pre-commit
+    rev: v1.9.4
     hooks:
-    -   id: prettier
-        entry: env PRETTIER_LEGACY_CLI=1 prettier
-        types_or: [javascript, css]
-        args:
-        - --trailing-comma=es5
--   repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v9.21.0
-    hooks:
-    -   id: eslint
-        additional_dependencies:
-            - "eslint@v9.21.0"
-            - "@eslint/js@v9.21.0"
-            - "globals"
-        files: \.js?$
-        types: [file]
-        args:
-        - --fix
+      - id: biome-check
 -   repo: https://github.com/astral-sh/ruff-pre-commit
     rev: 'v0.9.7'
     hooks:

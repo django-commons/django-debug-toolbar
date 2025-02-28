@@ -1,0 +1,36 @@
+{
+    "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+    "formatter": {
+        "enabled": true,
+        "useEditorconfig": true
+    },
+    "organizeImports": {
+        "enabled": true
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "complexity": {
+                "useArrowFunction": "off",
+                "noForEach": "off"
+            },
+            "style": {
+                "noArguments": "off",
+                "noParameterAssign": "off",
+                "noUselessElse": "off",
+                "useSingleVarDeclarator": "off",
+                "useTemplate": "off"
+            },
+            "suspicious": {
+                "noAssignInExpressions": "off"
+            }
+        }
+    },
+    "javascript": {
+        "formatter": {
+            "trailingCommas": "es5",
+            "quoteStyle": "double"
+        }
+    }
+}

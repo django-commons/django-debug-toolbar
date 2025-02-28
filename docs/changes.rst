@@ -11,6 +11,7 @@ Pending
   or ``async_to_sync`` to allow sync/async compatibility.
 * Make ``require_toolbar`` decorator compatible to async views.
 * Added link to contributing documentation in ``CONTRIBUTING.md``.
+* Replaced ESLint and prettier with biome in our pre-commit configuration.
 
 5.0.1 (2025-01-13)
 ------------------
