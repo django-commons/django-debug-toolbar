@@ -17,7 +17,6 @@
             },
             "style": {
                 "noArguments": "off",
-                "noParameterAssign": "off",
                 "useTemplate": "off"
             },
             "suspicious": {

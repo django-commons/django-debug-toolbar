@@ -297,11 +297,11 @@ const djdt = {
         const slowjax = debounce(ajax, 200);
 
         function handleAjaxResponse(storeId) {
-            storeId = encodeURIComponent(storeId);
-            const dest = `${sidebarUrl}?store_id=${storeId}`;
+            const encodedStoreId = encodeURIComponent(storeId);
+            const dest = `${sidebarUrl}?store_id=${encodedStoreId}`;
             slowjax(dest).then(function (data) {
                 if (djdt.needUpdateOnFetch) {
-                    replaceToolbarState(storeId, data);
+                    replaceToolbarState(encodedStoreId, data);
                 }
             });
         }
@@ -352,9 +352,7 @@ const djdt = {
 
             return cookies[key];
         },
-        set(key, value, options) {
-            options = options || {};
-
+        set(key, value, options = {}) {
             if (typeof options.expires === "number") {
                 const days = options.expires;
                 const t = (options.expires = new Date());

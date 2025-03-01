@@ -71,8 +71,7 @@ const $$ = {
 };
 
 function ajax(url, init) {
-    init = Object.assign({ credentials: "same-origin" }, init);
-    return fetch(url, init)
+    return fetch(url, Object.assign({ credentials: "same-origin" }, init))
         .then(function (response) {
             if (response.ok) {
                 return response.json().catch(function (error) {
