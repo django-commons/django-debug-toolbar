@@ -14,11 +14,7 @@ function difference(setA, setB) {
  * Create an array of dataset properties from a NodeList.
  */
 function pluckData(nodes, key) {
-    const data = [];
-    nodes.forEach((obj) => {
-        data.push(obj.dataset[key]);
-    });
-    return data;
+    return [...nodes].map((obj) => obj.dataset[key]);
 }
 
 function refreshHistory() {
@@ -31,12 +27,14 @@ function refreshHistory() {
     ajaxForm(formTarget)
         .then((data) => {
             // Remove existing rows first then re-populate with new data
-            container.querySelectorAll("tr[data-store-id]").forEach((node) => {
+            for (const node of container.querySelectorAll(
+                "tr[data-store-id]"
+            )) {
                 node.remove();
-            });
-            data.requests.forEach((request) => {
+            }
+            for (const request of data.requests) {
                 container.innerHTML = request.content + container.innerHTML;
-            });
+            }
         })
         .then(() => {
             const allIds = new Set(
@@ -54,18 +52,18 @@ function refreshHistory() {
             };
         })
         .then((refreshInfo) => {
-            refreshInfo.newIds.forEach((newId) => {
+            for (const newId of refreshInfo.newIds) {
                 const row = container.querySelector(
                     `tr[data-store-id="${newId}"]`
                 );
                 row.classList.add("flash-new");
-            });
+            }
             setTimeout(() => {
-                container
-                    .querySelectorAll("tr[data-store-id]")
-                    .forEach((row) => {
-                        row.classList.remove("flash-new");
-                    });
+                for (const row of container.querySelectorAll(
+                    "tr[data-store-id]"
+                )) {
+                    row.classList.remove("flash-new");
+                }
             }, 2000);
         });
 }

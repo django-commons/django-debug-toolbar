@@ -40,13 +40,13 @@ const $$ = {
         return !element.classList.contains("djdt-hidden");
     },
     executeScripts(scripts) {
-        scripts.forEach((script) => {
+        for (const script of scripts) {
             const el = document.createElement("script");
             el.type = "module";
             el.src = script;
             el.async = true;
             document.head.appendChild(el);
-        });
+        }
     },
     applyStyles(container) {
         /*
@@ -54,17 +54,19 @@ const $$ = {
          * The format is data-djdt-styles="styleName1:value;styleName2:value2"
          * The style names should use the CSSStyleDeclaration camel cased names.
          */
-        container.querySelectorAll("[data-djdt-styles]").forEach((element) => {
+        for (const element of container.querySelectorAll(
+            "[data-djdt-styles]"
+        )) {
             const styles = element.dataset.djdtStyles || "";
-            styles.split(";").forEach((styleText) => {
+            for (const styleText of styles.split(";")) {
                 const styleKeyPair = styleText.split(":");
                 if (styleKeyPair.length === 2) {
                     const name = styleKeyPair[0].trim();
                     const value = styleKeyPair[1].trim();
                     element.style[name] = value;
                 }
-            });
-        });
+            }
+        }
     },
 };
 
@@ -111,14 +113,14 @@ function replaceToolbarState(newStoreId, data) {
     const djDebug = document.getElementById("djDebug");
     djDebug.setAttribute("data-store-id", newStoreId);
     // Check if response is empty, it could be due to an expired storeId.
-    Object.keys(data).forEach((panelId) => {
+    for (const panelId of Object.keys(data)) {
         const panel = document.getElementById(panelId);
         if (panel) {
             panel.outerHTML = data[panelId].content;
             document.getElementById(`djdt-${panelId}`).outerHTML =
                 data[panelId].button;
         }
-    });
+    }
 }
 
 function debounce(func, delay) {
@@ -129,7 +131,9 @@ function debounce(func, delay) {
         clearTimeout(timer);
         timer = setTimeout(() => {
             const result = func(...args);
-            resolves.forEach((r) => r(result));
+            for (const r of resolves) {
+                r(result);
+            }
             resolves = [];
         }, delay);
 

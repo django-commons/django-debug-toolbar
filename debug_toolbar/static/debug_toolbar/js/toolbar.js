@@ -117,29 +117,31 @@ const djdt = {
             const openMe = this.textContent === toggleOpen;
             const name = this.dataset.toggleName;
             const container = document.getElementById(`${name}_${id}`);
-            container.querySelectorAll(".djDebugCollapsed").forEach((e) => {
-                $$.toggle(e, openMe);
-            });
-            container.querySelectorAll(".djDebugUncollapsed").forEach((e) => {
-                $$.toggle(e, !openMe);
-            });
-            this.closest(".djDebugPanelContent")
-                .querySelectorAll(`.djToggleDetails_${id}`)
-                .forEach((e) => {
-                    if (openMe) {
-                        e.classList.add("djSelected");
-                        e.classList.remove("djUnselected");
-                        this.textContent = toggleClose;
-                    } else {
-                        e.classList.remove("djSelected");
-                        e.classList.add("djUnselected");
-                        this.textContent = toggleOpen;
-                    }
-                    const switch_ = e.querySelector(".djToggleSwitch");
-                    if (switch_) {
-                        switch_.textContent = this.textContent;
-                    }
-                });
+            for (const el of container.querySelectorAll(".djDebugCollapsed")) {
+                $$.toggle(el, openMe);
+            }
+            for (const el of container.querySelectorAll(
+                ".djDebugUncollapsed"
+            )) {
+                $$.toggle(el, !openMe);
+            }
+            for (const el of this.closest(
+                ".djDebugPanelContent"
+            ).querySelectorAll(`.djToggleDetails_${id}`)) {
+                if (openMe) {
+                    el.classList.add("djSelected");
+                    el.classList.remove("djUnselected");
+                    this.textContent = toggleClose;
+                } else {
+                    el.classList.remove("djSelected");
+                    el.classList.add("djUnselected");
+                    this.textContent = toggleOpen;
+                }
+                const switch_ = el.querySelector(".djToggleSwitch");
+                if (switch_) {
+                    switch_.textContent = this.textContent;
+                }
+            }
         });
 
         $$.on(djDebug, "click", "#djHideToolBarButton", (event) => {
@@ -236,12 +238,12 @@ const djdt = {
     hidePanels() {
         const djDebug = getDebugElement();
         $$.hide(document.getElementById("djDebugWindow"));
-        djDebug.querySelectorAll(".djdt-panelContent").forEach((e) => {
-            $$.hide(e);
-        });
-        document.querySelectorAll("#djDebugToolbar li").forEach((e) => {
-            e.classList.remove("djdt-active");
-        });
+        for (const el of djDebug.querySelectorAll(".djdt-panelContent")) {
+            $$.hide(el);
+        }
+        for (const el of document.querySelectorAll("#djDebugToolbar li")) {
+            el.classList.remove("djdt-active");
+        }
     },
     ensureHandleVisibility() {
         const handle = document.getElementById("djDebugToolbarHandle");
@@ -340,10 +342,10 @@ const djdt = {
             const cookieArray = document.cookie.split("; ");
             const cookies = {};
 
-            cookieArray.forEach((e) => {
+            for (const e of cookieArray) {
                 const parts = e.split("=");
                 cookies[parts[0]] = parts[1];
-            });
+            }
 
             return cookies[key];
         },
