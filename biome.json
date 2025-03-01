@@ -16,7 +16,6 @@
                 "noForEach": "off"
             },
             "style": {
-                "noArguments": "off",
                 "useTemplate": "off"
             },
             "suspicious": {

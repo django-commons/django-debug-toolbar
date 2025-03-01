@@ -308,7 +308,7 @@ const djdt = {
 
         // Patch XHR / traditional AJAX requests
         const origOpen = XMLHttpRequest.prototype.open;
-        XMLHttpRequest.prototype.open = function () {
+        XMLHttpRequest.prototype.open = function (...args) {
             this.addEventListener("load", function () {
                 // Chromium emits a "Refused to get unsafe header" uncatchable warning
                 // when the header can't be fetched. While it doesn't impede execution
@@ -319,12 +319,12 @@ const djdt = {
                     handleAjaxResponse(this.getResponseHeader("djdt-store-id"));
                 }
             });
-            origOpen.apply(this, arguments);
+            origOpen.apply(this, args);
         };
 
         const origFetch = window.fetch;
-        window.fetch = function () {
-            const promise = origFetch.apply(this, arguments);
+        window.fetch = function (...args) {
+            const promise = origFetch.apply(this, args);
             promise.then(function (response) {
                 if (response.headers.get("djdt-store-id") !== null) {
                     handleAjaxResponse(response.headers.get("djdt-store-id"));
