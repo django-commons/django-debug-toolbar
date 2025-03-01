@@ -19,7 +19,6 @@
                 "noArguments": "off",
                 "noParameterAssign": "off",
                 "noUselessElse": "off",
-                "useSingleVarDeclarator": "off",
                 "useTemplate": "off"
             },
             "suspicious": {

@@ -1,9 +1,9 @@
 import { $$ } from "./utils.js";
 
 function insertBrowserTiming() {
-    const timingOffset = performance.timing.navigationStart,
-        timingEnd = performance.timing.loadEventEnd,
-        totalTime = timingEnd - timingOffset;
+    const timingOffset = performance.timing.navigationStart;
+    const timingEnd = performance.timing.loadEventEnd;
+    const totalTime = timingEnd - timingOffset;
     function getLeft(stat) {
         if (totalTime !== 0) {
             return (

@@ -37,9 +37,9 @@ const djdt = {
                 this.parentElement.classList.add("djdt-active");
 
                 const inner = current.querySelector(
-                        ".djDebugPanelContent .djdt-scroll"
-                    ),
-                    storeId = djDebug.dataset.storeId;
+                    ".djDebugPanelContent .djdt-scroll"
+                );
+                const storeId = djDebug.dataset.storeId;
                 if (storeId && inner.children.length === 0) {
                     const url = new URL(
                         djDebug.dataset.renderPanelUrl,
@@ -157,7 +157,8 @@ const djdt = {
                 djdt.showToolbar();
             }
         });
-        let startPageY, baseY;
+        let startPageY;
+        let baseY;
         const handle = document.getElementById("djDebugToolbarHandle");
         function onHandleMove(event) {
             // Chrome can send spurious mousemove events, so don't do anything unless the
@@ -341,8 +342,8 @@ const djdt = {
                 return null;
             }
 
-            const cookieArray = document.cookie.split("; "),
-                cookies = {};
+            const cookieArray = document.cookie.split("; ");
+            const cookies = {};
 
             cookieArray.forEach(function (e) {
                 const parts = e.split("=");
@@ -355,8 +356,8 @@ const djdt = {
             options = options || {};
 
             if (typeof options.expires === "number") {
-                const days = options.expires,
-                    t = (options.expires = new Date());
+                const days = options.expires;
+                const t = (options.expires = new Date());
                 t.setDate(t.getDate() + days);
             }
 
