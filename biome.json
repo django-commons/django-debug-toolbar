@@ -13,9 +13,6 @@
             "recommended": true,
             "complexity": {
                 "noForEach": "off"
-            },
-            "suspicious": {
-                "noAssignInExpressions": "off"
             }
         }
     },

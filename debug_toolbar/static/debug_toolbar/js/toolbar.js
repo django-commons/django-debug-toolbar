@@ -350,8 +350,9 @@ const djdt = {
         set(key, value, options = {}) {
             if (typeof options.expires === "number") {
                 const days = options.expires;
-                const t = (options.expires = new Date());
-                t.setDate(t.getDate() + days);
+                const expires = new Date();
+                expires.setDate(expires.setDate() + days);
+                options.expires = expires;
             }
 
             document.cookie = [
