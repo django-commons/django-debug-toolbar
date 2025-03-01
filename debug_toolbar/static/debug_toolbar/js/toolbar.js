@@ -47,7 +47,7 @@ const djdt = {
                     );
                     url.searchParams.append("store_id", storeId);
                     url.searchParams.append("panel_id", panelId);
-                    ajax(url).then(function (data) {
+                    ajax(url).then((data) => {
                         inner.previousElementSibling.remove(); // Remove AJAX loader
                         inner.innerHTML = data.content;
                         $$.executeScripts(data.scripts);
@@ -67,7 +67,7 @@ const djdt = {
                 }
             }
         });
-        $$.on(djDebug, "click", ".djDebugClose", function () {
+        $$.on(djDebug, "click", ".djDebugClose", () => {
             djdt.hideOneLevel();
         });
         $$.on(
@@ -102,7 +102,7 @@ const djdt = {
                 url = this.href;
             }
 
-            ajax(url, ajaxData).then(function (data) {
+            ajax(url, ajaxData).then((data) => {
                 const win = document.getElementById("djDebugWindow");
                 win.innerHTML = data.content;
                 $$.show(win);
@@ -117,42 +117,37 @@ const djdt = {
             const openMe = this.textContent === toggleOpen;
             const name = this.dataset.toggleName;
             const container = document.getElementById(`${name}_${id}`);
-            container
-                .querySelectorAll(".djDebugCollapsed")
-                .forEach(function (e) {
-                    $$.toggle(e, openMe);
-                });
-            container
-                .querySelectorAll(".djDebugUncollapsed")
-                .forEach(function (e) {
-                    $$.toggle(e, !openMe);
-                });
-            const self = this;
+            container.querySelectorAll(".djDebugCollapsed").forEach((e) => {
+                $$.toggle(e, openMe);
+            });
+            container.querySelectorAll(".djDebugUncollapsed").forEach((e) => {
+                $$.toggle(e, !openMe);
+            });
             this.closest(".djDebugPanelContent")
                 .querySelectorAll(`.djToggleDetails_${id}`)
-                .forEach(function (e) {
+                .forEach((e) => {
                     if (openMe) {
                         e.classList.add("djSelected");
                         e.classList.remove("djUnselected");
-                        self.textContent = toggleClose;
+                        this.textContent = toggleClose;
                     } else {
                         e.classList.remove("djSelected");
                         e.classList.add("djUnselected");
-                        self.textContent = toggleOpen;
+                        this.textContent = toggleOpen;
                     }
                     const switch_ = e.querySelector(".djToggleSwitch");
                     if (switch_) {
-                        switch_.textContent = self.textContent;
+                        switch_.textContent = this.textContent;
                     }
                 });
         });
 
-        $$.on(djDebug, "click", "#djHideToolBarButton", function (event) {
+        $$.on(djDebug, "click", "#djHideToolBarButton", (event) => {
             event.preventDefault();
             djdt.hideToolbar();
         });
 
-        $$.on(djDebug, "click", "#djShowToolBarButton", function () {
+        $$.on(djDebug, "click", "#djShowToolBarButton", () => {
             if (!djdt.handleDragged) {
                 djdt.showToolbar();
             }
@@ -177,7 +172,7 @@ const djdt = {
                 djdt.handleDragged = true;
             }
         }
-        $$.on(djDebug, "mousedown", "#djShowToolBarButton", function (event) {
+        $$.on(djDebug, "mousedown", "#djShowToolBarButton", (event) => {
             event.preventDefault();
             startPageY = event.pageY;
             baseY = handle.offsetTop - startPageY;
@@ -185,12 +180,12 @@ const djdt = {
 
             document.addEventListener(
                 "mouseup",
-                function (event) {
+                (event) => {
                     document.removeEventListener("mousemove", onHandleMove);
                     if (djdt.handleDragged) {
                         event.preventDefault();
                         localStorage.setItem("djdt.top", handle.offsetTop);
-                        requestAnimationFrame(function () {
+                        requestAnimationFrame(() => {
                             djdt.handleDragged = false;
                         });
                         djdt.ensureHandleVisibility();
@@ -221,7 +216,7 @@ const djdt = {
             djDebug.setAttribute("data-theme", userTheme);
         }
         // Adds the listener to the Theme Toggle Button
-        $$.on(djDebug, "click", "#djToggleThemeButton", function () {
+        $$.on(djDebug, "click", "#djToggleThemeButton", () => {
             switch (djDebug.getAttribute("data-theme")) {
                 case "auto":
                     djDebug.setAttribute("data-theme", "light");
@@ -241,10 +236,10 @@ const djdt = {
     hidePanels() {
         const djDebug = getDebugElement();
         $$.hide(document.getElementById("djDebugWindow"));
-        djDebug.querySelectorAll(".djdt-panelContent").forEach(function (e) {
+        djDebug.querySelectorAll(".djdt-panelContent").forEach((e) => {
             $$.hide(e);
         });
-        document.querySelectorAll("#djDebugToolbar li").forEach(function (e) {
+        document.querySelectorAll("#djDebugToolbar li").forEach((e) => {
             e.classList.remove("djdt-active");
         });
     },
@@ -299,7 +294,7 @@ const djdt = {
         function handleAjaxResponse(storeId) {
             const encodedStoreId = encodeURIComponent(storeId);
             const dest = `${sidebarUrl}?store_id=${encodedStoreId}`;
-            slowjax(dest).then(function (data) {
+            slowjax(dest).then((data) => {
                 if (djdt.needUpdateOnFetch) {
                     replaceToolbarState(encodedStoreId, data);
                 }
@@ -325,7 +320,7 @@ const djdt = {
         const origFetch = window.fetch;
         window.fetch = function (...args) {
             const promise = origFetch.apply(this, args);
-            promise.then(function (response) {
+            promise.then((response) => {
                 if (response.headers.get("djdt-store-id") !== null) {
                     handleAjaxResponse(response.headers.get("djdt-store-id"));
                 }
@@ -345,7 +340,7 @@ const djdt = {
             const cookieArray = document.cookie.split("; ");
             const cookies = {};
 
-            cookieArray.forEach(function (e) {
+            cookieArray.forEach((e) => {
                 const parts = e.split("=");
                 cookies[parts[0]] = parts[1];
             });

@@ -15,7 +15,7 @@ function difference(setA, setB) {
  */
 function pluckData(nodes, key) {
     const data = [];
-    nodes.forEach(function (obj) {
+    nodes.forEach((obj) => {
         data.push(obj.dataset[key]);
     });
     return data;
@@ -29,18 +29,16 @@ function refreshHistory() {
     );
 
     ajaxForm(formTarget)
-        .then(function (data) {
+        .then((data) => {
             // Remove existing rows first then re-populate with new data
-            container
-                .querySelectorAll("tr[data-store-id]")
-                .forEach(function (node) {
-                    node.remove();
-                });
-            data.requests.forEach(function (request) {
+            container.querySelectorAll("tr[data-store-id]").forEach((node) => {
+                node.remove();
+            });
+            data.requests.forEach((request) => {
                 container.innerHTML = request.content + container.innerHTML;
             });
         })
-        .then(function () {
+        .then(() => {
             const allIds = new Set(
                 pluckData(
                     container.querySelectorAll("tr[data-store-id]"),
@@ -55,8 +53,8 @@ function refreshHistory() {
                 lastRequestId,
             };
         })
-        .then(function (refreshInfo) {
-            refreshInfo.newIds.forEach(function (newId) {
+        .then((refreshInfo) => {
+            refreshInfo.newIds.forEach((newId) => {
                 const row = container.querySelector(
                     `tr[data-store-id="${newId}"]`
                 );
@@ -84,7 +82,7 @@ function switchHistory(newStoreId) {
     }
     formTarget.closest("tr").classList.add("djdt-highlighted");
 
-    ajaxForm(formTarget).then(function (data) {
+    ajaxForm(formTarget).then((data) => {
         if (Object.keys(data).length === 0) {
             const container = document.getElementById("djdtHistoryRequests");
             container.querySelector(
@@ -100,7 +98,7 @@ $$.on(djDebug, "click", ".switchHistory", function (event) {
     switchHistory(this.dataset.storeId);
 });
 
-$$.on(djDebug, "click", ".refreshHistory", function (event) {
+$$.on(djDebug, "click", ".refreshHistory", (event) => {
     event.preventDefault();
     refreshHistory();
 });

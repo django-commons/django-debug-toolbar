@@ -1,7 +1,7 @@
 const $$ = {
     on(root, eventName, selector, fn) {
         root.removeEventListener(eventName, fn);
-        root.addEventListener(eventName, function (event) {
+        root.addEventListener(eventName, (event) => {
             const target = event.target.closest(selector);
             if (root.contains(target)) {
                 fn.call(target, event);
@@ -17,7 +17,7 @@ const $$ = {
         panelId: The Id of the panel.
         fn: A function to execute when the event is triggered.
          */
-        root.addEventListener("djdt.panel.render", function (event) {
+        root.addEventListener("djdt.panel.render", (event) => {
             if (event.detail.panelId === panelId) {
                 fn.call(event);
             }
@@ -40,7 +40,7 @@ const $$ = {
         return !element.classList.contains("djdt-hidden");
     },
     executeScripts(scripts) {
-        scripts.forEach(function (script) {
+        scripts.forEach((script) => {
             const el = document.createElement("script");
             el.type = "module";
             el.src = script;
@@ -54,39 +54,39 @@ const $$ = {
          * The format is data-djdt-styles="styleName1:value;styleName2:value2"
          * The style names should use the CSSStyleDeclaration camel cased names.
          */
-        container
-            .querySelectorAll("[data-djdt-styles]")
-            .forEach(function (element) {
-                const styles = element.dataset.djdtStyles || "";
-                styles.split(";").forEach(function (styleText) {
-                    const styleKeyPair = styleText.split(":");
-                    if (styleKeyPair.length === 2) {
-                        const name = styleKeyPair[0].trim();
-                        const value = styleKeyPair[1].trim();
-                        element.style[name] = value;
-                    }
-                });
+        container.querySelectorAll("[data-djdt-styles]").forEach((element) => {
+            const styles = element.dataset.djdtStyles || "";
+            styles.split(";").forEach((styleText) => {
+                const styleKeyPair = styleText.split(":");
+                if (styleKeyPair.length === 2) {
+                    const name = styleKeyPair[0].trim();
+                    const value = styleKeyPair[1].trim();
+                    element.style[name] = value;
+                }
             });
+        });
     },
 };
 
 function ajax(url, init) {
     return fetch(url, Object.assign({ credentials: "same-origin" }, init))
-        .then(function (response) {
+        .then((response) => {
             if (response.ok) {
-                return response.json().catch(function (error) {
-                    return Promise.reject(
-                        new Error(
-                            `The response  is a invalid Json object : ${error}`
+                return response
+                    .json()
+                    .catch((error) =>
+                        Promise.reject(
+                            new Error(
+                                `The response  is a invalid Json object : ${error}`
+                            )
                         )
                     );
-                });
             }
             return Promise.reject(
                 new Error(`${response.status}: ${response.statusText}`)
             );
         })
-        .catch(function (error) {
+        .catch((error) => {
             const win = document.getElementById("djDebugWindow");
             win.innerHTML = `<div class="djDebugPanelTitle"><button type="button" class="djDebugClose">»</button><h3>${error.message}</h3></div>`;
             $$.show(win);
@@ -111,7 +111,7 @@ function replaceToolbarState(newStoreId, data) {
     const djDebug = document.getElementById("djDebug");
     djDebug.setAttribute("data-store-id", newStoreId);
     // Check if response is empty, it could be due to an expired storeId.
-    Object.keys(data).forEach(function (panelId) {
+    Object.keys(data).forEach((panelId) => {
         const panel = document.getElementById(panelId);
         if (panel) {
             panel.outerHTML = data[panelId].content;
@@ -125,7 +125,7 @@ function debounce(func, delay) {
     let timer = null;
     let resolves = [];
 
-    return function (...args) {
+    return (...args) => {
         clearTimeout(timer);
         timer = setTimeout(() => {
             const result = func(...args);

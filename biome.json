@@ -12,7 +12,6 @@
         "rules": {
             "recommended": true,
             "complexity": {
-                "useArrowFunction": "off",
                 "noForEach": "off"
             },
             "suspicious": {
