@@ -9,9 +9,8 @@ function insertBrowserTiming() {
             return (
                 ((performance.timing[stat] - timingOffset) / totalTime) * 100.0
             );
-        } else {
-            return 0;
         }
+        return 0;
     }
     function getCSSWidth(stat, endStat) {
         let width = 0;
