@@ -116,7 +116,7 @@ const djdt = {
             const toggleClose = "-";
             const openMe = this.textContent === toggleOpen;
             const name = this.dataset.toggleName;
-            const container = document.getElementById(name + "_" + id);
+            const container = document.getElementById(`${name}_${id}`);
             container
                 .querySelectorAll(".djDebugCollapsed")
                 .forEach(function (e) {
@@ -129,7 +129,7 @@ const djdt = {
                 });
             const self = this;
             this.closest(".djDebugPanelContent")
-                .querySelectorAll(".djToggleDetails_" + id)
+                .querySelectorAll(`.djToggleDetails_${id}`)
                 .forEach(function (e) {
                     if (openMe) {
                         e.classList.add("djSelected");
@@ -173,7 +173,7 @@ const djdt = {
                     top = window.innerHeight - handle.offsetHeight;
                 }
 
-                handle.style.top = top + "px";
+                handle.style.top = `${top}px`;
                 djdt.handleDragged = true;
             }
         }
@@ -255,7 +255,7 @@ const djdt = {
             localStorage.getItem("djdt.top") || 265,
             window.innerHeight - handle.offsetWidth
         );
-        handle.style.top = handleTop + "px";
+        handle.style.top = `${handleTop}px`;
     },
     hideToolbar() {
         djdt.hidePanels();
@@ -360,15 +360,15 @@ const djdt = {
             }
 
             document.cookie = [
-                encodeURIComponent(key) + "=" + String(value),
+                `${encodeURIComponent(key)}=${String(value)}`,
                 options.expires
-                    ? "; expires=" + options.expires.toUTCString()
+                    ? `; expires=${options.expires.toUTCString()}`
                     : "",
-                options.path ? "; path=" + options.path : "",
-                options.domain ? "; domain=" + options.domain : "",
+                options.path ? `; path=${options.path}` : "",
+                options.domain ? `; domain=${options.domain}` : "",
                 options.secure ? "; secure" : "",
                 "samesite" in options
-                    ? "; samesite=" + options.samesite
+                    ? `; samesite=${options.samesite}`
                     : "; samesite=lax",
             ].join("");
 

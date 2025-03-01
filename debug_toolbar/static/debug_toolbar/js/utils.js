@@ -77,21 +77,18 @@ function ajax(url, init) {
                 return response.json().catch(function (error) {
                     return Promise.reject(
                         new Error(
-                            "The response  is a invalid Json object : " + error
+                            `The response  is a invalid Json object : ${error}`
                         )
                     );
                 });
             }
             return Promise.reject(
-                new Error(response.status + ": " + response.statusText)
+                new Error(`${response.status}: ${response.statusText}`)
             );
         })
         .catch(function (error) {
             const win = document.getElementById("djDebugWindow");
-            win.innerHTML =
-                '<div class="djDebugPanelTitle"><button type="button" class="djDebugClose">»</button><h3>' +
-                error.message +
-                "</h3></div>";
+            win.innerHTML = `<div class="djDebugPanelTitle"><button type="button" class="djDebugClose">»</button><h3>${error.message}</h3></div>`;
             $$.show(win);
             throw error;
         });
@@ -118,7 +115,7 @@ function replaceToolbarState(newStoreId, data) {
         const panel = document.getElementById(panelId);
         if (panel) {
             panel.outerHTML = data[panelId].content;
-            document.getElementById("djdt-" + panelId).outerHTML =
+            document.getElementById(`djdt-${panelId}`).outerHTML =
                 data[panelId].button;
         }
     });

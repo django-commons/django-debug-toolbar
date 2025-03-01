@@ -74,7 +74,7 @@ function refreshHistory() {
 
 function switchHistory(newStoreId) {
     const formTarget = djDebug.querySelector(
-        ".switchHistory[data-store-id='" + newStoreId + "']"
+        `.switchHistory[data-store-id='${newStoreId}']`
     );
     const tbody = formTarget.closest("tbody");
 
@@ -88,7 +88,7 @@ function switchHistory(newStoreId) {
         if (Object.keys(data).length === 0) {
             const container = document.getElementById("djdtHistoryRequests");
             container.querySelector(
-                'button[data-store-id="' + newStoreId + '"]'
+                `button[data-store-id="${newStoreId}"]`
             ).innerHTML = "Switch [EXPIRED]";
         }
         replaceToolbarState(newStoreId, data);

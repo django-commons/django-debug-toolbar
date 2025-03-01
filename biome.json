@@ -15,9 +15,6 @@
                 "useArrowFunction": "off",
                 "noForEach": "off"
             },
-            "style": {
-                "useTemplate": "off"
-            },
             "suspicious": {
                 "noAssignInExpressions": "off"
             }

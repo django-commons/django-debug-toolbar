@@ -27,36 +27,31 @@ function insertBrowserTiming() {
         } else {
             width = 0;
         }
-        return width < 1 ? "2px" : width + "%";
+        return width < 1 ? "2px" : `${width}%`;
     }
     function addRow(tbody, stat, endStat) {
         const row = document.createElement("tr");
+        const elapsed = performance.timing[stat] - timingOffset;
         if (endStat) {
+            const duration =
+                performance.timing[endStat] - performance.timing[stat];
             // Render a start through end bar
-            row.innerHTML =
-                "<td>" +
-                stat.replace("Start", "") +
-                "</td>" +
-                '<td><svg class="djDebugLineChart" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 100 5" preserveAspectRatio="none"><rect y="0" height="5" fill="#ccc" /></svg></td>' +
-                "<td>" +
-                (performance.timing[stat] - timingOffset) +
-                " (+" +
-                (performance.timing[endStat] - performance.timing[stat]) +
-                ")</td>";
+            row.innerHTML = `
+<td>${stat.replace("Start", "")}</td>
+<td><svg class="djDebugLineChart" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 100 5" preserveAspectRatio="none"><rect y="0" height="5" fill="#ccc" /></svg></td>
+<td>${elapsed} (+${duration})</td>
+`;
             row.querySelector("rect").setAttribute(
                 "width",
                 getCSSWidth(stat, endStat)
             );
         } else {
             // Render a point in time
-            row.innerHTML =
-                "<td>" +
-                stat +
-                "</td>" +
-                '<td><svg class="djDebugLineChart" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 100 5" preserveAspectRatio="none"><rect y="0" height="5" fill="#ccc" /></svg></td>' +
-                "<td>" +
-                (performance.timing[stat] - timingOffset) +
-                "</td>";
+            row.innerHTML = `
+<td>${stat}</td>
+<td><svg class="djDebugLineChart" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 100 5" preserveAspectRatio="none"><rect y="0" height="5" fill="#ccc" /></svg></td>
+<td>${elapsed}</td>
+`;
             row.querySelector("rect").setAttribute("width", 2);
         }
         row.querySelector("rect").setAttribute("x", getLeft(stat));
