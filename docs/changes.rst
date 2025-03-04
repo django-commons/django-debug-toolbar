@@ -12,6 +12,8 @@ Pending
 * Make ``require_toolbar`` decorator compatible to async views.
 * Added link to contributing documentation in ``CONTRIBUTING.md``.
 * Replaced ESLint and prettier with biome in our pre-commit configuration.
+* Added a Makefile target (``make help``) to get a quick overview
+  of each target.
 
 5.0.1 (2025-01-13)
 ------------------
