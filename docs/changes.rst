@@ -14,7 +14,7 @@ Pending
 * Replaced ESLint and prettier with biome in our pre-commit configuration.
 * Added a Makefile target (``make help``) to get a quick overview
   of each target.
-* Replaced DebugConfiguredStorage with URLMixin in staticfiles panel.
+* Avoided reinitializing the staticfiles storage during instrumentation.
 
 5.0.1 (2025-01-13)
 ------------------
