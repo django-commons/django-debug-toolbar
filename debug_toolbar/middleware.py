@@ -36,7 +36,7 @@ def show_toolbar(request):
         # This is a hack for docker installations. It attempts to look
         # up the IP address of the docker host.
         # This is not guaranteed to work.
-        docker_ip = docker_ip = socket.gethostbyname('gateway.docker.internal')
+        docker_ip = docker_ip = socket.gethostbyname("gateway.docker.internal")
         if request.META.get("REMOTE_ADDR") == docker_ip:
             return True
     except socket.gaierror:
