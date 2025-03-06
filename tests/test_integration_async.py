@@ -54,13 +54,12 @@ class DebugToolbarTestCase(BaseTestCase):
         with self.settings(INTERNAL_IPS=[]):
             self.assertFalse(show_toolbar(self.request))
 
-    @patch("socket.gethostbyname", return_value="127.0.0.255")
+    @patch("socket.gethostbyname", return_value="192.168.65.1")
     async def test_show_toolbar_docker(self, mocked_gethostbyname):
         with self.settings(INTERNAL_IPS=[]):
-            # Is true because REMOTE_ADDR is 127.0.0.1 and the 255
-            # is shifted to be 1.
+            self.request.META["REMOTE_ADDR"] = "192.168.65.1"
             self.assertTrue(show_toolbar(self.request))
-        mocked_gethostbyname.assert_called_once_with("host.docker.internal")
+        mocked_gethostbyname.assert_called_once_with("gateway.docker.internal")
 
     async def test_not_iterating_over_INTERNAL_IPS(self):
         """
