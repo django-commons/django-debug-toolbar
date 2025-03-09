@@ -322,17 +322,21 @@ const djdt = {
         const origFetch = window.fetch;
         window.fetch = function (...args) {
             const promise = origFetch.apply(this, args);
-            promise.then((response) => {
-                if (response.headers.get("djdt-store-id") !== null) {
-                    handleAjaxResponse(response.headers.get("djdt-store-id"));
-                }
-                // Don't resolve the response via .json(). Instead
-                // continue to return it to allow the caller to consume as needed.
-                return response;
-            }).catch((err) => {
-                if (err.name === 'AbortError') return
-                throw(e);
-            });
+            promise
+                .then((response) => {
+                    if (response.headers.get("djdt-store-id") !== null) {
+                        handleAjaxResponse(
+                            response.headers.get("djdt-store-id")
+                        );
+                    }
+                    // Don't resolve the response via .json(). Instead
+                    // continue to return it to allow the caller to consume as needed.
+                    return response;
+                })
+                .catch((err) => {
+                    if (err.name === "AbortError") return;
+                    throw e;
+                });
             return promise;
         };
     },
