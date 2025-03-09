@@ -329,6 +329,9 @@ const djdt = {
                 // Don't resolve the response via .json(). Instead
                 // continue to return it to allow the caller to consume as needed.
                 return response;
+            }).catch((err) => {
+                if (err.name === 'AbortError') return
+                throw(e);
             });
             return promise;
         };
