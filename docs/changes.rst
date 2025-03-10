@@ -15,6 +15,7 @@ Pending
 * Added a Makefile target (``make help``) to get a quick overview
   of each target.
 * Avoided reinitializing the staticfiles storage during instrumentation.
+* Fix for exception-unhandled "forked" Promise chain in rebound window.fetch
 
 5.0.1 (2025-01-13)
 ------------------

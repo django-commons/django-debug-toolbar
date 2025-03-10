@@ -321,16 +321,24 @@ const djdt = {
 
         const origFetch = window.fetch;
         window.fetch = function (...args) {
+            // Heads up! Before modifying this code, please be aware of the
+            // possible unhandled errors that might arise from changing this.
+            // For details, see
+            // https://github.com/django-commons/django-debug-toolbar/pull/2100
             const promise = origFetch.apply(this, args);
-            promise.then((response) => {
+            return promise.then((response) => {
                 if (response.headers.get("djdt-store-id") !== null) {
-                    handleAjaxResponse(response.headers.get("djdt-store-id"));
+                    try {
+                        handleAjaxResponse(
+                            response.headers.get("djdt-store-id"));
+                    } catch (err) {
+                        throw new Error(
+                            `A(n) "${err.name}" happened within `
+                            `django-debug-toolbar: ${err.message}`)
+                    }
                 }
-                // Don't resolve the response via .json(). Instead
-                // continue to return it to allow the caller to consume as needed.
                 return response;
             });
-            return promise;
         };
     },
     cookie: {
