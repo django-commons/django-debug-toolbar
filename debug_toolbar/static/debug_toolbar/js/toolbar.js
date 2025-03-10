@@ -334,7 +334,7 @@ const djdt = {
                         );
                     } catch (err) {
                         throw new Error(
-                            `A(n) "${err.name}" happened within ``django-debug-toolbar: ${err.message}`
+                            `"${err.name}" occurred within django-debug-toolbar: ${err.message}`
                         );
                     }
                 }
