@@ -330,11 +330,12 @@ const djdt = {
                 if (response.headers.get("djdt-store-id") !== null) {
                     try {
                         handleAjaxResponse(
-                            response.headers.get("djdt-store-id"));
+                            response.headers.get("djdt-store-id")
+                        );
                     } catch (err) {
                         throw new Error(
-                            `A(n) "${err.name}" happened within `
-                            `django-debug-toolbar: ${err.message}`)
+                            `A(n) "${err.name}" happened within ``django-debug-toolbar: ${err.message}`
+                        );
                     }
                 }
                 return response;
