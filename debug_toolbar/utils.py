@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 import linecache
 import os.path
+import re
 import sys
 import warnings
 from collections.abc import Sequence
@@ -220,15 +221,73 @@ def get_sorted_request_variable(
 ) -> dict[str, list[tuple[str, Any]] | Any]:
     """
     Get a data structure for showing a sorted list of variables from the
-    request data.
+    request data. If enabled, sanitizes sensitive information.
     """
+    config = dt_settings.get_config()
+    sanitize_request_data = config.get("SANITIZE_REQUEST_DATA", True)
+
     try:
         if isinstance(variable, dict):
-            return {"list": [(k, variable.get(k)) for k in sorted(variable)]}
+            if sanitize_request_data:
+                return {
+                    "list": [
+                        (k, sanitize_value(k, variable.get(k)))
+                        for k in sorted(variable)
+                    ]
+                }
+            else:
+                return {"list": [(k, variable.get(k)) for k in sorted(variable)]}
         else:
-            return {"list": [(k, variable.getlist(k)) for k in sorted(variable)]}
+            # Handle QueryDict which can have multiple values per key
+            if sanitize_request_data:
+                sanitized_list = []
+                for k in sorted(variable):
+                    values = variable.getlist(k)
+                    sanitized_values = sanitize_value(k, values)
+                    sanitized_list.append((k, sanitized_values))
+                return {"list": sanitized_list}
+            else:
+                return {"list": [(k, variable.getlist(k)) for k in sorted(variable)]}
     except TypeError:
         return {"raw": variable}
+
+
+def sanitize_value(key: str, value: Any) -> Any:
+    """
+    Sanitize a potentially sensitive value based on its key.
+    """
+    config = dt_settings.get_config()
+
+    if not config.get("SANITIZE_REQUEST_DATA", True):
+        return value
+
+    cleansed_substitute = "********************"
+
+    # If key is not a string, we can't match it against our patterns
+    # so we just return the value unchanged
+    if not isinstance(key, str):
+        return value
+
+    patterns = config.get(
+        "REQUEST_SANITIZATION_PATTERNS",
+        (
+            "API",
+            "AUTH",
+            "TOKEN",
+            "KEY",
+            "SECRET",
+            "PASS",
+            "SIGNATURE",
+            "HTTP_COOKIE",
+        ),
+    )
+
+    if patterns:
+        pattern = re.compile("|".join(patterns), flags=re.I)
+        if pattern.search(key):
+            return cleansed_substitute
+
+    return value
 
 
 def get_stack(context=1) -> list[stubs.InspectStack]:

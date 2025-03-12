@@ -45,6 +45,17 @@ CONFIG_DEFAULTS = {
     "TOOLBAR_LANGUAGE": None,
     "IS_RUNNING_TESTS": "test" in sys.argv,
     "UPDATE_ON_FETCH": False,
+    "SANITIZE_REQUEST_DATA": True,
+    "REQUEST_SANITIZATION_PATTERNS": (
+        "API",
+        "AUTH",
+        "TOKEN",
+        "KEY",
+        "SECRET",
+        "PASS",
+        "SIGNATURE",
+        "HTTP_COOKIE",
+    ),
     "DEFAULT_THEME": "auto",
 }
 

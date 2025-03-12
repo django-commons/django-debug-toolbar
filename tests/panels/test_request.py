@@ -1,5 +1,5 @@
 from django.http import QueryDict
-from django.test import RequestFactory
+from django.test import RequestFactory, override_settings
 
 from ..base import BaseTestCase
 
@@ -136,3 +136,59 @@ class RequestPanelTestCase(BaseTestCase):
         self.panel.generate_stats(self.request, response)
         panel_stats = self.panel.get_stats()
         self.assertEqual(panel_stats["session"], data)
+
+    def test_sensitive_post_data_sanitization(self):
+        """Test that sensitive POST data is sanitized."""
+        self.request.POST = {"username": "testuser", "password": "secret123"}
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+
+        # Check that password is sanitized in panel content
+        content = self.panel.content
+        self.assertIn("username", content)
+        self.assertIn("testuser", content)
+        self.assertIn("password", content)
+        self.assertNotIn("secret123", content)
+        self.assertIn("********************", content)
+
+    def test_sensitive_get_data_sanitization(self):
+        """Test that sensitive GET data is sanitized."""
+        self.request.GET = {"api_key": "abc123", "q": "search term"}
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+
+        # Check that api_key is sanitized in panel content
+        content = self.panel.content
+        self.assertIn("api_key", content)
+        self.assertNotIn("abc123", content)
+        self.assertIn("********************", content)
+        self.assertIn("q", content)
+        self.assertIn("search term", content)
+
+    def test_sensitive_session_data_sanitization(self):
+        """Test that sensitive session data is sanitized."""
+        self.request.session = {"user_id": 123, "auth_token": "xyz789"}
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+
+        # Check that auth_token is sanitized in panel content
+        content = self.panel.content
+        self.assertIn("user_id", content)
+        self.assertIn("123", content)
+        self.assertIn("auth_token", content)
+        self.assertNotIn("xyz789", content)
+        self.assertIn("********************", content)
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"SANITIZE_REQUEST_DATA": False})
+    def test_sanitization_disabled_in_panel(self):
+        """Test that sanitization can be disabled for the panel."""
+        self.request.POST = {"username": "testuser", "password": "secret123"}
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+
+        # With sanitization disabled, password should appear in content
+        content = self.panel.content
+        self.assertIn("username", content)
+        self.assertIn("testuser", content)
+        self.assertIn("password", content)
+        self.assertIn("secret123", content)

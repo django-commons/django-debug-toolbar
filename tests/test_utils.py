@@ -1,13 +1,16 @@
 import unittest
 
+from django.http import QueryDict
 from django.test import override_settings
 
 import debug_toolbar.utils
 from debug_toolbar.utils import (
     get_name_from_obj,
+    get_sorted_request_variable,
     get_stack,
     get_stack_trace,
     render_stacktrace,
+    sanitize_value,
     tidy_stacktrace,
 )
 
@@ -109,3 +112,84 @@ class StackTraceTestCase(unittest.TestCase):
         rendered_stack_2 = render_stacktrace(stack_2_wrapper.value)
         self.assertNotIn("test_locals_value_1", rendered_stack_2)
         self.assertIn("test_locals_value_2", rendered_stack_2)
+
+
+class SanitizeValueTestCase(unittest.TestCase):
+    """Tests for the sanitize_value function."""
+
+    def test_sanitize_sensitive_key(self):
+        """Test that sensitive keys are sanitized."""
+        self.assertEqual(
+            sanitize_value("password", "secret123"), "********************"
+        )
+        self.assertEqual(sanitize_value("api_key", "abc123"), "********************")
+        self.assertEqual(sanitize_value("auth_token", "xyz789"), "********************")
+
+    def test_sanitize_non_sensitive_key(self):
+        """Test that non-sensitive keys are not sanitized."""
+        self.assertEqual(sanitize_value("username", "testuser"), "testuser")
+        self.assertEqual(
+            sanitize_value("email", "user@example.com"), "user@example.com"
+        )
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"SANITIZE_REQUEST_DATA": False})
+    def test_sanitize_disabled(self):
+        """Test that sanitization can be disabled."""
+        self.assertEqual(sanitize_value("password", "secret123"), "secret123")
+
+    @override_settings(
+        DEBUG_TOOLBAR_CONFIG={"REQUEST_SANITIZATION_PATTERNS": ("CUSTOM",)}
+    )
+    def test_custom_sanitization_patterns(self):
+        """Test that custom sanitization patterns can be used."""
+        self.assertEqual(
+            sanitize_value("custom_field", "sensitive"), "********************"
+        )
+        self.assertEqual(
+            sanitize_value("password", "secret123"),
+            "secret123",  # Not sanitized with custom pattern
+        )
+
+
+class GetSortedRequestVariableTestCase(unittest.TestCase):
+    """Tests for the get_sorted_request_variable function."""
+
+    def test_dict_sanitization(self):
+        """Test sanitization of a regular dictionary."""
+        test_dict = {
+            "username": "testuser",
+            "password": "secret123",
+            "api_key": "abc123",
+        }
+        result = get_sorted_request_variable(test_dict)
+
+        # Convert to dict for easier testing
+        result_dict = dict(result["list"])
+
+        self.assertEqual(result_dict["username"], "testuser")
+        self.assertEqual(result_dict["password"], "********************")
+        self.assertEqual(result_dict["api_key"], "********************")
+
+    def test_querydict_sanitization(self):
+        """Test sanitization of a QueryDict."""
+        query_dict = QueryDict("username=testuser&password=secret123&api_key=abc123")
+        result = get_sorted_request_variable(query_dict)
+
+        # Convert to dict for easier testing
+        result_dict = dict(result["list"])
+
+        self.assertEqual(result_dict["username"], "testuser")
+        self.assertEqual(result_dict["password"], "********************")
+        self.assertEqual(result_dict["api_key"], "********************")
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"SANITIZE_REQUEST_DATA": False})
+    def test_sanitization_disabled(self):
+        """Test that sanitization can be disabled."""
+        test_dict = {"username": "testuser", "password": "secret123"}
+        result = get_sorted_request_variable(test_dict)
+
+        # Convert to dict for easier testing
+        result_dict = dict(result["list"])
+
+        self.assertEqual(result_dict["username"], "testuser")
+        self.assertEqual(result_dict["password"], "secret123")  # Not sanitized

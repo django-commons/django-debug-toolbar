@@ -385,6 +385,50 @@ Here's what a slightly customized toolbar configuration might look like::
         'SQL_WARNING_THRESHOLD': 100,   # milliseconds
     }
 
+.. _SANITIZE_REQUEST_DATA:
+
+* ``SANITIZE_REQUEST_DATA``
+
+  Default: ``True``
+
+  Panel: request
+
+  This controls whether the toolbar should sanitize the request data
+  before rendering it. This helps prevent sensitive information from
+  being displayed in the Debug Toolbar panels or stored in any
+  persistent storage that might be used.
+
+  This setting sanitizes data in:
+
+  * GET parameters
+  * POST parameters
+  * Cookies
+  * Session data
+
+  Sanitized data is substituted with the string ``"********************"``.
+
+.. _REQUEST_SANITIZATION_PATTERNS:
+
+* ``REQUEST_SANITIZATION_PATTERNS``
+
+  Default::
+
+    (
+        "API",
+        "AUTH",
+        "TOKEN",
+        "KEY",
+        "SECRET",
+        "PASS",
+        "SIGNATURE",
+        "HTTP_COOKIE",
+    )
+
+  Panel: request
+
+  This controls the patterns that the toolbar should use to sanitize
+  the request data.
+
 Theming support
 ---------------
 The debug toolbar uses CSS variables to define fonts and colors. This allows
