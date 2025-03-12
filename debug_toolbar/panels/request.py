@@ -2,6 +2,7 @@ from django.http import Http404
 from django.urls import resolve
 from django.utils.translation import gettext_lazy as _
 
+from debug_toolbar import settings as dt_settings
 from debug_toolbar.panels import Panel
 from debug_toolbar.utils import (
     get_name_from_obj,
@@ -28,8 +29,6 @@ class RequestPanel(Panel):
         return view_func.rsplit(".", 1)[-1]
 
     def generate_stats(self, request, response):
-        from debug_toolbar import settings as dt_settings
-
         self.record_stats(
             {
                 "get": get_sorted_request_variable(request.GET),
@@ -71,28 +70,14 @@ class RequestPanel(Panel):
             )
 
             try:
-                if sanitize_request_data:
-                    session_list = []
-                    for k in sorted(request.session.keys()):
-                        v = request.session.get(k)
-                        sanitized_v = sanitize_value(k, v)
-                        session_list.append((k, sanitized_v))
-                else:
-                    session_list = [
-                        (k, request.session.get(k))
-                        for k in sorted(request.session.keys())
-                    ]
+                session_keys = sorted(request.session.keys())
             except TypeError:
                 # Handle non-dict session objects
-                if sanitize_request_data:
-                    session_list = []
-                    for k in request.session.keys():
-                        v = request.session.get(k)
-                        sanitized_v = sanitize_value(k, v)
-                        session_list.append((k, sanitized_v))
-                else:
-                    session_list = [
-                        (k, request.session.get(k)) for k in request.session.keys()
-                    ]
+                session_keys = request.session.keys()
+
+            session_list = [(k, request.session.get(k)) for k in session_keys]
+
+            if sanitize_request_data:
+                session_list = [(k, sanitize_value(k, v)) for k, v in session_list]
 
             self.record_stats({"session": {"list": session_list}})
