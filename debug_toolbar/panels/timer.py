@@ -46,6 +46,10 @@ class TimerPanel(Panel):
             (_("Total CPU time"), _("%(total)0.3f msec") % stats),
             (_("Elapsed time"), _("%(total_time)0.3f msec") % stats),
             (
+                _("Toolbar time"),
+                _("%(toolbar_time)0.3f msec") % stats,
+            ),
+            (
                 _("Context switches"),
                 _("%(vcsw)d voluntary, %(ivcsw)d involuntary") % stats,
             ),
@@ -90,6 +94,9 @@ class TimerPanel(Panel):
             #        stats['urss'] = self._end_rusage.ru_idrss
             #        stats['usrss'] = self._end_rusage.ru_isrss
 
+        if hasattr(self, "_toolbar_start_time"):
+            stats["toolbar_time"] = (perf_counter() - self._toolbar_start_time) * 1000
+
         self.record_stats(stats)
 
     def generate_server_timing(self, request, response):
@@ -101,6 +108,15 @@ class TimerPanel(Panel):
         self.record_server_timing(
             "total_time", "Elapsed time", stats.get("total_time", 0)
         )
+        self.record_server_timing(
+            "toolbar_time", "Toolbar time", stats.get("toolbar_time", 0)
+        )
 
     def _elapsed_ru(self, name):
         return getattr(self._end_rusage, name) - getattr(self._start_rusage, name)
+
+    def enable_instrumentation(self):
+        self._toolbar_start_time = perf_counter()
+
+    def aenable_instrumentation(self):
+        self._toolbar_start_time = perf_counter()
