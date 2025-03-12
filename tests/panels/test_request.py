@@ -165,6 +165,20 @@ class RequestPanelTestCase(BaseTestCase):
         self.assertIn("q", content)
         self.assertIn("search term", content)
 
+    def test_sensitive_cookie_data_sanitization(self):
+        """Test that sensitive cookie data is sanitized."""
+        self.request.COOKIES = {"session_id": "abc123", "auth_token": "xyz789"}
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+
+        # Check that auth_token is sanitized in panel content
+        content = self.panel.content
+        self.assertIn("session_id", content)
+        self.assertIn("abc123", content)
+        self.assertIn("auth_token", content)
+        self.assertNotIn("xyz789", content)
+        self.assertIn("********************", content)
+
     def test_sensitive_session_data_sanitization(self):
         """Test that sensitive session data is sanitized."""
         self.request.session = {"user_id": 123, "auth_token": "xyz789"}
