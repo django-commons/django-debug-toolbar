@@ -16,6 +16,7 @@ Pending
   of each target.
 * Avoided reinitializing the staticfiles storage during instrumentation.
 * Fix for exception-unhandled "forked" Promise chain in rebound window.fetch
+* Add hook to RedirectsPanel for subclass customization
 
 5.0.1 (2025-01-13)
 ------------------
