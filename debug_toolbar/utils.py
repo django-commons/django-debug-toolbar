@@ -14,10 +14,12 @@ from django.http import QueryDict
 from django.template import Node
 from django.utils.html import format_html
 from django.utils.safestring import SafeString, mark_safe
+from django.views.debug import get_default_exception_reporter_filter
 
 from debug_toolbar import _stubs as stubs, settings as dt_settings
 
 _local_data = Local()
+safe_filter = get_default_exception_reporter_filter()
 
 
 def _is_excluded_frame(frame: Any, excluded_modules: Sequence[str] | None) -> bool:
@@ -215,18 +217,34 @@ def getframeinfo(frame: Any, context: int = 1) -> inspect.Traceback:
     return inspect.Traceback(filename, lineno, frame.f_code.co_name, lines, index)
 
 
-def get_sorted_request_variable(
+def sanitize_and_sort_request_vars(
     variable: dict[str, Any] | QueryDict,
 ) -> dict[str, list[tuple[str, Any]] | Any]:
     """
     Get a data structure for showing a sorted list of variables from the
-    request data.
+    request data with sensitive values redacted.
     """
+    if not isinstance(variable, (dict, QueryDict)):
+        return {"raw": variable}
+
     try:
-        if isinstance(variable, dict):
-            return {"list": [(k, variable.get(k)) for k in sorted(variable)]}
+        try:
+            keys = sorted(variable)
+        except TypeError:
+            keys = list(variable)
+
+        if isinstance(variable, QueryDict):
+            result = []
+            for k in keys:
+                values = variable.getlist(k)
+                # Return single value if there's only one, otherwise keep as list
+                value = values[0] if len(values) == 1 else values
+                result.append((k, safe_filter.cleanse_setting(k, value)))
         else:
-            return {"list": [(k, variable.getlist(k)) for k in sorted(variable)]}
+            result = [
+                (k, safe_filter.cleanse_setting(k, variable.get(k))) for k in keys
+            ]
+        return {"list": result}
     except TypeError:
         return {"raw": variable}
 
