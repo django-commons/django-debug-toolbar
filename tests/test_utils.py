@@ -1,5 +1,6 @@
 import unittest
 
+from django.http import QueryDict
 from django.test import override_settings
 
 import debug_toolbar.utils
@@ -8,6 +9,7 @@ from debug_toolbar.utils import (
     get_stack,
     get_stack_trace,
     render_stacktrace,
+    sanitize_and_sort_request_vars,
     tidy_stacktrace,
 )
 
@@ -109,3 +111,63 @@ class StackTraceTestCase(unittest.TestCase):
         rendered_stack_2 = render_stacktrace(stack_2_wrapper.value)
         self.assertNotIn("test_locals_value_1", rendered_stack_2)
         self.assertIn("test_locals_value_2", rendered_stack_2)
+
+
+class SanitizeAndSortRequestVarsTestCase(unittest.TestCase):
+    """Tests for the sanitize_and_sort_request_vars function."""
+
+    def test_dict_sanitization(self):
+        """Test sanitization of a regular dictionary."""
+        test_dict = {
+            "username": "testuser",
+            "password": "secret123",
+            "api_key": "abc123",
+        }
+        result = sanitize_and_sort_request_vars(test_dict)
+
+        # Convert to dict for easier testing
+        result_dict = dict(result["list"])
+
+        self.assertEqual(result_dict["username"], "testuser")
+        self.assertEqual(result_dict["password"], "********************")
+        self.assertEqual(result_dict["api_key"], "********************")
+
+    def test_querydict_sanitization(self):
+        """Test sanitization of a QueryDict."""
+        query_dict = QueryDict("username=testuser&password=secret123&api_key=abc123")
+        result = sanitize_and_sort_request_vars(query_dict)
+
+        # Convert to dict for easier testing
+        result_dict = dict(result["list"])
+
+        self.assertEqual(result_dict["username"], "testuser")
+        self.assertEqual(result_dict["password"], "********************")
+        self.assertEqual(result_dict["api_key"], "********************")
+
+    def test_non_sortable_dict_keys(self):
+        """Test dictionary with keys that can't be sorted."""
+        test_dict = {
+            1: "one",
+            "2": "two",
+            None: "none",
+        }
+        result = sanitize_and_sort_request_vars(test_dict)
+        self.assertEqual(len(result["list"]), 3)
+        result_dict = dict(result["list"])
+        self.assertEqual(result_dict[1], "one")
+        self.assertEqual(result_dict["2"], "two")
+        self.assertEqual(result_dict[None], "none")
+
+    def test_querydict_multiple_values(self):
+        """Test QueryDict with multiple values for the same key."""
+        query_dict = QueryDict("name=bar1&name=bar2&title=value")
+        result = sanitize_and_sort_request_vars(query_dict)
+        result_dict = dict(result["list"])
+        self.assertEqual(result_dict["name"], ["bar1", "bar2"])
+        self.assertEqual(result_dict["title"], "value")
+
+    def test_non_dict_input(self):
+        """Test handling of non-dict input."""
+        test_input = ["not", "a", "dict"]
+        result = sanitize_and_sort_request_vars(test_input)
+        self.assertEqual(result["raw"], test_input)
