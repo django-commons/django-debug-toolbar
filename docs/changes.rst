@@ -16,7 +16,7 @@ Pending
   of each target.
 * Avoided reinitializing the staticfiles storage during instrumentation.
 * Fix for exception-unhandled "forked" Promise chain in rebound window.fetch
-* Added feature to cleanse sensitive data in the Request Panel.
+* Added feature to sanitize sensitive data in the Request Panel.
 
 5.0.1 (2025-01-13)
 ------------------
