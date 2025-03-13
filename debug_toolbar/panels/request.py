@@ -3,7 +3,7 @@ from django.urls import resolve
 from django.utils.translation import gettext_lazy as _
 
 from debug_toolbar.panels import Panel
-from debug_toolbar.utils import get_name_from_obj, get_sorted_request_variable
+from debug_toolbar.utils import get_name_from_obj, sanitize_and_sort_request_vars
 
 
 class RequestPanel(Panel):
@@ -26,9 +26,9 @@ class RequestPanel(Panel):
     def generate_stats(self, request, response):
         self.record_stats(
             {
-                "get": get_sorted_request_variable(request.GET),
-                "post": get_sorted_request_variable(request.POST),
-                "cookies": get_sorted_request_variable(request.COOKIES),
+                "get": sanitize_and_sort_request_vars(request.GET),
+                "post": sanitize_and_sort_request_vars(request.POST),
+                "cookies": sanitize_and_sort_request_vars(request.COOKIES),
             }
         )
 
@@ -59,13 +59,5 @@ class RequestPanel(Panel):
         self.record_stats(view_info)
 
         if hasattr(request, "session"):
-            try:
-                session_list = [
-                    (k, request.session.get(k)) for k in sorted(request.session.keys())
-                ]
-            except TypeError:
-                session_list = [
-                    (k, request.session.get(k))
-                    for k in request.session.keys()  # (it's not a dict)
-                ]
-            self.record_stats({"session": {"list": session_list}})
+            session_data = dict(request.session)
+            self.record_stats({"session": sanitize_and_sort_request_vars(session_data)})
