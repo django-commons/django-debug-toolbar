@@ -228,25 +228,45 @@ def sanitize_and_sort_request_vars(
         return {"raw": variable}
 
     try:
-        try:
-            keys = sorted(variable)
-        except TypeError:
-            keys = list(variable)
-
+        # Get sorted keys if possible, otherwise just list them
+        keys = _get_sorted_keys(variable)
+        
+        # Process the variable based on its type
         if isinstance(variable, QueryDict):
-            result = []
-            for k in keys:
-                values = variable.getlist(k)
-                # Return single value if there's only one, otherwise keep as list
-                value = values[0] if len(values) == 1 else values
-                result.append((k, safe_filter.cleanse_setting(k, value)))
+            result = _process_query_dict(variable, keys)
         else:
-            result = [
-                (k, safe_filter.cleanse_setting(k, variable.get(k))) for k in keys
-            ]
+            result = _process_dict(variable, keys)
+            
         return {"list": result}
     except TypeError:
+        # If any processing fails, return raw variable
         return {"raw": variable}
+
+
+def _get_sorted_keys(variable):
+    """Helper function to get sorted keys if possible."""
+    try:
+        return sorted(variable)
+    except TypeError:
+        return list(variable)
+
+
+def _process_query_dict(query_dict, keys):
+    """Process a QueryDict into a list of (key, sanitized_value) tuples."""
+    result = []
+    for k in keys:
+        values = query_dict.getlist(k)
+        # Return single value if there's only one, otherwise keep as list
+        value = values[0] if len(values) == 1 else values
+        result.append((k, safe_filter.cleanse_setting(k, value)))
+    return result
+
+
+def _process_dict(dictionary, keys):
+    """Process a dictionary into a list of (key, sanitized_value) tuples."""
+    return [
+        (k, safe_filter.cleanse_setting(k, dictionary.get(k))) for k in keys
+    ]
 
 
 def get_stack(context=1) -> list[stubs.InspectStack]:
