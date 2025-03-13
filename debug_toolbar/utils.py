@@ -230,13 +230,13 @@ def sanitize_and_sort_request_vars(
     try:
         # Get sorted keys if possible, otherwise just list them
         keys = _get_sorted_keys(variable)
-        
+
         # Process the variable based on its type
         if isinstance(variable, QueryDict):
             result = _process_query_dict(variable, keys)
         else:
             result = _process_dict(variable, keys)
-            
+
         return {"list": result}
     except TypeError:
         # If any processing fails, return raw variable
@@ -264,9 +264,7 @@ def _process_query_dict(query_dict, keys):
 
 def _process_dict(dictionary, keys):
     """Process a dictionary into a list of (key, sanitized_value) tuples."""
-    return [
-        (k, safe_filter.cleanse_setting(k, dictionary.get(k))) for k in keys
-    ]
+    return [(k, safe_filter.cleanse_setting(k, dictionary.get(k))) for k in keys]
 
 
 def get_stack(context=1) -> list[stubs.InspectStack]:
