@@ -11,6 +11,11 @@ Pending
   or ``async_to_sync`` to allow sync/async compatibility.
 * Make ``require_toolbar`` decorator compatible to async views.
 * Added link to contributing documentation in ``CONTRIBUTING.md``.
+* Replaced ESLint and prettier with biome in our pre-commit configuration.
+* Added a Makefile target (``make help``) to get a quick overview
+  of each target.
+* Avoided reinitializing the staticfiles storage during instrumentation.
+* Fix for exception-unhandled "forked" Promise chain in rebound window.fetch
 * Create a CSP nonce property on the toolbar ``Toolbar().csp_nonce``.
 
 5.0.1 (2025-01-13)

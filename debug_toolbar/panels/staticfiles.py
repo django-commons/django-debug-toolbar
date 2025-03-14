@@ -3,10 +3,8 @@ import uuid
 from contextvars import ContextVar
 from os.path import join, normpath
 
-from django.conf import settings
 from django.contrib.staticfiles import finders, storage
 from django.dispatch import Signal
-from django.utils.functional import LazyObject
 from django.utils.translation import gettext_lazy as _, ngettext
 
 from debug_toolbar import panels
@@ -37,46 +35,21 @@ request_id_context_var = ContextVar("djdt_request_id_store")
 record_static_file_signal = Signal()
 
 
-class DebugConfiguredStorage(LazyObject):
-    """
-    A staticfiles storage class to be used for collecting which paths
-    are resolved by using the {% static %} template tag (which uses the
-    `url` method).
-    """
-
-    def _setup(self):
-        try:
-            # From Django 4.2 use django.core.files.storage.storages in favor
-            # of the deprecated django.core.files.storage.get_storage_class
-            from django.core.files.storage import storages
-
-            configured_storage_cls = storages["staticfiles"].__class__
-        except ImportError:
-            # Backwards compatibility for Django versions prior to 4.2
-            from django.core.files.storage import get_storage_class
-
-            configured_storage_cls = get_storage_class(settings.STATICFILES_STORAGE)
-
-        class DebugStaticFilesStorage(configured_storage_cls):
-            def url(self, path):
-                url = super().url(path)
-                with contextlib.suppress(LookupError):
-                    # For LookupError:
-                    # The ContextVar wasn't set yet. Since the toolbar wasn't properly
-                    # configured to handle this request, we don't need to capture
-                    # the static file.
-                    request_id = request_id_context_var.get()
-                    record_static_file_signal.send(
-                        sender=self,
-                        staticfile=StaticFile(path=str(path), url=url),
-                        request_id=request_id,
-                    )
-                return url
-
-        self._wrapped = DebugStaticFilesStorage()
-
-
-_original_storage = storage.staticfiles_storage
+class URLMixin:
+    def url(self, path):
+        url = super().url(path)
+        with contextlib.suppress(LookupError):
+            # For LookupError:
+            # The ContextVar wasn't set yet. Since the toolbar wasn't properly
+            # configured to handle this request, we don't need to capture
+            # the static file.
+            request_id = request_id_context_var.get()
+            record_static_file_signal.send(
+                sender=self,
+                staticfile=StaticFile(path=str(path), url=url),
+                request_id=request_id,
+            )
+        return url
 
 
 class StaticFilesPanel(panels.Panel):
@@ -103,7 +76,9 @@ class StaticFilesPanel(panels.Panel):
 
     @classmethod
     def ready(cls):
-        storage.staticfiles_storage = DebugConfiguredStorage()
+        cls = storage.staticfiles_storage.__class__
+        if URLMixin not in cls.mro():
+            cls.__bases__ = (URLMixin, *cls.__bases__)
 
     def _store_static_files_signal_handler(self, sender, staticfile, **kwargs):
         # Only record the static file if the request_id matches the one
