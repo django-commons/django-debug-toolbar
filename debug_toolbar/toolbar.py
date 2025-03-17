@@ -71,11 +71,7 @@ class DebugToolbar:
         Look up the Content Security Policy nonce if there is one.
 
         This is built specifically for django-csp, which may not always
-        have a nonce associated with the request. Use the private attribute
-        because the lazy object wrapped value can generate a nonce by
-        accessing it. This isn't ideal when the toolbar is injecting context
-        into the response because it may set a nonce not used with
-        other assets.
+        have a nonce associated with the request.
         """
         return getattr(self.request, "csp_nonce", None)
 
