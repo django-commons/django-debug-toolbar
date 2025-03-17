@@ -227,20 +227,16 @@ def sanitize_and_sort_request_vars(
     if not isinstance(variable, (dict, QueryDict)):
         return {"raw": variable}
 
-    try:
-        # Get sorted keys if possible, otherwise just list them
-        keys = _get_sorted_keys(variable)
+    # Get sorted keys if possible, otherwise just list them
+    keys = _get_sorted_keys(variable)
 
-        # Process the variable based on its type
-        if isinstance(variable, QueryDict):
-            result = _process_query_dict(variable, keys)
-        else:
-            result = _process_dict(variable, keys)
+    # Process the variable based on its type
+    if isinstance(variable, QueryDict):
+        result = _process_query_dict(variable, keys)
+    else:
+        result = _process_dict(variable, keys)
 
-        return {"list": result}
-    except TypeError:
-        # If any processing fails, return raw variable
-        return {"raw": variable}
+    return {"list": result}
 
 
 def _get_sorted_keys(variable):
