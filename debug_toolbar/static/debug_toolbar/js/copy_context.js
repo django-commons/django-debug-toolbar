@@ -35,7 +35,9 @@ document.addEventListener("click", (event) => {
  */
 function decodeUnicode(text) {
     return text.replace(/\\u[\dA-Fa-f]{4}/g, (match) => {
-        return String.fromCharCode(parseInt(match.replace("\\u", ""), 16));
+        return String.fromCharCode(
+            Number.parseInt(match.replace("\\u", ""), 16)
+        );
     });
 }
 
@@ -46,5 +48,5 @@ function decodeUnicode(text) {
  * @returns {string} - Properly formatted JSON array string.
  */
 function makeList(text) {
-    return `[${text.replace(/\n(?=\{)/g, ',')}]`;
+    return `[${text.replace(/\n(?=\{)/g, ",")}]`;
 }
