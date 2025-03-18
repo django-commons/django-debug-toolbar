@@ -48,7 +48,7 @@ jobs:
         name: python-package-distributions
         path: dist/
     - name: Publish distribution 📦 to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1.10
+      uses: pypa/gh-action-pypi-publish@release/v1.12
 
   github-release:
     name: >-
@@ -69,7 +69,7 @@ jobs:
         name: python-package-distributions
         path: dist/
     - name: Sign the dists with Sigstore
-      uses: sigstore/gh-action-sigstore-python@v3
+      uses: sigstore/gh-action-sigstore-python@v3.0.0
       with:
         inputs: >-
           ./dist/*.tar.gz
@@ -95,7 +95,7 @@ jobs:
 
   publish-to-testpypi:
     name: Publish Python 🐍 distribution 📦 to TestPyPI
-    if: startsWith(github.ref, 'refs/tags/')  # only publish to TestPyPI on tag pushes
+    if: startsWith(github.ref, 'refs/tags/')  # only publish to Test PyPI on tag pushes
     needs:
     - build
     runs-on: ubuntu-latest
@@ -114,7 +114,7 @@ jobs:
         name: python-package-distributions
         path: dist/
     - name: Publish distribution 📦 to TestPyPI
-      uses: pypa/gh-action-pypi-publish@release/v1.10
+      uses: pypa/gh-action-pypi-publish@release/v1.12
       with:
         repository-url: https://test.pypi.org/legacy/
         skip-existing: true

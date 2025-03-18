@@ -10,6 +10,7 @@ Django Debug Toolbar
    tips
    panels
    commands
+   resources
    changes
    contributing
    architecture

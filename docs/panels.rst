@@ -321,7 +321,7 @@ Panels can ship their own templates, static files and views.
 Any views defined for the third-party panel use the following decorators:
 
 - ``debug_toolbar.decorators.require_show_toolbar`` - Prevents unauthorized
-  access to the view.
+  access to the view. This decorator is compatible with async views.
 - ``debug_toolbar.decorators.render_with_toolbar_language`` - Supports
   internationalization for any content rendered by the view. This will render
   the response with the :ref:`TOOLBAR_LANGUAGE <TOOLBAR_LANGUAGE>` rather than

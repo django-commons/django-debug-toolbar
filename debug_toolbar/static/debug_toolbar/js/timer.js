@@ -1,17 +1,16 @@
 import { $$ } from "./utils.js";
 
 function insertBrowserTiming() {
-    const timingOffset = performance.timing.navigationStart,
-        timingEnd = performance.timing.loadEventEnd,
-        totalTime = timingEnd - timingOffset;
+    const timingOffset = performance.timing.navigationStart;
+    const timingEnd = performance.timing.loadEventEnd;
+    const totalTime = timingEnd - timingOffset;
     function getLeft(stat) {
         if (totalTime !== 0) {
             return (
                 ((performance.timing[stat] - timingOffset) / totalTime) * 100.0
             );
-        } else {
-            return 0;
         }
+        return 0;
     }
     function getCSSWidth(stat, endStat) {
         let width = 0;
@@ -28,36 +27,31 @@ function insertBrowserTiming() {
         } else {
             width = 0;
         }
-        return width < 1 ? "2px" : width + "%";
+        return width < 1 ? "2px" : `${width}%`;
     }
     function addRow(tbody, stat, endStat) {
         const row = document.createElement("tr");
+        const elapsed = performance.timing[stat] - timingOffset;
         if (endStat) {
+            const duration =
+                performance.timing[endStat] - performance.timing[stat];
             // Render a start through end bar
-            row.innerHTML =
-                "<td>" +
-                stat.replace("Start", "") +
-                "</td>" +
-                '<td><svg class="djDebugLineChart" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 100 5" preserveAspectRatio="none"><rect y="0" height="5" fill="#ccc" /></svg></td>' +
-                "<td>" +
-                (performance.timing[stat] - timingOffset) +
-                " (+" +
-                (performance.timing[endStat] - performance.timing[stat]) +
-                ")</td>";
+            row.innerHTML = `
+<td>${stat.replace("Start", "")}</td>
+<td><svg class="djDebugLineChart" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 100 5" preserveAspectRatio="none"><rect y="0" height="5" fill="#ccc" /></svg></td>
+<td>${elapsed} (+${duration})</td>
+`;
             row.querySelector("rect").setAttribute(
                 "width",
                 getCSSWidth(stat, endStat)
             );
         } else {
             // Render a point in time
-            row.innerHTML =
-                "<td>" +
-                stat +
-                "</td>" +
-                '<td><svg class="djDebugLineChart" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 100 5" preserveAspectRatio="none"><rect y="0" height="5" fill="#ccc" /></svg></td>' +
-                "<td>" +
-                (performance.timing[stat] - timingOffset) +
-                "</td>";
+            row.innerHTML = `
+<td>${stat}</td>
+<td><svg class="djDebugLineChart" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 100 5" preserveAspectRatio="none"><rect y="0" height="5" fill="#ccc" /></svg></td>
+<td>${elapsed}</td>
+`;
             row.querySelector("rect").setAttribute("width", 2);
         }
         row.querySelector("rect").setAttribute("x", getLeft(stat));
