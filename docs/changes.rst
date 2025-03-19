@@ -4,6 +4,7 @@ Change log
 Pending
 -------
 
+* Fix Dark Mode Conflict in Pygments
 * Added Django 5.2 to the tox matrix.
 * Updated package metadata to include well-known labels.
 * Added resources section to the documentation.
