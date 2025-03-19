@@ -68,7 +68,7 @@ class CachePanel(Panel):
         self.hits = 0
         self.misses = 0
         self.calls = []
-        self.counts = {name: 0 for name in WRAPPED_CACHE_METHODS}
+        self.counts = dict.fromkeys(WRAPPED_CACHE_METHODS, 0)
 
     @classmethod
     def current_instance(cls):
