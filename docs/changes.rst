@@ -4,7 +4,6 @@ Change log
 Pending
 -------
 
-* Fix Dark Mode Conflict in Pygments
 * Added Django 5.2 to the tox matrix.
 * Updated package metadata to include well-known labels.
 * Added resources section to the documentation.
@@ -18,6 +17,7 @@ Pending
 * Avoided reinitializing the staticfiles storage during instrumentation.
 * Avoided a "forked" Promise chain in the rebound ``window.fetch`` function
   with missing exception handling.
+* Fixed the pygments code highlighting when using dark mode.
 
 5.0.1 (2025-01-13)
 ------------------
