@@ -4,6 +4,8 @@ Change log
 Pending
 -------
 
+5.1.0 (2025-03-20)
+------------------
 * Added Django 5.2 to the tox matrix.
 * Updated package metadata to include well-known labels.
 * Added resources section to the documentation.
