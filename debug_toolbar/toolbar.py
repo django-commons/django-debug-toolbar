@@ -65,6 +65,16 @@ class DebugToolbar:
         """
         return [panel for panel in self._panels.values() if panel.enabled]
 
+    @property
+    def csp_nonce(self):
+        """
+        Look up the Content Security Policy nonce if there is one.
+
+        This is built specifically for django-csp, which may not always
+        have a nonce associated with the request.
+        """
+        return getattr(self.request, "csp_nonce", None)
+
     def get_panel_by_id(self, panel_id):
         """
         Get the panel with the given id, which is the class name by default.

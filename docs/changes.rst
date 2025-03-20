@@ -15,7 +15,11 @@ Pending
 * Added a Makefile target (``make help``) to get a quick overview
   of each target.
 * Avoided reinitializing the staticfiles storage during instrumentation.
+* Avoided a "forked" Promise chain in the rebound ``window.fetch`` function
+  with missing exception handling.
+* Fixed the pygments code highlighting when using dark mode.
 * Fix for exception-unhandled "forked" Promise chain in rebound window.fetch
+* Create a CSP nonce property on the toolbar ``Toolbar().csp_nonce``.
 * Add hook to RedirectsPanel for subclass customization
 
 5.0.1 (2025-01-13)
