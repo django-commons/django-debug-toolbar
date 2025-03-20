@@ -85,3 +85,16 @@ class RedirectsPanelTestCase(BaseTestCase):
         response = await self.panel.process_request(self.request)
         self.assertIsInstance(response, HttpResponse)
         self.assertTrue(response is await_response)
+
+    def test_original_response_preserved(self):
+        redirect = HttpResponse(status=302)
+        redirect["Location"] = "http://somewhere/else/"
+        self._get_response = lambda request: redirect
+        response = self.panel.process_request(self.request)
+        self.assertFalse(response is redirect)
+        self.assertTrue(hasattr(response, "original_response"))
+        self.assertTrue(response.original_response is redirect)
+        self.assertIsNone(response.get("Location"))
+        self.assertEqual(
+            response.original_response.get("Location"), "http://somewhere/else/"
+        )

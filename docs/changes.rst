@@ -4,6 +4,11 @@ Change log
 Pending
 -------
 
+* Added hook to RedirectsPanel for subclass customization.
+* Added feature to sanitize sensitive data in the Request Panel.
+
+5.1.0 (2025-03-20)
+------------------
 * Added Django 5.2 to the tox matrix.
 * Updated package metadata to include well-known labels.
 * Added resources section to the documentation.
@@ -15,8 +20,11 @@ Pending
 * Added a Makefile target (``make help``) to get a quick overview
   of each target.
 * Avoided reinitializing the staticfiles storage during instrumentation.
+* Avoided a "forked" Promise chain in the rebound ``window.fetch`` function
+  with missing exception handling.
+* Fixed the pygments code highlighting when using dark mode.
 * Fix for exception-unhandled "forked" Promise chain in rebound window.fetch
-* Added feature to sanitize sensitive data in the Request Panel.
+* Create a CSP nonce property on the toolbar ``Toolbar().csp_nonce``.
 
 5.0.1 (2025-01-13)
 ------------------

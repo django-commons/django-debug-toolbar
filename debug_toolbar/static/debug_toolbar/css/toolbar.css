@@ -37,7 +37,7 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --djdt-font-color: #8393a7;
+        --djdt-font-color: #f8f8f2;
         --djdt-background-color: #1e293bff;
         --djdt-panel-content-background-color: #0f1729ff;
         --djdt-panel-title-background-color: #242432;

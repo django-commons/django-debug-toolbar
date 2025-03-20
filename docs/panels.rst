@@ -122,6 +122,11 @@ Since this behavior is annoying when you aren't debugging a redirect, this
 panel is included but inactive by default. You can activate it by default with
 the ``DISABLE_PANELS`` configuration option.
 
+To further customize the behavior, you can subclass the ``RedirectsPanel``
+and override the ``get_interception_response`` method to manipulate the
+response directly. To use a custom ``RedirectsPanel``, you need to replace
+the original one in ``DEBUG_TOOLBAR_PANELS`` in your ``settings.py``.
+
 .. _profiling-panel:
 
 Profiling
