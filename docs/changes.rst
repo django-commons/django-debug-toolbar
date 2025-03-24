@@ -6,6 +6,7 @@ Pending
 
 * Added hook to RedirectsPanel for subclass customization.
 * Added feature to sanitize sensitive data in the Request Panel.
+* Fixed dark mode conflict in code block toolbar CSS
 
 5.1.0 (2025-03-20)
 ------------------
