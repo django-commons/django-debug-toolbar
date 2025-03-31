@@ -649,6 +649,9 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         options = Options()
         if os.environ.get("CI"):
             options.add_argument("-headless")
+        # Set the browser preference to light mode for consistent testing
+        options.set_preference("ui.systemUsesDarkTheme", 0)
+        options.set_preference("ui.prefersReducedMotion", 0)
         cls.selenium = webdriver.Firefox(options=options)
 
     @classmethod
@@ -898,24 +901,30 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         toggle_button = self.selenium.find_element(By.ID, "djToggleThemeButton")
         self.assertTrue(toggle_button.is_displayed())
 
-        # The theme changes when user clicks the button
-        toggle_button.click()
-        self.assertEqual(toolbar.get_attribute("data-user-theme"), "light")
+        # The browser is set to light mode via Firefox preferences
+        # With light mode system preference, the order is: auto -> dark -> light -> auto
+        # Check that auto initially uses light theme
+        self.assertEqual(toolbar.get_attribute("data-user-theme"), "auto")
         self.assertEqual(toolbar.get_attribute("data-theme"), "light")
-        toggle_button.click()
+
+        # The theme changes when user clicks the button
+        toggle_button.click()  # auto -> dark
         self.assertEqual(toolbar.get_attribute("data-user-theme"), "dark")
         self.assertEqual(toolbar.get_attribute("data-theme"), "dark")
-        toggle_button.click()
-        self.assertEqual(toolbar.get_attribute("data-user-theme"), "auto")
-        # Switch back to light.
-        toggle_button.click()
+
+        toggle_button.click()  # dark -> light
         self.assertEqual(toolbar.get_attribute("data-user-theme"), "light")
+        self.assertEqual(toolbar.get_attribute("data-theme"), "light")
+
+        toggle_button.click()  # light -> auto
+        self.assertEqual(toolbar.get_attribute("data-user-theme"), "auto")
         self.assertEqual(toolbar.get_attribute("data-theme"), "light")
 
         # Enter the page again to check that user settings is saved
         self.get("/regular/basic/")
         toolbar = self.selenium.find_element(By.ID, "djDebug")
-        self.assertEqual(toolbar.get_attribute("data-user-theme"), "light")
+        self.assertEqual(toolbar.get_attribute("data-user-theme"), "auto")
+        self.assertEqual(toolbar.get_attribute("data-theme"), "light")
 
     def test_async_sql_action(self):
         self.get("/async_execute_sql/")
