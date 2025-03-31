@@ -7,6 +7,9 @@ Pending
 * Added hook to RedirectsPanel for subclass customization.
 * Added feature to sanitize sensitive data in the Request Panel.
 * Fixed dark mode conflict in code block toolbar CSS
+* Added support for using django-template-partials with the template panel's
+  source view functionality. The same change possibly adds support for other
+  template loaders.
 
 5.1.0 (2025-03-20)
 ------------------
