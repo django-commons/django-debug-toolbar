@@ -201,13 +201,6 @@ Toolbar options
   request when it occurs. This is especially useful when using htmx
   boosting or similar JavaScript techniques.
 
-.. _DEFAULT_THEME:
-
-* ``DEFAULT_THEME``
-
-  Default: ``"auto"``
-
-  This controls which theme will use the toolbar by default.
 
 Panel options
 ~~~~~~~~~~~~~

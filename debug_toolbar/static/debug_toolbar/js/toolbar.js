@@ -212,27 +212,30 @@ const djdt = {
             djdt.updateOnAjax();
         }
 
+        const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)"
+        ).matches;
+        const themeList = prefersDark
+            ? ["auto", "light", "dark"]
+            : ["auto", "dark", "light"];
+        const setTheme = (theme) => {
+            djDebug.setAttribute(
+                "data-theme",
+                theme === "auto" ? (prefersDark ? "dark" : "light") : theme
+            );
+            djDebug.setAttribute("data-user-theme", theme);
+        };
+
         // Updates the theme using user settings
-        const userTheme = localStorage.getItem("djdt.user-theme");
-        if (userTheme !== null) {
-            djDebug.setAttribute("data-theme", userTheme);
-        }
+        let userTheme = localStorage.getItem("djdt.user-theme") || "auto";
+        setTheme(userTheme);
+
         // Adds the listener to the Theme Toggle Button
         $$.on(djDebug, "click", "#djToggleThemeButton", () => {
-            switch (djDebug.getAttribute("data-theme")) {
-                case "auto":
-                    djDebug.setAttribute("data-theme", "light");
-                    localStorage.setItem("djdt.user-theme", "light");
-                    break;
-                case "light":
-                    djDebug.setAttribute("data-theme", "dark");
-                    localStorage.setItem("djdt.user-theme", "dark");
-                    break;
-                default: /* dark is the default */
-                    djDebug.setAttribute("data-theme", "auto");
-                    localStorage.setItem("djdt.user-theme", "auto");
-                    break;
-            }
+            const index = themeList.indexOf(userTheme);
+            userTheme = themeList[(index + 1) % themeList.length];
+            localStorage.setItem("djdt.user-theme", userTheme);
+            setTheme(userTheme);
         });
     },
     hidePanels() {

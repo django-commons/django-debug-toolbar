@@ -892,7 +892,7 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         toolbar = self.selenium.find_element(By.ID, "djDebug")
 
         # Check that the default theme is auto
-        self.assertEqual(toolbar.get_attribute("data-theme"), "auto")
+        self.assertEqual(toolbar.get_attribute("data-user-theme"), "auto")
 
         # The theme toggle button is shown on the toolbar
         toggle_button = self.selenium.find_element(By.ID, "djToggleThemeButton")
@@ -900,19 +900,22 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
 
         # The theme changes when user clicks the button
         toggle_button.click()
+        self.assertEqual(toolbar.get_attribute("data-user-theme"), "light")
         self.assertEqual(toolbar.get_attribute("data-theme"), "light")
         toggle_button.click()
+        self.assertEqual(toolbar.get_attribute("data-user-theme"), "dark")
         self.assertEqual(toolbar.get_attribute("data-theme"), "dark")
         toggle_button.click()
-        self.assertEqual(toolbar.get_attribute("data-theme"), "auto")
+        self.assertEqual(toolbar.get_attribute("data-user-theme"), "auto")
         # Switch back to light.
         toggle_button.click()
+        self.assertEqual(toolbar.get_attribute("data-user-theme"), "light")
         self.assertEqual(toolbar.get_attribute("data-theme"), "light")
 
         # Enter the page again to check that user settings is saved
         self.get("/regular/basic/")
         toolbar = self.selenium.find_element(By.ID, "djDebug")
-        self.assertEqual(toolbar.get_attribute("data-theme"), "light")
+        self.assertEqual(toolbar.get_attribute("data-user-theme"), "light")
 
     def test_async_sql_action(self):
         self.get("/async_execute_sql/")
