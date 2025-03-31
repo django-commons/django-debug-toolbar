@@ -27,15 +27,18 @@ def template_source(request):
     template_name = request.GET.get("template", template_origin_name)
 
     final_loaders = []
-    loaders = Engine.get_default().template_loaders
+    loaders = list(Engine.get_default().template_loaders)
 
-    for loader in loaders:
+    while loaders:
+        loader = loaders.pop(0)
+
         if loader is not None:
-            # When the loader has loaders associated with it,
-            # append those loaders to the list. This occurs with
-            # django.template.loaders.cached.Loader
+            # Recursively unwrap loaders until we get to loaders which do not
+            # themselves wrap other loaders. This occurs
+            # with django.template.loaders.cached.Loader and the
+            # django-template-partials loader (possibly among others)
             if hasattr(loader, "loaders"):
-                final_loaders += loader.loaders
+                loaders.extend(loader.loaders)
             else:
                 final_loaders.append(loader)
 
