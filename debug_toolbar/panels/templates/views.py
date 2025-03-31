@@ -34,8 +34,8 @@ def template_source(request):
 
         if loader is not None:
             # Recursively unwrap loaders until we get to loaders which do not
-            # themselves wrap other loaders. This occurs
-            # with django.template.loaders.cached.Loader and the
+            # themselves wrap other loaders. This adds support for
+            # django.template.loaders.cached.Loader and the
             # django-template-partials loader (possibly among others)
             if hasattr(loader, "loaders"):
                 loaders.extend(loader.loaders)
