@@ -132,6 +132,24 @@ class TemplatesPanelTestCase(BaseTestCase):
         self.panel.generate_stats(self.request, response)
         self.assertIn("lazy_value", self.panel.content)
 
+    @override_settings(
+        DEBUG=True,
+        DEBUG_TOOLBAR_PANELS=["debug_toolbar.panels.templates.TemplatesPanel"],
+    )
+    def test_template_source(self):
+        from django.core import signing
+        from django.template.loader import get_template
+
+        template = get_template("basic.html")
+        url = "/__debug__/template_source/"
+        data = {
+            "template": template.template.name,
+            "template_origin": signing.dumps(template.template.origin.name),
+        }
+
+        response = self.client.get(url, data)
+        self.assertEqual(response.status_code, 200)
+
 
 @override_settings(
     DEBUG=True, DEBUG_TOOLBAR_PANELS=["debug_toolbar.panels.templates.TemplatesPanel"]
