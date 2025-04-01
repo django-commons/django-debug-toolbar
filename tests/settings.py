@@ -28,6 +28,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "debug_toolbar",
+    # We are not actively using template-partials; we just want more nesting
+    # in our template loader configuration, see
+    # https://github.com/django-commons/django-debug-toolbar/issues/2109
     "template_partials",
     "tests",
 ]
