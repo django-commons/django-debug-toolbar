@@ -19,6 +19,32 @@ from debug_toolbar import settings as dt_settings
 from debug_toolbar.toolbar import DebugToolbar
 from debug_toolbar.utils import clear_stack_trace_caches, is_processable_html_response
 
+_resolved_gateway_ip = None
+
+
+def _gateway_ip():
+    global _resolved_gateway_ip
+    if _resolved_gateway_ip is None:
+        print(
+            "[django-debug-toolbar] Trying to configure determine the Docker gateay address for autoconfiguration... ",
+            end="",
+        )
+        try:
+            # This is a hack for docker installations. It attempts to look
+            # up the IP address of the docker host.
+            # This is not guaranteed to work.
+            _resolved_gateway_ip = (
+                # Convert the last segment of the IP address to be .1
+                ".".join(socket.gethostbyname("host.docker.internal").rsplit(".")[:-1])
+                + ".1"
+            )
+            print("Success.")
+        except socket.gaierror:
+            # It's fine if the lookup errored since they may not be using docker
+            _resolved_gateway_ip = "unresolvable"
+            print("Not resolvable.")
+    return _resolved_gateway_ip
+
 
 def show_toolbar(request):
     """
@@ -32,20 +58,8 @@ def show_toolbar(request):
         return True
 
     # Test: Docker
-    try:
-        # This is a hack for docker installations. It attempts to look
-        # up the IP address of the docker host.
-        # This is not guaranteed to work.
-        docker_ip = (
-            # Convert the last segment of the IP address to be .1
-            ".".join(socket.gethostbyname("host.docker.internal").rsplit(".")[:-1])
-            + ".1"
-        )
-        if request.META.get("REMOTE_ADDR") == docker_ip:
-            return True
-    except socket.gaierror:
-        # It's fine if the lookup errored since they may not be using docker
-        pass
+    if request.META.get("REMOTE_ADDR") == _gateway_ip():
+        return True
 
     # No test passed
     return False
