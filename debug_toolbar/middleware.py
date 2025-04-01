@@ -13,6 +13,8 @@ from asgiref.sync import (
     sync_to_async,
 )
 from django.conf import settings
+from django.dispatch import receiver
+from django.test.signals import setting_changed
 from django.utils.module_loading import import_string
 
 from debug_toolbar import settings as dt_settings
@@ -44,6 +46,13 @@ def _gateway_ip():
             _resolved_gateway_ip = "unresolvable"
             print("Not resolvable.")
     return _resolved_gateway_ip
+
+
+@receiver(setting_changed)
+def _clear_gateway_ip_cache(*, setting, **kwargs):
+    global _resolved_gateway_ip
+    if setting in {"DEBUG", "INTERNAL_IPS"}:
+        _resolved_gateway_ip = None
 
 
 def show_toolbar(request):
