@@ -20,6 +20,9 @@
         <dd>
           <details>
             <summary>{% trans "Toggle context" %}</summary>
+            <button class="copy-context" data-context="{{ template.context|escapejs }}">
+              {% trans "Copy" %}
+            </button>
             <code class="djTemplateContext">{{ template.context }}</code>
           </details>
         </dd>
