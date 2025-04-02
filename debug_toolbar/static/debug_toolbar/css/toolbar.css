@@ -1182,3 +1182,40 @@ To regenerate:
     height: 1rem;
     width: 1rem;
 }
+
+#djDebug .djdt-community-panel {
+    padding: 1.5em;
+}
+
+#djDebug .djdt-community-panel h2 {
+    font-size: 2em;
+}
+
+#djDebug .djdt-community-panel p {
+    font-size: 1em;
+    margin: 0 0 1em 0;
+}
+
+#djDebug .djdt-community-panel .djdt-community-description {
+    font-size: 1em;
+    margin: 0 0 1.5em 0;
+}
+
+#djDebug .djdt-community-panel ul {
+    list-style-type: disc;
+    padding-left: 1.25em;
+    margin: 1em 0;
+}
+
+#djDebug .djdt-community-panel li {
+    margin: 0.5em 0;
+}
+
+#djDebug .djdt-community-panel a {
+    font-weight: bold;
+    font-size: 1em;
+}
+
+#djDebug .djdt-community-panel a:hover {
+    text-decoration: underline;
+}

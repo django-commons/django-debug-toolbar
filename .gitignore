@@ -16,3 +16,4 @@ venv
 .direnv/
 .envrc
 venv
+.vscode

@@ -108,6 +108,13 @@ Signals
 
 List of signals and receivers.
 
+Community
+~~~~~~~~~
+
+.. class:: debug_toolbar.panels.community.CommunityPanel
+
+A panel that provides links to the Django Debug Toolbar community.
+
 Redirects
 ~~~~~~~~~
 

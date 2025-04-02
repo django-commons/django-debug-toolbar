@@ -8,6 +8,7 @@ Pending
 * Removed logging about the toolbar failing to serialize a value into JSON.
 * Moved the the import statement of ``debug_toolbar.urls`` to within the if
   statement's scope on the installation documentation.
+* Added ``Community Panel`` containing links to documentation and resources.
 
 6.0.0 (2025-07-22)
 ------------------
