@@ -79,6 +79,7 @@ class HistoryViewsTestCase(IntegrationTestCase):
         "CachePanel",
         "SignalsPanel",
         "ProfilingPanel",
+        "CommunityPanel",
     }
 
     def test_history_panel_integration_content(self):
