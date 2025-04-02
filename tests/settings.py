@@ -7,6 +7,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
 
+DEBUG = False
 SECRET_KEY = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
 INTERNAL_IPS = ["127.0.0.1"]
@@ -27,6 +28,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "debug_toolbar",
+    # We are not actively using template-partials; we just want more nesting
+    # in our template loader configuration, see
+    # https://github.com/django-commons/django-debug-toolbar/issues/2109
+    "template_partials",
     "tests",
 ]
 
