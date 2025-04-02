@@ -13,6 +13,7 @@ Pending
 * Added support for using django-template-partials with the template panel's
   source view functionality. The same change possibly adds support for other
   template loaders.
+* Added Community panel
 
 5.1.0 (2025-03-20)
 ------------------

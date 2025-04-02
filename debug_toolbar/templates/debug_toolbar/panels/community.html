@@ -1,0 +1,47 @@
+﻿{% load i18n %}
+
+<div class="djdt-panelContent" style="font-family: Arial, sans-serif; padding: 20px;">
+    <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; font-size: 22px;">
+        {% trans "Community & Contribution" %}
+    </h2>
+    
+    <p style="font-size: 18px; color: #555;">
+        {% trans "Want to contribute to Django Debug Toolbar? Get involved in our community!" %}
+    </p>
+    
+    <div style="margin-top: 15px;">
+        <ul style="list-style-type: disc; padding-left: 20px;">
+            <li>
+                <a href="https://github.com/django-commons/django-debug-toolbar/discussions" target="_blank" 
+                   style="text-decoration: none; color: #007bff; font-weight: bold; font-size: 16px;">
+                    {% trans "Join Discussions" %}
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/django-commons/django-debug-toolbar/issues" target="_blank" 
+                   style="text-decoration: none; color: #007bff; font-weight: bold; font-size: 16px;">
+                    {% trans "View Issues" %}
+                </a>
+            </li>
+            <li>
+                <a href="https://django-debug-toolbar.readthedocs.io/en/latest/contributing.html" target="_blank" 
+                   style="text-decoration: none; color: #007bff; font-weight: bold; font-size: 16px;">
+                    {% trans "Contribution Guide" %}
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <h3 style="color: #2c3e50; margin-top: 20px; font-size: 20px;">
+        {% trans "Django Debug Toolbar Documentation" %}
+    </h3>
+    <p style="font-size: 16px; color: #666;">
+        {% trans "Explore the official documentation to learn more about Django Debug Toolbar." %}
+    </p>
+    <br> 
+    <a href="https://django-debug-toolbar.readthedocs.io/en/latest/" target="_blank" 
+       style="text-decoration: none; background-color: #2980b9; color: white; padding: 10px 18px; 
+              border-radius: 5px; font-weight: bold; font-size: 16px; display: inline-block;">
+        {% trans "Read Documentation" %}
+    </a>
+</div>
