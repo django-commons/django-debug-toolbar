@@ -1,4 +1,4 @@
-{% load i18n %}{% load static %}
+{% load i18n static %}
 <form method="get" action="{% url 'djdt:history_refresh' %}">
     {{ refresh_form.as_div }}
     <button class="refreshHistory">Refresh</button>
@@ -6,12 +6,12 @@
 <table class="djdt-max-height-100">
     <thead>
         <tr>
-            <th>{% trans "Time" %}</th>
-            <th>{% trans "Method" %}</th>
-            <th>{% trans "Path" %}</th>
-            <th>{% trans "Request Variables" %}</th>
-            <th>{% trans "Status" %}</th>
-            <th>{% trans "Action" %}</th>
+            <th>{% translate "Time" %}</th>
+            <th>{% translate "Method" %}</th>
+            <th>{% translate "Path" %}</th>
+            <th>{% translate "Request Variables" %}</th>
+            <th>{% translate "Status" %}</th>
+            <th>{% translate "Action" %}</th>
         </tr>
     </thead>
     <tbody id="djdtHistoryRequests">

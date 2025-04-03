@@ -2,10 +2,10 @@
 {% block css %}
 <link{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} rel="stylesheet" href="{% static 'debug_toolbar/css/print.css' %}" media="print">
 <link{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} rel="stylesheet" href="{% static 'debug_toolbar/css/toolbar.css' %}">
-{% endblock %}
+{% endblock css %}
 {% block js %}
 <script{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} type="module" src="{% static 'debug_toolbar/js/toolbar.js' %}" async></script>
-{% endblock %}
+{% endblock js %}
 <div id="djDebug" class="djdt-hidden" dir="ltr"
      {% if not toolbar.should_render_panels %}
      data-store-id="{{ toolbar.store_id }}"
@@ -19,10 +19,10 @@
      {{ toolbar.config.ROOT_TAG_EXTRA_ATTRS|safe }}  data-update-on-fetch="{{ toolbar.config.UPDATE_ON_FETCH }}">
   <div class="djdt-hidden" id="djDebugToolbar">
     <ul id="djDebugPanelList">
-      <li><a id="djHideToolBarButton" href="#" title="{% trans 'Hide toolbar' %}">{% trans "Hide" %} »</a></li>
+      <li><a id="djHideToolBarButton" href="#" title="{% translate 'Hide toolbar' %}">{% translate "Hide" %} »</a></li>
       <li>
-        <a id="djToggleThemeButton" href="#" title="{% trans 'Toggle Theme' %}">
-          {% trans "Toggle Theme" %} {% include "debug_toolbar/includes/theme_selector.html" %}
+        <a id="djToggleThemeButton" href="#" title="{% translate 'Toggle Theme' %}">
+          {% translate "Toggle Theme" %} {% include "debug_toolbar/includes/theme_selector.html" %}
         </a>
       </li>
       {% for panel in toolbar.panels %}
@@ -31,7 +31,7 @@
     </ul>
   </div>
   <div class="djdt-hidden" id="djDebugToolbarHandle">
-    <div title="{% trans 'Show toolbar' %}" id="djShowToolBarButton">
+    <div title="{% translate 'Show toolbar' %}" id="djShowToolBarButton">
       <span id="djShowToolBarD">D</span><span id="djShowToolBarJ">J</span>DT
     </div>
   </div>

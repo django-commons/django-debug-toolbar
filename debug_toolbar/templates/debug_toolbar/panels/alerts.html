@@ -1,12 +1,12 @@
 {% load i18n %}
 
 {% if alerts %}
-  <h4>{% trans "Alerts found" %}</h4>
+  <h4>{% translate "Alerts found" %}</h4>
   {% for alert in alerts %}
     <ul>
       <li>{{ alert.alert }}</li>
     </ul>
   {% endfor %}
 {% else %}
-  <h4>{% trans "No alerts found" %}</h4>
+  <h4>{% translate "No alerts found" %}</h4>
 {% endif %}

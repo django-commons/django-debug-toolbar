@@ -655,8 +655,8 @@ class SQLPanelTestCase(BaseTestCase):
         template_info = query["template_info"]
         template_name = os.path.basename(template_info["name"])
         self.assertEqual(template_name, "flat.html")
-        self.assertEqual(template_info["context"][2]["content"].strip(), "{{ users }}")
-        self.assertEqual(template_info["context"][2]["highlight"], True)
+        self.assertEqual(template_info["context"][3]["content"].strip(), "{{ users }}")
+        self.assertEqual(template_info["context"][3]["highlight"], True)
 
     @override_settings(
         DEBUG=True,

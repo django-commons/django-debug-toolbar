@@ -1,5 +1,5 @@
 {% load i18n %}
-<h4>{% trans "Resource usage" %}</h4>
+<h4>{% translate "Resource usage" %}</h4>
 <table>
   <colgroup>
     <col class="djdt-width-20">
@@ -7,8 +7,8 @@
   </colgroup>
   <thead>
     <tr>
-      <th>{% trans "Resource" %}</th>
-      <th>{% trans "Value" %}</th>
+      <th>{% translate "Resource" %}</th>
+      <th>{% translate "Value" %}</th>
     </tr>
   </thead>
   <tbody>
@@ -23,7 +23,7 @@
 
 <!-- This hidden div is populated and displayed by code in toolbar.timer.js -->
 <div id="djDebugBrowserTiming" class="djdt-hidden">
-  <h4>{% trans "Browser timing" %}</h4>
+  <h4>{% translate "Browser timing" %}</h4>
   <table>
     <colgroup>
       <col class="djdt-width-20">
@@ -32,9 +32,9 @@
     </colgroup>
     <thead>
       <tr>
-        <th>{% trans "Timing attribute" %}</th>
-        <th>{% trans "Timeline" %}</th>
-        <th>{% trans "Milliseconds since navigation start (+length)" %}</th>
+        <th>{% translate "Timing attribute" %}</th>
+        <th>{% translate "Timeline" %}</th>
+        <th>{% translate "Milliseconds since navigation start (+length)" %}</th>
       </tr>
     </thead>
     <tbody id="djDebugBrowserTimingTableBody">

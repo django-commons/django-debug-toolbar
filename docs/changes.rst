@@ -13,6 +13,8 @@ Pending
 * Added support for using django-template-partials with the template panel's
   source view functionality. The same change possibly adds support for other
   template loaders.
+* Introduced `djade <https://github.com/adamchainz/djade>`__ to format Django
+  templates.
 
 5.1.0 (2025-03-20)
 ------------------

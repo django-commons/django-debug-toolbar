@@ -1,16 +1,16 @@
 {% load i18n %}
 <div class="djDebugPanelTitle">
   <button type="button" class="djDebugClose">»</button>
-  <h3>{% trans "SQL explained" %}</h3>
+  <h3>{% translate "SQL explained" %}</h3>
 </div>
 <div class="djDebugPanelContent">
   <div class="djdt-scroll">
     <dl>
-      <dt>{% trans "Executed SQL" %}</dt>
+      <dt>{% translate "Executed SQL" %}</dt>
       <dd>{{ sql|safe }}</dd>
-      <dt>{% trans "Time" %}</dt>
+      <dt>{% translate "Time" %}</dt>
       <dd>{{ duration }} ms</dd>
-      <dt>{% trans "Database" %}</dt>
+      <dt>{% translate "Database" %}</dt>
       <dd>{{ alias }}</dd>
     </dl>
     <table>

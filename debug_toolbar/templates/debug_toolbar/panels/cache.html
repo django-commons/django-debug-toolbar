@@ -1,12 +1,12 @@
 {% load i18n %}
-<h4>{% trans "Summary" %}</h4>
+<h4>{% translate "Summary" %}</h4>
 <table>
   <thead>
     <tr>
-      <th>{% trans "Total calls" %}</th>
-      <th>{% trans "Total time" %}</th>
-      <th>{% trans "Cache hits" %}</th>
-      <th>{% trans "Cache misses" %}</th>
+      <th>{% translate "Total calls" %}</th>
+      <th>{% translate "Total time" %}</th>
+      <th>{% translate "Cache hits" %}</th>
+      <th>{% translate "Cache misses" %}</th>
     </tr>
   </thead>
   <tbody>
@@ -18,7 +18,7 @@
     </tr>
   </tbody>
 </table>
-<h4>{% trans "Commands" %}</h4>
+<h4>{% translate "Commands" %}</h4>
 <table>
   <thead>
     <tr>
@@ -36,15 +36,15 @@
   </tbody>
 </table>
 {% if calls %}
-  <h4>{% trans "Calls" %}</h4>
+  <h4>{% translate "Calls" %}</h4>
   <table>
     <thead>
       <tr>
-        <th colspan="2">{% trans "Time (ms)" %}</th>
-        <th>{% trans "Type" %}</th>
-        <th>{% trans "Arguments" %}</th>
-        <th>{% trans "Keyword arguments" %}</th>
-        <th>{% trans "Backend" %}</th>
+        <th colspan="2">{% translate "Time (ms)" %}</th>
+        <th>{% translate "Type" %}</th>
+        <th>{% translate "Arguments" %}</th>
+        <th>{% translate "Keyword arguments" %}</th>
+        <th>{% translate "Backend" %}</th>
       </tr>
     </thead>
     <tbody>
