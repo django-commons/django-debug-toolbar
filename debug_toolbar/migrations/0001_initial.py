@@ -6,7 +6,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="DebugToolbarEntry",
+            name="HistoryEntry",
             fields=[
                 (
                     "request_id",
