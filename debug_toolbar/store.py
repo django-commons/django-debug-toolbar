@@ -6,10 +6,12 @@ from collections.abc import Iterable
 from typing import Any
 
 from django.core.serializers.json import DjangoJSONEncoder
+from django.utils import timezone
 from django.utils.encoding import force_str
 from django.utils.module_loading import import_string
 
 from debug_toolbar import settings as dt_settings
+from debug_toolbar.models import DebugToolbarEntry
 
 logger = logging.getLogger(__name__)
 
@@ -138,6 +140,101 @@ class MemoryStore(BaseStore):
             return {}
         for panel, data in panel_mapping.items():
             yield panel, deserialize(data)
+
+
+class DatabaseStore(BaseStore):
+    @classmethod
+    def _cleanup_old_entries(cls):
+        """
+        Enforce the cache size limit - keeping only the most recently used entries
+        up to RESULTS_CACHE_SIZE.
+        """
+        # Get the cache size limit from settings
+        cache_size = dt_settings.get_config()["RESULTS_CACHE_SIZE"]
+
+        # Determine which entries to keep (the most recent ones up to cache_size)
+        keep_ids = list(
+            DebugToolbarEntry.objects.order_by("-created_at")[:cache_size].values_list(
+                "request_id", flat=True
+            )
+        )
+
+        # Delete all entries not in the keep list
+        if keep_ids:
+            DebugToolbarEntry.objects.exclude(request_id__in=keep_ids).delete()
+
+    @classmethod
+    def request_ids(cls):
+        """Return all stored request ids within the cache size limit"""
+        cache_size = dt_settings.get_config()["RESULTS_CACHE_SIZE"]
+        return list(
+            DebugToolbarEntry.objects.order_by("-created_at")[:cache_size].values_list(
+                "request_id", flat=True
+            )
+        )
+
+    @classmethod
+    def exists(cls, request_id: str) -> bool:
+        """Check if the given request_id exists in the store"""
+        return DebugToolbarEntry.objects.filter(request_id=request_id).exists()
+
+    @classmethod
+    def set(cls, request_id: str):
+        """Set a request_id in the store and clean up old entries"""
+        # Create or update the entry
+        obj, created = DebugToolbarEntry.objects.get_or_create(request_id=request_id)
+        if not created:
+            # Update timestamp to mark as recently used
+            obj.created_at = timezone.now()
+            obj.save(update_fields=["created_at"])
+
+        # Enforce the cache size limit to clean up old entries
+        cls._cleanup_old_entries()
+
+    @classmethod
+    def clear(cls):
+        """Remove all requests from the store"""
+        DebugToolbarEntry.objects.all().delete()
+
+    @classmethod
+    def delete(cls, request_id: str):
+        """Delete the stored request for the given request_id"""
+        DebugToolbarEntry.objects.filter(request_id=request_id).delete()
+
+    @classmethod
+    def save_panel(cls, request_id: str, panel_id: str, data: Any = None):
+        """Save the panel data for the given request_id"""
+        # First ensure older entries are cleared if we exceed cache size
+        cls.set(request_id)
+
+        # Ensure the request exists
+        obj, _ = DebugToolbarEntry.objects.get_or_create(request_id=request_id)
+        store_data = obj.data
+        store_data[panel_id] = serialize(data)
+        obj.data = store_data
+        obj.save()
+
+    @classmethod
+    def panel(cls, request_id: str, panel_id: str) -> Any:
+        """Fetch the panel data for the given request_id"""
+        try:
+            data = DebugToolbarEntry.objects.get(request_id=request_id).data
+            panel_data = data.get(panel_id)
+            if panel_data is None:
+                return {}
+            return deserialize(panel_data)
+        except DebugToolbarEntry.DoesNotExist:
+            return {}
+
+    @classmethod
+    def panels(cls, request_id: str) -> Any:
+        """Fetch all panel data for the given request_id"""
+        try:
+            data = DebugToolbarEntry.objects.get(request_id=request_id).data
+            for panel_id, panel_data in data.items():
+                yield panel_id, deserialize(panel_data)
+        except DebugToolbarEntry.DoesNotExist:
+            return {}
 
 
 def get_store() -> BaseStore:

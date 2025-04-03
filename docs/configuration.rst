@@ -109,7 +109,8 @@ Toolbar options
 
   Default: ``25``
 
-  The toolbar keeps up to this many results in memory.
+  The toolbar keeps up to this many results in memory or persistent storage.
+
 
 .. _ROOT_TAG_EXTRA_ATTRS:
 
@@ -186,6 +187,24 @@ Toolbar options
 
   The path to the class to be used for storing the toolbar's data per request.
 
+  Available store classes:
+
+  * ``debug_toolbar.store.MemoryStore`` - Stores data in memory
+  * ``debug_toolbar.store.DatabaseStore`` - Stores data in the database
+
+  The DatabaseStore provides persistence and automatically cleans up old
+  entries based on the ``RESULTS_CACHE_SIZE`` setting.
+
+  Note: For full functionality, DatabaseStore requires migrations for
+  the debug_toolbar app:
+
+  .. code-block:: bash
+
+      python manage.py migrate debug_toolbar
+
+  For the DatabaseStore to work properly, you need to run migrations for the
+  debug_toolbar app. The migrations create the necessary database table to store
+  toolbar data.
 
 .. _TOOLBAR_LANGUAGE:
 
@@ -392,6 +411,14 @@ Here's what a slightly customized toolbar configuration might look like::
         'SHOW_COLLAPSED': True,
         # Panel options
         'SQL_WARNING_THRESHOLD': 100,   # milliseconds
+    }
+
+Here's an example of using a persistent store to keep debug data between server
+restarts::
+
+    DEBUG_TOOLBAR_CONFIG = {
+        'TOOLBAR_STORE_CLASS': 'debug_toolbar.store.DatabaseStore',
+        'RESULTS_CACHE_SIZE': 100,  # Store up to 100 requests
     }
 
 Theming support

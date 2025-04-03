@@ -24,6 +24,8 @@ Serializable (don't include in main)
 * Update all panels to utilize data from ``Panel.get_stats()`` to load content
   to render. Specifically for ``Panel.title`` and ``Panel.nav_title``.
 * Extend example app to contain an async version.
+* Added ``debug_toolbar.store.DatabaseStore`` for persistent debug data
+  storage.
 
 Pending
 -------

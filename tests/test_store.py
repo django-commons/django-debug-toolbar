@@ -1,3 +1,5 @@
+import uuid
+
 from django.test import TestCase
 from django.test.utils import override_settings
 
@@ -109,3 +111,124 @@ class GetStoreTestCase(TestCase):
     )
     def test_get_store_with_setting(self):
         self.assertIs(store.get_store(), StubStore)
+
+
+class DatabaseStoreTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls) -> None:
+        cls.store = store.DatabaseStore
+
+    def tearDown(self) -> None:
+        self.store.clear()
+
+    def test_ids(self):
+        id1 = str(uuid.uuid4())
+        id2 = str(uuid.uuid4())
+        self.store.set(id1)
+        self.store.set(id2)
+        # Convert the UUIDs to strings for comparison
+        request_ids = {str(id) for id in self.store.request_ids()}
+        self.assertEqual(request_ids, {id1, id2})
+
+    def test_exists(self):
+        missing_id = str(uuid.uuid4())
+        self.assertFalse(self.store.exists(missing_id))
+        id1 = str(uuid.uuid4())
+        self.store.set(id1)
+        self.assertTrue(self.store.exists(id1))
+
+    def test_set(self):
+        id1 = str(uuid.uuid4())
+        self.store.set(id1)
+        self.assertTrue(self.store.exists(id1))
+
+    def test_set_max_size(self):
+        with self.settings(DEBUG_TOOLBAR_CONFIG={"RESULTS_CACHE_SIZE": 1}):
+            # Clear any existing entries first
+            self.store.clear()
+
+            # Add first entry
+            id1 = str(uuid.uuid4())
+            self.store.save_panel(id1, "foo.panel", "foo.value")
+
+            # Verify it exists
+            self.assertTrue(self.store.exists(id1))
+            self.assertEqual(self.store.panel(id1, "foo.panel"), "foo.value")
+
+            # Add second entry, which should push out the first one due to size limit=1
+            id2 = str(uuid.uuid4())
+            self.store.save_panel(id2, "bar.panel", {"a": 1})
+
+            # Verify only the bar entry exists now
+            # Convert the UUIDs to strings for comparison
+            request_ids = {str(id) for id in self.store.request_ids()}
+            self.assertEqual(request_ids, {id2})
+            self.assertFalse(self.store.exists(id1))
+            self.assertEqual(self.store.panel(id1, "foo.panel"), {})
+            self.assertEqual(self.store.panel(id2, "bar.panel"), {"a": 1})
+
+    def test_clear(self):
+        id1 = str(uuid.uuid4())
+        self.store.save_panel(id1, "bar.panel", {"a": 1})
+        self.store.clear()
+        self.assertEqual(list(self.store.request_ids()), [])
+        self.assertEqual(self.store.panel(id1, "bar.panel"), {})
+
+    def test_delete(self):
+        id1 = str(uuid.uuid4())
+        self.store.save_panel(id1, "bar.panel", {"a": 1})
+        self.store.delete(id1)
+        self.assertEqual(list(self.store.request_ids()), [])
+        self.assertEqual(self.store.panel(id1, "bar.panel"), {})
+        # Make sure it doesn't error
+        self.store.delete(id1)
+
+    def test_save_panel(self):
+        id1 = str(uuid.uuid4())
+        self.store.save_panel(id1, "bar.panel", {"a": 1})
+        self.assertTrue(self.store.exists(id1))
+        self.assertEqual(self.store.panel(id1, "bar.panel"), {"a": 1})
+
+    def test_update_panel(self):
+        id1 = str(uuid.uuid4())
+        self.store.save_panel(id1, "test.panel", {"original": True})
+        self.assertEqual(self.store.panel(id1, "test.panel"), {"original": True})
+
+        # Update the panel
+        self.store.save_panel(id1, "test.panel", {"updated": True})
+        self.assertEqual(self.store.panel(id1, "test.panel"), {"updated": True})
+
+    def test_panels_nonexistent_request(self):
+        missing_id = str(uuid.uuid4())
+        panels = dict(self.store.panels(missing_id))
+        self.assertEqual(panels, {})
+
+    def test_panel(self):
+        id1 = str(uuid.uuid4())
+        missing_id = str(uuid.uuid4())
+        self.assertEqual(self.store.panel(missing_id, "missing"), {})
+        self.store.save_panel(id1, "bar.panel", {"a": 1})
+        self.assertEqual(self.store.panel(id1, "bar.panel"), {"a": 1})
+
+    def test_panels(self):
+        id1 = str(uuid.uuid4())
+        self.store.save_panel(id1, "panel1", {"a": 1})
+        self.store.save_panel(id1, "panel2", {"b": 2})
+        panels = dict(self.store.panels(id1))
+        self.assertEqual(len(panels), 2)
+        self.assertEqual(panels["panel1"], {"a": 1})
+        self.assertEqual(panels["panel2"], {"b": 2})
+
+    def test_cleanup_old_entries(self):
+        # Create multiple entries
+        ids = [str(uuid.uuid4()) for _ in range(5)]
+        for id in ids:
+            self.store.save_panel(id, "test.panel", {"test": True})
+
+        # Set a small cache size
+        with self.settings(DEBUG_TOOLBAR_CONFIG={"RESULTS_CACHE_SIZE": 2}):
+            # Trigger cleanup
+            self.store._cleanup_old_entries()
+
+            # Check that only the most recent 2 entries remain
+            self.assertEqual(len(list(self.store.request_ids())), 2)
