@@ -8,8 +8,8 @@ class HistoryEntry(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = _("debug toolbar entry")
-        verbose_name_plural = _("debug toolbar entries")
+        verbose_name = _("history entry")
+        verbose_name_plural = _("history entries")
         ordering = ["-created_at"]
 
     def __str__(self):
