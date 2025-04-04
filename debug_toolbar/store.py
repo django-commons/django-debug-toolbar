@@ -153,9 +153,7 @@ class DatabaseStore(BaseStore):
 
         # Determine which entries to keep (the most recent ones up to cache_size)
         keep_ids = list(
-            HistoryEntry.objects.all()[:cache_size].values_list(
-                "request_id", flat=True
-            )
+            HistoryEntry.objects.all()[:cache_size].values_list("request_id", flat=True)
         )
 
         # Delete all entries not in the keep list
