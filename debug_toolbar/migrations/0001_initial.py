@@ -16,8 +16,8 @@ class Migration(migrations.Migration):
                 ("created_at", models.DateTimeField(auto_now_add=True)),
             ],
             options={
-                "verbose_name": "Debug Toolbar Entry",
-                "verbose_name_plural": "Debug Toolbar Entries",
+                "verbose_name": "history entry",
+                "verbose_name_plural": "history entries",
                 "ordering": ["-created_at"],
             },
         ),
