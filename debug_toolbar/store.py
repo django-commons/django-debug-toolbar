@@ -151,13 +151,16 @@ class DatabaseStore(BaseStore):
         # Get the cache size limit from settings
         cache_size = dt_settings.get_config()["RESULTS_CACHE_SIZE"]
 
-        # Get the IDs to keep as a subquery
-        recent_ids = HistoryEntry.objects.all()[:cache_size].values_list(
-            "request_id", flat=True
+        # Determine which entries to keep (the most recent ones up to cache_size)
+        keep_ids = list(
+            HistoryEntry.objects.all()[:cache_size].values_list(
+                "request_id", flat=True
+            )
         )
 
         # Delete all entries not in the keep list
-        HistoryEntry.objects.exclude(request_id__in=recent_ids).delete()
+        if keep_ids:
+            HistoryEntry.objects.exclude(request_id__in=keep_ids).delete()
 
     @classmethod
     def request_ids(cls):
