@@ -172,10 +172,11 @@ class DatabaseStore(BaseStore):
     def set(cls, request_id: str):
         """Set a request_id in the store and clean up old entries"""
         # Create the entry if it doesn't exist (ignore otherwise)
-        HistoryEntry.objects.get_or_create(request_id=request_id)
+        _, created = HistoryEntry.objects.get_or_create(request_id=request_id)
 
-        # Enforce the cache size limit to clean up old entries
-        cls._cleanup_old_entries()
+        # Only enforce cache size limit when new entries are created
+        if created:
+            cls._cleanup_old_entries()
 
     @classmethod
     def clear(cls):
