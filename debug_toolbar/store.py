@@ -148,13 +148,8 @@ class DatabaseStore(BaseStore):
         Enforce the cache size limit - keeping only the most recently used entries
         up to RESULTS_CACHE_SIZE.
         """
-        # Get the cache size limit from settings
-        cache_size = dt_settings.get_config()["RESULTS_CACHE_SIZE"]
-
-        # Determine which entries to keep (the most recent ones up to cache_size)
-        keep_ids = list(
-            HistoryEntry.objects.all()[:cache_size].values_list("request_id", flat=True)
-        )
+        # Determine which entries to keep
+        keep_ids = cls.request_ids()
 
         # Delete all entries not in the keep list
         if keep_ids:
