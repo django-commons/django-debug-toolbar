@@ -34,6 +34,10 @@ Pending
 * Fixed the pygments code highlighting when using dark mode.
 * Fix for exception-unhandled "forked" Promise chain in rebound window.fetch
 * Create a CSP nonce property on the toolbar ``Toolbar().csp_nonce``.
+* Add hook to RedirectsPanel for subclass customization
+* Added ``show_toolbar_with_docker`` function to check Docker host IP address
+  when running inside Docker containers.
+
 
 5.0.1 (2025-01-13)
 ------------------
