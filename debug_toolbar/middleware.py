@@ -31,6 +31,21 @@ def show_toolbar(request):
     if request.META.get("REMOTE_ADDR") in settings.INTERNAL_IPS:
         return True
 
+    # No test passed
+    return False
+
+
+def show_toolbar_with_docker(request):
+    """
+    Default function to determine whether to show the toolbar on a given page.
+    """
+    if not settings.DEBUG:
+        return False
+
+    # Test: settings
+    if request.META.get("REMOTE_ADDR") in settings.INTERNAL_IPS:
+        return True
+
     # Test: Docker
     try:
         # This is a hack for docker installations. It attempts to look

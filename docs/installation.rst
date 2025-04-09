@@ -155,7 +155,7 @@ option.
     If using Docker, the toolbar will attempt to look up your host name
     automatically and treat it as an allowable internal IP. If you're not
     able to get the toolbar to work with your docker installation, review
-    the code in ``debug_toolbar.middleware.show_toolbar``.
+    the code in ``debug_toolbar.middleware.show_toolbar_with_docker``.
 
 7. Disable the toolbar when running tests (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
