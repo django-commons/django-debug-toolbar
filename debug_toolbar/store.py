@@ -6,6 +6,7 @@ from collections.abc import Iterable
 from typing import Any
 
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db import transaction
 from django.utils.encoding import force_str
 from django.utils.module_loading import import_string
 
@@ -171,12 +172,13 @@ class DatabaseStore(BaseStore):
     @classmethod
     def set(cls, request_id: str):
         """Set a request_id in the store and clean up old entries"""
-        # Create the entry if it doesn't exist (ignore otherwise)
-        _, created = HistoryEntry.objects.get_or_create(request_id=request_id)
+        with transaction.atomic():
+            # Create the entry if it doesn't exist (ignore otherwise)
+            _, created = HistoryEntry.objects.get_or_create(request_id=request_id)
 
-        # Only enforce cache size limit when new entries are created
-        if created:
-            cls._cleanup_old_entries()
+            # Only enforce cache size limit when new entries are created
+            if created:
+                cls._cleanup_old_entries()
 
     @classmethod
     def clear(cls):
@@ -194,11 +196,12 @@ class DatabaseStore(BaseStore):
         # First ensure older entries are cleared if we exceed cache size
         cls.set(request_id)
 
-        obj, _ = HistoryEntry.objects.get_or_create(request_id=request_id)
-        store_data = obj.data
-        store_data[panel_id] = serialize(data)
-        obj.data = store_data
-        obj.save()
+        with transaction.atomic():
+            obj, _ = HistoryEntry.objects.get_or_create(request_id=request_id)
+            store_data = obj.data
+            store_data[panel_id] = serialize(data)
+            obj.data = store_data
+            obj.save()
 
     @classmethod
     def panel(cls, request_id: str, panel_id: str) -> Any:
