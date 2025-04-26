@@ -812,7 +812,7 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         debug_window = self.selenium.find_element(By.ID, "djDebugWindow")
         self.selenium.find_element(By.CLASS_NAME, "BuggyPanel").click()
         self.wait.until(EC.visibility_of(debug_window))
-        self.assertEqual(debug_window.text, "»\n500: Internal Server Error")
+        self.assertEqual(debug_window.text, "500: Internal Server Error\n»")
 
     def test_toolbar_language_will_render_to_default_language_when_not_set(self):
         self.get("/regular/basic/")
