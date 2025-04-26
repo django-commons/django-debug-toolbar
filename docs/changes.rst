@@ -15,7 +15,8 @@ Pending
   template loaders.
 * Introduced `djade <https://github.com/adamchainz/djade>`__ to format Django
   templates.
-* Swapped display order of panel header and close button to prevent style conflicts
+* Swapped display order of panel header and close button to prevent style
+  conflicts
 
 5.1.0 (2025-03-20)
 ------------------
