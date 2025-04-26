@@ -24,8 +24,8 @@ class SettingsIntegrationTestCase(IntegrationTestCase):
             """
             <div id="SettingsPanel" class="djdt-panelContent djdt-hidden">
             <div class="djDebugPanelTitle">
-            <button type="button" class="djDebugClose">×</button>
             <h3>Settings from None</h3>
+            <button type="button" class="djDebugClose">×</button>
             </div>
             <div class="djDebugPanelContent">
             <div class="djdt-loader"></div>

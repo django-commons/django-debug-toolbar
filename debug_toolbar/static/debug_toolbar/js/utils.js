@@ -90,7 +90,7 @@ function ajax(url, init) {
         })
         .catch((error) => {
             const win = document.getElementById("djDebugWindow");
-            win.innerHTML = `<div class="djDebugPanelTitle"><button type="button" class="djDebugClose">»</button><h3>${error.message}</h3></div>`;
+            win.innerHTML = `<div class="djDebugPanelTitle"><h3>${error.message}</h3><button type="button" class="djDebugClose">»</button></div>`;
             $$.show(win);
             throw error;
         });

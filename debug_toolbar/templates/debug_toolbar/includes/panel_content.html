@@ -3,8 +3,8 @@
 {% if panel.has_content and panel.enabled %}
   <div id="{{ panel.panel_id }}" class="djdt-panelContent djdt-hidden">
     <div class="djDebugPanelTitle">
-      <button type="button" class="djDebugClose">×</button>
       <h3>{{ panel.title }}</h3>
+      <button type="button" class="djDebugClose">×</button>
     </div>
     <div class="djDebugPanelContent">
       {% if toolbar.should_render_panels %}
