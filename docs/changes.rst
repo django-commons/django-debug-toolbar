@@ -17,6 +17,8 @@ Pending
   templates.
 * Swapped display order of panel header and close button to prevent style
   conflicts
+* Added CSS for resetting the height of elements too to avoid problems with
+  global CSS of a website where the toolbar is used.
 
 5.1.0 (2025-03-20)
 ------------------
