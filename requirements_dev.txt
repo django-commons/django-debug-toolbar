@@ -11,6 +11,7 @@ html5lib
 selenium
 tox
 black
+django-template-partials
 django-csp # Used in tests/test_csp_rendering
 
 # Integration support
