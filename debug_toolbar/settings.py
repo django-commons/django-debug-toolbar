@@ -1,3 +1,4 @@
+import os
 import sys
 import warnings
 from functools import cache
@@ -43,7 +44,7 @@ CONFIG_DEFAULTS = {
     "SQL_WARNING_THRESHOLD": 500,  # milliseconds
     "OBSERVE_REQUEST_CALLBACK": "debug_toolbar.toolbar.observe_request",
     "TOOLBAR_LANGUAGE": None,
-    "IS_RUNNING_TESTS": "test" in sys.argv,
+    "IS_RUNNING_TESTS": "test" in sys.argv or "PYTEST_VERSION" in os.environ,
     "UPDATE_ON_FETCH": False,
 }
 

@@ -165,7 +165,7 @@ can do this by adding another setting:
 
 .. code-block:: python
 
-    TESTING = "test" in sys.argv
+    TESTING = "test" in sys.argv or "PYTEST_VERSION" in os.environ
 
     if not TESTING:
         INSTALLED_APPS = [
