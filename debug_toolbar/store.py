@@ -193,9 +193,6 @@ class DatabaseStore(BaseStore):
     @classmethod
     def save_panel(cls, request_id: str, panel_id: str, data: Any = None):
         """Save the panel data for the given request_id"""
-        # First ensure older entries are cleared if we exceed cache size
-        cls.set(request_id)
-
         with transaction.atomic():
             obj, _ = HistoryEntry.objects.get_or_create(request_id=request_id)
             store_data = obj.data

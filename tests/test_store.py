@@ -149,23 +149,20 @@ class DatabaseStoreTestCase(TestCase):
 
             # Add first entry
             id1 = str(uuid.uuid4())
-            self.store.save_panel(id1, "foo.panel", "foo.value")
+            self.store.set(id1)
 
             # Verify it exists
             self.assertTrue(self.store.exists(id1))
-            self.assertEqual(self.store.panel(id1, "foo.panel"), "foo.value")
 
             # Add second entry, which should push out the first one due to size limit=1
             id2 = str(uuid.uuid4())
-            self.store.save_panel(id2, "bar.panel", {"a": 1})
+            self.store.set(id2)
 
             # Verify only the bar entry exists now
             # Convert the UUIDs to strings for comparison
             request_ids = {str(id) for id in self.store.request_ids()}
             self.assertEqual(request_ids, {id2})
             self.assertFalse(self.store.exists(id1))
-            self.assertEqual(self.store.panel(id1, "foo.panel"), {})
-            self.assertEqual(self.store.panel(id2, "bar.panel"), {"a": 1})
 
     def test_clear(self):
         id1 = str(uuid.uuid4())
