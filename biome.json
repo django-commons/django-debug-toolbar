@@ -38,6 +38,9 @@
                 "useExportType": "error",
                 "noUselessElse": "error",
                 "useShorthandFunctionType": "error"
+            },
+            "suspicious": {
+                "noDocumentCookie": "off"
             }
         }
     },
