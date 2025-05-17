@@ -109,10 +109,10 @@ function ajaxForm(element) {
     return ajax(url, ajaxData);
 }
 
-function replaceToolbarState(newStoreId, data) {
+function replaceToolbarState(newRequestId, data) {
     const djDebug = document.getElementById("djDebug");
-    djDebug.setAttribute("data-store-id", newStoreId);
-    // Check if response is empty, it could be due to an expired storeId.
+    djDebug.setAttribute("data-request-id", newRequestId);
+    // Check if response is empty, it could be due to an expired requestId.
     for (const panelId of Object.keys(data)) {
         const panel = document.getElementById(panelId);
         if (panel) {
