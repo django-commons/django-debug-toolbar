@@ -77,7 +77,7 @@ Toolbar options
 
 * ``IS_RUNNING_TESTS``
 
-  Default: ``"test" in sys.argv``
+  Default: ``"test" in sys.argv or "PYTEST_VERSION" in os.environ``
 
   This setting whether the application is running tests. If this resolves to
   ``True``, the toolbar will prevent you from running tests. This should only

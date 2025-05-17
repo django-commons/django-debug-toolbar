@@ -1,3 +1,4 @@
+import os
 import sys
 import warnings
 from functools import cache
@@ -5,6 +6,15 @@ from functools import cache
 from django.conf import settings
 from django.dispatch import receiver
 from django.test.signals import setting_changed
+
+
+def _is_running_tests():
+    """
+    Helper function to support testing default value for
+    IS_RUNNING_TESTS
+    """
+    return "test" in sys.argv or "PYTEST_VERSION" in os.environ
+
 
 CONFIG_DEFAULTS = {
     # Toolbar options
@@ -43,7 +53,7 @@ CONFIG_DEFAULTS = {
     "SQL_WARNING_THRESHOLD": 500,  # milliseconds
     "OBSERVE_REQUEST_CALLBACK": "debug_toolbar.toolbar.observe_request",
     "TOOLBAR_LANGUAGE": None,
-    "IS_RUNNING_TESTS": "test" in sys.argv,
+    "IS_RUNNING_TESTS": _is_running_tests(),
     "UPDATE_ON_FETCH": False,
 }
 

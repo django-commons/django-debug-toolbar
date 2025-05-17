@@ -49,6 +49,7 @@ psycopg
 py
 pyflame
 pylibmc
+pytest
 pyupgrade
 querysets
 refactoring
@@ -65,5 +66,6 @@ theming
 timeline
 tox
 uWSGI
+unhandled
 unhashable
 validator
