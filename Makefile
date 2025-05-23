@@ -7,6 +7,12 @@ example:  ## Run the example application
 		--noinput --username="$(USER)" --email="$(USER)@mailinator.com"
 	python example/manage.py runserver
 
+example_async:
+	python example/manage.py migrate --noinput
+	-DJANGO_SUPERUSER_PASSWORD=p python example/manage.py createsuperuser \
+		--noinput --username="$(USER)" --email="$(USER)@mailinator.com"
+	daphne example.asgi:application
+
 example_test:  ## Run the test suite for the example application
 	python example/manage.py test example
 

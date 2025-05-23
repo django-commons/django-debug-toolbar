@@ -15,6 +15,7 @@ from django.shortcuts import render
 from django.test.utils import override_settings
 
 import debug_toolbar.panels.sql.tracking as sql_tracking
+from debug_toolbar.panels.sql import SQLPanel
 
 try:
     import psycopg
@@ -47,7 +48,7 @@ async def concurrent_async_sql_call(*, use_iterator=False):
 
 
 class SQLPanelTestCase(BaseTestCase):
-    panel_id = "SQLPanel"
+    panel_id = SQLPanel.panel_id
 
     def test_disabled(self):
         config = {"DISABLE_PANELS": {"debug_toolbar.panels.sql.SQLPanel"}}
@@ -357,7 +358,7 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertIn(
             "<strong>SELECT</strong> * <strong>FROM</strong>"
             " tests_binary <strong>WHERE</strong> field =",
-            self.panel._queries[0]["sql"],
+            self.panel.content,
         )
 
     @unittest.skipUnless(connection.vendor != "sqlite", "Test invalid for SQLite")
@@ -429,8 +430,6 @@ class SQLPanelTestCase(BaseTestCase):
         """
         list(User.objects.filter(username="café"))
         response = self.panel.process_request(self.request)
-        # ensure the panel does not have content yet.
-        self.assertNotIn("café", self.panel.content)
         self.panel.generate_stats(self.request, response)
         # ensure the panel renders correctly.
         content = self.panel.content
@@ -559,20 +558,29 @@ class SQLPanelTestCase(BaseTestCase):
             list(User.objects.filter(username__istartswith="spam"))
             response = self.panel.process_request(self.request)
             self.panel.generate_stats(self.request, response)
+            # The content formats the sql and prettifies it
+            self.assertTrue(self.panel.content)
             pretty_sql = self.panel._queries[-1]["sql"]
             self.assertEqual(len(self.panel._queries), 1)
 
-        # Reset the queries
-        self.panel._queries = []
+        # Recreate the panel to reset the queries. Content being a cached_property
+        # which doesn't have a way to reset it.
+        self.panel.disable_instrumentation()
+        self.panel = SQLPanel(self.panel.toolbar, self.panel.get_response)
+        self.panel.enable_instrumentation()
         # Run it again, but with prettify off. Verify that it's different.
         with override_settings(DEBUG_TOOLBAR_CONFIG={"PRETTIFY_SQL": False}):
             list(User.objects.filter(username__istartswith="spam"))
             response = self.panel.process_request(self.request)
             self.panel.generate_stats(self.request, response)
+            # The content formats the sql and prettifies it
+            self.assertTrue(self.panel.content)
             self.assertEqual(len(self.panel._queries), 1)
-            self.assertNotEqual(pretty_sql, self.panel._queries[-1]["sql"])
+            self.assertNotIn(pretty_sql, self.panel.content)
 
-        self.panel._queries = []
+        self.panel.disable_instrumentation()
+        self.panel = SQLPanel(self.panel.toolbar, self.panel.get_response)
+        self.panel.enable_instrumentation()
         # Run it again, but with prettify back on.
         # This is so we don't have to check what PRETTIFY_SQL does exactly,
         # but we know it's doing something.
@@ -580,8 +588,10 @@ class SQLPanelTestCase(BaseTestCase):
             list(User.objects.filter(username__istartswith="spam"))
             response = self.panel.process_request(self.request)
             self.panel.generate_stats(self.request, response)
+            # The content formats the sql and prettifies it
+            self.assertTrue(self.panel.content)
             self.assertEqual(len(self.panel._queries), 1)
-            self.assertEqual(pretty_sql, self.panel._queries[-1]["sql"])
+            self.assertIn(pretty_sql, self.panel.content)
 
     def test_simplification(self):
         """
@@ -593,6 +603,8 @@ class SQLPanelTestCase(BaseTestCase):
         list(User.objects.values_list("id"))
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)
+        # The content formats the sql which injects the ellipsis character
+        self.assertTrue(self.panel.content)
         self.assertEqual(len(self.panel._queries), 3)
         self.assertNotIn("\u2022", self.panel._queries[0]["sql"])
         self.assertNotIn("\u2022", self.panel._queries[1]["sql"])
@@ -618,6 +630,8 @@ class SQLPanelTestCase(BaseTestCase):
             )
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)
+        # The content formats the sql which injects the ellipsis character
+        self.assertTrue(self.panel.content)
         if connection.vendor != "mysql":
             self.assertEqual(len(self.panel._queries), 4)
         else:
@@ -738,7 +752,7 @@ class SQLPanelTestCase(BaseTestCase):
 
 
 class SQLPanelMultiDBTestCase(BaseMultiDBTestCase):
-    panel_id = "SQLPanel"
+    panel_id = SQLPanel.panel_id
 
     def test_aliases(self):
         self.assertFalse(self.panel._queries)

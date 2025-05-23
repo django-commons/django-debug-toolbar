@@ -24,9 +24,9 @@ class HistoryPanel(Panel):
     def get_headers(self, request):
         headers = super().get_headers(request)
         observe_request = self.toolbar.get_observe_request()
-        store_id = self.toolbar.store_id
-        if store_id and observe_request(request):
-            headers["djdt-store-id"] = store_id
+        request_id = self.toolbar.request_id
+        if request_id and observe_request(request):
+            headers["djdt-request-id"] = request_id
         return headers
 
     @property
@@ -87,23 +87,25 @@ class HistoryPanel(Panel):
 
         Fetch every store for the toolbar and include it in the template.
         """
-        stores = {}
-        for id, toolbar in reversed(self.toolbar._store.items()):
-            stores[id] = {
-                "toolbar": toolbar,
+        toolbar_history = {}
+        for request_id in reversed(self.toolbar.store.request_ids()):
+            toolbar_history[request_id] = {
+                "history_stats": self.toolbar.store.panel(
+                    request_id, HistoryPanel.panel_id
+                ),
                 "form": HistoryStoreForm(
-                    initial={"store_id": id, "exclude_history": True}
+                    initial={"request_id": request_id, "exclude_history": True}
                 ),
             }
 
         return render_to_string(
             self.template,
             {
-                "current_store_id": self.toolbar.store_id,
-                "stores": stores,
+                "current_request_id": self.toolbar.request_id,
+                "toolbar_history": toolbar_history,
                 "refresh_form": HistoryStoreForm(
                     initial={
-                        "store_id": self.toolbar.store_id,
+                        "request_id": self.toolbar.request_id,
                         "exclude_history": True,
                     }
                 ),

@@ -133,6 +133,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 DEBUG_TOOLBAR_CONFIG = {
     # Django's test client sets wsgi.multiprocess to True inappropriately
     "RENDER_PANELS": False,
+    "RESULTS_CACHE_SIZE": 3,
     # IS_RUNNING_TESTS must be False even though we're running tests because we're running the toolbar's own tests.
     "IS_RUNNING_TESTS": False,
 }

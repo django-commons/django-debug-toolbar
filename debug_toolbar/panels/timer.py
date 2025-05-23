@@ -19,11 +19,11 @@ class TimerPanel(Panel):
 
     def nav_subtitle(self):
         stats = self.get_stats()
-        if hasattr(self, "_start_rusage"):
-            utime = self._end_rusage.ru_utime - self._start_rusage.ru_utime
-            stime = self._end_rusage.ru_stime - self._start_rusage.ru_stime
+        if stats.get("utime"):
+            utime = stats.get("utime")
+            stime = stats.get("stime")
             return _("CPU: %(cum)0.2fms (%(total)0.2fms)") % {
-                "cum": (utime + stime) * 1000.0,
+                "cum": (utime + stime),
                 "total": stats["total_time"],
             }
         elif "total_time" in stats:
@@ -64,27 +64,44 @@ class TimerPanel(Panel):
             self._start_rusage = resource.getrusage(resource.RUSAGE_SELF)
         return super().process_request(request)
 
+    def serialize_rusage(self, data):
+        fields_to_serialize = [
+            "ru_utime",
+            "ru_stime",
+            "ru_nvcsw",
+            "ru_nivcsw",
+            "ru_minflt",
+            "ru_majflt",
+        ]
+        return {field: getattr(data, field) for field in fields_to_serialize}
+
     def generate_stats(self, request, response):
         stats = {}
         if hasattr(self, "_start_time"):
             stats["total_time"] = (perf_counter() - self._start_time) * 1000
-        if hasattr(self, "_start_rusage"):
+        if self.has_content:
             self._end_rusage = resource.getrusage(resource.RUSAGE_SELF)
-            stats["utime"] = 1000 * self._elapsed_ru("ru_utime")
-            stats["stime"] = 1000 * self._elapsed_ru("ru_stime")
+            start = self.serialize_rusage(self._start_rusage)
+            end = self.serialize_rusage(self._end_rusage)
+            stats.update(
+                {
+                    "utime": 1000 * self._elapsed_ru(start, end, "ru_utime"),
+                    "stime": 1000 * self._elapsed_ru(start, end, "ru_stime"),
+                    "vcsw": self._elapsed_ru(start, end, "ru_nvcsw"),
+                    "ivcsw": self._elapsed_ru(start, end, "ru_nivcsw"),
+                    "minflt": self._elapsed_ru(start, end, "ru_minflt"),
+                    "majflt": self._elapsed_ru(start, end, "ru_majflt"),
+                }
+            )
             stats["total"] = stats["utime"] + stats["stime"]
-            stats["vcsw"] = self._elapsed_ru("ru_nvcsw")
-            stats["ivcsw"] = self._elapsed_ru("ru_nivcsw")
-            stats["minflt"] = self._elapsed_ru("ru_minflt")
-            stats["majflt"] = self._elapsed_ru("ru_majflt")
             # these are documented as not meaningful under Linux.  If you're
             # running BSD feel free to enable them, and add any others that I
             # hadn't gotten to before I noticed that I was getting nothing but
             # zeroes and that the docs agreed. :-(
             #
-            #        stats['blkin'] = self._elapsed_ru('ru_inblock')
-            #        stats['blkout'] = self._elapsed_ru('ru_oublock')
-            #        stats['swap'] = self._elapsed_ru('ru_nswap')
+            #        stats['blkin'] = self._elapsed_ru(start, end, 'ru_inblock')
+            #        stats['blkout'] = self._elapsed_ru(start, end, 'ru_oublock')
+            #        stats['swap'] = self._elapsed_ru(start, end, 'ru_nswap')
             #        stats['rss'] = self._end_rusage.ru_maxrss
             #        stats['srss'] = self._end_rusage.ru_ixrss
             #        stats['urss'] = self._end_rusage.ru_idrss
@@ -102,5 +119,6 @@ class TimerPanel(Panel):
             "total_time", "Elapsed time", stats.get("total_time", 0)
         )
 
-    def _elapsed_ru(self, name):
-        return getattr(self._end_rusage, name) - getattr(self._start_rusage, name)
+    @staticmethod
+    def _elapsed_ru(start, end, name):
+        return end.get(name) - start.get(name)

@@ -184,7 +184,6 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
                 "duration": duration,
                 "raw_sql": sql,
                 "params": _params,
-                "raw_params": params,
                 "stacktrace": get_stack_trace(skip=2),
                 "template_info": template_info,
             }
