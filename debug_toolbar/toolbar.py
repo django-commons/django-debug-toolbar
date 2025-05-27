@@ -2,15 +2,14 @@
 The main DebugToolbar class that loads and renders the Toolbar.
 """
 
+import logging
 import re
 import uuid
-from collections import OrderedDict
 from functools import cache
 
 from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.core.handlers.asgi import ASGIRequest
 from django.dispatch import Signal
 from django.template import TemplateSyntaxError
 from django.template.loader import render_to_string
@@ -20,14 +19,17 @@ from django.utils.module_loading import import_string
 from django.utils.translation import get_language, override as lang_override
 
 from debug_toolbar import APP_NAME, settings as dt_settings
-from debug_toolbar.panels import Panel
+from debug_toolbar.store import get_store
+
+logger = logging.getLogger(__name__)
 
 
 class DebugToolbar:
     # for internal testing use only
     _created = Signal()
+    store = None
 
-    def __init__(self, request, get_response):
+    def __init__(self, request, get_response, request_id=None):
         self.request = request
         self.config = dt_settings.get_config().copy()
         panels = []
@@ -37,16 +39,11 @@ class DebugToolbar:
             if panel.enabled:
                 get_response = panel.process_request
         self.process_request = get_response
-        # Use OrderedDict for the _panels attribute so that items can be efficiently
-        # removed using FIFO order in the DebugToolbar.store() method.  The .popitem()
-        # method of Python's built-in dict only supports LIFO removal.
-        self._panels = OrderedDict[str, Panel]()
-        while panels:
-            panel = panels.pop()
-            self._panels[panel.panel_id] = panel
+        self._panels = {panel.panel_id: panel for panel in reversed(panels)}
         self.stats = {}
         self.server_timing_stats = {}
-        self.store_id = None
+        self.request_id = request_id
+        self.init_store()
         self._created.send(request, toolbar=self)
 
     # Manage panels
@@ -88,7 +85,7 @@ class DebugToolbar:
         Renders the overall Toolbar with panels inside.
         """
         if not self.should_render_panels():
-            self.store()
+            self.init_store()
         try:
             context = {"toolbar": self}
             lang = self.config["TOOLBAR_LANGUAGE"] or get_language()
@@ -109,37 +106,24 @@ class DebugToolbar:
 
         If False, the panels will be loaded via Ajax.
         """
-        if (render_panels := self.config["RENDER_PANELS"]) is None:
-            # If wsgi.multiprocess is true then it is either being served
-            # from ASGI or multithreaded third-party WSGI server eg gunicorn.
-            # we need to make special check for ASGI for supporting
-            # async context based requests.
-            if isinstance(self.request, ASGIRequest):
-                render_panels = False
-            else:
-                # The wsgi.multiprocess case of being True isn't supported until the
-                # toolbar has resolved the following issue:
-                # This type of set up is most likely
-                # https://github.com/django-commons/django-debug-toolbar/issues/1430
-                render_panels = self.request.META.get("wsgi.multiprocess", True)
-        return render_panels
+        return self.config["RENDER_PANELS"] or False
 
     # Handle storing toolbars in memory and fetching them later on
 
-    _store = OrderedDict()
+    def init_store(self):
+        # Store already initialized.
+        if self.store is None:
+            self.store = get_store()
 
-    def store(self):
-        # Store already exists.
-        if self.store_id:
+        if self.request_id:
             return
-        self.store_id = uuid.uuid4().hex
-        self._store[self.store_id] = self
-        for _ in range(self.config["RESULTS_CACHE_SIZE"], len(self._store)):
-            self._store.popitem(last=False)
+        self.request_id = uuid.uuid4().hex
+        self.store.set(self.request_id)
 
     @classmethod
-    def fetch(cls, store_id):
-        return cls._store.get(store_id)
+    def fetch(cls, request_id, panel_id=None):
+        if get_store().exists(request_id):
+            return StoredDebugToolbar.from_store(request_id, panel_id=panel_id)
 
     # Manually implement class-level caching of panel classes and url patterns
     # because it's more obvious than going through an abstraction.
@@ -206,6 +190,41 @@ def observe_request(request):
     Determine whether to update the toolbar from a client side request.
     """
     return True
+
+
+def from_store_get_response(request):
+    logger.warning(
+        "get_response was called for debug toolbar after being loaded from the store. No request exists in this scenario as the request is not stored, only the panel's data."
+    )
+    return None
+
+
+class StoredDebugToolbar(DebugToolbar):
+    def __init__(self, request, get_response, request_id=None):
+        self.request = None
+        self.config = dt_settings.get_config().copy()
+        self.process_request = get_response
+        self.stats = {}
+        self.server_timing_stats = {}
+        self.request_id = request_id
+        self.init_store()
+
+    @classmethod
+    def from_store(cls, request_id, panel_id=None):
+        toolbar = StoredDebugToolbar(
+            None, from_store_get_response, request_id=request_id
+        )
+        toolbar._panels = {}
+
+        for panel_class in reversed(cls.get_panel_classes()):
+            panel = panel_class(toolbar, from_store_get_response)
+            if panel_id and panel.panel_id != panel_id:
+                continue
+            data = toolbar.store.panel(toolbar.request_id, panel.panel_id)
+            if data:
+                panel.load_stats_from_store(data)
+                toolbar._panels[panel.panel_id] = panel
+        return toolbar
 
 
 def debug_toolbar_urls(prefix="__debug__"):
