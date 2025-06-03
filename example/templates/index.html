@@ -25,9 +25,14 @@
       <button id="incrementFetch" data-url="{% url 'ajax_increment' %}" type="button">Increment via fetch</button>
       <button id="incrementXHR" data-url="{% url 'ajax_increment' %}" type="button">Increment via XHR</button>
     </p>
+    {% comment %}
+    <button id="asyncRequest" data-url="{% url 'async_db_view' %}" type="button">Make async call</button>
+    {% endcomment %}
+
   <script>
     const incrementFetch = document.querySelector("#incrementFetch");
     const incrementXHR = document.querySelector("#incrementXHR");
+    const asyncButton = document.querySelector("#asyncRequest");
     const value = document.querySelector("#session-value");
     incrementFetch.addEventListener("click", function () {
       fetch(incrementFetch.dataset.url).then( function (response) {
@@ -46,6 +51,14 @@
       xhr.open('GET', incrementXHR.dataset.url, true);
       xhr.send('');
     });
+    asyncButton.addEventListener("click", function () {
+      fetch(asyncButton.dataset.url).then( function (response) {
+        response.json().then(function(data) {
+          console.log(data)
+        });
+      });
+    });
+
   </script>
   </body>
 </html>

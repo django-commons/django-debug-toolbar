@@ -171,16 +171,17 @@ class CachePanel(Panel):
 
     @property
     def nav_subtitle(self):
-        cache_calls = len(self.calls)
+        stats = self.get_stats()
+        cache_calls = len(stats.get("calls"))
         return ngettext(
             "%(cache_calls)d call in %(time).2fms",
             "%(cache_calls)d calls in %(time).2fms",
             cache_calls,
-        ) % {"cache_calls": cache_calls, "time": self.total_time}
+        ) % {"cache_calls": cache_calls, "time": stats.get("total_time")}
 
     @property
     def title(self):
-        count = len(getattr(settings, "CACHES", ["default"]))
+        count = self.get_stats().get("total_caches")
         return ngettext(
             "Cache calls from %(count)d backend",
             "Cache calls from %(count)d backends",
@@ -216,6 +217,7 @@ class CachePanel(Panel):
                 "hits": self.hits,
                 "misses": self.misses,
                 "counts": self.counts,
+                "total_caches": len(getattr(settings, "CACHES", ["default"])),
             }
         )
 

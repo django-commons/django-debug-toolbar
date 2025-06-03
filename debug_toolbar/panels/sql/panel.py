@@ -1,10 +1,11 @@
 import uuid
 from collections import defaultdict
-from copy import copy
 
 from asgiref.sync import sync_to_async
 from django.db import connections
+from django.template.loader import render_to_string
 from django.urls import path
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _, ngettext
 
 from debug_toolbar import settings as dt_settings
@@ -86,7 +87,7 @@ def _similar_query_key(query):
 
 
 def _duplicate_query_key(query):
-    raw_params = () if query["raw_params"] is None else tuple(query["raw_params"])
+    raw_params = () if query["params"] is None else tuple(query["params"])
     # repr() avoids problems because of unhashable types
     # (e.g. lists) when used as dictionary keys.
     # https://github.com/django-commons/django-debug-toolbar/issues/1091
@@ -146,6 +147,7 @@ class SQLPanel(Panel):
         return trans_id
 
     def record(self, **kwargs):
+        kwargs["djdt_query_id"] = uuid.uuid4().hex
         self._queries.append(kwargs)
         alias = kwargs["alias"]
         if alias not in self._databases:
@@ -164,19 +166,20 @@ class SQLPanel(Panel):
 
     @property
     def nav_subtitle(self):
-        query_count = len(self._queries)
+        stats = self.get_stats()
+        query_count = len(stats.get("queries", []))
         return ngettext(
             "%(query_count)d query in %(sql_time).2fms",
             "%(query_count)d queries in %(sql_time).2fms",
             query_count,
         ) % {
             "query_count": query_count,
-            "sql_time": self._sql_time,
+            "sql_time": stats.get("sql_time"),
         }
 
     @property
     def title(self):
-        count = len(self._databases)
+        count = len(self.get_stats().get("databases"))
         return ngettext(
             "SQL queries from %(count)d connection",
             "SQL queries from %(count)d connections",
@@ -211,8 +214,6 @@ class SQLPanel(Panel):
             connection._djdt_logger = None
 
     def generate_stats(self, request, response):
-        colors = contrasting_color_generator()
-        trace_colors = defaultdict(lambda: next(colors))
         similar_query_groups = defaultdict(list)
         duplicate_query_groups = defaultdict(list)
 
@@ -269,14 +270,6 @@ class SQLPanel(Panel):
                     query["trans_status"] = get_transaction_status_display(
                         query["vendor"], query["trans_status"]
                     )
-
-                query["form"] = SignedDataForm(
-                    auto_id=None, initial=SQLSelectForm(initial=copy(query)).initial
-                )
-
-                if query["sql"]:
-                    query["sql"] = reformat_sql(query["sql"], with_toggle=True)
-
                 query["is_slow"] = query["duration"] > sql_warning_threshold
                 query["is_select"] = is_select_query(query["raw_sql"])
 
@@ -288,9 +281,6 @@ class SQLPanel(Panel):
                 query["start_offset"] = width_ratio_tally
                 query["end_offset"] = query["width_ratio"] + query["start_offset"]
                 width_ratio_tally += query["width_ratio"]
-                query["stacktrace"] = render_stacktrace(query["stacktrace"])
-
-                query["trace_color"] = trace_colors[query["stacktrace"]]
 
                 last_by_alias[alias] = query
 
@@ -323,3 +313,28 @@ class SQLPanel(Panel):
         title = "SQL {} queries".format(len(stats.get("queries", [])))
         value = stats.get("sql_time", 0)
         self.record_server_timing("sql_time", title, value)
+
+    # Cache the content property since it manipulates the queries in the stats
+    # This allows the caller to treat content as idempotent
+    @cached_property
+    def content(self):
+        if self.has_content:
+            stats = self.get_stats()
+            colors = contrasting_color_generator()
+            trace_colors = defaultdict(lambda: next(colors))
+
+            for query in stats.get("queries", []):
+                query["sql"] = reformat_sql(query["sql"], with_toggle=True)
+                query["form"] = SignedDataForm(
+                    auto_id=None,
+                    initial=SQLSelectForm(
+                        initial={
+                            "djdt_query_id": query["djdt_query_id"],
+                            "request_id": self.toolbar.request_id,
+                        }
+                    ).initial,
+                )
+                query["stacktrace"] = render_stacktrace(query["stacktrace"])
+                query["trace_color"] = trace_colors[query["stacktrace"]]
+
+            return render_to_string(self.template, stats)
