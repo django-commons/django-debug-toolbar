@@ -1,11 +1,7 @@
 from __future__ import annotations
 
-from typing import cast
-from xml.etree.ElementTree import Element
-
 from django.conf import settings
-from django.http.response import HttpResponse
-from django.test.utils import ContextList, override_settings
+from django.test.utils import override_settings
 from html5lib.constants import E
 from html5lib.html5parser import HTMLParser
 
@@ -40,7 +36,6 @@ class CspRenderingTestCase(IntegrationTestCase):
         self.parser = HTMLParser()
 
     def _fail_if_missing(self, root, path, namespaces, nonce):
-
         """
         Search elements, fail if a `nonce` attribute is missing on them.
         """
