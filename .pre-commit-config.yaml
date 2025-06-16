@@ -10,7 +10,7 @@ repos:
     -   id: file-contents-sorter
         files: docs/spelling_wordlist.txt
 -   repo: https://github.com/pycqa/doc8
-    rev: v1.1.2
+    rev: v2.0.0
     hooks:
     -   id: doc8
 -   repo: https://github.com/adamchainz/django-upgrade
@@ -34,7 +34,7 @@ repos:
       - id: biome-check
         verbose: true
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.11.12'
+    rev: 'v0.11.13'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
