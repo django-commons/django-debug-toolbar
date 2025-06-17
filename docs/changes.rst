@@ -59,6 +59,7 @@ Pending
 * Fixed a crash which occurred when using non-``str`` static file values.
 * Documented experimental async support.
 * Improved troubleshooting doc for incorrect mime types for .js static files
+* Added toolbar time to the timer panel.
 
 Please see everything under 5.0.0-alpha as well.
 
