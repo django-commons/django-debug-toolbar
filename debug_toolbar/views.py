@@ -1,8 +1,8 @@
 import os
-from django.http import JsonResponse, FileResponse, Http404
+
+from django.http import FileResponse, Http404, JsonResponse
 from django.utils.html import escape
 from django.utils.translation import gettext as _
-
 from django.views.decorators.http import require_GET
 
 from debug_toolbar._compat import login_not_required
@@ -33,12 +33,15 @@ def render_panel(request):
 @require_GET
 def download_prof_file(request):
     file_path = request.GET.get("path")
-    print("Serving .prof file:", file_path) 
+    print("Serving .prof file:", file_path)
     if not file_path or not os.path.exists(file_path):
-        print("File does not exist:", file_path) 
+        print("File does not exist:", file_path)
         raise Http404("File not found.")
 
-    response = FileResponse(open(file_path, 'rb'), content_type='application/octet-stream')
-    response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
+    response = FileResponse(
+        open(file_path, "rb"), content_type="application/octet-stream"
+    )
+    response["Content-Disposition"] = (
+        f'attachment; filename="{os.path.basename(file_path)}"'
+    )
     return response
-

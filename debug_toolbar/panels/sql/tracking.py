@@ -143,7 +143,11 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
         self.db._djdt_logger = None
         try:
             # Handle executemany: take the first set of parameters for formatting
-            if isinstance(params, (list, tuple)) and len(params) > 0 and isinstance(params[0], (list, tuple)):
+            if (
+                isinstance(params, (list, tuple))
+                and len(params) > 0
+                and isinstance(params[0], (list, tuple))
+            ):
                 sample_params = params[0]
             else:
                 sample_params = params
