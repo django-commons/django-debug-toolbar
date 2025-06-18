@@ -1,5 +1,6 @@
 import cProfile
 import os
+import tempfile
 from colorsys import hsv_to_rgb
 from pstats import Stats
 
@@ -168,8 +169,13 @@ class ProfilingPanel(Panel):
         self.stats = Stats(self.profiler)
         self.stats.calc_callees()
 
-        root_func = cProfile.label(super().process_request.__code__)
+        prof_file_path = os.path.join(
+            tempfile.gettempdir(), next(tempfile._get_candidate_names()) + ".prof"
+        )
+        self.profiler.dump_stats(prof_file_path)
+        self.prof_file_path = prof_file_path
 
+        root_func = cProfile.label(super().process_request.__code__)
         if root_func in self.stats.stats:
             root = FunctionCall(self.stats, root_func, depth=0)
             func_list = []
@@ -182,4 +188,6 @@ class ProfilingPanel(Panel):
                 dt_settings.get_config()["PROFILER_MAX_DEPTH"],
                 cum_time_threshold,
             )
-            self.record_stats({"func_list": func_list})
+            self.record_stats(
+                {"func_list": func_list, "prof_file_path": self.prof_file_path}
+            )
