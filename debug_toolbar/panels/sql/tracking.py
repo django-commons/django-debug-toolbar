@@ -142,7 +142,16 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
         # process during the .last_executed_query() call.
         self.db._djdt_logger = None
         try:
-            return self.db.ops.last_executed_query(self.cursor, sql, params)
+            # Handle executemany: take the first set of parameters for formatting
+            if isinstance(params, (list, tuple)) and len(params) > 0 and isinstance(params[0], (list, tuple)):
+                sample_params = params[0]
+            else:
+                sample_params = params
+
+            try:
+                return self.db.ops.last_executed_query(self.cursor, sql, sample_params)
+            except Exception:
+                return sql
         finally:
             self.db._djdt_logger = self.logger
 

@@ -1,4 +1,13 @@
 {% load i18n %}
+
+{% if prof_file_path %}
+  <div style="margin-bottom: 10px;">
+    <a href="{% url 'debug_toolbar_download_prof_file' %}?path={{ prof_file_path|urlencode }}" class="djDebugButton">
+    Download .prof file
+  </a>
+  </div>
+{% endif %}
+
 <table>
   <thead>
     <tr>
