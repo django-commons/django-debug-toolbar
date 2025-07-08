@@ -63,7 +63,15 @@ class DebugToolbar:
         """
         Get a list of panels enabled for the current request.
         """
-        return [panel for panel in self._panels.values() if panel.enabled]
+        panels = [panel for panel in self._panels.values() if panel.enabled]
+        # Ensure TimerPanel is first in order to measure the full time of the toolbar's processing.
+        timer_panel = next(
+            (panel for panel in panels if panel.panel_id == "TimerPanel"), None
+        )
+        if timer_panel:
+            panels.remove(timer_panel)
+            panels.insert(0, timer_panel)
+        return panels
 
     @property
     def csp_nonce(self):

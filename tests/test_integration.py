@@ -297,6 +297,10 @@ class DebugToolbarTestCase(BaseTestCase):
             len(response.toolbar.get_panel_by_id("SQLPanel").get_stats()["queries"]), 2
         )
 
+    def test_timer_panel_first(self):
+        toolbar = DebugToolbar(self.request, self.get_response)
+        self.assertEqual(toolbar.enabled_panels[0].panel_id, "TimerPanel")
+
 
 @override_settings(DEBUG=True)
 class DebugToolbarIntegrationTestCase(IntegrationTestCase):
@@ -605,6 +609,7 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
             r'TimerPanel_stime;dur=(\d)*(\.(\d)*)?;desc="System CPU time", ',
             r'TimerPanel_total;dur=(\d)*(\.(\d)*)?;desc="Total CPU time", ',
             r'TimerPanel_total_time;dur=(\d)*(\.(\d)*)?;desc="Elapsed time", ',
+            r'TimerPanel_toolbar_time;dur=(\d)*(\.(\d)*)?;desc="Toolbar time", ',
             r'SQLPanel_sql_time;dur=(\d)*(\.(\d)*)?;desc="SQL 1 queries", ',
             r'CachePanel_total_time;dur=0;desc="Cache 0 Calls"',
         ]
