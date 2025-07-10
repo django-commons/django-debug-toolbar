@@ -1,10 +1,12 @@
 from django.core import cache
 
+from debug_toolbar.panels.cache import CachePanel
+
 from ..base import BaseTestCase
 
 
 class CachePanelTestCase(BaseTestCase):
-    panel_id = "CachePanel"
+    panel_id = CachePanel.panel_id
 
     def test_recording(self):
         self.assertEqual(len(self.panel.calls), 0)

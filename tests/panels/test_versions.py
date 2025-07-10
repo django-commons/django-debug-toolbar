@@ -1,5 +1,7 @@
 from collections import namedtuple
 
+from debug_toolbar.panels.versions import VersionsPanel
+
 from ..base import BaseTestCase
 
 version_info_t = namedtuple(
@@ -8,7 +10,7 @@ version_info_t = namedtuple(
 
 
 class VersionsPanelTestCase(BaseTestCase):
-    panel_id = "VersionsPanel"
+    panel_id = VersionsPanel.panel_id
 
     def test_app_version_from_get_version_fn(self):
         class FakeApp:

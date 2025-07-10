@@ -8,6 +8,28 @@ Pending
   if tests are running.
 * Added ``show_toolbar_with_docker`` function to check Docker host IP address
   when running inside Docker containers.
+* Defines the ``BaseStore`` interface for request storage mechanisms.
+* Added the setting ``TOOLBAR_STORE_CLASS`` to configure the request
+  storage mechanism. Defaults to ``debug_toolbar.store.MemoryStore``.
+* Rename ``store_id`` properties to ``request_id`` and ``Toolbar.store`` to
+  ``Toolbar.init_store``.
+* Support ``Panel`` instances with stored stats via
+  ``Panel.load_stats_from_store``.
+* Swapped ``Toolbar._store`` for the ``get_store()`` class.
+* Created a ``StoredDebugToolbar`` that support creating an instance of the
+  toolbar representing an old request. It should only be used for fetching
+  panels' contents.
+* Drop ``raw_params`` from query data.
+* Queries now have a unique ``djdt_query_id``. The SQL forms now reference
+  this id and avoid passing SQL to be executed.
+* Move the formatting logic of SQL queries to just before rendering in
+  ``SQLPanel.content``.
+* Make ``Panel.panel_id`` a class member.
+* Update all panels to utilize data from ``Panel.get_stats()`` to load content
+  to render. Specifically for ``Panel.title`` and ``Panel.nav_title``.
+* Extend example app to contain an async version.
+* Added ``debug_toolbar.store.DatabaseStore`` for persistent debug data
+  storage.
 
 5.2.0 (2025-04-29)
 ------------------
@@ -211,7 +233,6 @@ Please see everything under 5.0.0-alpha as well.
 
 4.1.0 (2023-05-15)
 ------------------
-
 * Improved SQL statement formatting performance.  Additionally, fixed the
   indentation of ``CASE`` statements and stopped simplifying ``.count()``
   queries.

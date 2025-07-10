@@ -53,6 +53,7 @@ CONFIG_DEFAULTS = {
     "SQL_WARNING_THRESHOLD": 500,  # milliseconds
     "OBSERVE_REQUEST_CALLBACK": "debug_toolbar.toolbar.observe_request",
     "TOOLBAR_LANGUAGE": None,
+    "TOOLBAR_STORE_CLASS": "debug_toolbar.store.MemoryStore",
     "IS_RUNNING_TESTS": _is_running_tests(),
     "UPDATE_ON_FETCH": False,
 }

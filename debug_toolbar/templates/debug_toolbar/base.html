@@ -8,7 +8,7 @@
 {% endblock js %}
 <div id="djDebug" class="djdt-hidden" dir="ltr"
      {% if not toolbar.should_render_panels %}
-     data-store-id="{{ toolbar.store_id }}"
+     data-request-id="{{ toolbar.request_id }}"
      data-render-panel-url="{% url 'djdt:render_panel' %}"
      {% endif %}
      {% url 'djdt:history_sidebar' as history_url %}

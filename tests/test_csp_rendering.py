@@ -5,6 +5,7 @@ from django.test.utils import override_settings
 from html5lib.constants import E
 from html5lib.html5parser import HTMLParser
 
+from debug_toolbar.store import get_store
 from debug_toolbar.toolbar import DebugToolbar
 
 from .base import IntegrationTestCase
@@ -76,8 +77,7 @@ class CspRenderingTestCase(IntegrationTestCase):
                 self.assertContains(response, "djDebug")
 
                 namespaces = get_namespaces(element=html_root)
-                toolbar = list(DebugToolbar._store.values())[-1]
-                nonce = str(toolbar.csp_nonce)
+                nonce = response.context["request"].csp_nonce
                 self._fail_if_missing(
                     root=html_root, path=".//link", namespaces=namespaces, nonce=nonce
                 )
@@ -131,12 +131,14 @@ class CspRenderingTestCase(IntegrationTestCase):
                 )
 
     def test_panel_content_nonce_exists(self):
+        store = get_store()
         for middleware in [MIDDLEWARE_CSP_BEFORE, MIDDLEWARE_CSP_LAST]:
             with self.settings(MIDDLEWARE=middleware):
                 response = self.client.get(path="/csp_view/")
                 self.assertEqual(response.status_code, 200)
 
-                toolbar = list(DebugToolbar._store.values())[-1]
+                request_ids = list(store.request_ids())
+                toolbar = DebugToolbar.fetch(request_ids[-1])
                 panels_to_check = ["HistoryPanel", "TimerPanel"]
                 for panel in panels_to_check:
                     content = toolbar.get_panel_by_id(panel).content

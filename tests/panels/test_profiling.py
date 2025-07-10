@@ -6,6 +6,8 @@ from django.db import IntegrityError, transaction
 from django.http import HttpResponse
 from django.test.utils import override_settings
 
+from debug_toolbar.panels.profiling import ProfilingPanel
+
 from ..base import BaseTestCase, IntegrationTestCase
 from ..views import listcomp_view, regular_view
 
@@ -14,7 +16,7 @@ from ..views import listcomp_view, regular_view
     DEBUG_TOOLBAR_PANELS=["debug_toolbar.panels.profiling.ProfilingPanel"]
 )
 class ProfilingPanelTestCase(BaseTestCase):
-    panel_id = "ProfilingPanel"
+    panel_id = ProfilingPanel.panel_id
 
     def test_regular_view(self):
         self._get_response = lambda request: regular_view(request, "profiling")
