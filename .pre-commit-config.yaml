@@ -29,12 +29,12 @@ repos:
     -   id: rst-backticks
     -   id: rst-directive-colons
 -   repo: https://github.com/biomejs/pre-commit
-    rev: v2.0.6
+    rev: v2.1.1
     hooks:
       - id: biome-check
         verbose: true
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.12.2'
+    rev: 'v0.12.3'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
