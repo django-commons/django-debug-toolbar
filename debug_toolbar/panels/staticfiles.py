@@ -1,6 +1,7 @@
 import contextlib
 import uuid
 from contextvars import ContextVar
+from dataclasses import dataclass
 from os.path import join, normpath
 
 from django.contrib.staticfiles import finders, storage
@@ -10,14 +11,14 @@ from django.utils.translation import gettext_lazy as _, ngettext
 from debug_toolbar import panels
 
 
+@dataclass(eq=True, frozen=True)
 class StaticFile:
     """
     Representing the different properties of a static file.
     """
 
-    def __init__(self, *, path, url):
-        self.path = path
-        self._url = url
+    path: str
+    url: str
 
     def __str__(self):
         return self.path
@@ -72,7 +73,7 @@ class StaticFilesPanel(panels.Panel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.num_found = 0
-        self.used_paths = []
+        self.used_paths = set()
         self.request_id = str(uuid.uuid4())
 
     @classmethod
@@ -88,7 +89,7 @@ class StaticFilesPanel(panels.Panel):
         # concurrent connections and we want to avoid storing of same
         # staticfile from other connections as well.
         if request_id_context_var.get() == self.request_id:
-            self.used_paths.append(staticfile)
+            self.used_paths.add(staticfile)
 
     def enable_instrumentation(self):
         self.ctx_token = request_id_context_var.set(self.request_id)
@@ -112,7 +113,7 @@ class StaticFilesPanel(panels.Panel):
             {
                 "num_found": self.num_found,
                 "num_used": len(self.used_paths),
-                "staticfiles": self.used_paths,
+                "staticfiles": sorted(self.used_paths),
                 "staticfiles_apps": self.get_staticfiles_apps(),
                 "staticfiles_dirs": self.get_staticfiles_dirs(),
                 "staticfiles_finders": self.get_staticfiles_finders(),

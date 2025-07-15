@@ -30,6 +30,7 @@ Pending
 * Extend example app to contain an async version.
 * Added ``debug_toolbar.store.DatabaseStore`` for persistent debug data
   storage.
+* Deduplicated static files in the staticfiles panel.
 
 5.2.0 (2025-04-29)
 ------------------
