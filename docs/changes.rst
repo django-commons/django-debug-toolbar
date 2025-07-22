@@ -1,8 +1,8 @@
 Change log
 ==========
 
-Pending
--------
+6.0.0 (2025-07-22)
+------------------
 
 * Added support for checking if pytest as the test runner when determining
   if tests are running.

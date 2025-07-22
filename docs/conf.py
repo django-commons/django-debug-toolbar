@@ -25,7 +25,7 @@ copyright = "{}, Django Debug Toolbar developers and contributors"
 copyright = copyright.format(datetime.date.today().year)
 
 # The full version, including alpha/beta/rc tags
-release = "5.2.0"
+release = "6.0.0"
 
 
 # -- General configuration ---------------------------------------------------
