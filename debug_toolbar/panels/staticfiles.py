@@ -16,8 +16,8 @@ record_static_file_signal = Signal()
 
 
 class URLMixin:
-    def url(self, path):
-        url = super().url(path)
+    def url(self, path, *args, **kwargs):
+        url = super().url(path, *args, **kwargs)
         with contextlib.suppress(LookupError):
             # For LookupError:
             # The ContextVar wasn't set yet. Since the toolbar wasn't properly
