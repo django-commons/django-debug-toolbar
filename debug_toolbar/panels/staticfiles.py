@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _, ngettext
 from debug_toolbar import panels
 
 
-@dataclass(eq=True, frozen=True)
+@dataclass(eq=True, frozen=True, order=True)
 class StaticFile:
     """
     Representing the different properties of a static file.

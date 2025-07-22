@@ -1,3 +1,1 @@
-{% load static %}
-{# A single file used twice #}
-{% static path %}{% static path %}
+{% load static %}{% for path in paths %}{% static path %}{% endfor %}
