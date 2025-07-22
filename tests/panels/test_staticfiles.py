@@ -114,7 +114,7 @@ class StaticFilesPanelTestCase(BaseTestCase):
             url = storage.staticfiles_storage.url("test.css")
             self.assertTrue(url.startswith("/static/"))
             # Verify file was tracked
-            self.assertIn("test.css", [f.path for f in self.panel.used_paths])
+            self.assertIn("test.css", [f[0] for f in self.panel.used_paths])
         finally:
             request_id_context_var.reset(token)
 
