@@ -1,7 +1,6 @@
 import contextlib
 import uuid
 from contextvars import ContextVar
-from dataclasses import dataclass
 from os.path import join, normpath
 
 from django.contrib.staticfiles import finders, storage
@@ -9,26 +8,6 @@ from django.dispatch import Signal
 from django.utils.translation import gettext_lazy as _, ngettext
 
 from debug_toolbar import panels
-
-
-@dataclass(eq=True, frozen=True, order=True)
-class StaticFile:
-    """
-    Representing the different properties of a static file.
-    """
-
-    path: str
-    url: str
-
-    def __str__(self):
-        return self.path
-
-    def real_path(self):
-        return finders.find(self.path)
-
-    def url(self):
-        return self._url
-
 
 # This will record and map the StaticFile instances with its associated
 # request across threads and async concurrent requests state.
@@ -47,7 +26,7 @@ class URLMixin:
             request_id = request_id_context_var.get()
             record_static_file_signal.send(
                 sender=self,
-                staticfile=StaticFile(path=str(path), url=url),
+                staticfile=(str(path), url, finders.find(str(path))),
                 request_id=request_id,
             )
         return url

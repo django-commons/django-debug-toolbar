@@ -25,9 +25,9 @@
 <h4>{% blocktranslate count staticfiles_count=staticfiles|length %}Static file{% plural %}Static files{% endblocktranslate %}</h4>
 {% if staticfiles %}
   <dl>
-    {% for staticfile in staticfiles %}
-      <dt><strong><a class="toggleTemplate" href="{{ staticfile.url }}">{{ staticfile }}</a></strong></dt>
-      <dd><samp>{{ staticfile.real_path }}</samp></dd>
+    {% for path, url, real_path in staticfiles %}
+      <dt><strong><a class="toggleTemplate" href="{{ url }}" target="_blank" rel="noopener">{{ path }}</a></strong></dt>
+      <dd><samp>{{ real_path }}</samp></dd>
     {% endfor %}
   </dl>
 {% else %}
