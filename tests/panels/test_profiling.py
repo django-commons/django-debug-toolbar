@@ -35,11 +35,14 @@ class ProfilingPanelTestCase(BaseTestCase):
         # ensure the panel does not have content yet.
         self.assertNotIn("regular_view", self.panel.content)
         self.panel.generate_stats(self.request, response)
+        self.reload_stats()
         # ensure the panel renders correctly.
         content = self.panel.content
         self.assertIn("regular_view", content)
         self.assertIn("render", content)
         self.assertValidHTML(content)
+        # ensure traces aren't escaped
+        self.assertIn('<span class="djdt-path">', content)
 
     @override_settings(DEBUG_TOOLBAR_CONFIG={"PROFILER_THRESHOLD_RATIO": 1})
     def test_cum_time_threshold(self):

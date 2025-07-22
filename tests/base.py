@@ -112,6 +112,10 @@ class BaseMixin:
                 msg_parts.append(f"    {lines[position[0] - 1]}")
             raise self.failureException("\n".join(msg_parts))
 
+    def reload_stats(self):
+        data = self.toolbar.store.panel(self.toolbar.request_id, self.panel_id)
+        self.panel.load_stats_from_store(data)
+
 
 class BaseTestCase(BaseMixin, TestCase):
     pass

@@ -2,6 +2,7 @@ import uuid
 
 from django.test import TestCase
 from django.test.utils import override_settings
+from django.utils.safestring import SafeData, mark_safe
 
 from debug_toolbar import store
 
@@ -96,6 +97,18 @@ class MemoryStoreTestCase(TestCase):
         self.assertEqual(self.store.panel("missing", "missing"), {})
         self.store.save_panel("bar", "bar.panel", {"a": 1})
         self.assertEqual(self.store.panel("bar", "bar.panel"), {"a": 1})
+
+    def test_serialize_safestring(self):
+        before = {"string": mark_safe("safe")}
+
+        self.store.save_panel("bar", "bar.panel", before)
+        after = self.store.panel("bar", "bar.panel")
+
+        self.assertFalse(type(before["string"]) is str)
+        self.assertTrue(isinstance(before["string"], SafeData))
+
+        self.assertTrue(type(after["string"]) is str)
+        self.assertFalse(isinstance(after["string"], SafeData))
 
 
 class StubStore(store.BaseStore):
