@@ -16,6 +16,10 @@ Pending
   rather than on instantiation.
 * Highlighted the documentation about disabling the browser's caching to
   ensure the latest static assets are used.
+* Fixed SQL Explain functionality for GeoDjango queries with binary parameters.
+  Binary data (such as EWKB geometry) is now properly handled through base64
+  encoding, preventing "parse error - invalid geometry" errors when using
+  Explain on spatial queries.
 
 6.2.0 (2026-01-20)
 ------------------
