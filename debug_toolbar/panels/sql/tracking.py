@@ -2,6 +2,7 @@ import contextlib
 import contextvars
 import datetime
 import json
+import base64
 from time import perf_counter
 
 import django.test.testcases
@@ -125,6 +126,11 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
         # If a dictionary type, decode each value separately
         if isinstance(param, dict):
             return {key: self._decode(value) for key, value in param.items()}
+
+        # Handle binary data (e.g., GeoDjango EWKB geometry data)
+        if isinstance(param, (bytes, bytearray)):
+            # Mark as binary data for later reconstruction
+            return {"__djdt_binary__": base64.b64encode(param).decode('ascii')}
 
         # make sure datetime, date and time are converted to string by force_str
         CONVERT_TYPES = (datetime.datetime, datetime.date, datetime.time)
