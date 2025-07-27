@@ -1,6 +1,14 @@
 Change log
 ==========
 
+Pending
+-------
+
+* Fixed SQL Explain functionality for GeoDjango queries with binary parameters.
+  Binary data (such as EWKB geometry) is now properly handled through base64
+  encoding, preventing "parse error - invalid geometry" errors when using
+  Explain on spatial queries.
+
 6.0.0 (2025-07-22)
 ------------------
 
