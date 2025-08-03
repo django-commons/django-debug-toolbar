@@ -6,6 +6,7 @@ import subprocess
 from time import sleep
 
 from selenium.webdriver.common.by import By # type: ignore
+from selenium.webdriver.common.action_chains import ActionChains # type: ignore
 from selenium.webdriver.common.keys import Keys # type: ignore
 from selenium.webdriver.support import expected_conditions as EC # type: ignore
 from selenium.webdriver.support.wait import WebDriverWait # type: ignore
