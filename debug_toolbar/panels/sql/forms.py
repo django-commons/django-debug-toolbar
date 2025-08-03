@@ -12,22 +12,6 @@ from debug_toolbar.panels.sql.utils import is_select_query, reformat_sql
 from debug_toolbar.toolbar import DebugToolbar
 
 
-def _reconstruct_params(params):
-    """
-    Reconstruct parameters that were encoded for JSON storage,
-    especially binary data that was base64 encoded.
-    """
-    if isinstance(params, list):
-        return [_reconstruct_params(param) for param in params]
-    elif isinstance(params, dict):
-        if "__djdt_binary__" in params:
-            # Reconstruct binary data from base64
-            return base64.b64decode(params["__djdt_binary__"])
-        else:
-            return {key: _reconstruct_params(value) for key, value in params.items()}
-    else:
-        return params
-
 
 class SQLSelectForm(forms.Form):
     """
