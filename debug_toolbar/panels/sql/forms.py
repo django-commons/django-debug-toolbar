@@ -7,6 +7,7 @@ from django.db import connections
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
+from debug_toolbar.panels.sql.decoders import DebugToolbarJSONDecoder
 from debug_toolbar.panels.sql.utils import is_select_query, reformat_sql
 from debug_toolbar.toolbar import DebugToolbar
 
@@ -90,7 +91,7 @@ class SQLSelectForm(forms.Form):
     def _get_query_params(self):
         """Get reconstructed parameters for the current query"""
         query = self.cleaned_data["query"]
-        return _reconstruct_params(json.loads(query["params"]))
+        return json.loads(query["params"], cls=DebugToolbarJSONDecoder)
 
     def select(self):
         query = self.cleaned_data["query"]
