@@ -1,4 +1,3 @@
-import base64
 import json
 
 from django import forms
@@ -10,7 +9,6 @@ from django.utils.translation import gettext_lazy as _
 from debug_toolbar.panels.sql.decoders import DebugToolbarJSONDecoder
 from debug_toolbar.panels.sql.utils import is_select_query, reformat_sql
 from debug_toolbar.toolbar import DebugToolbar
-
 
 
 class SQLSelectForm(forms.Form):
