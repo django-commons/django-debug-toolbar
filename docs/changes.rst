@@ -1,6 +1,11 @@
 Change log
 ==========
 
+Pending
+-------
+
+* Added a note about the default password in ``make example``.
+
 6.0.0 (2025-07-22)
 ------------------
 
