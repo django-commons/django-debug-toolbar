@@ -147,6 +147,7 @@ jobs:
         DB_BACKEND: ${{ matrix.database }}
         DB_HOST: localhost
         DB_PORT: 5432
+        DJANGO_SELENIUM_TESTS: ${{ matrix.env.DJANGO_SELENIUM_TESTS }}
 
   sqlite:
     runs-on: ubuntu-latest
