@@ -90,7 +90,8 @@ jobs:
               database: postgis3
             - python-version: '3.13'
               database: postgresql
-              name: selenium
+              env:
+                DJANGO_SELENIUM_TESTS=true
 
     services:
       postgres:
@@ -141,21 +142,11 @@ jobs:
         python -m pip install --upgrade tox tox-gh-actions
 
     - name: Test with tox
-      if: matrix.name != 'selenium'
       run: tox
       env:
         DB_BACKEND: ${{ matrix.database }}
         DB_HOST: localhost
         DB_PORT: 5432
-
-    - name: Test with tox (selenium)
-      if: matrix.name == 'selenium'
-      run: tox
-      env:
-        DB_BACKEND: ${{ matrix.database }}
-        DB_HOST: localhost
-        DB_PORT: 5432
-        DJANGO_SELENIUM_TESTS: true
 
   sqlite:
     runs-on: ubuntu-latest
