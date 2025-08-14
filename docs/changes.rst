@@ -1,6 +1,11 @@
 Change log
 ==========
 
+Pending
+-------
+
+* Removed logging about the toolbar failing to serialize a value into JSON.
+
 6.0.0 (2025-07-22)
 ------------------
 

@@ -1,6 +1,5 @@
 import contextlib
 import json
-import logging
 from collections import defaultdict, deque
 from collections.abc import Iterable
 from typing import Any
@@ -13,15 +12,12 @@ from django.utils.module_loading import import_string
 from debug_toolbar import settings as dt_settings
 from debug_toolbar.models import HistoryEntry
 
-logger = logging.getLogger(__name__)
-
 
 class DebugToolbarJSONEncoder(DjangoJSONEncoder):
     def default(self, o):
         try:
             return super().default(o)
         except (TypeError, ValueError):
-            logger.debug("The debug toolbar can't serialize %s into JSON" % o)
             return force_str(o)
 
 
