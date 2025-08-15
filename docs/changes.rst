@@ -6,6 +6,9 @@ Pending
 
 * Added a note about the default password in ``make example``.
 * Removed logging about the toolbar failing to serialize a value into JSON.
+* Fixed PostgreSQL compatibility issues: SQL profiling now properly detects
+  MySQL requirement and provides clear error messages for other databases.
+  Fixed CI configuration to use correct PostgreSQL credentials.
 
 6.0.0 (2025-07-22)
 ------------------
