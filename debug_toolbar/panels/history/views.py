@@ -27,6 +27,9 @@ def history_sidebar(request):
         for panel in toolbar.panels:
             if exclude_history and not panel.is_historical:
                 continue
+            # Only include enabled panels in the history sidebar
+            if not panel.enabled:
+                continue
             panel_context = {"panel": panel}
             context[panel.panel_id] = {
                 "button": render_to_string(
