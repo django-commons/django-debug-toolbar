@@ -6,6 +6,8 @@ Pending
 
 * Added a note about the default password in ``make example``.
 * Removed logging about the toolbar failing to serialize a value into JSON.
+* Fixed KeyError when using DatabaseStore with dynamically added panels to
+  DEBUG_TOOLBAR_PANELS.
 
 6.0.0 (2025-07-22)
 ------------------
