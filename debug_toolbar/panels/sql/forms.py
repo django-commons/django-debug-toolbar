@@ -102,6 +102,15 @@ class SQLSelectForm(forms.Form):
         query = self.cleaned_data["query"]
         sql = query["raw_sql"]
         params = json.loads(query["params"])
+        vendor = query["vendor"]
+
+        # Profiling is only supported on MySQL
+        if vendor != "mysql":
+            raise ValueError(
+                f"Profiling is not supported for {vendor}. "
+                "Profiling is only available for MySQL databases."
+            )
+
         with self.cursor as cursor:
             cursor.execute("SET PROFILING=1")  # Enable profiling
             cursor.execute(sql, params)  # Execute SELECT

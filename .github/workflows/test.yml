@@ -1,222 +1,218 @@
 name: Test
 
 on:
-  push:
-  pull_request:
-  schedule:
-    # Run weekly on Saturday
-    - cron: '37 3 * * SAT'
+    push:
+    pull_request:
+    schedule:
+        # Run weekly on Saturday
+        - cron: "37 3 * * SAT"
 
 jobs:
-  mysql:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      max-parallel: 5
-      matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+    mysql:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            max-parallel: 5
+            matrix:
+                python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
-    services:
-      mariadb:
-        image: mariadb
-        env:
-          MARIADB_ROOT_PASSWORD: debug_toolbar
-        options: >-
-          --health-cmd "mariadb-admin ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-        - 3306:3306
+        services:
+            mariadb:
+                image: mariadb
+                env:
+                    MARIADB_ROOT_PASSWORD: debug_toolbar
+                options: >-
+                    --health-cmd "mariadb-admin ping"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+                ports:
+                    - 3306:3306
 
-    steps:
-    - uses: actions/checkout@v4
+        steps:
+            - uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-        allow-prereleases: true
+            - name: Set up Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ matrix.python-version }}
+                  allow-prereleases: true
 
-    - name: Get pip cache dir
-      id: pip-cache
-      run: |
-        echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+            - name: Get pip cache dir
+              id: pip-cache
+              run: |
+                  echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
 
-    - name: Cache
-      uses: actions/cache@v4
-      with:
-        path: ${{ steps.pip-cache.outputs.dir }}
-        key:
-          ${{ matrix.python-version }}-v1-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/tox.ini') }}
-        restore-keys: |
-          ${{ matrix.python-version }}-v1-
+            - name: Cache
+              uses: actions/cache@v4
+              with:
+                  path: ${{ steps.pip-cache.outputs.dir }}
+                  key: ${{ matrix.python-version }}-v1-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/tox.ini') }}
+                  restore-keys: |
+                      ${{ matrix.python-version }}-v1-
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade tox tox-gh-actions
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  python -m pip install --upgrade tox tox-gh-actions
 
-    - name: Test with tox
-      run: tox
-      env:
-        DB_BACKEND: mysql
-        DB_USER: root
-        DB_PASSWORD: debug_toolbar
-        DB_HOST: 127.0.0.1
-        DB_PORT: 3306
+            - name: Test with tox
+              run: tox
+              env:
+                  DB_BACKEND: mysql
+                  DB_USER: root
+                  DB_PASSWORD: debug_toolbar
+                  DB_HOST: 127.0.0.1
+                  DB_PORT: 3306
 
+    postgres:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            max-parallel: 5
+            matrix:
+                # Skip 3.13 here, it needs the psycopg3 / postgis3 database
+                python-version: ["3.9", "3.10", "3.11", "3.12"]
+                database: [postgresql, postgis]
+                # Add psycopg3 to our matrix for modern python versions
+                include:
+                    - python-version: "3.10"
+                      database: psycopg3
+                    - python-version: "3.11"
+                      database: psycopg3
+                    - python-version: "3.12"
+                      database: psycopg3
+                    - python-version: "3.13"
+                      database: psycopg3
+                    - python-version: "3.13"
+                      database: postgis3
 
-  postgres:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      max-parallel: 5
-      matrix:
-        # Skip 3.13 here, it needs the psycopg3 / postgis3 database
-        python-version: ['3.9', '3.10', '3.11', '3.12']
-        database: [postgresql, postgis]
-        # Add psycopg3 to our matrix for modern python versions
-        include:
-            - python-version: '3.10'
-              database: psycopg3
-            - python-version: '3.11'
-              database: psycopg3
-            - python-version: '3.12'
-              database: psycopg3
-            - python-version: '3.13'
-              database: psycopg3
-            - python-version: '3.13'
-              database: postgis3
+        services:
+            postgres:
+                image: postgis/postgis:14-3.1
+                env:
+                    POSTGRES_DB: debug_toolbar
+                    POSTGRES_USER: debug_toolbar
+                    POSTGRES_PASSWORD: debug_toolbar
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
 
-    services:
-      postgres:
-        image: postgis/postgis:14-3.1
-        env:
-          POSTGRES_DB: debug_toolbar
-          POSTGRES_USER: debug_toolbar
-          POSTGRES_PASSWORD: debug_toolbar
-        ports:
-        - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+        steps:
+            - uses: actions/checkout@v4
 
-    steps:
-    - uses: actions/checkout@v4
+            - name: Set up Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ matrix.python-version }}
+                  allow-prereleases: true
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-        allow-prereleases: true
+            - name: Get pip cache dir
+              id: pip-cache
+              run: |
+                  echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
 
-    - name: Get pip cache dir
-      id: pip-cache
-      run: |
-        echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+            - name: Cache
+              uses: actions/cache@v4
+              with:
+                  path: ${{ steps.pip-cache.outputs.dir }}
+                  key: ${{ matrix.python-version }}-v1-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/tox.ini') }}
+                  restore-keys: |
+                      ${{ matrix.python-version }}-v1-
 
-    - name: Cache
-      uses: actions/cache@v4
-      with:
-        path: ${{ steps.pip-cache.outputs.dir }}
-        key:
-          ${{ matrix.python-version }}-v1-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/tox.ini') }}
-        restore-keys: |
-          ${{ matrix.python-version }}-v1-
+            - name: Install gdal-bin (for postgis)
+              run: |
+                  sudo apt-get -qq update
+                  sudo apt-get -y install gdal-bin
 
-    - name: Install gdal-bin (for postgis)
-      run: |
-        sudo apt-get -qq update
-        sudo apt-get -y install gdal-bin
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  python -m pip install --upgrade tox tox-gh-actions
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade tox tox-gh-actions
+            - name: Test with tox
+              run: tox
+              env:
+                  DB_BACKEND: ${{ matrix.database }}
+                  DB_NAME: debug_toolbar
+                  DB_USER: debug_toolbar
+                  DB_PASSWORD: debug_toolbar
+                  DB_HOST: localhost
+                  DB_PORT: 5432
 
-    - name: Test with tox
-      run: tox
-      env:
-        DB_BACKEND: ${{ matrix.database }}
-        DB_HOST: localhost
-        DB_PORT: 5432
+    sqlite:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            max-parallel: 5
+            matrix:
+                python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
-  sqlite:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      max-parallel: 5
-      matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        steps:
+            - uses: actions/checkout@v4
 
-    steps:
-    - uses: actions/checkout@v4
+            - name: Set up Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ matrix.python-version }}
+                  allow-prereleases: true
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-        allow-prereleases: true
+            - name: Get pip cache dir
+              id: pip-cache
+              run: |
+                  echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
 
-    - name: Get pip cache dir
-      id: pip-cache
-      run: |
-        echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+            - name: Cache
+              uses: actions/cache@v4
+              with:
+                  path: ${{ steps.pip-cache.outputs.dir }}
+                  key: ${{ matrix.python-version }}-v1-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/tox.ini') }}
+                  restore-keys: |
+                      ${{ matrix.python-version }}-v1-
 
-    - name: Cache
-      uses: actions/cache@v4
-      with:
-        path: ${{ steps.pip-cache.outputs.dir }}
-        key:
-          ${{ matrix.python-version }}-v1-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/tox.ini') }}
-        restore-keys: |
-          ${{ matrix.python-version }}-v1-
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  python -m pip install --upgrade tox tox-gh-actions
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade tox tox-gh-actions
+            - name: Test with tox
+              run: tox
+              env:
+                  DB_BACKEND: sqlite3
+                  DB_NAME: ":memory:"
 
-    - name: Test with tox
-      run: tox
-      env:
-        DB_BACKEND: sqlite3
-        DB_NAME: ":memory:"
+    lint:
+        runs-on: ubuntu-latest
 
-  lint:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
+        steps:
+            - uses: actions/checkout@v4
 
-    steps:
-    - uses: actions/checkout@v4
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: 3.9
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: 3.9
+            - name: Get pip cache dir
+              id: pip-cache
+              run: |
+                  echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
 
-    - name: Get pip cache dir
-      id: pip-cache
-      run: |
-        echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+            - name: Cache
+              uses: actions/cache@v4
+              with:
+                  path: ${{ steps.pip-cache.outputs.dir }}
+                  key: 3.9-v1-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/tox.ini') }}
+                  restore-keys: |
+                      3.9-v1-
 
-    - name: Cache
-      uses: actions/cache@v4
-      with:
-        path: ${{ steps.pip-cache.outputs.dir }}
-        key:
-          ${{ matrix.python-version }}-v1-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/tox.ini') }}
-        restore-keys: |
-          ${{ matrix.python-version }}-v1-
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  python -m pip install --upgrade tox
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade tox
-
-    - name: Test with tox
-      run: tox -e docs,packaging
+            - name: Test with tox
+              run: tox -e docs,packaging
