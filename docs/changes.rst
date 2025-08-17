@@ -1,6 +1,12 @@
 Change log
 ==========
 
+Pending
+-------
+
+* Moved the the import statement of ``debug_toolbar.urls`` to within the if
+  statement's scope on the installation documentation.
+
 6.0.0 (2025-07-22)
 ------------------
 
