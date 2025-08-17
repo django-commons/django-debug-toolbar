@@ -413,6 +413,7 @@ class HealthLevel(IntEnum):
     levels from their `health_level` property. The toolbar will aggregate the maximum level
     across all panels to determine the overall toolbar health state.
     """
+
     NONE = 0
     WARNING = 1
     CRITICAL = 2
