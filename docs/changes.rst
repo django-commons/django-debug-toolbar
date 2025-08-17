@@ -4,6 +4,8 @@ Change log
 Pending
 -------
 
+* Added a note about the default password in ``make example``.
+* Removed logging about the toolbar failing to serialize a value into JSON.
 * Moved the the import statement of ``debug_toolbar.urls`` to within the if
   statement's scope on the installation documentation.
 

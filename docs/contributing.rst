@@ -40,6 +40,9 @@ For convenience, there's an alias for the second command::
 
     $ make example
 
+The default password is ``p``, it can be overridden by setting the environment
+variable ``DJANGO_SUPERUSER_PASSWORD``.
+
 Look at ``example/settings.py`` for running the example with another database
 than SQLite.
 
