@@ -29,7 +29,7 @@ class MockLogger:
         pass
 
 
-class TestCursor(NormalCursorMixin):
+class StubCursor(NormalCursorMixin):
     """Test cursor that can be instantiated"""
 
     def __init__(self):
