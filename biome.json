@@ -1,5 +1,5 @@
 {
-    "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
+    "$schema": "https://biomejs.dev/schemas/2.2.3/schema.json",
     "formatter": {
         "enabled": true,
         "useEditorconfig": true
@@ -15,6 +15,9 @@
         "enabled": true,
         "rules": {
             "recommended": true,
+            "complexity": {
+                "noImportantStyles": "off"
+            },
             "correctness": {
                 "noUndeclaredVariables": "error"
             },
