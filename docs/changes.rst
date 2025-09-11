@@ -6,6 +6,9 @@ Pending
 
 * Added a note about the default password in ``make example``.
 * Removed logging about the toolbar failing to serialize a value into JSON.
+* Fixed KeyError when using DatabaseStore with dynamically added panels to
+  DEBUG_TOOLBAR_PANELS. Also fixed history sidebar to only include enabled
+  panels.
 * Moved the the import statement of ``debug_toolbar.urls`` to within the if
   statement's scope on the installation documentation.
 
