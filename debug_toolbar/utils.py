@@ -6,6 +6,7 @@ import os.path
 import sys
 import warnings
 from collections.abc import Sequence
+from enum import IntEnum
 from pprint import PrettyPrinter, pformat
 from typing import Any
 
@@ -401,3 +402,18 @@ def is_processable_html_response(response):
         and content_encoding == ""
         and content_type in _HTML_TYPES
     )
+
+
+class HealthLevel(IntEnum):
+    """
+    Represents the health or alert level for a panel or the toolbar as a whole.
+
+    Used to indicate the severity of issues detected by panels, allowing the UI to reflect
+    warning or critical states (e.g., via colorization). Panels should return one of these
+    levels from their `health_level` property. The toolbar will aggregate the maximum level
+    across all panels to determine the overall toolbar health state.
+    """
+
+    NONE = 0
+    WARNING = 1
+    CRITICAL = 2
