@@ -221,9 +221,8 @@ class StoredDebugToolbar(DebugToolbar):
             if panel_id and panel.panel_id != panel_id:
                 continue
             data = toolbar.store.panel(toolbar.request_id, panel.panel_id)
-            if data:
-                panel.load_stats_from_store(data)
-                toolbar._panels[panel.panel_id] = panel
+            panel.load_stats_from_store(data)
+            toolbar._panels[panel.panel_id] = panel
         return toolbar
 
 

@@ -89,7 +89,7 @@ jobs:
             - python-version: '3.13'
               database: postgis3
             - python-version: '3.13'
-              database: postgresql
+              database: psycopg3
               env:
                 DJANGO_SELENIUM_TESTS=true
 
