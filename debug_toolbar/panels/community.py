@@ -9,10 +9,5 @@ class CommunityPanel(Panel):
     """
 
     is_async = True
-
-    title = _("Community")
     template = "debug_toolbar/panels/community.html"
-
-    def process_request(self, request):
-        self.record_stats({"community": "community"})
-        return super().process_request(request)
+    title = _("Community")
