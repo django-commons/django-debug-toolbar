@@ -1,5 +1,5 @@
-import unittest
 import re
+import unittest
 from unittest.mock import patch
 
 import html5lib
