@@ -1,4 +1,5 @@
 import unittest
+import re
 from unittest.mock import patch
 
 import html5lib
@@ -505,6 +506,29 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
         self.assertEqual(response.status_code, 200)
         # Link to LOCATION header.
         self.assertIn(b'href="/regular/redirect/"', response.content)
+
+    async def test_server_timing_headers(self):
+        response = await self.async_client.get("/execute_sql/")
+        server_timing = response["Server-Timing"]
+        expected_partials = [
+            r'TimerPanel_utime;dur=(\d)*(\.(\d)*)?;desc="User CPU time", ',
+            r'TimerPanel_stime;dur=(\d)*(\.(\d)*)?;desc="System CPU time", ',
+            r'TimerPanel_total;dur=(\d)*(\.(\d)*)?;desc="Total CPU time", ',
+            r'TimerPanel_total_time;dur=(\d)*(\.(\d)*)?;desc="Elapsed time", ',
+            r'SQLPanel_sql_time;dur=(\d)*(\.(\d)*)?;desc="SQL 1 queries", ',
+            r'CachePanel_total_time;dur=0;desc="Cache 0 Calls"',
+        ]
+        for expected in expected_partials:
+            self.assertTrue(re.compile(expected).search(server_timing))
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"RENDER_PANELS": True})
+    async def test_timer_panel(self):
+        response = await self.async_client.get("/regular/basic/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            '<script type="module" src="/static/debug_toolbar/js/timer.js" async>',
+        )
 
     async def test_auth_login_view_without_redirect(self):
         response = await self.async_client.get("/login_without_redirect/")
