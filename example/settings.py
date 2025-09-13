@@ -118,4 +118,7 @@ if ENABLE_DEBUG_TOOLBAR:
         "debug_toolbar.middleware.DebugToolbarMiddleware",
     ]
     # Customize the config to support turbo and htmx boosting.
-    DEBUG_TOOLBAR_CONFIG = {"ROOT_TAG_EXTRA_ATTRS": "data-turbo-permanent hx-preserve"}
+    DEBUG_TOOLBAR_CONFIG = {
+        "ROOT_TAG_EXTRA_ATTRS": "data-turbo-permanent hx-preserve",
+        "EDITOR_URL_CALLBACK": lambda f: f"vscode://file/{f}",
+    }
