@@ -67,6 +67,14 @@ Toolbar options
   This setting is a set of the full Python paths to each panel that you
   want disabled (but still displayed) by default.
 
+* ``EDITOR_URL_CALLBACK``
+
+  Default: ``lambda f: None``
+
+  This function is passed a file path and should return a URL to open the file in
+  the editor. For example, to open the file in VS Code, you can use:
+  ``lambda f: f"vscode://file/{f}"``
+
 * ``INSERT_BEFORE``
 
   Default: ``'</body>'``

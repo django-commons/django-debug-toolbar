@@ -195,6 +195,9 @@ class TemplatesPanel(Panel):
             if hasattr(template, "origin") and template.origin and template.origin.name:
                 template.origin_name = template.origin.name
                 template.origin_hash = signing.dumps(template.origin.name)
+                template.editor_url = self.toolbar.config["EDITOR_URL_CALLBACK"](
+                    template.origin.name
+                )
             else:
                 template.origin_name = _("No origin")
                 template.origin_hash = ""
@@ -202,6 +205,7 @@ class TemplatesPanel(Panel):
                 "name": template.name,
                 "origin_name": template.origin_name,
                 "origin_hash": template.origin_hash,
+                "editor_url": getattr(template, "editor_url", None),
             }
             # Clean up context for better readability
             if self.toolbar.config["SHOW_TEMPLATE_CONTEXT"]:
