@@ -16,6 +16,7 @@ from debug_toolbar.panels import Panel
 from debug_toolbar.panels.sql.tracking import SQLQueryTriggered, allow_sql
 from debug_toolbar.panels.templates import views
 from debug_toolbar.sanitize import force_str
+from debug_toolbar.utils import get_editor_url
 
 if find_spec("jinja2"):
     from debug_toolbar.panels.templates.jinja2 import patch_jinja_render
@@ -195,6 +196,7 @@ class TemplatesPanel(Panel):
             if hasattr(template, "origin") and template.origin and template.origin.name:
                 template.origin_name = template.origin.name
                 template.origin_hash = signing.dumps(template.origin.name)
+                template.editor_url = get_editor_url(template.origin.name)
             else:
                 template.origin_name = _("No origin")
                 template.origin_hash = ""
@@ -202,6 +204,7 @@ class TemplatesPanel(Panel):
                 "name": template.name,
                 "origin_name": template.origin_name,
                 "origin_hash": template.origin_hash,
+                "editor_url": getattr(template, "editor_url", None),
             }
             # Clean up context for better readability
             if self.toolbar.config["SHOW_TEMPLATE_CONTEXT"]:

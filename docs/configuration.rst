@@ -67,6 +67,16 @@ Toolbar options
   This setting is a set of the full Python paths to each panel that you
   want disabled (but still displayed) by default.
 
+* ``EDITOR``
+
+  Default: ``'vscode'``
+
+  The editor to use to open file paths from the toolbar.
+
+  Available editors: ``'vscode'``, ``'cursor'``, ``'emacs'``, ``'idea'``,
+  ``'pycharm'``, ``'sublime'``, ``'vscode-insiders'``, ``'vscode-remote'``,
+  ``'vscodium'``, ``'windsurf'``
+
 * ``INSERT_BEFORE``
 
   Default: ``'</body>'``
