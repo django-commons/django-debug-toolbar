@@ -401,3 +401,28 @@ def is_processable_html_response(response):
         and content_encoding == ""
         and content_type in _HTML_TYPES
     )
+
+
+def get_editor_url(file: str, line: int = 1) -> str | None:
+    formats = {
+        "cursor": "cursor://file/{file}:{line}",
+        "emacs": "emacs://open?url=file://{file}&line={line}",
+        "espresso": "x-espresso://open?filepath={file}&lines={line}",
+        "idea": "idea://open?file={file}&line={line}",
+        "idea-remote": "javascript:(()=>{let r=new XMLHttpRequest; r.open('get','http://localhost:63342/api/file/?file={file}&line={line}');r.send();})()",
+        "macvim": "mvim://open/?url=file://{file}&line={line}",
+        "nova": "nova://open?path={file}&line={line}",
+        "pycharm": "pycharm://open?file={file}&line={line}",
+        "pycharm-remote": "javascript:(()=>{let r=new XMLHttpRequest; r.open('get','http://localhost:63342/api/file/{file}:{line}');r.send();})()",
+        "sublime": "subl://open?url=file://{file}&line={line}",
+        "vscode": "vscode://file/{file}:{line}",
+        "vscode-insiders": "vscode-insiders://file/{file}:{line}",
+        "vscode-remote": "vscode://vscode-remote/{file}:{line}",
+        "vscode-insiders-remote": "vscode-insiders://vscode-remote/{file}:{line}",
+        "vscodium": "vscodium://file/{file}:{line}",
+        "windsurf": "windsurf://file/{file}:{line}",
+    }
+    template = formats.get(dt_settings.get_config()["EDITOR"])
+    if template is None:
+        return None
+    return template.format(file=file, line=line)
