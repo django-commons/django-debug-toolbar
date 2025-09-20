@@ -34,6 +34,13 @@
     --djdt-button-border-color: var(--djdt-table-border-color);
     --djdt-pre-border-color: var(--djdt-table-border-color);
     --djdt-raw-border-color: var(--djdt-table-border-color);
+
+    --djdt-health-background-color-1: #4b3f1b;
+    --djdt-health-color-1: #ffe761;
+    --djdt-health-border-color-1: #ffcc00;
+    --djdt-health-background-color-2: #5a2327;
+    --djdt-health-color-2: #ffb3b3;
+    --djdt-health-border-color-2: #ff0000;
 }
 
 #djDebug[data-theme="dark"] {
@@ -56,6 +63,13 @@
     --djdt-button-border-color: var(--djdt-table-border-color);
     --djdt-pre-border-color: var(--djdt-table-border-color);
     --djdt-raw-border-color: var(--djdt-table-border-color);
+
+    --djdt-health-background-color-1: #4b3f1b;
+    --djdt-health-color-1: #ffe761;
+    --djdt-health-border-color-1: #ffcc00;
+    --djdt-health-background-color-2: #5a2327;
+    --djdt-health-color-2: #ffb3b3;
+    --djdt-health-border-color-2: #ff0000;
 }
 
 /* Debug Toolbar CSS Reset, adapted from Eric Meyer's CSS Reset */
@@ -375,6 +389,29 @@
     width: 38px;
     height: 38px;
     animation: spin 2s linear infinite;
+}
+
+/* Panel and Toolbar hidden button health states */
+#djDebug .djdt-health-1 {
+    /* The background can be shadowed by #djDebugToolbar li.djdt-active a:hover */
+    background: var(--djdt-health-background-color-1) !important;
+    color: var(--djdt-health-color-1);
+}
+
+#djDebug .djdt-health-2 {
+    /* The background can be shadowed by #djDebugToolbar li.djdt-active a:hover */
+    background: var(--djdt-health-background-color-2) !important;
+    color: var(--djdt-health-color-2);
+}
+
+#djDebug .djdt-toolbarhandle-health-1 {
+    /* The border-color is shadowed by the default #djShowToolBarButton border */
+    border-color: var(--djdt-health-border-color-1) !important;
+}
+
+#djDebug .djdt-toolbarhandle-health-2 {
+    /* The border-color is shadowed by the default #djShowToolBarButton border */
+    border-color: var(--djdt-health-border-color-2) !important;
 }
 
 @keyframes spin {
