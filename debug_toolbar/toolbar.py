@@ -82,7 +82,7 @@ class DebugToolbar:
         if not self.panels:
             return HealthLevel.NONE
 
-        return max(panel.health_level for panel in self.panels)
+        return max(panel.health_level for panel in self.enabled_panels)
 
     def get_panel_by_id(self, panel_id):
         """
