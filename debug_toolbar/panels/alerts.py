@@ -97,7 +97,7 @@ class AlertsPanel(Panel):
         """
         Return the health level of the panel based on the alerts.
         """
-        if not self.alerts:
+        if not self.get_stats().get("alerts"):
             return HealthLevel.NONE
 
         return HealthLevel.CRITICAL
