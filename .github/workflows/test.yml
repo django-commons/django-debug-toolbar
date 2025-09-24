@@ -78,6 +78,14 @@ jobs:
         exclude:
             - python-version: '3.9'
               database: psycopg3
+            - python-version: '3.13'
+              database: postgis
+            - python-version: '3.13'
+              database: postgresql
+            - python-version: '3.14'
+              database: postgis
+            - python-version: '3.14'
+              database: postgresql
         # Add postgis3 to our matrix for modern Python versions
         include:
             - python-version: '3.13'
