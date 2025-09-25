@@ -6,6 +6,7 @@ from unittest.mock import call, patch
 
 import django
 from asgiref.sync import sync_to_async
+from django.apps import apps
 from django.contrib.auth.models import User
 from django.db import connection, transaction
 from django.db.backends.utils import CursorDebugWrapper, CursorWrapper
@@ -15,7 +16,9 @@ from django.shortcuts import render
 from django.test.utils import override_settings
 
 import debug_toolbar.panels.sql.tracking as sql_tracking
-from debug_toolbar.panels.sql import SQLPanel
+from debug_toolbar import settings as dt_settings
+from debug_toolbar.models import HistoryEntry
+from debug_toolbar.panels.sql import SQLPanel, tracking
 
 try:
     import psycopg
@@ -33,6 +36,18 @@ def sql_call(*, use_iterator=False):
     return list(qs)
 
 
+def sql_call_toolbar_model():
+    """Query one of the toolbar's models to test tracking of SQL queries."""
+    qs = HistoryEntry.objects.all()
+    return list(qs)
+
+
+async def async_sql_call_toolbar_model():
+    """(async) Query one of the toolbar's models to test tracking of SQL queries."""
+    qs = HistoryEntry.objects.all()
+    return await sync_to_async(list)(qs)
+
+
 async def async_sql_call(*, use_iterator=False):
     qs = User.objects.all()
     if use_iterator:
@@ -45,6 +60,21 @@ async def concurrent_async_sql_call(*, use_iterator=False):
     if use_iterator:
         qs = qs.iterator()
     return await asyncio.gather(sync_to_async(list)(qs), User.objects.acount())
+
+
+def patch_tracking_ddt_models():
+    """
+    Set the tracking.DDT_MODELS constant to the toolbar's models.
+    This only gets configured when the store is set to the DatabaseStore.
+    """
+    if (
+        dt_settings.get_config()["TOOLBAR_STORE_CLASS"]
+        == "debug_toolbar.store.DatabaseStore"
+    ):
+        apps.get_app_config("debug_toolbar").import_models()
+        tracking.DDT_MODELS = {
+            m._meta.db_table for m in apps.get_app_config("debug_toolbar").get_models()
+        }
 
 
 class SQLPanelTestCase(BaseTestCase):
@@ -103,6 +133,84 @@ class SQLPanelTestCase(BaseTestCase):
 
         # ensure the stacktrace is populated
         self.assertTrue(len(query["stacktrace"]) > 0)
+
+    @override_settings(
+        DEBUG_TOOLBAR_CONFIG={
+            "SKIP_TOOLBAR_QUERIES": False,
+            "TOOLBAR_STORE_CLASS": "debug_toolbar.store.DatabaseStore",
+        }
+    )
+    def test_toolbar_model_query_is_tracked(self):
+        """
+        Test is toolbar models are tracked when the `SKIP_TOOLBAR_QUERIES`
+        is set to False.
+        """
+        self.assertEqual(len(self.panel._queries), 0)
+
+        patch_tracking_ddt_models()
+        sql_call_toolbar_model()
+
+        # ensure query was logged
+        self.assertEqual(len(self.panel._queries), 1)
+        query = self.panel._queries[0]
+        self.assertTrue(HistoryEntry._meta.db_table in query["sql"])
+
+    @override_settings(
+        DEBUG_TOOLBAR_CONFIG={
+            "SKIP_TOOLBAR_QUERIES": False,
+            "TOOLBAR_STORE_CLASS": "debug_toolbar.store.DatabaseStore",
+        }
+    )
+    async def test_toolbar_model_query_is_tracked_async(self):
+        """
+        (async) Test is toolbar models are tracked when the `SKIP_TOOLBAR_QUERIES`
+        is set to False.
+        """
+        self.assertEqual(len(self.panel._queries), 0)
+
+        patch_tracking_ddt_models()
+        await async_sql_call_toolbar_model()
+
+        # ensure query was logged
+        self.assertEqual(len(self.panel._queries), 1)
+        query = self.panel._queries[0]
+        self.assertTrue(HistoryEntry._meta.db_table in query["sql"])
+
+    @override_settings(
+        DEBUG_TOOLBAR_CONFIG={
+            "SKIP_TOOLBAR_QUERIES": True,
+            "TOOLBAR_STORE_CLASS": "debug_toolbar.store.DatabaseStore",
+        }
+    )
+    def test_toolbar_model_query_is_not_tracked(self):
+        """
+        Test is toolbar models are not tracked when the `SKIP_TOOLBAR_QUERIES`
+        is set to True.
+        """
+        self.assertEqual(len(self.panel._queries), 0)
+
+        patch_tracking_ddt_models()
+        sql_call_toolbar_model()
+
+        self.assertEqual(len(self.panel._queries), 0)
+
+    @override_settings(
+        DEBUG_TOOLBAR_CONFIG={
+            "SKIP_TOOLBAR_QUERIES": True,
+            "TOOLBAR_STORE_CLASS": "debug_toolbar.store.DatabaseStore",
+        }
+    )
+    async def test_toolbar_model_query_is_not_tracked_async(self):
+        """
+        (async) Test is toolbar models are not tracked when the `SKIP_TOOLBAR_QUERIES`
+        is set to True.
+        """
+        self.assertEqual(len(self.panel._queries), 0)
+
+        patch_tracking_ddt_models()
+        await async_sql_call_toolbar_model()
+
+        self.assertEqual(len(self.panel._queries), 0)
 
     @unittest.skipUnless(
         connection.vendor == "postgresql", "Test valid only on PostgreSQL"

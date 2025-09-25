@@ -5,7 +5,9 @@ import json
 from time import perf_counter
 
 import django.test.testcases
+from django.apps import apps
 
+from debug_toolbar import settings as dt_settings
 from debug_toolbar.sanitize import force_str
 from debug_toolbar.utils import get_stack_trace, get_template_info
 
@@ -26,6 +28,11 @@ except ImportError:
 # by the TemplatePanel to prevent the toolbar from issuing
 # additional queries.
 allow_sql = contextvars.ContextVar("debug-toolbar-allow-sql", default=True)
+
+
+DDT_MODELS = {
+    m._meta.db_table for m in apps.get_app_config("debug_toolbar").get_models()
+}
 
 
 class SQLQueryTriggered(Exception):
@@ -221,8 +228,13 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
                     }
                 )
 
-            # We keep `sql` to maintain backwards compatibility
-            self.logger.record(**kwargs)
+            # Skip tracking for toolbar models by default.
+            # This can be overridden by setting SKIP_TOOLBAR_QUERIES = False
+            if not dt_settings.get_config()["SKIP_TOOLBAR_QUERIES"] or not any(
+                table in sql for table in DDT_MODELS
+            ):
+                # We keep `sql` to maintain backwards compatibility
+                self.logger.record(**kwargs)
 
     def callproc(self, procname, params=None):
         return self._record(super().callproc, procname, params)
