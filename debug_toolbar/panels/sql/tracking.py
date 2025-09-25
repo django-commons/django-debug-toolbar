@@ -237,13 +237,11 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
                 )
 
             # Skip recording if query includes DDT models.
-            if not allow_ddt_models_tracking.get() and any(
+            if allow_ddt_models_tracking.get() or not any(
                 table in sql for table in DDT_MODELS
             ):
-                return
-
-            # We keep `sql` to maintain backwards compatibility
-            self.logger.record(**kwargs)
+                # We keep `sql` to maintain backwards compatibility
+                self.logger.record(**kwargs)
 
     def callproc(self, procname, params=None):
         return self._record(super().callproc, procname, params)
