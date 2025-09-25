@@ -8,6 +8,7 @@ import django.test.testcases
 from django.utils.encoding import force_str
 
 from debug_toolbar.utils import get_stack_trace, get_template_info
+from django.apps import apps
 
 try:
     import psycopg
@@ -26,6 +27,17 @@ except ImportError:
 # by the TemplatePanel to prevent the toolbar from issuing
 # additional queries.
 allow_sql = contextvars.ContextVar("debug-toolbar-allow-sql", default=True)
+
+# Prevents tracking of DDT models
+allow_ddt_models_tracking = contextvars.ContextVar(
+    "debug-toolbar-allow-ddt-models", default=False
+)
+
+DDT_MODELS = {
+    m._meta.db_table
+    for m in apps.get_app_config("debug_toolbar").get_models()
+    if m._meta.app_label == "debug_toolbar"
+}
 
 
 class SQLQueryTriggered(Exception):
@@ -223,6 +235,12 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
                         "iso_level": iso_level,
                     }
                 )
+
+            # Skip recording if query includes DDT models.
+            if not allow_ddt_models_tracking.get() and any(
+                table in sql for table in DDT_MODELS
+            ):
+                return
 
             # We keep `sql` to maintain backwards compatibility
             self.logger.record(**kwargs)
