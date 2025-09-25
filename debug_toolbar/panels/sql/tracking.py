@@ -5,10 +5,10 @@ import json
 from time import perf_counter
 
 import django.test.testcases
+from django.apps import apps
 from django.utils.encoding import force_str
 
 from debug_toolbar.utils import get_stack_trace, get_template_info
-from django.apps import apps
 
 try:
     import psycopg

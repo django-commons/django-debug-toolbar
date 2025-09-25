@@ -15,8 +15,8 @@ from django.shortcuts import render
 from django.test.utils import override_settings
 
 import debug_toolbar.panels.sql.tracking as sql_tracking
-from debug_toolbar.panels.sql import SQLPanel
 from debug_toolbar.models import HistoryEntry
+from debug_toolbar.panels.sql import SQLPanel
 
 try:
     import psycopg
