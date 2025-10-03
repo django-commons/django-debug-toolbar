@@ -29,17 +29,6 @@ except ImportError:
 # additional queries.
 allow_sql = contextvars.ContextVar("debug-toolbar-allow-sql", default=True)
 
-# Prevents tracking of DDT models
-allow_ddt_models_tracking = contextvars.ContextVar(
-    "debug-toolbar-allow-ddt-models", default=False
-)
-
-DDT_MODELS = {
-    m._meta.db_table
-    for m in apps.get_app_config("debug_toolbar").get_models()
-    if m._meta.app_label == "debug_toolbar"
-}
-
 
 DDT_MODELS = {
     m._meta.db_table for m in apps.get_app_config("debug_toolbar").get_models()
