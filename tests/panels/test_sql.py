@@ -34,17 +34,14 @@ def sql_call(*, use_iterator=False):
     return list(qs)
 
 
-def sql_call_ddt(*, use_iterator=False):
+def sql_call_ddt():
+    """Test query to fetch DDT related entries from one of the DDT models"""
     qs = HistoryEntry.objects.all()
-    if use_iterator:
-        qs = qs.iterator()
     return list(qs)
 
 
-async def async_sql_call_ddt(*, use_iterator=False):
+async def async_sql_call_ddt():
     qs = HistoryEntry.objects.all()
-    if use_iterator:
-        qs = qs.iterator()
     return await sync_to_async(list)(qs)
 
 
@@ -120,7 +117,7 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertTrue(len(query["stacktrace"]) > 0)
 
     @override_settings(DEBUG_TOOLBAR_CONFIG={"TRACK_DDT_MODELS": True})
-    def test_ddt_models_tracking(self):
+    def test_ddt_models_tracked(self):
         self.assertEqual(len(self.panel._queries), 0)
 
         sql_call_ddt()
@@ -128,16 +125,10 @@ class SQLPanelTestCase(BaseTestCase):
         # ensure query was logged
         self.assertEqual(len(self.panel._queries), 1)
         query = self.panel._queries[0]
-        self.assertEqual(query["alias"], "default")
-        self.assertTrue("sql" in query)
-        self.assertTrue("duration" in query)
-        self.assertTrue("stacktrace" in query)
-
-        # ensure the stacktrace is populated
-        self.assertTrue(len(query["stacktrace"]) > 0)
+        self.assertTrue(HistoryEntry._meta.db_table in query["sql"])
 
     @override_settings(DEBUG_TOOLBAR_CONFIG={"TRACK_DDT_MODELS": True})
-    async def test_ddt_models_tracking_async(self):
+    async def test_ddt_models_tracked_async(self):
         self.assertEqual(len(self.panel._queries), 0)
 
         await async_sql_call_ddt()
@@ -145,22 +136,16 @@ class SQLPanelTestCase(BaseTestCase):
         # ensure query was logged
         self.assertEqual(len(self.panel._queries), 1)
         query = self.panel._queries[0]
-        self.assertEqual(query["alias"], "default")
-        self.assertTrue("sql" in query)
-        self.assertTrue("duration" in query)
-        self.assertTrue("stacktrace" in query)
+        self.assertTrue(HistoryEntry._meta.db_table in query["sql"])
 
-        # ensure the stacktrace is populated
-        self.assertTrue(len(query["stacktrace"]) > 0)
-
-    def test_ddt_models_untracking(self):
+    def test_ddt_models_not_tracked(self):
         self.assertEqual(len(self.panel._queries), 0)
 
         sql_call_ddt()
 
         self.assertEqual(len(self.panel._queries), 0)
 
-    async def test_ddt_models_untracking_async(self):
+    async def test_ddt_models_not_tracked_async(self):
         self.assertEqual(len(self.panel._queries), 0)
 
         await async_sql_call_ddt()
