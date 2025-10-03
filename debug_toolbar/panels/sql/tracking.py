@@ -8,6 +8,7 @@ import django.test.testcases
 from django.apps import apps
 from django.utils.encoding import force_str
 
+from debug_toolbar import settings as dt_settings
 from debug_toolbar.utils import get_stack_trace, get_template_info
 
 try:
@@ -37,6 +38,11 @@ DDT_MODELS = {
     m._meta.db_table
     for m in apps.get_app_config("debug_toolbar").get_models()
     if m._meta.app_label == "debug_toolbar"
+}
+
+
+DDT_MODELS = {
+    m._meta.db_table for m in apps.get_app_config("debug_toolbar").get_models()
 }
 
 
@@ -236,8 +242,9 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
                     }
                 )
 
-            # Skip recording if query includes DDT models.
-            if allow_ddt_models_tracking.get() or not any(
+            # Skip tracking for DDT models by default.
+            # This can be overridden by setting TRACK_DDT_MODELS = True
+            if dt_settings.get_config()["TRACK_DDT_MODELS"] or not any(
                 table in sql for table in DDT_MODELS
             ):
                 # We keep `sql` to maintain backwards compatibility

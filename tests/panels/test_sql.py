@@ -119,11 +119,9 @@ class SQLPanelTestCase(BaseTestCase):
         # ensure the stacktrace is populated
         self.assertTrue(len(query["stacktrace"]) > 0)
 
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"TRACK_DDT_MODELS": True})
     def test_ddt_models_tracking(self):
         self.assertEqual(len(self.panel._queries), 0)
-
-        # enable ddt tracking
-        sql_tracking.allow_ddt_models_tracking.set(True)
 
         sql_call_ddt()
 
@@ -136,13 +134,11 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertTrue("stacktrace" in query)
 
         # ensure the stacktrace is populated
-        self.assertTrue(len(self.panel._queries), 0)
+        self.assertTrue(len(query["stacktrace"]) > 0)
 
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"TRACK_DDT_MODELS": True})
     async def test_ddt_models_tracking_async(self):
         self.assertEqual(len(self.panel._queries), 0)
-
-        # enable ddt tracking
-        sql_tracking.allow_ddt_models_tracking.set(True)
 
         await async_sql_call_ddt()
 
@@ -155,13 +151,10 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertTrue("stacktrace" in query)
 
         # ensure the stacktrace is populated
-        self.assertTrue(len(self.panel._queries), 0)
+        self.assertTrue(len(query["stacktrace"]) > 0)
 
     def test_ddt_models_untracking(self):
         self.assertEqual(len(self.panel._queries), 0)
-
-        # disable ddt tracking
-        sql_tracking.allow_ddt_models_tracking.set(False)
 
         sql_call_ddt()
 
@@ -169,9 +162,6 @@ class SQLPanelTestCase(BaseTestCase):
 
     async def test_ddt_models_untracking_async(self):
         self.assertEqual(len(self.panel._queries), 0)
-
-        # enable ddt tracking
-        sql_tracking.allow_ddt_models_tracking.set(False)
 
         await async_sql_call_ddt()
 
