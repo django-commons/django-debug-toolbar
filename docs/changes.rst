@@ -18,6 +18,8 @@ Pending
   documentation.
 * Fixed force_str to catch error and give out degault string if value is not
   serializable
+* Fixed force_str to catch error and give out default string if value is not
+  serializable.
 
 6.0.0 (2025-07-22)
 ------------------
