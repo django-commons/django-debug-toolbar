@@ -35,12 +35,13 @@ def sql_call(*, use_iterator=False):
 
 
 def sql_call_ddt():
-    """Test query to fetch DDT related entries from one of the DDT models"""
+    """Helper function to query one of the DDT models to test tracking of DDT entries."""
     qs = HistoryEntry.objects.all()
     return list(qs)
 
 
 async def async_sql_call_ddt():
+    """(async) Helper function to query one of the DDT models to test tracking of DDT entries."""
     qs = HistoryEntry.objects.all()
     return await sync_to_async(list)(qs)
 
@@ -118,6 +119,7 @@ class SQLPanelTestCase(BaseTestCase):
 
     @override_settings(DEBUG_TOOLBAR_CONFIG={"TRACK_DDT_MODELS": True})
     def test_ddt_models_tracked(self):
+        """test if DDT models are being tracked when the `TRACK_DDT_MODELS` is set to True"""
         self.assertEqual(len(self.panel._queries), 0)
 
         sql_call_ddt()
@@ -129,6 +131,7 @@ class SQLPanelTestCase(BaseTestCase):
 
     @override_settings(DEBUG_TOOLBAR_CONFIG={"TRACK_DDT_MODELS": True})
     async def test_ddt_models_tracked_async(self):
+        """(async) test if DDT models are being tracked when the `TRACK_DDT_MODELS` is set to True"""
         self.assertEqual(len(self.panel._queries), 0)
 
         await async_sql_call_ddt()
@@ -139,6 +142,7 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertTrue(HistoryEntry._meta.db_table in query["sql"])
 
     def test_ddt_models_not_tracked(self):
+        """Tests whether DDt models are not being tracked when the `TRACK_DDT_MODELS` is set to False"""
         self.assertEqual(len(self.panel._queries), 0)
 
         sql_call_ddt()
@@ -146,6 +150,7 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertEqual(len(self.panel._queries), 0)
 
     async def test_ddt_models_not_tracked_async(self):
+        """(async) Tests whether DDt models are not being tracked when the `TRACK_DDT_MODELS` is set to False"""
         self.assertEqual(len(self.panel._queries), 0)
 
         await async_sql_call_ddt()
