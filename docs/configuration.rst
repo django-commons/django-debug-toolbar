@@ -73,9 +73,23 @@ Toolbar options
 
   The editor to use to open file paths from the toolbar.
 
-  Available editors: ``'vscode'``, ``'cursor'``, ``'emacs'``, ``'idea'``,
-  ``'pycharm'``, ``'sublime'``, ``'vscode-insiders'``, ``'vscode-remote'``,
-  ``'vscodium'``, ``'windsurf'``
+  Available editors:
+
+    * ``'cursor'``
+    * ``'emacs'``
+    * ``'idea'``
+    * ``'idea-remote'``
+    * ``'macvim'``
+    * ``'nova'``
+    * ``'pycharm'``
+    * ``'pycharm-remote'``
+    * ``'sublime'``
+    * ``'vscode'``
+    * ``'vscode-insiders'``
+    * ``'vscode-remote'``
+    * ``'vscode-insiders-remote'``
+    * ``'vscodium'``
+    * ``'windsurf'``
 
 * ``INSERT_BEFORE``
 
