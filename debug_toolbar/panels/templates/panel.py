@@ -7,6 +7,7 @@ from django import http
 from django.core import signing
 from django.db.models.query import QuerySet, RawQuerySet
 from django.template import RequestContext, Template
+from django.template.base import UNKNOWN_SOURCE
 from django.test.signals import template_rendered
 from django.test.utils import instrumented_test_render
 from django.urls import path
@@ -244,6 +245,6 @@ class TemplatesPanel(Panel):
         stats = super().get_stats()
         for template in stats.get("templates", []):
             origin_name = template["template"]["origin_name"]
-            if origin_name:
+            if origin_name and origin_name != UNKNOWN_SOURCE:
                 template["template"]["editor_url"] = get_editor_url(origin_name)
         return stats
