@@ -196,15 +196,13 @@ class TemplatesPanel(Panel):
             if hasattr(template, "origin") and template.origin and template.origin.name:
                 template.origin_name = template.origin.name
                 template.origin_hash = signing.dumps(template.origin.name)
-                template.editor_url = get_editor_url(template.origin.name)
             else:
-                template.origin_name = _("No origin")
+                template.origin_name = None
                 template.origin_hash = ""
             info["template"] = {
                 "name": template.name,
                 "origin_name": template.origin_name,
                 "origin_hash": template.origin_hash,
-                "editor_url": getattr(template, "editor_url", None),
             }
             # Clean up context for better readability
             if self.toolbar.config["SHOW_TEMPLATE_CONTEXT"]:
@@ -241,3 +239,11 @@ class TemplatesPanel(Panel):
                 "context_processors": context_processors,
             }
         )
+
+    def get_stats(self):
+        stats = super().get_stats()
+        for template in stats.get("templates", []):
+            origin_name = template["template"]["origin_name"]
+            if origin_name:
+                template["template"]["editor_url"] = get_editor_url(origin_name)
+        return stats

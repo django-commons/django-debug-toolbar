@@ -19,8 +19,10 @@
         <samp>
         {% if template.template.editor_url %}
           <a href="{{ template.template.editor_url }}" title="{% translate "Open in editor" %}">{{ template.template.origin_name|addslashes }}</a>
-        {% else %}
+        {% elif template.template.origin_name %}
           {{ template.template.origin_name|addslashes }}
+        {% else %}
+          {% translate "No origin" %}
         {% endif %}
         </samp>
       </dd>
