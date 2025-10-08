@@ -1,3 +1,4 @@
+from async_.views import async_chat_index
 from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
@@ -20,6 +21,7 @@ urlpatterns = [
     ),
     path("jinja/", jinja2_view, name="jinja"),
     path("async/", async_home, name="async_home"),
+    path("async/chat/", async_chat_index, name="async_chat"),
     path("async/db/", async_db, name="async_db"),
     path("async/db-concurrent/", async_db_concurrent, name="async_db_concurrent"),
     path("jquery/", TemplateView.as_view(template_name="jquery/index.html")),
