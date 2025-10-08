@@ -83,6 +83,8 @@ Pending
   conflicts
 * Added CSS for resetting the height of elements too to avoid problems with
   global CSS of a website where the toolbar is used.
+* Show the cache backend alias instead of the cache instance for each call in
+  the cache panel.
 
 5.1.0 (2025-03-20)
 ------------------

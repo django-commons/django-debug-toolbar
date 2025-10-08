@@ -30,7 +30,7 @@ WRAPPED_CACHE_METHODS = [
 ]
 
 
-def _monkey_patch_method(cache, name):
+def _monkey_patch_method(cache, name, alias):
     original_method = getattr(cache, name)
 
     @functools.wraps(original_method)
@@ -39,15 +39,15 @@ def _monkey_patch_method(cache, name):
         if panel is None:
             return original_method(*args, **kwargs)
         else:
-            return panel._record_call(cache, name, original_method, args, kwargs)
+            return panel._record_call(cache, alias, name, original_method, args, kwargs)
 
     setattr(cache, name, wrapper)
 
 
-def _monkey_patch_cache(cache):
+def _monkey_patch_cache(cache, alias):
     if not hasattr(cache, "_djdt_patched"):
         for name in WRAPPED_CACHE_METHODS:
-            _monkey_patch_method(cache, name)
+            _monkey_patch_method(cache, name, alias)
         cache._djdt_patched = True
 
 
@@ -95,7 +95,7 @@ class CachePanel(Panel):
                 cache = original_method(self, alias)
                 panel = cls.current_instance()
                 if panel is not None:
-                    _monkey_patch_cache(cache)
+                    _monkey_patch_cache(cache, alias)
                     cache._djdt_panel = panel
                 return cache
 
@@ -138,7 +138,7 @@ class CachePanel(Panel):
             }
         )
 
-    def _record_call(self, cache, name, original_method, args, kwargs):
+    def _record_call(self, cache, alias, name, original_method, args, kwargs):
         # Some cache backends implement certain cache methods in terms of other cache
         # methods (e.g. get_or_set() in terms of get() and add()).  In order to only
         # record the calls made directly by the user code, set the cache's _djdt_panel
@@ -161,7 +161,7 @@ class CachePanel(Panel):
             kwargs=kwargs,
             trace=get_stack_trace(skip=2),
             template_info=get_template_info(),
-            backend=cache,
+            backend=alias,
         )
         return value
 
@@ -194,9 +194,10 @@ class CachePanel(Panel):
         # requests.  The monkey patch of CacheHander.create_connection() installed in
         # the .ready() method will ensure that any new cache connections that get opened
         # during this request will also be monkey patched.
-        for cache in caches.all(initialized_only=True):
-            _monkey_patch_cache(cache)
-            cache._djdt_panel = self
+        for alias in caches:
+            if hasattr(caches._connections, alias):
+                _monkey_patch_cache(caches[alias], alias)
+                caches[alias]._djdt_panel = self
         # Mark this panel instance as the current one for the active thread/async task
         # context.  This will be used by the CacheHander.create_connection() monkey
         # patch.

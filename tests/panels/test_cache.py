@@ -154,3 +154,7 @@ class CachePanelTestCase(BaseTestCase):
         }
 
         self.assertEqual(self.panel.get_server_timing_stats(), expected_data)
+
+    def test_backend_alias_is_recorded(self):
+        cache.cache.get("foo")
+        self.assertEqual(self.panel.calls[0]["backend"], "default")
