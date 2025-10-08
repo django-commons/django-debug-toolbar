@@ -28,6 +28,7 @@ CONFIG_DEFAULTS = {
     "ROOT_TAG_EXTRA_ATTRS": "",
     "SHOW_COLLAPSED": False,
     "SHOW_TOOLBAR_CALLBACK": "debug_toolbar.middleware.show_toolbar",
+    "TRACK_DDT_MODELS": False,
     # Panel options
     "EXTRA_SIGNALS": [],
     "ENABLE_STACKTRACES": True,

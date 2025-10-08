@@ -15,6 +15,7 @@ from django.shortcuts import render
 from django.test.utils import override_settings
 
 import debug_toolbar.panels.sql.tracking as sql_tracking
+from debug_toolbar.models import HistoryEntry
 from debug_toolbar.panels.sql import SQLPanel
 
 try:
@@ -31,6 +32,18 @@ def sql_call(*, use_iterator=False):
     if use_iterator:
         qs = qs.iterator()
     return list(qs)
+
+
+def sql_call_ddt():
+    """Helper function to query one of the DDT models to test tracking of DDT entries."""
+    qs = HistoryEntry.objects.all()
+    return list(qs)
+
+
+async def async_sql_call_ddt():
+    """(async) Helper function to query one of the DDT models to test tracking of DDT entries."""
+    qs = HistoryEntry.objects.all()
+    return await sync_to_async(list)(qs)
 
 
 async def async_sql_call(*, use_iterator=False):
@@ -103,6 +116,46 @@ class SQLPanelTestCase(BaseTestCase):
 
         # ensure the stacktrace is populated
         self.assertTrue(len(query["stacktrace"]) > 0)
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"TRACK_DDT_MODELS": True})
+    def test_ddt_models_tracked(self):
+        """test if DDT models are being tracked when the `TRACK_DDT_MODELS` is set to True"""
+        self.assertEqual(len(self.panel._queries), 0)
+
+        sql_call_ddt()
+
+        # ensure query was logged
+        self.assertEqual(len(self.panel._queries), 1)
+        query = self.panel._queries[0]
+        self.assertTrue(HistoryEntry._meta.db_table in query["sql"])
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"TRACK_DDT_MODELS": True})
+    async def test_ddt_models_tracked_async(self):
+        """(async) test if DDT models are being tracked when the `TRACK_DDT_MODELS` is set to True"""
+        self.assertEqual(len(self.panel._queries), 0)
+
+        await async_sql_call_ddt()
+
+        # ensure query was logged
+        self.assertEqual(len(self.panel._queries), 1)
+        query = self.panel._queries[0]
+        self.assertTrue(HistoryEntry._meta.db_table in query["sql"])
+
+    def test_ddt_models_not_tracked(self):
+        """Tests whether DDt models are not being tracked when the `TRACK_DDT_MODELS` is set to False"""
+        self.assertEqual(len(self.panel._queries), 0)
+
+        sql_call_ddt()
+
+        self.assertEqual(len(self.panel._queries), 0)
+
+    async def test_ddt_models_not_tracked_async(self):
+        """(async) Tests whether DDt models are not being tracked when the `TRACK_DDT_MODELS` is set to False"""
+        self.assertEqual(len(self.panel._queries), 0)
+
+        await async_sql_call_ddt()
+
+        self.assertEqual(len(self.panel._queries), 0)
 
     @unittest.skipUnless(
         connection.vendor == "postgresql", "Test valid only on PostgreSQL"
