@@ -12,6 +12,8 @@ You can report bugs and request features in the `bug tracker
 
 Please search the existing database for duplicates before filing an issue.
 
+.. _code:
+
 Code
 ----
 
@@ -207,3 +209,75 @@ The release itself requires the following steps:
 #. **After the publishing completed** edit the automatically created GitHub
    release to include the release notes (you may use GitHub's "Generate release
    notes" button for this).
+
+
+Building the documentation locally
+----------------------------------
+
+The project's documentation is built using `Sphinx <https://www.sphinx-doc.org>`_.
+You can generate it locally to preview your changes before submitting a pull request.
+
+Two main approaches are supported:
+
+- **Make** – recommended for Linux/macOS users.
+- **Tox** – recommended for Windows users or for isolated, consistent builds.
+
+Prerequisites
+--------------
+
+Before building the documentation, ensure that all dependencies are installed as described in
+:ref:`the setup instructions <code>`.  
+If you plan to use *Tox*, make sure it is installed:
+
+.. code-block:: bash
+
+    pip install tox
+
+
+Option 1: Using Make (Linux/macOS)
+----------------------------------
+
+From the project root, run:
+
+.. code-block:: bash
+
+    cd docs/
+    make html
+
+After the build completes, open the generated documentation:
+
+- **macOS:** ``open _build/html/index.html``
+- **Linux:** ``xdg-open _build/html/index.html``
+
+
+Option 2: Using Tox (Cross-Platform)
+------------------------------------
+
+To build the documentation using Tox, run from the project root:
+
+.. code-block:: bash
+
+    tox -e docs -- html
+
+This will generate the HTML files in ``docs/_build/html/``.
+
+You can then open the documentation in your browser:
+
+- **macOS:** ``open docs/_build/html/index.html``
+- **Linux:** ``xdg-open docs/_build/html/index.html``
+- **Windows:** ``start docs\_build\html\index.html``
+
+*Tox automatically installs the necessary dependencies, so you don’t need to activate a virtual environment manually.*
+
+
+Troubleshooting
+----------------
+
+- If you encounter an error such as ``make: sphinx-build: Command not found``, install Sphinx manually:
+
+  .. code-block:: bash
+
+      pip install sphinx
+
+- If HTML files are not generated, review the build output for warnings or errors.
+- On Windows, if ``make`` is unavailable, use the Tox approach instead.
