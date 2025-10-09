@@ -226,7 +226,7 @@ Prerequisites
 --------------
 
 Before building the documentation, ensure that all dependencies are installed as described in
-:ref:`the setup instructions <code>`.  
+:ref:`the setup instructions <code>`.
 If you plan to use *Tox*, make sure it is installed:
 
 .. code-block:: bash
