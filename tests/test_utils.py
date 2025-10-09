@@ -194,6 +194,7 @@ class GetEditorUrlTestCase(unittest.TestCase):
             "vscode-insiders-remote": "vscode-insiders://vscode-remote/test.py:5",
             "vscodium": "vscodium://file/test.py:5",
             "windsurf": "windsurf://file/test.py:5",
+            "non-existent-editor": None,
         }
         for editor, expected_url in editors.items():
             with (
