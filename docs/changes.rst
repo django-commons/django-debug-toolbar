@@ -13,6 +13,7 @@ Pending
   class instance, regardless if any data was generated.
 * Fixed selenium tests for CI by using psycopg for Python 3.13 runs.
 * Added ``CommunityPanel`` containing links to documentation and resources.
+* Added how to generate the documentation locally to the contributing documentation.
 
 6.0.0 (2025-07-22)
 ------------------
