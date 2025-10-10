@@ -240,7 +240,8 @@ This will generate the HTML files in ``docs/_build/html/``.
 
 You can then open the documentation in your browser:
 
-- **macOS & Linux:** ``open docs/_build/html/index.html``
+- **Linux:** ``xdg-open docs/_build/html/index.html``
+- **macOS:** ``open docs/_build/html/index.html``
 - **Windows:** ``start docs\_build\html\index.html``
 
 *Tox automatically installs the necessary dependencies, so you don’t need
