@@ -225,6 +225,25 @@ Prerequisites
 Before building the documentation, ensure that all dependencies are installed
 as described in :ref:`the setup instructions <code>`.
 
+Additionally, to build the documentation with proper spell checking,
+you need to install:
+
+- **Enchant Library** - This is required by the sphinxcontrib-spelling
+        extension via the pyenchant package. Installation instructions vary by
+        platform:
+
+  - **Windows**: The binary wheel includes a pre-compiled Enchant library.
+  - **macOS**: ``brew install enchant``
+  - **Linux**: Use your distribution's package manager
+       (e.g., ``apt install enchant``)
+
+  - **FreeBSD**: ``pkg install enchant-2``
+
+  - **FreeBSD**: ``pkg install enchant-2``
+
+  For detailed installation instructions, see the `pyenchant installation documentation
+  <https://pyenchant.github.io/pyenchant/install.html#installing-the-enchant-c-library>`_.
+
 
 
 Using Tox (Cross-Platform)
