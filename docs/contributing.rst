@@ -215,14 +215,15 @@ Building the documentation locally
 ----------------------------------
 
 The project's documentation is built using `Sphinx <https://www.sphinx-doc.org>`_.
-You can generate it locally to preview your changes before submitting a pull request.
+You can generate it locally to preview your changes before submitting a pull
+request.
 
 
 Prerequisites
 --------------
 
-Before building the documentation, ensure that all dependencies are installed as described in
-:ref:`the setup instructions <code>`.
+Before building the documentation, ensure that all dependencies are installed
+as described in :ref:`the setup instructions <code>`.
 
 
 
@@ -242,22 +243,24 @@ You can then open the documentation in your browser:
 - **macOS & Linux:** ``open docs/_build/html/index.html``
 - **Windows:** ``start docs\_build\html\index.html``
 
-*Tox automatically installs the necessary dependencies, so you don’t need to activate a virtual environment manually.*
+*Tox automatically installs the necessary dependencies, so you don’t need
+to activate a virtual environment manually.*
 
 
 Troubleshooting
 ----------------
 
 
-If you encounter an error about a missing dependency such as ``sphinx-build: command not found``,
-ensure that your virtual environment is activated and all dependencies are installed:
+If you encounter an error about a missing dependency such as
+``sphinx-build: command not found``, ensure that your virtual environment is
+activated and all dependencies are installed:
 
 .. code-block:: bash
 
     pip install -r requirements_dev.txt
 
-Alternatively, you can build the documentation using Tox, which automatically handles
-dependencies and environment setup:
+Alternatively, you can build the documentation using Tox, which automatically
+handles dependencies and environment setup:
 
 .. code-block:: bash
 
