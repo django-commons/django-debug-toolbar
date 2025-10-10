@@ -227,11 +227,7 @@ Prerequisites
 
 Before building the documentation, ensure that all dependencies are installed as described in
 :ref:`the setup instructions <code>`.
-If you plan to use *Tox*, make sure it is installed:
 
-.. code-block:: bash
-
-    pip install tox
 
 
 Option 1: Using Make (Linux/macOS)
@@ -272,11 +268,17 @@ You can then open the documentation in your browser:
 Troubleshooting
 ----------------
 
-- If you encounter an error such as ``make: sphinx-build: Command not found``, install Sphinx manually:
 
-  .. code-block:: bash
+If you encounter an error about a missing dependency such as ``sphinx-build: command not found``,
+ensure that your virtual environment is activated and all dependencies are installed:
 
-      pip install sphinx
+.. code-block:: bash
 
-- If HTML files are not generated, review the build output for warnings or errors.
-- On Windows, if ``make`` is unavailable, use the Tox approach instead.
+    pip install -r requirements_dev.txt
+
+Alternatively, you can build the documentation using Tox, which automatically handles
+dependencies and environment setup:
+
+.. code-block:: bash
+
+    tox -e docs -- html
