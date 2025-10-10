@@ -263,8 +263,7 @@ This will generate the HTML files in ``docs/_build/html/``.
 
 You can then open the documentation in your browser:
 
-- **macOS:** ``open docs/_build/html/index.html``
-- **Linux:** ``xdg-open docs/_build/html/index.html``
+- **macOS & Linux:** ``open docs/_build/html/index.html``
 - **Windows:** ``start docs\_build\html\index.html``
 
 *Tox automatically installs the necessary dependencies, so you don’t need to activate a virtual environment manually.*
