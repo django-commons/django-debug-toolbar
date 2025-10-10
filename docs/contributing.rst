@@ -217,10 +217,6 @@ Building the documentation locally
 The project's documentation is built using `Sphinx <https://www.sphinx-doc.org>`_.
 You can generate it locally to preview your changes before submitting a pull request.
 
-Two main approaches are supported:
-
-- **Make** – recommended for Linux/macOS users.
-- **Tox** – recommended for Windows users or for isolated, consistent builds.
 
 Prerequisites
 --------------
@@ -230,23 +226,7 @@ Before building the documentation, ensure that all dependencies are installed as
 
 
 
-Option 1: Using Make (Linux/macOS)
-----------------------------------
-
-From the project root, run:
-
-.. code-block:: bash
-
-    cd docs/
-    make html
-
-After the build completes, open the generated documentation:
-
-- **macOS:** ``open _build/html/index.html``
-- **Linux:** ``xdg-open _build/html/index.html``
-
-
-Option 2: Using Tox (Cross-Platform)
+Using Tox (Cross-Platform)
 ------------------------------------
 
 To build the documentation using Tox, run from the project root:
