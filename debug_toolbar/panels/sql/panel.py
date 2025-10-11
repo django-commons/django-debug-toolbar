@@ -19,7 +19,7 @@ from debug_toolbar.panels.sql.utils import (
     is_select_query,
     reformat_sql,
 )
-from debug_toolbar.utils import render_stacktrace
+from debug_toolbar.utils import HealthLevel, render_stacktrace
 
 
 def get_isolation_level_display(vendor, level):
@@ -185,6 +185,21 @@ class SQLPanel(Panel):
             "SQL queries from %(count)d connections",
             count,
         ) % {"count": count}
+
+    @property
+    def health_level(self):
+        """
+        Return the health level of the SQL panel.
+        This is determined by the number of slow queries recorded.
+        """
+        stats = self.get_stats()
+        slow_queries = len([1 for q in stats.get("queries", []) if q.get("is_slow")])
+        if slow_queries > 10:
+            return HealthLevel.CRITICAL
+        elif slow_queries > 0:
+            return HealthLevel.WARNING
+
+        return super().health_level
 
     template = "debug_toolbar/panels/sql.html"
 
