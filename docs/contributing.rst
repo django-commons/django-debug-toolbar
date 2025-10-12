@@ -229,20 +229,10 @@ Additionally, to build the documentation with proper spell checking,
 you need to install:
 
 - **Enchant Library** - This is required by the sphinxcontrib-spelling
-        extension via the pyenchant package. Installation instructions vary by
-        platform:
+        extension via the pyenchant package. For detailed installation
+        instructions, see the
+        `pyenchant installation documentation <https://pyenchant.github.io/pyenchant/install.html#installing-the-enchant-c-library>`_.
 
-  - **Windows**: The binary wheel includes a pre-compiled Enchant library.
-  - **macOS**: ``brew install enchant``
-  - **Linux**: Use your distribution's package manager
-       (e.g., ``apt install enchant``)
-
-  - **FreeBSD**: ``pkg install enchant-2``
-
-  - **FreeBSD**: ``pkg install enchant-2``
-
-  For detailed installation instructions, see the `pyenchant installation documentation
-  <https://pyenchant.github.io/pyenchant/install.html#installing-the-enchant-c-library>`_.
 
 
 
