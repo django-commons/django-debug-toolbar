@@ -120,6 +120,13 @@ Redirects
 
 .. class:: debug_toolbar.panels.redirects.RedirectsPanel
 
+.. deprecated:: 6.0
+
+The RedirectsPanel is deprecated and will be removed in a future version.
+The HistoryPanel now provides the ability to view toolbar data for redirected
+requests. If you have a use case for this panel, please comment on the
+GitHub issue <https://github.com/django-commons/django-debug-toolbar/issues/2216>`_.
+
 When this panel is enabled, the debug toolbar will show an intermediate page
 upon redirect so you can view any debug information prior to redirecting. This
 page will provide a link to the redirect destination you can follow when
