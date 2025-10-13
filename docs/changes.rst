@@ -15,6 +15,8 @@ Pending
 * Added ``CommunityPanel`` containing links to documentation and resources.
 * Upgraded postigs from ``postgis:14-3.1`` to ``postgis:17-3.5``.
 
+* Added how to generate the documentation locally to the contributing
+  documentation.
 
 6.0.0 (2025-07-22)
 ------------------
