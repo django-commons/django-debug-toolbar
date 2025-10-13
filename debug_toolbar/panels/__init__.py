@@ -1,10 +1,14 @@
+from typing import TYPE_CHECKING
+
 from django.core.handlers.asgi import ASGIRequest
 from django.template.loader import render_to_string
 from django.utils.functional import classproperty
 
 from debug_toolbar import settings as dt_settings
-from debug_toolbar._stubs import GetResponse
 from debug_toolbar.utils import get_name_from_obj
+
+if TYPE_CHECKING:
+    from debug_toolbar._stubs import GetResponse
 
 
 class Panel:
@@ -14,7 +18,7 @@ class Panel:
 
     is_async = False
 
-    def __init__(self, toolbar, get_response: GetResponse):
+    def __init__(self, toolbar, get_response: "GetResponse"):
         self.toolbar = toolbar
         self.get_response = get_response
         self.from_store = False

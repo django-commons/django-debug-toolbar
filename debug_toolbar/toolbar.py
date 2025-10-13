@@ -5,9 +5,9 @@ The main DebugToolbar class that loads and renders the Toolbar.
 import logging
 import re
 import uuid
-from functools import cache
 from collections import OrderedDict
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type
+from functools import cache
+from typing import TYPE_CHECKING, Any, Optional
 
 from django.apps import apps
 from django.conf import settings
@@ -16,17 +16,17 @@ from django.dispatch import Signal
 from django.http import HttpRequest
 from django.template import TemplateSyntaxError
 from django.template.loader import render_to_string
-from django.urls import include, path, re_path, resolve, URLPattern
+from django.urls import URLPattern, include, path, re_path, resolve
 from django.urls.exceptions import Resolver404
 from django.utils.module_loading import import_string
 from django.utils.translation import get_language, override as lang_override
 
 from debug_toolbar import APP_NAME, settings as dt_settings
+from debug_toolbar._stubs import GetResponse
 from debug_toolbar.store import get_store
 
 logger = logging.getLogger(__name__)
 
-from ._stubs import GetResponse
 
 if TYPE_CHECKING:
     from .panels import Panel
@@ -37,8 +37,9 @@ class DebugToolbar:
     _created = Signal()
     store = None
 
-
-    def __init__(self, request: HttpRequest, get_response: GetResponse, request_id=None):
+    def __init__(
+        self, request: HttpRequest, get_response: GetResponse, request_id=None
+    ):
         self.request = request
         self.config = dt_settings.get_config().copy()
         panels = []
@@ -56,8 +57,8 @@ class DebugToolbar:
         while panels:
             panel = panels.pop()
             self._panels[panel.panel_id] = panel
-        self.stats: Dict[str, Any] = {}
-        self.server_timing_stats: Dict[str, Any] = {}
+        self.stats: dict[str, Any] = {}
+        self.server_timing_stats: dict[str, Any] = {}
         self.request_id = request_id
         self.init_store()
         self._created.send(request, toolbar=self)
@@ -65,14 +66,14 @@ class DebugToolbar:
     # Manage panels
 
     @property
-    def panels(self) -> List["Panel"]:
+    def panels(self) -> list["Panel"]:
         """
         Get a list of all available panels.
         """
         return list(self._panels.values())
 
     @property
-    def enabled_panels(self) -> List["Panel"]:
+    def enabled_panels(self) -> list["Panel"]:
         """
         Get a list of panels enabled for the current request.
         """
@@ -87,7 +88,6 @@ class DebugToolbar:
         have a nonce associated with the request.
         """
         return getattr(self.request, "csp_nonce", None)
-
 
     def get_panel_by_id(self, panel_id: str) -> "Panel":
         """
@@ -145,10 +145,10 @@ class DebugToolbar:
     # Manually implement class-level caching of panel classes and url patterns
     # because it's more obvious than going through an abstraction.
 
-    _panel_classes: Optional[List[Type["Panel"]]] = None
+    _panel_classes: Optional[list[type["Panel"]]] = None
 
     @classmethod
-    def get_panel_classes(cls):
+    def get_panel_classes(cls) -> list[type["Panel"]]:
         if cls._panel_classes is None:
             # Load panels in a temporary variable for thread safety.
             panel_classes = [
@@ -157,10 +157,10 @@ class DebugToolbar:
             cls._panel_classes = panel_classes
         return cls._panel_classes
 
-    _urlpatterns: Optional[List[URLPattern]] = None
+    _urlpatterns: Optional[list[URLPattern]] = None
 
     @classmethod
-    def get_urls(cls) -> List[URLPattern]:
+    def get_urls(cls) -> list[URLPattern]:
         if cls._urlpatterns is None:
             from . import views
 
@@ -176,7 +176,7 @@ class DebugToolbar:
         return cls._urlpatterns
 
     @classmethod
-    def is_toolbar_request(cls, request) -> bool:
+    def is_toolbar_request(cls, request: HttpRequest) -> bool:
         """
         Determine if the request is for a DebugToolbar view.
         """
@@ -220,7 +220,9 @@ def from_store_get_response(request):
 
 
 class StoredDebugToolbar(DebugToolbar):
-    def __init__(self, request, get_response, request_id=None):
+    def __init__(
+        self, request: HttpRequest, get_response: "GetResponse", request_id=None
+    ):
         self.request = None
         self.config = dt_settings.get_config().copy()
         self.process_request = get_response
@@ -230,7 +232,7 @@ class StoredDebugToolbar(DebugToolbar):
         self.init_store()
 
     @classmethod
-    def from_store(cls, request_id, panel_id=None):
+    def from_store(cls, request_id, panel_id=None) -> "StoredDebugToolbar":
         toolbar = StoredDebugToolbar(
             None, from_store_get_response, request_id=request_id
         )
@@ -246,7 +248,7 @@ class StoredDebugToolbar(DebugToolbar):
         return toolbar
 
 
-def debug_toolbar_urls(prefix="__debug__"):
+def debug_toolbar_urls(prefix="__debug__") -> list[URLPattern]:
     """
     Return a URL pattern for serving toolbar in debug mode.
 
