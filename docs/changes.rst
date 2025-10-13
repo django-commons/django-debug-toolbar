@@ -13,6 +13,8 @@ Pending
   class instance, regardless if any data was generated.
 * Fixed selenium tests for CI by using psycopg for Python 3.13 runs.
 * Added ``CommunityPanel`` containing links to documentation and resources.
+* Upgraded postigs from ``postgis:14-3.1`` to ``postgis:17-3.5``.
+
 
 6.0.0 (2025-07-22)
 ------------------
