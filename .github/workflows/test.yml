@@ -103,7 +103,7 @@ jobs:
 
     services:
       postgres:
-        image: postgis/postgis:14-3.1
+        image: postgis/postgis:17-3.5
         env:
           POSTGRES_DB: debug_toolbar
           POSTGRES_USER: debug_toolbar
