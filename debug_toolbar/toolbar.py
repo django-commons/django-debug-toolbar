@@ -6,9 +6,7 @@ import logging
 import re
 import uuid
 from functools import cache
-from collections import OrderedDict
-from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type
+from typing import TYPE_CHECKING, Any, Optional
 
 from django.apps import apps
 from django.conf import settings
@@ -17,7 +15,7 @@ from django.dispatch import Signal
 from django.http import HttpRequest
 from django.template import TemplateSyntaxError
 from django.template.loader import render_to_string
-from django.urls import URLPattern, path, resolve, include, re_path
+from django.urls import URLPattern, include, path, re_path, resolve
 from django.urls.exceptions import Resolver404
 from django.utils.module_loading import import_string
 from django.utils.translation import get_language, override as lang_override
@@ -25,9 +23,10 @@ from django.utils.translation import get_language, override as lang_override
 from debug_toolbar import APP_NAME, settings as dt_settings
 from debug_toolbar.store import get_store
 
+from ._stubs import GetResponse
+
 logger = logging.getLogger(__name__)
 
-from ._stubs import GetResponse
 
 if TYPE_CHECKING:
     from .panels import Panel
@@ -38,26 +37,21 @@ class DebugToolbar:
     _created = Signal()
     store = None
 
-    def __init__(self, request: HttpRequest, get_response: GetResponse, request_id=None):
+    def __init__(
+        self, request: HttpRequest, get_response: GetResponse, request_id=None
+    ):
         self.request = request
         self.config = dt_settings.get_config().copy()
         panels = []
-        for panel_class in reversed(self.get_panel_classes()):
+        for panel_class in reversed(list(self.get_panel_classes())):
             panel = panel_class(self, get_response)
             panels.append(panel)
             if panel.enabled:
                 get_response = panel.process_request
         self.process_request = get_response
-        # Use OrderedDict for the _panels attribute so that items can be efficiently
-        # removed using FIFO order in the DebugToolbar.store() method.  The .popitem()
-        # method of Python's built-in dict only supports LIFO removal.
-        self._panels = OrderedDict()  # type: ignore[var-annotated]
-        while panels:
-            panel = panels.pop()
-            self._panels[panel.panel_id] = panel
-        self.stats: Dict[str, Any] = {}
-        self.server_timing_stats: Dict[str, Any] = {}
-        self.store_id: Optional[str] = None
+        self._panels = {panel.panel_id: panel for panel in panels}  # type: ignore[var-annotated]
+        self.stats: dict[str, Any] = {}
+        self.server_timing_stats: dict[str, Any] = {}
         self.request_id = request_id
         self.init_store()
         self._created.send(request, toolbar=self)
@@ -65,14 +59,14 @@ class DebugToolbar:
     # Manage panels
 
     @property
-    def panels(self) -> List["Panel"]:
+    def panels(self) -> list["Panel"]:
         """
         Get a list of all available panels.
         """
         return list(self._panels.values())
 
     @property
-    def enabled_panels(self) -> List["Panel"]:
+    def enabled_panels(self) -> list["Panel"]:
         """
         Get a list of panels enabled for the current request.
         """
@@ -144,7 +138,7 @@ class DebugToolbar:
     # Manually implement class-level caching of panel classes and url patterns
     # because it's more obvious than going through an abstraction.
 
-    _panel_classes: Optional[List[Type["Panel"]]] = None
+    _panel_classes: Optional[list[type["Panel"]]] = None
 
     @classmethod
     def get_panel_classes(cls):
@@ -156,10 +150,10 @@ class DebugToolbar:
             cls._panel_classes = panel_classes
         return cls._panel_classes
 
-    _urlpatterns: Optional[List[URLPattern]] = None
+    _urlpatterns: Optional[list[URLPattern]] = None
 
     @classmethod
-    def get_urls(cls) -> List[URLPattern]:
+    def get_urls(cls) -> list[URLPattern]:
         if cls._urlpatterns is None:
             from . import views
 
@@ -169,7 +163,7 @@ class DebugToolbar:
                 path("render_panel/", views.render_panel, name="render_panel"),
             ]
             # Per-panel URLs
-            for panel_class in cls.get_panel_classes():
+            for panel_class in list(cls.get_panel_classes()):
                 urlpatterns += panel_class.get_urls()
             cls._urlpatterns = urlpatterns
         return cls._urlpatterns
@@ -235,7 +229,7 @@ class StoredDebugToolbar(DebugToolbar):
         )
         toolbar._panels = {}
 
-        for panel_class in reversed(cls.get_panel_classes()):
+        for panel_class in reversed(list(cls.get_panel_classes())):
             panel = panel_class(toolbar, from_store_get_response)
             if panel_id and panel.panel_id != panel_id:
                 continue
