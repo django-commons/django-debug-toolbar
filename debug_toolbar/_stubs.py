@@ -1,4 +1,4 @@
-from typing import Any, List, NamedTuple, Optional, Protocol, Tuple
+from typing import Any, NamedTuple, Optional, Protocol
 
 from django import template as dj_template
 from django.http import HttpRequest, HttpResponse
@@ -26,5 +26,4 @@ class RequestContext(dj_template.RequestContext):
 
 
 class GetResponse(Protocol):
-    def __call__(self, request: HttpRequest) -> HttpResponse:
-        ...
+    def __call__(self, request: HttpRequest) -> HttpResponse: ...

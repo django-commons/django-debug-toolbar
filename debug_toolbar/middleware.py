@@ -20,7 +20,6 @@ from debug_toolbar import settings as dt_settings
 from debug_toolbar.toolbar import DebugToolbar
 from debug_toolbar.utils import clear_stack_trace_caches, is_processable_html_response
 
-
 from ._stubs import GetResponse
 
 _HTML_TYPES = ("text/html", "application/xhtml+xml")
@@ -113,7 +112,6 @@ class DebugToolbarMiddleware:
 
     sync_capable = True
     async_capable = True
-
 
     def __init__(self, get_response: GetResponse):
         self.get_response = get_response
