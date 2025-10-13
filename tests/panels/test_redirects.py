@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.test import AsyncRequestFactory
 
 from debug_toolbar.panels.redirects import RedirectsPanel
+from debug_toolbar.toolbar import DebugToolbar
 
 from ..base import BaseTestCase
 
@@ -110,7 +111,6 @@ class RedirectsPanelTestCase(BaseTestCase):
 
     def test_deprecation_warning(self):
         """Test that a deprecation warning is shown when RedirectsPanel is instantiated."""
-        from debug_toolbar.toolbar import DebugToolbar
 
         with self.assertWarns(DeprecationWarning) as cm:
             toolbar = DebugToolbar(self.request, self._get_response)
