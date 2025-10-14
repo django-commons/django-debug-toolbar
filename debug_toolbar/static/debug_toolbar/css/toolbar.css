@@ -1219,3 +1219,52 @@ To regenerate:
 #djDebug .djdt-community-panel a:hover {
     text-decoration: underline;
 }
+
+.deprecation-warning {
+    position: relative;
+    background-color: #fffbdb;
+    color: #735c0f;
+    border-left: 4px solid #f1c40f;
+    padding: 16px 45px 16px 16px;
+    margin: 20px 0;
+    border-radius: 3px;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.12),
+        0 1px 2px rgba(0, 0, 0, 0.24);
+    font-family: var(--djdt-font-family-primary);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.deprecation-warning::before {
+    content: "⚠️";
+    font-size: 18px;
+    margin-right: 12px;
+    vertical-align: middle;
+}
+
+.deprecation-warning a {
+    color: #1a5fb4;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid #1a5fb4;
+    padding-bottom: 1px;
+    transition: all 0.2s ease;
+}
+
+.deprecation-warning a:hover {
+    color: #0d47a1;
+    border-bottom: 2px solid #0d47a1;
+}
+
+.deprecation-warning strong {
+    color: #000;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .deprecation-warning {
+        padding: 12px 12px 12px 12px;
+        margin: 15px 0;
+    }
+}
