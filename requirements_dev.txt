@@ -8,6 +8,7 @@ Jinja2
 daphne
 whitenoise  # To avoid dealing with static files
 channels
+channels_redis
 
 # Testing
 

@@ -12,3 +12,7 @@ async def async_db_view(request):
 
 def async_chat_index(request):
     return render(request, "chat/index.html")
+
+
+def async_chat_room(request, room_name):
+    return render(request, "chat/room.html", {"room_name": room_name})
