@@ -22,6 +22,7 @@ CONFIG_DEFAULTS = {
         "debug_toolbar.panels.profiling.ProfilingPanel",
         "debug_toolbar.panels.redirects.RedirectsPanel",
     },
+    "EDITOR": "vscode",
     "INSERT_BEFORE": "</body>",
     "RENDER_PANELS": None,
     "RESULTS_CACHE_SIZE": 25,
