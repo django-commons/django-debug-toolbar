@@ -28,7 +28,7 @@ class SettingsPanel(Panel):
             try:
                 return force_function(value)
             except DjangoUnicodeDecodeError:
-                return "Debug toolbar was unable to parse value"
+                return "Django Debug Toolbar was unable to parse value."
 
         self.record_stats(
             {
