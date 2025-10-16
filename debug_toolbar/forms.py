@@ -3,7 +3,7 @@ import json
 from django import forms
 from django.core import signing
 from django.core.exceptions import ValidationError
-from django.utils.encoding import force_str
+from debug_toolbar.sanitize import force_str
 
 
 class SignedDataForm(forms.Form):

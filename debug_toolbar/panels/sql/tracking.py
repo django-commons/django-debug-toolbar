@@ -5,7 +5,7 @@ import json
 from time import perf_counter
 
 import django.test.testcases
-from django.utils.encoding import force_str
+from debug_toolbar.sanitize import force_str
 
 from debug_toolbar.utils import get_stack_trace, get_template_info
 

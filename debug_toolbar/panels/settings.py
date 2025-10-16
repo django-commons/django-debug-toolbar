@@ -1,8 +1,8 @@
-from django.utils.encoding import DjangoUnicodeDecodeError, force_str
 from django.utils.translation import gettext_lazy as _
 from django.views.debug import get_default_exception_reporter_filter
 
 from debug_toolbar.panels import Panel
+from debug_toolbar.sanitize import force_str
 
 get_safe_settings = get_default_exception_reporter_filter().get_safe_settings
 
@@ -24,17 +24,12 @@ class SettingsPanel(Panel):
         )
 
     def generate_stats(self, request, response):
-        def catch_force_errors(force_function, value):
-            try:
-                return force_function(value)
-            except DjangoUnicodeDecodeError:
-                return "Django Debug Toolbar was unable to parse value."
-
         self.record_stats(
             {
                 "settings": {
-                    key: catch_force_errors(force_str, value)
+                    key: force_str(value)
                     for key, value in sorted(get_safe_settings().items())
                 }
             }
         )
+
