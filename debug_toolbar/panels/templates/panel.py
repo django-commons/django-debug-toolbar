@@ -13,9 +13,9 @@ from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
 from debug_toolbar.panels import Panel
-from debug_toolbar.sanitize import force_str
 from debug_toolbar.panels.sql.tracking import SQLQueryTriggered, allow_sql
 from debug_toolbar.panels.templates import views
+from debug_toolbar.sanitize import force_str
 
 if find_spec("jinja2"):
     from debug_toolbar.panels.templates.jinja2 import patch_jinja_render
