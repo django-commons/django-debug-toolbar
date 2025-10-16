@@ -130,7 +130,6 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
         CONVERT_TYPES = (datetime.datetime, datetime.date, datetime.time)
         return force_str(param, strings_only=not isinstance(param, CONVERT_TYPES))
 
-
     def _last_executed_query(self, sql, params):
         """Get the last executed query from the connection."""
         # Django's psycopg3 backend creates a new cursor in its implementation of the
