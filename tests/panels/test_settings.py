@@ -3,12 +3,7 @@ from django.test import override_settings
 from ..base import IntegrationTestCase
 
 
-@override_settings(
-    DEBUG=True,
-    RANDOM_SETTING=bytes.fromhex(
-        "a3f2b8c14e972d5a8fb3c7291a64e0859c472bf63d18a0945e73b2c84f917ae2"
-    ),
-)
+@override_settings(DEBUG=True)
 class SettingsIntegrationTestCase(IntegrationTestCase):
     def test_panel_title(self):
         response = self.client.get("/regular/basic/")
