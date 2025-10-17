@@ -16,6 +16,7 @@ Pending
 * Upgraded CI ``postgis`` version to 17-3.5.
 * Added how to generate the documentation locally to the contributing
   documentation.
+* Added Django Channels chat app to the example project.
 
 6.0.0 (2025-07-22)
 ------------------
