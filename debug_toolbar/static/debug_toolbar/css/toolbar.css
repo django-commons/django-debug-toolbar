@@ -1220,51 +1220,52 @@ To regenerate:
     text-decoration: underline;
 }
 
-.deprecation-warning {
+#djDebug .djdt-deprecation-warning {
+    --djdt-warning-bg: #fff3cd;
+    --djdt-warning-text: #856404;
+    --djdt-warning-accent: #f1c40f;
+    --djdt-warning-link: #0056b3;
+    --djdt-warning-link-hover: #003d7a;
+    --djdt-warning-strong: #000;
+    --djdt-warning-shadow: rgba(0, 0, 0, 0.1);
+
     position: relative;
-    background-color: #fffbdb;
-    color: #735c0f;
-    border-left: 4px solid #f1c40f;
-    padding: 16px 45px 16px 16px;
-    margin: 20px 0;
-    border-radius: 3px;
+    background-color: var(--djdt-warning-bg);
+    color: var(--djdt-warning-text);
+    border-left: 0.25em solid var(--djdt-warning-accent);
+    padding: 1em;
+    margin: 1.5em 0;
+    border-radius: 0.25em;
     box-shadow:
-        0 1px 3px rgba(0, 0, 0, 0.12),
-        0 1px 2px rgba(0, 0, 0, 0.24);
+        0 0.0625em 0.1875em var(--djdt-warning-shadow),
+        0 0.0625em 0.125em var(--djdt-warning-shadow);
     font-family: var(--djdt-font-family-primary);
-    font-size: 14px;
+    font-size: 0.875em;
     line-height: 1.5;
 }
 
-.deprecation-warning::before {
+#djDebug .djdt-deprecation-warning::before {
     content: "⚠️";
-    font-size: 18px;
-    margin-right: 12px;
+    font-size: 1.125em;
+    margin-right: 0.75em;
     vertical-align: middle;
 }
 
-.deprecation-warning a {
-    color: #1a5fb4;
+#djDebug .djdt-deprecation-warning a {
+    color: var(--djdt-warning-link);
     text-decoration: none;
     font-weight: 500;
-    border-bottom: 1px solid #1a5fb4;
-    padding-bottom: 1px;
+    border-bottom: 0.0625em solid currentColor;
+    padding-bottom: 0.0625em;
     transition: all 0.2s ease;
 }
 
-.deprecation-warning a:hover {
-    color: #0d47a1;
-    border-bottom: 2px solid #0d47a1;
+#djDebug .djdt-deprecation-warning a:hover {
+    color: var(--djdt-warning-link-hover);
+    border-bottom-width: 0.125em;
 }
 
-.deprecation-warning strong {
-    color: #000;
+#djDebug .djdt-deprecation-warning strong {
+    color: var(--djdt-warning-strong);
     font-weight: 600;
-}
-
-@media (max-width: 768px) {
-    .deprecation-warning {
-        padding: 12px 12px 12px 12px;
-        margin: 15px 0;
-    }
 }

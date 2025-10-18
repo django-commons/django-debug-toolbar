@@ -6,8 +6,8 @@
     <script{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} type="module" src="{% static 'debug_toolbar/js/redirect.js' %}" async></script>
     <link{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} rel="stylesheet" href="{% static 'debug_toolbar/css/toolbar.css' %}">
   </head>
-  <body>
-    <div class="deprecation-warning">
+  <body id="djDebug" {% if toolbar.store_id %}data-store-id="{{ toolbar.store_id }}"{% endif %}>
+    <div class="djdt-deprecation-warning">
       <strong>{% translate "WARNING:" %}</strong> {% translate "The RedirectsPanel is deprecated and will be removed in a future version. The HistoryPanel now provides the ability to view toolbar data for redirected requests. If you still have a use case for this panel, please comment on this <a href='https://github.com/django-commons/django-debug-toolbar/issues/2216'>issue</a>" %}
     </div>
     <h1>{{ status_line }}</h1>
