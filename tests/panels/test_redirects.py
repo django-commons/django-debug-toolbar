@@ -1,16 +1,24 @@
 import copy
+import warnings
 
 from django.conf import settings
 from django.http import HttpResponse
 from django.test import AsyncRequestFactory
 
 from debug_toolbar.panels.redirects import RedirectsPanel
+from debug_toolbar.toolbar import DebugToolbar
 
 from ..base import BaseTestCase
 
 
 class RedirectsPanelTestCase(BaseTestCase):
     panel_id = RedirectsPanel.panel_id
+
+    def setUp(self):
+        # Suppress the deprecation warning during setup
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            super().setUp()
 
     def test_regular_response(self):
         not_redirect = HttpResponse()
@@ -100,3 +108,13 @@ class RedirectsPanelTestCase(BaseTestCase):
         self.assertEqual(
             response.original_response.get("Location"), "http://somewhere/else/"
         )
+
+    def test_deprecation_warning(self):
+        """Test that a deprecation warning is shown when RedirectsPanel is instantiated."""
+
+        with self.assertWarns(DeprecationWarning) as cm:
+            toolbar = DebugToolbar(self.request, self._get_response)
+            toolbar.get_panel_by_id(RedirectsPanel.panel_id)
+
+        self.assertIn("RedirectsPanel is deprecated", str(cm.warning))
+        self.assertIn("HistoryPanel", str(cm.warning))
