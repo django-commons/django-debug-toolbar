@@ -5,8 +5,8 @@ import json
 from time import perf_counter
 
 import django.test.testcases
-from django.utils.encoding import force_str
 
+from debug_toolbar.sanitize import force_str
 from debug_toolbar.utils import get_stack_trace, get_template_info
 
 try:
@@ -128,10 +128,7 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
 
         # make sure datetime, date and time are converted to string by force_str
         CONVERT_TYPES = (datetime.datetime, datetime.date, datetime.time)
-        try:
-            return force_str(param, strings_only=not isinstance(param, CONVERT_TYPES))
-        except UnicodeDecodeError:
-            return "(encoded string)"
+        return force_str(param, strings_only=not isinstance(param, CONVERT_TYPES))
 
     def _last_executed_query(self, sql, params):
         """Get the last executed query from the connection."""
