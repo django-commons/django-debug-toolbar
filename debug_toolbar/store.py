@@ -6,11 +6,11 @@ from typing import Any
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction
-from django.utils.encoding import force_str
 from django.utils.module_loading import import_string
 
 from debug_toolbar import settings as dt_settings
 from debug_toolbar.models import HistoryEntry
+from debug_toolbar.sanitize import force_str
 
 
 class DebugToolbarJSONEncoder(DjangoJSONEncoder):
