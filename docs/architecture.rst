@@ -85,3 +85,5 @@ Problematic Parts
   fully compatible and currently being worked on. For now, these panels
   are disabled by default when running in async environment.
   follow the progress of this issue in `Async compatible toolbar project <https://github.com/orgs/jazzband/projects/9>`_.
+- Django Channels incompatibility: The toolbar does not currently support
+  Django Channels' consumers.

@@ -273,8 +273,9 @@ And for Apache:
 Django Channels & Async
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The Debug Toolbar currently has experimental support for Django Channels and
-async projects. The Debug Toolbar is compatible with the following exceptions:
+The Debug Toolbar currently has experimental support for async projects,
+but not for Django Channels. The Debug Toolbar is compatible with the
+following exceptions:
 
 - Concurrent requests aren't supported
 - ``TimerPanel``, ``RequestPanel`` and ``ProfilingPanel`` can't be used
