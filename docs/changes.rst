@@ -16,6 +16,9 @@ Pending
 * Upgraded CI ``postgis`` version to 17-3.5.
 * Added how to generate the documentation locally to the contributing
   documentation.
+* Updated logic that forces values to strings (``force_str``) to render
+  "Django Debug Toolbar was unable to parse value." when there's a decoding
+  error.
 * Added Django Channels chat app to the example project.
 
 6.0.0 (2025-07-22)
