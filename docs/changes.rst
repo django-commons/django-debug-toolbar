@@ -19,6 +19,7 @@ Pending
 * Updated logic that forces values to strings (``force_str``) to render
   "Django Debug Toolbar was unable to parse value." when there's a decoding
   error.
+* Added Django Channels chat app to the example project.
 
 6.0.0 (2025-07-22)
 ------------------

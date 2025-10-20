@@ -70,7 +70,6 @@ USE_TZ = True
 WSGI_APPLICATION = "example.wsgi.application"
 ASGI_APPLICATION = "example.asgi.application"
 
-
 # Cache and database
 
 CACHES = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
