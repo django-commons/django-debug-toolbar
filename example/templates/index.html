@@ -16,7 +16,6 @@
         <li><a href="{% url 'turbo' %}">Hotwire Turbo</a></li>
         <li><a href="{% url 'htmx' %}">htmx</a></li>
         <li><a href="{% url 'bad_form' %}">Bad form</a></li>
-        <li><a href="{% url 'async_chat' %}">Chat app</a></li>
       </ul>
       <p><a href="/admin/">Django Admin</a></p>
     {% endcache %}
@@ -27,6 +26,7 @@
       <button id="incrementXHR" data-url="{% url 'ajax_increment' %}" type="button">Increment via XHR</button>
     </p>
     {% comment %}
+    <li><a href="{% url 'async_chat' %}">Chat app</a></li>
     <button id="asyncRequest" data-url="{% url 'async_db_view' %}" type="button">Make async call</button>
     {% endcomment %}
 

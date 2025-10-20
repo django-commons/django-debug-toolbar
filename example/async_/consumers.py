@@ -1,4 +1,5 @@
 # This is the consumer logic for the Django Channels "Web Socket" chat app
+# https://channels.readthedocs.io/en/latest/tutorial/index.html
 import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer

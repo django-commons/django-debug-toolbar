@@ -1,4 +1,5 @@
 # This is the routing logic for the Django Channels "Web Socket" chat app
+# https://channels.readthedocs.io/en/latest/tutorial/index.html
 from django.urls import re_path
 
 from . import consumers
