@@ -86,4 +86,4 @@ Problematic Parts
   are disabled by default when running in async environment.
   follow the progress of this issue in `Async compatible toolbar project <https://github.com/orgs/jazzband/projects/9>`_.
 - Django Channels incompatibility: The toolbar does not currently support
-  Django Channels' consumers.
+  Django Channels' consumers due to the difference in middleware design.
