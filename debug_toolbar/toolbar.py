@@ -5,9 +5,8 @@ The main DebugToolbar class that loads and renders the Toolbar.
 import logging
 import re
 import uuid
-from collections import OrderedDict
 from functools import cache
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Optional
 
 from django.apps import apps
 from django.conf import settings
@@ -49,16 +48,9 @@ class DebugToolbar:
             if panel.enabled:
                 get_response = panel.process_request
         self.process_request = get_response
-        # Use OrderedDict for the _panels attribute so that items can be efficiently
-        # removed using FIFO order in the DebugToolbar.store() method.  The .popitem()
-        # method of Python's built-in dict only supports LIFO removal.
-        # type: ignore[var-annotated]
-        self._panels = OrderedDict()
-        while panels:
-            panel = panels.pop()
-            self._panels[panel.panel_id] = panel
-        self.stats: dict[str, Any] = {}
-        self.server_timing_stats: dict[str, Any] = {}
+        self._panels = {panel.panel_id: panel for panel in reversed(panels)}
+        self.stats = {}
+        self.server_timing_stats = {}
         self.request_id = request_id
         self.init_store()
         self._created.send(request, toolbar=self)
@@ -73,7 +65,7 @@ class DebugToolbar:
         return list(self._panels.values())
 
     @property
-    def enabled_panels(self) -> list["Panel"]:
+    def enabled_panels(self) -> list[Panel]:
         """
         Get a list of panels enabled for the current request.
         """
@@ -89,7 +81,7 @@ class DebugToolbar:
         """
         return getattr(self.request, "csp_nonce", None)
 
-    def get_panel_by_id(self, panel_id: str) -> "Panel":
+    def get_panel_by_id(self, panel_id: str) -> Panel:
         """
         Get the panel with the given id, which is the class name by default.
         """
@@ -142,13 +134,10 @@ class DebugToolbar:
         if get_store().exists(request_id):
             return StoredDebugToolbar.from_store(request_id, panel_id=panel_id)
 
-    # Manually implement class-level caching of panel classes and url patterns
-    # because it's more obvious than going through an abstraction.
-
     _panel_classes: Optional[list[type["Panel"]]] = None
 
     @classmethod
-    def get_panel_classes(cls) -> list[type["Panel"]]:
+    def get_panel_classes(cls) -> list[type[Panel]]:
         if cls._panel_classes is None:
             # Load panels in a temporary variable for thread safety.
             panel_classes = [
