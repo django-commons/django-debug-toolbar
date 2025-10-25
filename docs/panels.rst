@@ -379,6 +379,8 @@ There is no public CSS API at this time.
 
     .. automethod:: debug_toolbar.panels.Panel.run_checks
 
+.. autoclass:: debug_toolbar._stubs.GetResponse
+
 .. _javascript-api:
 
 JavaScript API
