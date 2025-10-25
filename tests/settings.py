@@ -128,6 +128,10 @@ DATABASES = {
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
+# Force the MIGRATION_MODULES to always find our migrations.
+# See debug_toolbar/apps.py::_manage_migrations_visibility
+MIGRATION_MODULES = {"debug_toolbar": "debug_toolbar.migrations"}
+
 # Debug Toolbar configuration
 
 DEBUG_TOOLBAR_CONFIG = {
