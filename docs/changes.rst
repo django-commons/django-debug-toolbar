@@ -16,6 +16,8 @@ Pending
 * Upgraded CI ``postgis`` version to 17-3.5.
 * Added how to generate the documentation locally to the contributing
   documentation.
+* Hide the toolbar's migrations unless the database store is being used. This
+  may change in the future.
 * Updated logic that forces values to strings (``force_str``) to render
   "Django Debug Toolbar was unable to parse value." when there's a decoding
   error.
