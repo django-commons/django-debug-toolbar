@@ -6,7 +6,7 @@ import logging
 import re
 import uuid
 from functools import cache
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from django.apps import apps
 from django.conf import settings
@@ -24,11 +24,9 @@ from debug_toolbar import APP_NAME, settings as dt_settings
 from debug_toolbar._stubs import GetResponse
 from debug_toolbar.store import get_store
 
+from .panels import Panel
+
 logger = logging.getLogger(__name__)
-
-
-if TYPE_CHECKING:
-    from .panels import Panel
 
 
 class DebugToolbar:
@@ -58,7 +56,7 @@ class DebugToolbar:
     # Manage panels
 
     @property
-    def panels(self) -> list["Panel"]:
+    def panels(self) -> list[Panel]:
         """
         Get a list of all available panels.
         """
@@ -134,10 +132,10 @@ class DebugToolbar:
         if get_store().exists(request_id):
             return StoredDebugToolbar.from_store(request_id, panel_id=panel_id)
 
-    _panel_classes: Optional[list[type["Panel"]]] = None
+    _panel_classes: Optional[list[Panel]] = None
 
     @classmethod
-    def get_panel_classes(cls) -> list[type[Panel]]:
+    def get_panel_classes(cls) -> list[Panel]:
         if cls._panel_classes is None:
             # Load panels in a temporary variable for thread safety.
             panel_classes = [
