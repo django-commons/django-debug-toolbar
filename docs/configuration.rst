@@ -196,15 +196,15 @@ Toolbar options
   The DatabaseStore provides persistence and automatically cleans up old
   entries based on the ``RESULTS_CACHE_SIZE`` setting.
 
-  Note: For full functionality, DatabaseStore requires migrations for
-  the debug_toolbar app:
+  Note: When using ``DatabaseStore`` migrations are required for
+  the ``debug_toolbar`` app:
 
   .. code-block:: bash
 
       python manage.py migrate debug_toolbar
 
-  For the DatabaseStore to work properly, you need to run migrations for the
-  debug_toolbar app. The migrations create the necessary database table to store
+  For the ``DatabaseStore`` to work properly, you need to run migrations for the
+  ``debug_toolbar`` app. The migrations create the necessary database table to store
   toolbar data.
 
 .. _TOOLBAR_LANGUAGE:
