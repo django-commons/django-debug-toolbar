@@ -16,12 +16,15 @@ Pending
 * Upgraded CI ``postgis`` version to 17-3.5.
 * Added how to generate the documentation locally to the contributing
   documentation.
-* Hide the toolbar's migrations unless the database store is being used. This
-  may change in the future.
 * Updated logic that forces values to strings (``force_str``) to render
   "Django Debug Toolbar was unable to parse value." when there's a decoding
   error.
 * Updated docs to show incompatibility with Django Channels.
+* Hide the toolbar's migrations unless ``debug_toolbar.store.DatabaseStore``
+  is being used. This may change in the future.
+* Hide ``debug_toolbar.HistoryEntry`` as a model unless
+  ``debug_toolbar.store.DatabaseStore`` is being used. This may change in the
+  future.
 
 6.0.0 (2025-07-22)
 ------------------
