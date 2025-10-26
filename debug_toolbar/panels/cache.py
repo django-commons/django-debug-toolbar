@@ -44,11 +44,12 @@ def _monkey_patch_method(cache, name, alias):
     setattr(cache, name, wrapper)
 
 
-def _monkey_patch_cache(cache, alias):
+def _monkey_patch_cache(cache, alias, panel):
     if not hasattr(cache, "_djdt_patched"):
         for name in WRAPPED_CACHE_METHODS:
             _monkey_patch_method(cache, name, alias)
         cache._djdt_patched = True
+        cache._djdt_panel = panel
 
 
 class CachePanel(Panel):
@@ -95,8 +96,7 @@ class CachePanel(Panel):
                 cache = original_method(self, alias)
                 panel = cls.current_instance()
                 if panel is not None:
-                    _monkey_patch_cache(cache, alias)
-                    cache._djdt_panel = panel
+                    _monkey_patch_cache(cache, alias, panel)
                 return cache
 
             CacheHandler.create_connection = wrapper
@@ -194,10 +194,8 @@ class CachePanel(Panel):
         # requests.  The monkey patch of CacheHander.create_connection() installed in
         # the .ready() method will ensure that any new cache connections that get opened
         # during this request will also be monkey patched.
-        for alias in caches:
-            if hasattr(caches._connections, alias):
-                _monkey_patch_cache(caches[alias], alias)
-                caches[alias]._djdt_panel = self
+        for cache, alias in self.initialized_caches():
+            _monkey_patch_cache(cache, alias, self)
         # Mark this panel instance as the current one for the active thread/async task
         # context.  This will be used by the CacheHander.create_connection() monkey
         # patch.
@@ -208,6 +206,17 @@ class CachePanel(Panel):
             del self._context_locals.current_instance
         for cache in caches.all(initialized_only=True):
             cache._djdt_panel = None
+
+    def initialized_caches(self):
+        """
+        Return the initialized caches and aliases.
+
+        This does the same as`caches.all(initialized_only=True)`, but keeps
+        the alias with each cache instance.
+        """
+        for alias in caches:
+            if hasattr(caches._connections, alias):
+                yield caches[alias], alias
 
     def generate_stats(self, request, response):
         self.record_stats(
