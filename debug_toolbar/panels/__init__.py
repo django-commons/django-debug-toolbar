@@ -3,7 +3,7 @@ from django.template.loader import render_to_string
 from django.utils.functional import classproperty
 
 from debug_toolbar import settings as dt_settings
-from debug_toolbar.utils import get_name_from_obj
+from debug_toolbar.utils import HealthLevel, get_name_from_obj
 
 
 class Panel:
@@ -128,6 +128,19 @@ class Panel:
         this event to support dynamic functionality.
         """
         return []
+
+    @property
+    def health_level(self):
+        """
+        Returns the health level of the panel as a `ToolbarHealthLevel` enum value.
+
+        This property is used by the toolbar to determine the overall health status of each panel.
+        The default implementation returns `ToolbarHealthLevel.NONE`, indicating no issues.
+
+        Subclasses should override this property to provide custom health logic, returning
+        `ToolbarHealthLevel.WARNING` or `ToolbarHealthLevel.ERROR` as appropriate based on panel-specific conditions.
+        """
+        return HealthLevel.NONE
 
     # Panel early initialization
 
