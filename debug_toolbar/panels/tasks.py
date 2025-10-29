@@ -33,7 +33,55 @@ class TasksPanel(Panel):
         self.record_stats(stats)
 
     def enable_instrumentation(self):
-        pass
+        """Hook into task system to collect queued tasks"""
+        try:
+            import django
+
+            if django.VERSION < (6, 0):
+                return
+            from django.tasks import Task
+
+            print("[TasksPanel] instrumentation enabled:", hasattr(Task, "enqueue"))
+
+            # Store original enqueue method
+            if hasattr(Task, "enqueue"):
+                self._original_enqueue = Task.enqueue
+
+                def wrapped_enqueue(task, *args, **kwargs):
+                    result = self._original_enqueue(task, *args, **kwargs).return_value
+                    self._record_task(task, args, kwargs, result)
+                    return result
+
+                Task.enqueue = wrapped_enqueue
+        except (ImportError, AttributeError):
+            pass
+
+    def _record_task(self, task, args, kwargs, result):
+        """Record a task that was queued"""
+        task_info = {
+            "name": getattr(task, "__name__", str(task)),
+            "args": repr(args) if args else "",
+            "kwargs": repr(kwargs) if kwargs else "",
+        }
+        self.queued_tasks.append(task_info)
 
     def disable_instrumentation(self):
-        pass
+        """Restore original methods"""
+        try:
+            from django.tasks import Task
+
+            if hasattr(self, "_original_enqueue"):
+                Task.enqueue = self._original_enqueue
+        except (ImportError, AttributeError):
+            pass
+
+    def _check_tasks_available(self):
+        """Check if Django tasks system is available"""
+        try:
+            import django
+
+            if django.VERSION < (6, 0):
+                return False
+            return True
+        except (ImportError, AttributeError):
+            return False
