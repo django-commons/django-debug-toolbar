@@ -19,6 +19,8 @@ Pending
 * Upgraded CI ``postgis`` version to 17-3.5.
 * Added how to generate the documentation locally to the contributing
   documentation.
+* Deprecated ``RedirectsPanel`` in favor of ``HistoryPanel`` for viewing
+  toolbar data from redirected requests.
 * Updated logic that forces values to strings (``force_str``) to render
   "Django Debug Toolbar was unable to parse value." when there's a decoding
   error.
