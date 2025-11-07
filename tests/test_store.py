@@ -132,6 +132,9 @@ class GetStoreTestCase(TestCase):
         self.assertIs(store.get_store(), StubStore)
 
 
+@override_settings(
+    DEBUG_TOOLBAR_CONFIG={"TOOLBAR_STORE_CLASS": "debug_toolbar.store.DatabaseStore"}
+)
 class DatabaseStoreTestCase(TestCase):
     @classmethod
     def setUpTestData(cls) -> None:

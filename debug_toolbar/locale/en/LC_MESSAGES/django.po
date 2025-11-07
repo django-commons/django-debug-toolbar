@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django Debug Toolbar\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-06 07:12-0500\n"
+"POT-Creation-Date: 2025-10-16 19:11-0500\n"
 "PO-Revision-Date: 2012-03-31 20:10+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -18,6 +18,14 @@ msgstr ""
 
 #: apps.py:18
 msgid "Debug Toolbar"
+msgstr ""
+
+#: models.py:11
+msgid "history entry"
+msgstr ""
+
+#: models.py:12
+msgid "history entries"
 msgstr ""
 
 #: panels/alerts.py:67
@@ -44,37 +52,41 @@ msgstr ""
 msgid "Alerts"
 msgstr ""
 
-#: panels/cache.py:168
+#: panels/cache.py:170
 msgid "Cache"
 msgstr ""
 
-#: panels/cache.py:174
+#: panels/cache.py:177
 #, python-format
 msgid "%(cache_calls)d call in %(time).2fms"
 msgid_plural "%(cache_calls)d calls in %(time).2fms"
 msgstr[0] ""
 msgstr[1] ""
 
-#: panels/cache.py:183
+#: panels/cache.py:186
 #, python-format
 msgid "Cache calls from %(count)d backend"
 msgid_plural "Cache calls from %(count)d backends"
 msgstr[0] ""
 msgstr[1] ""
 
+#: panels/community.py:13
+msgid "Community"
+msgstr ""
+
 #: panels/headers.py:31
 msgid "Headers"
 msgstr ""
 
-#: panels/history/panel.py:19 panels/history/panel.py:20
+#: panels/history/panel.py:20 panels/history/panel.py:21
 msgid "History"
 msgstr ""
 
-#: panels/profiling.py:140
+#: panels/profiling.py:156
 msgid "Profiling"
 msgstr ""
 
-#: panels/redirects.py:17
+#: panels/redirects.py:18
 msgid "Intercept redirects"
 msgstr ""
 
@@ -82,125 +94,133 @@ msgstr ""
 msgid "Request"
 msgstr ""
 
-#: panels/request.py:38
+#: panels/request.py:36
 msgid "<no view>"
 msgstr ""
 
-#: panels/request.py:55
+#: panels/request.py:53
 msgid "<unavailable>"
 msgstr ""
 
-#: panels/settings.py:17
+#: panels/settings.py:19
 msgid "Settings"
 msgstr ""
 
-#: panels/settings.py:20
+#: panels/settings.py:22
 #, python-format
 msgid "Settings from %s"
 msgstr ""
 
-#: panels/signals.py:57
+#: panels/signals.py:59
 #, python-format
 msgid "%(num_receivers)d receiver of 1 signal"
 msgid_plural "%(num_receivers)d receivers of 1 signal"
 msgstr[0] ""
 msgstr[1] ""
 
-#: panels/signals.py:62
+#: panels/signals.py:64
 #, python-format
 msgid "%(num_receivers)d receiver of %(num_signals)d signals"
 msgid_plural "%(num_receivers)d receivers of %(num_signals)d signals"
 msgstr[0] ""
 msgstr[1] ""
 
-#: panels/signals.py:67
+#: panels/signals.py:69
 msgid "Signals"
 msgstr ""
 
-#: panels/sql/panel.py:30 panels/sql/panel.py:41
+#: panels/sql/forms.py:56
+msgid "Data for this panel isn't available anymore."
+msgstr ""
+
+#: panels/sql/forms.py:68
+msgid "Invalid query id."
+msgstr ""
+
+#: panels/sql/panel.py:32 panels/sql/panel.py:43
 msgid "Read uncommitted"
 msgstr ""
 
-#: panels/sql/panel.py:31 panels/sql/panel.py:43
+#: panels/sql/panel.py:33 panels/sql/panel.py:45
 msgid "Read committed"
 msgstr ""
 
-#: panels/sql/panel.py:32 panels/sql/panel.py:45
+#: panels/sql/panel.py:34 panels/sql/panel.py:47
 msgid "Repeatable read"
 msgstr ""
 
-#: panels/sql/panel.py:33 panels/sql/panel.py:47
+#: panels/sql/panel.py:35 panels/sql/panel.py:49
 msgid "Serializable"
 msgstr ""
 
-#: panels/sql/panel.py:39
+#: panels/sql/panel.py:41
 msgid "Autocommit"
 msgstr ""
 
-#: panels/sql/panel.py:61 panels/sql/panel.py:71
+#: panels/sql/panel.py:63 panels/sql/panel.py:73
 msgid "Idle"
 msgstr ""
 
-#: panels/sql/panel.py:62 panels/sql/panel.py:72
+#: panels/sql/panel.py:64 panels/sql/panel.py:74
 msgid "Active"
 msgstr ""
 
-#: panels/sql/panel.py:63 panels/sql/panel.py:73
+#: panels/sql/panel.py:65 panels/sql/panel.py:75
 msgid "In transaction"
 msgstr ""
 
-#: panels/sql/panel.py:64 panels/sql/panel.py:74
+#: panels/sql/panel.py:66 panels/sql/panel.py:76
 msgid "In error"
 msgstr ""
 
-#: panels/sql/panel.py:65 panels/sql/panel.py:75
+#: panels/sql/panel.py:67 panels/sql/panel.py:77
 msgid "Unknown"
 msgstr ""
 
-#: panels/sql/panel.py:162
+#: panels/sql/panel.py:165
 msgid "SQL"
 msgstr ""
 
-#: panels/sql/panel.py:168
+#: panels/sql/panel.py:172
 #, python-format
 msgid "%(query_count)d query in %(sql_time).2fms"
 msgid_plural "%(query_count)d queries in %(sql_time).2fms"
 msgstr[0] ""
 msgstr[1] ""
 
-#: panels/sql/panel.py:180
+#: panels/sql/panel.py:184
 #, python-format
 msgid "SQL queries from %(count)d connection"
 msgid_plural "SQL queries from %(count)d connections"
 msgstr[0] ""
 msgstr[1] ""
 
-#: panels/staticfiles.py:82
+#: panels/staticfiles.py:47
 #, python-format
 msgid "Static files (%(num_found)s found, %(num_used)s used)"
 msgstr ""
 
-#: panels/staticfiles.py:103
+#: panels/staticfiles.py:81
 msgid "Static files"
 msgstr ""
 
-#: panels/staticfiles.py:109
+#: panels/staticfiles.py:87
 #, python-format
 msgid "%(num_used)s file used"
 msgid_plural "%(num_used)s files used"
 msgstr[0] ""
 msgstr[1] ""
 
-#: panels/templates/panel.py:101
+#: panels/templates/panel.py:104
 msgid "Templates"
 msgstr ""
 
-#: panels/templates/panel.py:106
+#: panels/templates/panel.py:109
 #, python-format
 msgid "Templates (%(num_templates)s rendered)"
 msgstr ""
 
-#: panels/templates/panel.py:195
+#: panels/templates/panel.py:199
 msgid "No origin"
 msgstr ""
 
@@ -266,23 +286,23 @@ msgstr ""
 msgid "%(vcsw)d voluntary, %(ivcsw)d involuntary"
 msgstr ""
 
-#: panels/versions.py:19
+#: panels/versions.py:21
 msgid "Versions"
 msgstr ""
 
-#: templates/debug_toolbar/base.html:23
+#: templates/debug_toolbar/base.html:22
 msgid "Hide toolbar"
 msgstr ""
 
-#: templates/debug_toolbar/base.html:23
+#: templates/debug_toolbar/base.html:22
 msgid "Hide"
 msgstr ""
 
-#: templates/debug_toolbar/base.html:25 templates/debug_toolbar/base.html:26
+#: templates/debug_toolbar/base.html:24 templates/debug_toolbar/base.html:25
 msgid "Toggle Theme"
 msgstr ""
 
-#: templates/debug_toolbar/base.html:35
+#: templates/debug_toolbar/base.html:34
 msgid "Show toolbar"
 msgstr ""
 
@@ -351,6 +371,44 @@ msgstr ""
 
 #: templates/debug_toolbar/panels/cache.html:47
 msgid "Backend"
+msgstr ""
+
+#: templates/debug_toolbar/panels/community.html:5
+msgid "Community & Contribution"
+msgstr ""
+
+#: templates/debug_toolbar/panels/community.html:8
+msgid ""
+"Want to contribute to Django Debug Toolbar? Get involved in our community!"
+msgstr ""
+
+#: templates/debug_toolbar/panels/community.html:14
+msgid "Join Discussions"
+msgstr ""
+
+#: templates/debug_toolbar/panels/community.html:19
+msgid "View Issues"
+msgstr ""
+
+#: templates/debug_toolbar/panels/community.html:24
+msgid "Contribution Guide"
+msgstr ""
+
+#: templates/debug_toolbar/panels/community.html:31
+msgid "Django Debug Toolbar Documentation"
+msgstr ""
+
+#: templates/debug_toolbar/panels/community.html:34
+msgid ""
+"Explore the official documentation to learn more about Django Debug Toolbar."
+msgstr ""
+
+#: templates/debug_toolbar/panels/community.html:39
+msgid "Read Documentation"
+msgstr ""
+
+#: templates/debug_toolbar/panels/community.html:44
+msgid "How to Use Django Debug Toolbar"
 msgstr ""
 
 #: templates/debug_toolbar/panels/headers.html:3
@@ -551,7 +609,7 @@ msgstr ""
 msgid "No SQL queries were recorded during this request."
 msgstr ""
 
-#: templates/debug_toolbar/panels/sql_explain.html:4
+#: templates/debug_toolbar/panels/sql_explain.html:3
 msgid "SQL explained"
 msgstr ""
 
@@ -567,7 +625,7 @@ msgstr ""
 msgid "Database"
 msgstr ""
 
-#: templates/debug_toolbar/panels/sql_profile.html:4
+#: templates/debug_toolbar/panels/sql_profile.html:3
 msgid "SQL profiled"
 msgstr ""
 
@@ -575,7 +633,7 @@ msgstr ""
 msgid "Error"
 msgstr ""
 
-#: templates/debug_toolbar/panels/sql_select.html:4
+#: templates/debug_toolbar/panels/sql_select.html:3
 msgid "SQL selected"
 msgstr ""
 
@@ -626,7 +684,7 @@ msgstr[1] ""
 msgid "Location"
 msgstr ""
 
-#: templates/debug_toolbar/panels/template_source.html:4
+#: templates/debug_toolbar/panels/template_source.html:3
 msgid "Template source:"
 msgstr ""
 
@@ -696,7 +754,7 @@ msgid ""
 "redirect as normal."
 msgstr ""
 
-#: views.py:16
+#: views.py:18
 msgid ""
 "Data for this panel isn't available anymore. Please reload the page and "
 "retry."

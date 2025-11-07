@@ -48,6 +48,7 @@ pre
 profiler
 psycopg
 py
+pyenchant
 pyflame
 pylibmc
 pytest
@@ -58,6 +59,7 @@ reinitializing
 resizing
 runserver
 spellchecking
+sphinxcontrib
 spooler
 stacktrace
 stacktraces

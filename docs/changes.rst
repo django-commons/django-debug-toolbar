@@ -4,6 +4,9 @@ Change log
 Pending
 -------
 
+6.1.0 (2025-10-30)
+------------------
+
 * Added support for async to timer panel.
 * Added a note about the default password in ``make example``.
 * Removed logging about the toolbar failing to serialize a value into JSON.
@@ -13,6 +16,18 @@ Pending
   class instance, regardless if any data was generated.
 * Fixed selenium tests for CI by using psycopg for Python 3.13 runs.
 * Added ``CommunityPanel`` containing links to documentation and resources.
+* Upgraded CI ``postgis`` version to 17-3.5.
+* Added how to generate the documentation locally to the contributing
+  documentation.
+* Updated logic that forces values to strings (``force_str``) to render
+  "Django Debug Toolbar was unable to parse value." when there's a decoding
+  error.
+* Updated docs to show incompatibility with Django Channels.
+* Hide the toolbar's migrations unless ``debug_toolbar.store.DatabaseStore``
+  is being used. This may change in the future.
+* Hide ``debug_toolbar.HistoryEntry`` as a model unless
+  ``debug_toolbar.store.DatabaseStore`` is being used. This may change in the
+  future.
 
 6.0.0 (2025-07-22)
 ------------------
