@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, NamedTuple, Optional, Protocol
+from typing import Any, NamedTuple, Optional, Protocol
 
 from django import template as dj_template
-
-if TYPE_CHECKING:
-    from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse
 
 
 class InspectStack(NamedTuple):

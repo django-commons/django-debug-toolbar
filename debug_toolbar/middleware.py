@@ -5,7 +5,6 @@ Debug Toolbar middleware
 import re
 import socket
 from functools import cache
-from typing import TYPE_CHECKING
 
 from asgiref.sync import (
     async_to_sync,
@@ -18,12 +17,10 @@ from django.http import HttpRequest, HttpResponse
 from django.utils.module_loading import import_string
 
 from debug_toolbar import settings as dt_settings
+from debug_toolbar._stubs import GetResponse
 from debug_toolbar.panels import Panel
 from debug_toolbar.toolbar import DebugToolbar
 from debug_toolbar.utils import clear_stack_trace_caches, is_processable_html_response
-
-if TYPE_CHECKING:
-    from debug_toolbar._stubs import GetResponse
 
 _HTML_TYPES = ("text/html", "application/xhtml+xml")
 
@@ -116,7 +113,7 @@ class DebugToolbarMiddleware:
     sync_capable = True
     async_capable = True
 
-    def __init__(self, get_response: "GetResponse"):
+    def __init__(self, get_response: GetResponse):
         self.get_response = get_response
         # If get_response is a coroutine function, turns us into async mode so
         # a thread is not consumed during a whole request.
@@ -216,7 +213,7 @@ class DebugToolbarMiddleware:
         return response
 
     @staticmethod
-    def get_headers(request: HttpRequest, panels: list["Panel"]) -> dict[str, str]:
+    def get_headers(request: HttpRequest, panels: list[Panel]) -> dict[str, str]:
         headers = {}
         for panel in panels:
             for header, value in panel.get_headers(request).items():

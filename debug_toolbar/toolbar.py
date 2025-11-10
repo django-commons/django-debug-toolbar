@@ -2,11 +2,12 @@
 The main DebugToolbar class that loads and renders the Toolbar.
 """
 
+from __future__ import annotations
+
 import logging
 import re
 import uuid
 from functools import cache
-from typing import Optional
 
 from django.apps import apps
 from django.conf import settings
@@ -15,7 +16,7 @@ from django.dispatch import Signal
 from django.http import HttpRequest
 from django.template import TemplateSyntaxError
 from django.template.loader import render_to_string
-from django.urls import URLPattern, include, path, re_path, resolve
+from django.urls import URLPattern, URLResolver, include, path, re_path, resolve
 from django.urls.exceptions import Resolver404
 from django.utils.module_loading import import_string
 from django.utils.translation import get_language, override as lang_override
@@ -132,7 +133,10 @@ class DebugToolbar:
         if get_store().exists(request_id):
             return StoredDebugToolbar.from_store(request_id, panel_id=panel_id)
 
-    _panel_classes: Optional[list[Panel]] = None
+    # Manually implement class-level caching of panel classes and url patterns
+    # because it's more obvious than going through an abstraction.
+
+    _panel_classes: list[Panel] | None = None
 
     @classmethod
     def get_panel_classes(cls) -> list[Panel]:
@@ -144,10 +148,10 @@ class DebugToolbar:
             cls._panel_classes = panel_classes
         return cls._panel_classes
 
-    _urlpatterns: Optional[list[URLPattern]] = None
+    _urlpatterns: list[URLPattern | URLResolver] | None = None
 
     @classmethod
-    def get_urls(cls) -> list[URLPattern]:
+    def get_urls(cls) -> list[URLPattern | URLResolver]:
         if cls._urlpatterns is None:
             from . import views
 
@@ -208,7 +212,7 @@ def from_store_get_response(request):
 
 class StoredDebugToolbar(DebugToolbar):
     def __init__(
-        self, request: HttpRequest, get_response: "GetResponse", request_id=None
+        self, request: HttpRequest, get_response: GetResponse, request_id=None
     ):
         self.request = None
         self.config = dt_settings.get_config().copy()
@@ -219,7 +223,7 @@ class StoredDebugToolbar(DebugToolbar):
         self.init_store()
 
     @classmethod
-    def from_store(cls, request_id, panel_id=None) -> "StoredDebugToolbar":
+    def from_store(cls, request_id, panel_id=None) -> StoredDebugToolbar:
         toolbar = StoredDebugToolbar(
             None, from_store_get_response, request_id=request_id
         )
