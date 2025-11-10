@@ -5,6 +5,7 @@ Debug Toolbar middleware
 import re
 import socket
 from functools import cache
+from typing import Callable
 
 from asgiref.sync import (
     async_to_sync,
@@ -25,7 +26,7 @@ from debug_toolbar.utils import clear_stack_trace_caches, is_processable_html_re
 _HTML_TYPES = ("text/html", "application/xhtml+xml")
 
 
-def show_toolbar(request: HttpRequest):
+def show_toolbar(request: HttpRequest) -> bool:
     """
     Default function to determine whether to show the toolbar on a given page.
     """
@@ -40,7 +41,7 @@ def show_toolbar(request: HttpRequest):
     return False
 
 
-def show_toolbar_with_docker(request: HttpRequest):
+def show_toolbar_with_docker(request: HttpRequest) -> bool:
     """
     Default function to determine whether to show the toolbar on a given page.
     """
@@ -72,7 +73,7 @@ def show_toolbar_with_docker(request: HttpRequest):
 
 
 @cache
-def show_toolbar_func_or_path():
+def show_toolbar_func_or_path() -> Callable:
     """
     Fetch the show toolbar callback from settings
 
@@ -87,7 +88,7 @@ def show_toolbar_func_or_path():
         return func_or_path
 
 
-def get_show_toolbar(async_mode):
+def get_show_toolbar(async_mode) -> Callable:
     """
     Get the callback function to show the toolbar.
 
