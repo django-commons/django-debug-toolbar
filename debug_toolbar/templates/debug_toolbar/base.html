@@ -31,7 +31,7 @@
     </ul>
   </div>
   <div class="djdt-hidden" id="djDebugToolbarHandle">
-    <div title="{% translate 'Show toolbar' %}" id="djShowToolBarButton">
+    <div title="{% translate 'Show toolbar' %}" id="djShowToolBarButton" class="{% if toolbar.health_level %} djdt-toolbarhandle-health-{{ toolbar.health_level }}{% endif %}">
       <span id="djShowToolBarD">D</span><span id="djShowToolBarJ">J</span>DT
     </div>
   </div>

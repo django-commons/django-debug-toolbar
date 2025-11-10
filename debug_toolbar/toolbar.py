@@ -20,6 +20,7 @@ from django.utils.translation import get_language, override as lang_override
 
 from debug_toolbar import APP_NAME, settings as dt_settings
 from debug_toolbar.store import get_store
+from debug_toolbar.utils import HealthLevel
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +72,17 @@ class DebugToolbar:
         have a nonce associated with the request.
         """
         return getattr(self.request, "csp_nonce", None)
+
+    @property
+    def health_level(self):
+        """
+        Return the maximum health level across all panels.
+        This is used to color the toolbar hidden button.
+        """
+        if not self.panels:
+            return HealthLevel.NONE
+
+        return max(panel.health_level for panel in self.enabled_panels)
 
     def get_panel_by_id(self, panel_id):
         """

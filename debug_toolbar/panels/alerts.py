@@ -3,7 +3,7 @@ from html.parser import HTMLParser
 from django.utils.translation import gettext_lazy as _
 
 from debug_toolbar.panels import Panel
-from debug_toolbar.utils import is_processable_html_response
+from debug_toolbar.utils import HealthLevel, is_processable_html_response
 
 
 class FormParser(HTMLParser):
@@ -91,6 +91,16 @@ class AlertsPanel(Panel):
             return f"{len(alerts)} {alert_text}"
         else:
             return ""
+
+    @property
+    def health_level(self):
+        """
+        Return the health level of the panel based on the alerts.
+        """
+        if not self.get_stats().get("alerts"):
+            return HealthLevel.NONE
+
+        return HealthLevel.CRITICAL
 
     def add_alert(self, alert):
         self.alerts.append(alert)
