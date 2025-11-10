@@ -7,6 +7,9 @@ on:
     # Run weekly on Saturday
     - cron: '37 3 * * SAT'
 
+permissions:
+  contents: read
+
 jobs:
   mysql:
     runs-on: ubuntu-latest
@@ -18,7 +21,7 @@ jobs:
 
     services:
       mariadb:
-        image: mariadb
+        image: mariadb:11.8
         env:
           MARIADB_ROOT_PASSWORD: debug_toolbar
         options: >-
@@ -31,6 +34,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v5
+      with:
+        persist-credentials: false
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
@@ -118,6 +123,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v5
+      with:
+        persist-credentials: false
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
@@ -167,6 +174,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v5
+      with:
+        persist-credentials: false
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
@@ -206,6 +215,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v5
+      with:
+        persist-credentials: false
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
