@@ -6,6 +6,7 @@ Pending
 
 * Deprecated ``RedirectsPanel`` in favor of ``HistoryPanel`` for viewing
   toolbar data from redirected requests.
+* Fixed support for generating code coverage comments in PRs.
 
 6.1.0 (2025-10-30)
 ------------------

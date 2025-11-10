@@ -75,6 +75,14 @@ jobs:
         DB_PASSWORD: debug_toolbar
         DB_HOST: 127.0.0.1
         DB_PORT: 3306
+        COVERAGE_FILE: ".coverage.mysql.${{ matrix.python-version }}"
+
+    - name: Store coverage file
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-mysql-${{ matrix.python-version }}
+        path: .coverage.mysql.${{ matrix.python-version }}*
+        include-hidden-files: true
 
 
   postgres:
@@ -169,6 +177,14 @@ jobs:
         DB_HOST: localhost
         DB_PORT: 5432
         DJANGO_SELENIUM_TESTS: ${{ matrix.env.DJANGO_SELENIUM_TESTS }}
+        COVERAGE_FILE: ".coverage.${{ matrix.database }}.${{ matrix.python-version }}"
+
+    - name: Store coverage file
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-${{ matrix.database }}-${{ matrix.python-version }}
+        path: .coverage.${{ matrix.database }}.${{ matrix.python-version }}*
+        include-hidden-files: true
 
   sqlite:
     runs-on: ubuntu-latest
@@ -214,6 +230,14 @@ jobs:
       env:
         DB_BACKEND: sqlite3
         DB_NAME: ":memory:"
+        COVERAGE_FILE: ".coverage.sqlite.${{ matrix.python-version }}"
+
+    - name: Store coverage file
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-sqlite-${{ matrix.python-version }}
+        path: .coverage.sqlite.${{ matrix.python-version }}*
+        include-hidden-files: true
 
   lint:
     runs-on: ubuntu-latest
@@ -252,3 +276,38 @@ jobs:
 
     - name: Test with tox
       run: tox -e docs,packaging
+
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    needs:
+      - mysql
+      - postgres
+      - sqlite
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        id: download
+        with:
+          pattern: coverage-*
+          merge-multiple: true
+
+      - name: Coverage comment
+        id: coverage_comment
+        uses: py-cov-action/python-coverage-comment-action@6494290850a5098c2836298dad8f11082b4ceaa9 # v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_COVERAGE_FILES: true
+
+      - name: Store Pull Request comment to be posted
+        uses: actions/upload-artifact@v4
+        if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
+        with:
+          name: python-coverage-comment-action
+          path: python-coverage-comment-action.txt
