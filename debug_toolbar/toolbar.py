@@ -8,6 +8,7 @@ import logging
 import re
 import uuid
 from functools import cache
+from typing import Callable
 
 from django.apps import apps
 from django.conf import settings
@@ -23,7 +24,7 @@ from django.utils.translation import get_language, override as lang_override
 
 from debug_toolbar import APP_NAME, settings as dt_settings
 from debug_toolbar._stubs import GetResponse
-from debug_toolbar.store import get_store
+from debug_toolbar.store import BaseStore, get_store
 
 from .panels import Panel
 
@@ -33,10 +34,13 @@ logger = logging.getLogger(__name__)
 class DebugToolbar:
     # for internal testing use only
     _created = Signal()
-    store = None
+    store: BaseStore = None
 
     def __init__(
-        self, request: HttpRequest, get_response: GetResponse, request_id=None
+        self,
+        request: HttpRequest,
+        get_response: GetResponse,
+        request_id: str | None = None,
     ):
         self.request = request
         self.config = dt_settings.get_config().copy()
@@ -71,7 +75,7 @@ class DebugToolbar:
         return [panel for panel in self._panels.values() if panel.enabled]
 
     @property
-    def csp_nonce(self):
+    def csp_nonce(self) -> str | None:
         """
         Look up the Content Security Policy nonce if there is one.
 
@@ -129,7 +133,9 @@ class DebugToolbar:
         self.store.set(self.request_id)
 
     @classmethod
-    def fetch(cls, request_id, panel_id=None):
+    def fetch(
+        cls, request_id: str, panel_id: str | None = None
+    ) -> StoredDebugToolbar | None:
         if get_store().exists(request_id):
             return StoredDebugToolbar.from_store(request_id, panel_id=panel_id)
 
@@ -139,7 +145,7 @@ class DebugToolbar:
     _panel_classes: list[Panel] | None = None
 
     @classmethod
-    def get_panel_classes(cls) -> list[Panel]:
+    def get_panel_classes(cls) -> list[type[Panel]] | None:
         if cls._panel_classes is None:
             # Load panels in a temporary variable for thread safety.
             panel_classes = [
@@ -186,7 +192,7 @@ class DebugToolbar:
 
     @staticmethod
     @cache
-    def get_observe_request():
+    def get_observe_request() -> Callable:
         # If OBSERVE_REQUEST_CALLBACK is a string, which is the recommended
         # setup, resolve it to the corresponding callable.
         func_or_path = dt_settings.get_config()["OBSERVE_REQUEST_CALLBACK"]
@@ -196,14 +202,14 @@ class DebugToolbar:
             return func_or_path
 
 
-def observe_request(request: HttpRequest):
+def observe_request(request: HttpRequest) -> bool:
     """
     Determine whether to update the toolbar from a client side request.
     """
     return True
 
 
-def from_store_get_response(request):
+def from_store_get_response(request: HttpRequest | None) -> None:
     logger.warning(
         "get_response was called for debug toolbar after being loaded from the store. No request exists in this scenario as the request is not stored, only the panel's data."
     )
@@ -212,7 +218,10 @@ def from_store_get_response(request):
 
 class StoredDebugToolbar(DebugToolbar):
     def __init__(
-        self, request: HttpRequest, get_response: GetResponse, request_id=None
+        self,
+        request: HttpRequest | None,
+        get_response: GetResponse,
+        request_id: str | None = None,
     ):
         self.request = None
         self.config = dt_settings.get_config().copy()
@@ -223,7 +232,9 @@ class StoredDebugToolbar(DebugToolbar):
         self.init_store()
 
     @classmethod
-    def from_store(cls, request_id, panel_id=None) -> StoredDebugToolbar:
+    def from_store(
+        cls, request_id: str, panel_id: str | None = None
+    ) -> StoredDebugToolbar:
         toolbar = StoredDebugToolbar(
             None, from_store_get_response, request_id=request_id
         )
@@ -239,7 +250,7 @@ class StoredDebugToolbar(DebugToolbar):
         return toolbar
 
 
-def debug_toolbar_urls(prefix="__debug__") -> list[URLPattern]:
+def debug_toolbar_urls(prefix: str = "__debug__") -> list[URLPattern | URLResolver]:
     """
     Return a URL pattern for serving toolbar in debug mode.
 
