@@ -2,6 +2,7 @@ import asyncio
 
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.http import JsonResponse
 from django.shortcuts import render
 
@@ -40,3 +41,10 @@ async def async_db_concurrent(request):
     return await sync_to_async(render)(
         request, "async_db.html", {"user_count": user_count}
     )
+
+
+def cache_view(request):
+    cache.set("foo", "bar")
+    cache.get("foo")
+    cache.get("baz")
+    return render(request, "cache.html")

@@ -4,6 +4,9 @@ Change log
 Pending
 -------
 
+* Deprecated ``RedirectsPanel`` in favor of ``HistoryPanel`` for viewing
+  toolbar data from redirected requests.
+
 6.1.0 (2025-10-30)
 ------------------
 

@@ -4,8 +4,68 @@
   <head>
     <title>Django Debug Toolbar Redirects Panel: {{ status_line }}</title>
     <script{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} type="module" src="{% static 'debug_toolbar/js/redirect.js' %}" async></script>
+    <style>
+      .djdt-deprecation-warning {
+        --djdt-warning-bg: #fff3cd;
+        --djdt-warning-text: #856404;
+        --djdt-warning-accent: #f1c40f;
+        --djdt-warning-link: #0056b3;
+        --djdt-warning-link-hover: #003d7a;
+        --djdt-warning-strong: #000;
+        --djdt-warning-shadow: rgba(0, 0, 0, 0.1);
+
+        position: relative;
+        background-color: var(--djdt-warning-bg);
+        color: var(--djdt-warning-text);
+        border-left: 0.25em solid var(--djdt-warning-accent);
+        padding: 1em;
+        margin: 1.5em 0;
+        border-radius: 0.25em;
+        box-shadow:
+          0 0.0625em 0.1875em var(--djdt-warning-shadow),
+          0 0.0625em 0.125em var(--djdt-warning-shadow);
+        font-family: var(--djdt-font-family-primary);
+        font-size: 0.875em;
+        line-height: 1.5;
+      }
+
+      .djdt-deprecation-warning::before {
+        content: "⚠️";
+        font-size: 1.125em;
+        margin-right: 0.75em;
+        vertical-align: middle;
+      }
+
+      .djdt-deprecation-warning a {
+        color: var(--djdt-warning-link);
+        text-decoration: none;
+        font-weight: 500;
+        border-bottom: 0.0625em solid currentColor;
+        padding-bottom: 0.0625em;
+        transition: all 0.2s ease;
+      }
+
+      .djdt-deprecation-warning a:hover {
+        color: var(--djdt-warning-link-hover);
+        border-bottom-width: 0.125em;
+      }
+
+      .djdt-deprecation-warning strong {
+        color: var(--djdt-warning-strong);
+        font-weight: 600;
+      }
+    </style>
   </head>
   <body>
+    <div class="djdt-deprecation-warning">
+      <strong>{% translate "WARNING:" %}</strong>
+      {% blocktranslate with issue_url="https://github.com/django-commons/django-debug-toolbar/issues/2216" %}
+      The RedirectsPanel is deprecated and will be removed in a future version. The HistoryPanel
+      now provides the ability to view toolbar data for redirected requests. If you still have a
+      use case for this panel, please comment on this <a target="_blank" rel="noopener noreferrer"
+      href="{{ issue_url }}">issue</a>.
+      {% endblocktranslate %}
+    </div>
     <h1>{{ status_line }}</h1>
     <h2>{% translate "Location:" %} <a id="redirect_to" href="{{ redirect_to }}">{{ redirect_to }}</a></h2>
     <p class="notice">
