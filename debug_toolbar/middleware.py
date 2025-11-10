@@ -91,7 +91,7 @@ def get_show_toolbar(async_mode):
     """
     Get the callback function to show the toolbar.
 
-     Will wrap the function with sync_to_async or
+    Will wrap the function with sync_to_async or
     async_to_sync depending on the status of async_mode
     and whether the underlying function is a coroutine.
     """
