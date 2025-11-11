@@ -21,7 +21,7 @@ class Panel:
     # Private panel properties
 
     @classproperty
-    def panel_id(cls):
+    def panel_id(cls) -> str:
         return cls.__name__
 
     @property
