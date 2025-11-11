@@ -1,3 +1,5 @@
+from typing import Union
+
 from django.http import HttpRequest, HttpResponseBadRequest, JsonResponse
 from django.template.loader import render_to_string
 
@@ -11,13 +13,15 @@ from debug_toolbar.toolbar import DebugToolbar
 @login_not_required
 @require_show_toolbar
 @render_with_toolbar_language
-def history_sidebar(request: HttpRequest) -> HttpResponseBadRequest | JsonResponse:
+def history_sidebar(
+    request: HttpRequest,
+) -> Union[HttpResponseBadRequest, JsonResponse]:
     """Returns the selected debug toolbar history snapshot."""
     form = HistoryStoreForm(request.GET)
 
     if form.is_valid():
         request_id: str = form.cleaned_data["request_id"]
-        toolbar: DebugToolbar | None = DebugToolbar.fetch(request_id)
+        toolbar: Union[DebugToolbar, None] = DebugToolbar.fetch(request_id)
         exclude_history = form.cleaned_data["exclude_history"]
         context: dict[str, dict[str, str]] = {}
         if toolbar is None:
@@ -43,7 +47,9 @@ def history_sidebar(request: HttpRequest) -> HttpResponseBadRequest | JsonRespon
 @login_not_required
 @require_show_toolbar
 @render_with_toolbar_language
-def history_refresh(request: HttpRequest) -> HttpResponseBadRequest | JsonResponse:
+def history_refresh(
+    request: HttpRequest,
+) -> Union[HttpResponseBadRequest, JsonResponse]:
     """Returns the refreshed list of table rows for the History Panel."""
     form = HistoryStoreForm(request.GET)
 
