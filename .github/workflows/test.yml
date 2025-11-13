@@ -2,6 +2,10 @@ name: Test
 
 on:
   push:
+    branches:
+    - main
+    tags:
+    - '**'
   pull_request:
   schedule:
     # Run weekly on Saturday
