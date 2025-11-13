@@ -99,6 +99,7 @@ skip_empty = true
 [tool.coverage.run]
 branch = true
 parallel = true
+relative_files = true
 source = [
   "debug_toolbar",
 ]
