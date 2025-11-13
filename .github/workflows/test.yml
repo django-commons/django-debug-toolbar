@@ -60,6 +60,7 @@ jobs:
           ${{ matrix.python-version }}-v1-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/tox.ini') }}
         restore-keys: |
           ${{ matrix.python-version }}-v1-
+        lookup-only: true
 
     - name: Install dependencies
       run: |
@@ -149,6 +150,7 @@ jobs:
           ${{ matrix.python-version }}-v1-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/tox.ini') }}
         restore-keys: |
           ${{ matrix.python-version }}-v1-
+        lookup-only: true
 
     - name: Install gdal-bin (for postgis)
       run: |
@@ -200,6 +202,7 @@ jobs:
           ${{ matrix.python-version }}-v1-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/tox.ini') }}
         restore-keys: |
           ${{ matrix.python-version }}-v1-
+        lookup-only: true
 
     - name: Install dependencies
       run: |
@@ -240,6 +243,7 @@ jobs:
           ${{ matrix.python-version }}-v1-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/tox.ini') }}
         restore-keys: |
           ${{ matrix.python-version }}-v1-
+        lookup-only: true
 
     - name: Install dependencies
       run: |
