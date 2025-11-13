@@ -7,6 +7,7 @@ Pending
 * Deprecated ``RedirectsPanel`` in favor of ``HistoryPanel`` for viewing
   toolbar data from redirected requests.
 * Fixed support for generating code coverage comments in PRs.
+* Added Django 6.0 to the testing matrix.
 
 6.1.0 (2025-10-30)
 ------------------
