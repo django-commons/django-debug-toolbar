@@ -7,7 +7,8 @@ Pending
 * Deprecated ``RedirectsPanel`` in favor of ``HistoryPanel`` for viewing
   toolbar data from redirected requests.
 * Fixed support for generating code coverage comments in PRs.
-* Added Django 6.0 to the testing matrix.
+* Added Django 6.0 to the testing matrix. Removed Django 5.0 to save CI
+  resources.
 * Show the cache backend alias and cache backend class name instead of
   the cache instance in the cache panel.
 
