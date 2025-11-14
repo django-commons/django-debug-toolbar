@@ -160,7 +160,7 @@ class CachePanel(Panel):
             kwargs=kwargs,
             trace=get_stack_trace(skip=2),
             template_info=get_template_info(),
-            backend=alias,
+            backend=f"{alias} ({type(cache).__name__})",
         )
         return value
 
