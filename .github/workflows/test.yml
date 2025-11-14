@@ -290,7 +290,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          # Persist the credentials because coverage_comment needs them too.
+          persist-credentials: true
 
       - uses: actions/download-artifact@v4
         id: download
