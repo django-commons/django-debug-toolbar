@@ -8,6 +8,8 @@ Pending
   toolbar data from redirected requests.
 * Fixed support for generating code coverage comments in PRs.
 * Added Django 6.0 to the testing matrix.
+* Show the cache backend alias and cache backend class name instead of
+  the cache instance in the cache panel.
 
 6.1.0 (2025-10-30)
 ------------------
@@ -83,8 +85,6 @@ Pending
   conflicts
 * Added CSS for resetting the height of elements too to avoid problems with
   global CSS of a website where the toolbar is used.
-* Show the cache backend alias instead of the cache instance for each call in
-  the cache panel.
 
 5.1.0 (2025-03-20)
 ------------------
