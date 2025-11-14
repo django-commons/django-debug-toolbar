@@ -45,10 +45,9 @@ def _monkey_patch_method(cache, name, alias):
 
 
 def _monkey_patch_cache(cache, alias, panel):
-    if not hasattr(cache, "_djdt_patched"):
+    if not getattr(cache, "_djdt_panel", None):
         for name in WRAPPED_CACHE_METHODS:
             _monkey_patch_method(cache, name, alias)
-        cache._djdt_patched = True
         cache._djdt_panel = panel
 
 
