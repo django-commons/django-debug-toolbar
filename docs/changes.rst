@@ -11,6 +11,7 @@ Pending
   resources.
 * Show the cache backend alias and cache backend class name instead of
   the cache instance in the cache panel.
+* Dropped support for the Python 3.9, it has reached its end of life date.
 
 6.1.0 (2025-10-30)
 ------------------

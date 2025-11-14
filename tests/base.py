@@ -1,5 +1,4 @@
 import contextvars
-from typing import Optional
 
 import html5lib
 from asgiref.local import Local
@@ -70,7 +69,7 @@ class BaseMixin:
     client_class = ToolbarTestClient
     async_client_class = AsyncToolbarTestClient
 
-    panel: Optional[Panel] = None
+    panel: Panel | None = None
     panel_id = None
 
     def setUp(self):

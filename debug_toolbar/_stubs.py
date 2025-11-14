@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, NamedTuple, Optional, Protocol
+from typing import Any, NamedTuple, Protocol
 
 from django import template as dj_template
 from django.http import HttpRequest, HttpResponse
@@ -15,7 +15,7 @@ class InspectStack(NamedTuple):
     index: int
 
 
-TidyStackTrace = list[tuple[str, int, str, str, Optional[Any]]]
+TidyStackTrace = list[tuple[str, int, str, str, Any | None]]
 
 
 class RenderContext(dj_template.context.RenderContext):

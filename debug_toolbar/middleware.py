@@ -4,8 +4,8 @@ Debug Toolbar middleware
 
 import re
 import socket
+from collections.abc import Callable
 from functools import cache
-from typing import Callable
 
 from asgiref.sync import (
     async_to_sync,

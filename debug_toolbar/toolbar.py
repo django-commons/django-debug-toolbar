@@ -7,8 +7,8 @@ from __future__ import annotations
 import logging
 import re
 import uuid
+from collections.abc import Callable
 from functools import cache
-from typing import Callable
 
 from django.apps import apps
 from django.conf import settings

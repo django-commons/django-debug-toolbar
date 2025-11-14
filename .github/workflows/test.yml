@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
 
     services:
       mariadb:
@@ -91,11 +91,9 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
         database: [postgresql, postgis, psycopg3]
         exclude:
-            - python-version: '3.9'
-              database: psycopg3
             - python-version: '3.13'
               database: postgis
             - python-version: '3.13'
@@ -192,7 +190,7 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
 
     steps:
     - uses: actions/checkout@v5
@@ -252,7 +250,7 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
       with:
-        python-version: 3.9
+        python-version: 3.10
 
     - name: Get pip cache dir
       id: pip-cache
