@@ -102,6 +102,17 @@ class SQLPanelTestCase(BaseTestCase):
         # ensure the stacktrace is populated
         self.assertTrue(len(query["stacktrace"]) > 0)
 
+    def test_assert_num_queries_works(self):
+        """
+        Confirm Django's assertNumQueries and CaptureQueriesContext works
+
+        See  https://github.com/django-commons/django-debug-toolbar/issues/1791
+        """
+        self.assertEqual(len(self.panel._queries), 0)
+        with self.assertNumQueries(1):
+            sql_call()
+        self.assertEqual(len(self.panel._queries), 1)
+
     async def test_recording_async(self):
         self.assertEqual(len(self.panel._queries), 0)
 

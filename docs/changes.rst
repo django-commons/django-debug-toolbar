@@ -14,6 +14,7 @@ Pending
 * Dropped support for the Python 3.9, it has reached its end of life date.
 * Toggle tracking the toolbar's queries when using
   ``debug_toolbar.store.DatabaseStore`` with ``SKIP_TOOLBAR_QUERIES``.
+* Added test to confirm Django's ``TestCase.assertNumQueries`` works.
 
 6.1.0 (2025-10-30)
 ------------------
