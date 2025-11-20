@@ -325,6 +325,10 @@
     margin-bottom: 3px;
 }
 
+#djDebug pre span {
+    font-family: var(--djdt-font-family-monospace);
+}
+
 #djDebug .djdt-panelContent {
     position: fixed;
     margin: 0;
