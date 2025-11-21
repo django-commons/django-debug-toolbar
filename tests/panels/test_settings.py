@@ -1,6 +1,25 @@
-from django.test import override_settings
+from django.test import RequestFactory, override_settings
 
-from ..base import IntegrationTestCase
+from debug_toolbar.panels.settings import SettingsPanel
+
+from ..base import BaseTestCase, IntegrationTestCase
+
+rf = RequestFactory()
+
+
+class SettingsPanelTestCase(BaseTestCase):
+    panel_id = SettingsPanel.panel_id
+
+    def test_panel_recording(self):
+        self.request = rf.post("/", data={"foo": "bar"})
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+
+        settings = self.panel.get_stats()["settings"]
+        self.assertEqual(settings["USE_THOUSAND_SEPARATOR"], "False")
+        self.assertEqual(settings["ABSOLUTE_URL_OVERRIDES"], "{}")
+        self.assertEqual(settings["EMAIL_HOST"], "'localhost'")
+        self.assertEqual(settings["EMAIL_PORT"], "25")
 
 
 @override_settings(DEBUG=True)
