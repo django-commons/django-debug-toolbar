@@ -1,5 +1,6 @@
 from functools import cache, lru_cache
 from html import escape
+from itertools import cycle
 
 import sqlparse
 from django.dispatch import receiver
@@ -136,27 +137,13 @@ def contrasting_color_generator():
     and then vary subsequent bits systematically.
     """
 
-    def rgb_to_hex(rgb):
-        return "#{:02x}{:02x}{:02x}".format(*tuple(rgb))
-
-    triples = [
-        (1, 0, 0),
-        (0, 1, 0),
-        (0, 0, 1),
-        (1, 1, 0),
-        (0, 1, 1),
-        (1, 0, 1),
-        (1, 1, 1),
-    ]
-    n = 1 << 7
-    so_far = [[0, 0, 0]]
-    while True:
-        if n == 0:  # This happens after 2**24 colours; presumably, never
-            yield "#000000"  # black
-        copy_so_far = list(so_far)
-        for triple in triples:
-            for previous in copy_so_far:
-                rgb = [n * triple[i] + previous[i] for i in range(3)]
-                so_far.append(rgb)
-                yield rgb_to_hex(rgb)
-        n >>= 1
+    return cycle([
+        "#0C375A",
+        "#21A0A0",
+        "#FFC300",
+        "#FF5733",
+        "#C70039",
+        "#900C3F",
+        "#581845",
+        "#F1C40F"
+    ])

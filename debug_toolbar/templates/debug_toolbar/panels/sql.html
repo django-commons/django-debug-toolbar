@@ -31,7 +31,7 @@
     <thead>
       <tr>
         <th></th>
-        <th colspan="2">{% translate "Query" %}</th>
+        <th>{% translate "Query" %}</th>
         <th>{% translate "Timeline" %}</th>
         <th>{% translate "Time (ms)" %}</th>
         <th>{% translate "Action" %}</th>
@@ -39,11 +39,8 @@
     </thead>
     <tbody>
       {% for query in queries %}
-        <tr class="{% if query.is_slow %} djDebugRowWarning{% endif %}" id="sqlMain_{{ forloop.counter }}">
+        <tr class="djToggleRow {% if query.is_slow %} djDebugRowWarning{% endif %}" id="sqlMain_{{ forloop.counter }}" data-toggle-name="sqlDetails" data-toggle-id="{{ forloop.counter }}">
           <td><span class="djdt-color" data-djdt-styles="backgroundColor:rgb({{ query.rgb_color|join:', ' }})"></span></td>
-          <td class="djdt-toggle">
-            <button type="button" class="djToggleSwitch" data-toggle-name="sqlMain" data-toggle-id="{{ forloop.counter }}">+</button>
-          </td>
           <td>
             <div class="djDebugSql">{{ query.sql|safe }}</div>
             {% if query.similar_count %}
@@ -88,11 +85,11 @@
             {% endif %}
           </td>
         </tr>
-        <tr class="djUnselected {% if query.is_slow %} djDebugRowWarning{% endif %} djToggleDetails_{{ forloop.counter }}" id="sqlDetails_{{ forloop.counter }}">
-          <td colspan="2"></td>
-          <td colspan="4">
+        <tr class="djDetailsRow djUnselected {% if query.is_slow %} djDebugRowWarning{% endif %} djToggleDetails_{{ forloop.counter }}" id="sqlDetails_{{ forloop.counter }}">
+          <td colspan="1"></td>
+          <td colspan="5">
             <div class="djSQLDetailsDiv">
-              <p><strong>{% translate "Connection:" %}</strong> {{ query.alias }}</p>
+              <p style="margin-bottom: 10px;"><strong>{% translate "Connection:" %}</strong> {{ query.alias }}</p>
               {% if query.iso_level %}
                 <p><strong>{% translate "Isolation level:" %}</strong> {{ query.iso_level }}</p>
               {% endif %}
@@ -100,7 +97,7 @@
                 <p><strong>{% translate "Transaction status:" %}</strong> {{ query.trans_status }}</p>
               {% endif %}
               {% if query.stacktrace %}
-                <pre class="djdt-stack">{{ query.stacktrace }}</pre>
+                <div class="djdt-stack">{{ query.stacktrace }}</div>
               {% endif %}
               {% if query.template_info %}
                 <table>

@@ -24,12 +24,22 @@
 
 <h4>{% blocktranslate count staticfiles_count=staticfiles|length %}Static file{% plural %}Static files{% endblocktranslate %}</h4>
 {% if staticfiles %}
-  <dl>
-    {% for path, url, real_path in staticfiles %}
-      <dt><strong><a class="toggleTemplate" href="{{ url }}" target="_blank" rel="noopener">{{ path }}</a></strong></dt>
-      <dd><samp>{{ real_path }}</samp></dd>
-    {% endfor %}
-  </dl>
+  <table>
+    <thead>
+      <tr>
+        <th>{% translate 'Path' %}</th>
+        <th>{% translate 'Location' %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for path, url, real_path in staticfiles %}
+        <tr>
+          <td><strong><a class="toggleTemplate" href="{{ url }}" target="_blank" rel="noopener">{{ path }}</a></strong></td>
+          <td><samp>{{ real_path }}</samp></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% else %}
   <p>{% translate "None" %}</p>
 {% endif %}

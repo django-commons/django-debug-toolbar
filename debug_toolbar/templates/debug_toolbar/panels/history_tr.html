@@ -39,7 +39,12 @@
         </div>
     </td>
     <td>
-        <p>{{ history_context.history_stats.status_code|escape }}</p>
+        <p>
+          {% if history_context.history_stats.status_code >= 400 %}
+            <span class="djdt-badge djdt-badge-error">{{ history_context.history_stats.status_code|escape }}</span>
+          {% else %}
+            <span class="djdt-badge djdt-badge-success">{{ history_context.history_stats.status_code|escape }}</span>
+          {% endif %}
     </td>
     <td class="djdt-actions">
         <form method="get" action="{% url 'djdt:history_sidebar' %}">
