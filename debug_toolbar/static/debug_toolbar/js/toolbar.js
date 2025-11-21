@@ -116,6 +116,15 @@ const djdt = {
             const isSelected = container.classList.contains("djSelected");
             container.classList.toggle("djSelected", !isSelected);
             container.classList.toggle("djUnselected", isSelected);
+
+            for (const el of this.querySelectorAll(".djDebugCollapsed")) {
+                $$.toggle(el, !isSelected);
+            }
+            for (const el of this.querySelectorAll(
+                ".djDebugUncollapsed"
+            )) {
+                $$.toggle(el, isSelected);
+            }
         });
 
         // Used by the cache, profiling and SQL panels

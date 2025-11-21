@@ -25,7 +25,7 @@
         <td class="djToggleRow" data-toggle-name="templateDetails" data-toggle-id="{{ template.template.name }}">
           <strong><a class="remoteCall" href="{% url 'djdt:template_source' %}?template={{ template.template.name }}&amp;template_origin={{ template.template.origin_hash }}">{{ template.template.name|addslashes }}</a></strong>
           <br>
-          <samp style="color: #666;">{{ template.template.origin_name|addslashes }}</samp>
+          <samp style="color: var(--djdt-stack-span-color);">{{ template.template.origin_name|addslashes }}</samp>
         </td>
         <td>
           <a class="djButton remoteCall toggleTemplate" href="{% url 'djdt:template_source' %}?template={{ template.template.name }}&amp;template_origin={{ template.template.origin_hash }}">{% translate "Source" %}</a>

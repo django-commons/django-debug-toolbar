@@ -19,21 +19,21 @@
     --djdt-background-color: white;
     --djdt-panel-content-background-color: #eee;
     --djdt-panel-content-table-background-color: var(--djdt-background-color);
-    --djdt-panel-content-table-alternate-background-color: #fafafa;
     --djdt-panel-title-background-color: #ffc;
     --djdt-djdt-panel-content-table-strip-background-color: #f5f5f5;
     --djdt-highlighted-background-color: #ffc;
     --djdt-toggle-template-background-color: #bbb;
 
     --djdt-sql-font-color: #333;
-    --djdt-pre-text-color: #555;
+    --djdt-pre-text-color: #666;
     --djdt-path-and-locals: black;
+    --djdt-stack-color: #666;
     --djdt-stack-span-color: black;
     --djdt-template-highlight-color: #333;
 
     --djdt-table-header-color: #666;
     --djdt-table-header-background-color: #f8f8f8;
-    --djdt-table-border-color: #e8e8e8;
+    --djdt-table-border-color: #ddd;
     --djdt-button-border-color: #ccc;
     --djdt-button-hover-border-color: #666;
     --djdt-pre-border-color: var(--djdt-table-border-color);
@@ -45,15 +45,15 @@
     --djdt-background-color: #121212;
     --djdt-panel-content-background-color: #121212;
     --djdt-panel-content-table-background-color: var(--djdt-background-color);
-    --djdt-panel-content-table-alternate-background-color: #171717;
     --djdt-panel-title-background-color: #417690;
-    --djdt-djdt-panel-content-table-strip-background-color: #324154ff;
+    --djdt-djdt-panel-content-table-strip-background-color: #171717;
     --djdt-highlighted-background-color: #00363a;
     --djdt-toggle-template-background-color: #282755;
 
     --djdt-sql-font-color: var(--djdt-font-color);
     --djdt-pre-text-color: var(--djdt-font-color);
     --djdt-path-and-locals: #65758cff;
+    --djdt-stack-color: #888;
     --djdt-stack-span-color: #ccc;
     --djdt-template-highlight-color: var(--djdt-stack-span-color);
 
@@ -472,12 +472,13 @@
     top: 4px;
     right: 15px;
     line-height: 16px;
-    border: 6px solid #ddd;
+    border: 3px solid #ddd;
     border-radius: 50%;
-    background: #fff;
+    background: transparent;
+    box-shadow: none;
     color: #ddd;
-    font-weight: 900;
-    font-size: 20px;
+    font-weight: 400;
+    font-size: 26px;
     height: 36px;
     width: 36px;
     padding: 0 0 5px;
@@ -543,6 +544,8 @@
 
 #djDebug .highlight {
     color: var(--djdt-font-color);
+    padding: 10px 13px;
+    border: 1px solid var(--djdt-table-border-color);
 }
 #djDebug .highlight .err {
     color: var(--djdt-font-color);
@@ -561,6 +564,9 @@ To regenerate:
     from pygments.formatters import HtmlFormatter
     print(HtmlFormatter(wrapcode=True).get_style_defs())
  */
+#djDebug[data-theme="light"] .highlight {
+    background: #fff;
+}
 #djDebug[data-theme="light"] .highlight pre {
     line-height: 125%;
 }
@@ -1084,7 +1090,7 @@ To regenerate:
 }
 
 #djDebug .djDetailsRow {
-    background-color: var(--djdt-panel-content-table-alternate-background-color);
+    background-color: var(--djdt-djdt-panel-content-table-strip-background-color);
 }
 
 #djDebug .djDebugRowWarning .djdt-time {
@@ -1122,12 +1128,12 @@ To regenerate:
 }
 
 #djDebug .djdt-stack {
-    color: var(--djdt-stack-span-color);
+    color: var(--djdt-stack-color);
 }
 
 #djDebug .djdt-stack span {
     color: var(--djdt-stack-span-color);
-    font-weight: bold;
+    font-weight: 500;
 }
 #djDebug .djdt-stack pre.djdt-locals,
 #djDebug .djdt-stack pre.djdt-locals span {
@@ -1135,12 +1141,10 @@ To regenerate:
     font-weight: normal;
 }
 #djDebug .djdt-stack .djdt-code {
+    font-size: 14px;
     font-weight: normal;
     margin: 5px 0 10px;
-    border: 1px solid var(--djdt-pre-border-color);
-    border-collapse: collapse;
-    background-color: var(--djdt-background-color);
-    padding: 5px;
+    color: var(--djdt-stack-color);
 }
 #djDebug .djdt-stack pre.djdt-locals {
     margin: 0 27px 27px 27px;
