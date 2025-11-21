@@ -120,9 +120,7 @@ const djdt = {
             for (const el of this.querySelectorAll(".djDebugCollapsed")) {
                 $$.toggle(el, !isSelected);
             }
-            for (const el of this.querySelectorAll(
-                ".djDebugUncollapsed"
-            )) {
+            for (const el of this.querySelectorAll(".djDebugUncollapsed")) {
                 $$.toggle(el, isSelected);
             }
         });

@@ -69,7 +69,6 @@ def tidy_stacktrace(stack: list[stubs.InspectStack]) -> stubs.TidyStackTrace:
     return trace
 
 
-
 def render_stacktrace(trace: stubs.TidyStackTrace) -> SafeString:
     show_locals = dt_settings.get_config()["ENABLE_STACKTRACES_LOCALS"]
     html = ""

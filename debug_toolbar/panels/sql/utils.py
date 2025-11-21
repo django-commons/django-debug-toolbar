@@ -137,13 +137,15 @@ def contrasting_color_generator():
     and then vary subsequent bits systematically.
     """
 
-    return cycle([
-        "#0C375A",
-        "#21A0A0",
-        "#FFC300",
-        "#FF5733",
-        "#C70039",
-        "#900C3F",
-        "#581845",
-        "#F1C40F"
-    ])
+    return cycle(
+        [
+            "#0C375A",
+            "#21A0A0",
+            "#FFC300",
+            "#FF5733",
+            "#C70039",
+            "#900C3F",
+            "#581845",
+            "#F1C40F",
+        ]
+    )

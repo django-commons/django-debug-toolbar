@@ -153,7 +153,8 @@
     transition: none;
 }
 
-#djDebug button, #djDebug .djButton {
+#djDebug button,
+#djDebug .djButton {
     background-color: var(--djdt-background-color);
     border: 1px solid var(--djdt-button-border-color);
     border-radius: 4px;
@@ -164,16 +165,19 @@
     text-decoration: none;
 }
 
-#djDebug[data-theme="light"] button, #djDebug[data-theme="light"] .djButton {
+#djDebug[data-theme="light"] button,
+#djDebug[data-theme="light"] .djButton {
     box-shadow: 0 -15px 20px -10px rgba(0, 0, 0, 0.15) inset;
 }
 
-#djDebug button:hover, #djDebug .djButton:hover {
+#djDebug button:hover,
+#djDebug .djButton:hover {
     border-color: var(--djdt-button-hover-border-color);
     cursor: pointer;
 }
 
-#djDebug button:active, #djDebug .djButton:active {
+#djDebug button:active,
+#djDebug .djButton:active {
     border: 1px solid #aaa;
 }
 
@@ -464,7 +468,7 @@
 
 #djDebug .djdt-badge.djdt-badge-success {
     color: #fff;
-    background-color: #05A53F;
+    background-color: #05a53f;
 }
 
 #djDebug .djdt-panelContent .djDebugClose {
@@ -1090,7 +1094,9 @@ To regenerate:
 }
 
 #djDebug .djDetailsRow {
-    background-color: var(--djdt-djdt-panel-content-table-strip-background-color);
+    background-color: var(
+        --djdt-djdt-panel-content-table-strip-background-color
+    );
 }
 
 #djDebug .djDebugRowWarning .djdt-time {

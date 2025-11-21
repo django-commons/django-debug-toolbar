@@ -1,8 +1,9 @@
+from pprint import pformat
+
 from django.utils.translation import gettext_lazy as _
 from django.views.debug import get_default_exception_reporter_filter
-from pprint import pformat
+
 from debug_toolbar.panels import Panel
-from debug_toolbar.sanitize import force_str
 
 get_safe_settings = get_default_exception_reporter_filter().get_safe_settings
 
