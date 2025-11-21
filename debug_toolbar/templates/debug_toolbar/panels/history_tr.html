@@ -10,36 +10,15 @@
         <p>{{ history_context.history_stats.request_url|truncatechars:100|escape }}</p>
     </td>
     <td>
-        <button type="button" class="djToggleSwitch" data-toggle-name="historyMain" data-toggle-id="{{ request_id }}">+</button>
-        <div class="djUnselected djToggleDetails_{{ request_id }}">
-          <table>
-            <colgroup>
-              <col class="djdt-width-20">
-              <col>
-            </colgroup>
-            <thead>
-              <tr>
-                <th>{% translate "Variable" %}</th>
-                <th>{% translate "Value" %}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for key, value in history_context.history_stats.data.items %}
-                <tr>
-                  <td><code>{{ key|pprint }}</code></td>
-                  <td><code>{{ value|pprint }}</code></td>
-                </tr>
-              {% empty %}
-                <tr>
-                  <td colspan="2">No data</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+      {% if history_context.history_stats.data %}{{ history_context.history_stats.data }}{% endif %}
     </td>
     <td>
-        <p>{{ history_context.history_stats.status_code|escape }}</p>
+        <p>
+          {% if history_context.history_stats.status_code >= 400 %}
+            <span class="djdt-badge djdt-badge-error">{{ history_context.history_stats.status_code|escape }}</span>
+          {% else %}
+            <span class="djdt-badge djdt-badge-success">{{ history_context.history_stats.status_code|escape }}</span>
+          {% endif %}
     </td>
     <td class="djdt-actions">
         <form method="get" action="{% url 'djdt:history_sidebar' %}">
