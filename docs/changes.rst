@@ -91,6 +91,8 @@ Pending
   conflicts
 * Added CSS for resetting the height of elements too to avoid problems with
   global CSS of a website where the toolbar is used.
+* Added open in editor functionality to templates panel using ``EDITOR``
+  setting.
 
 5.1.0 (2025-03-20)
 ------------------
