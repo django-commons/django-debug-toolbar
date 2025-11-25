@@ -328,13 +328,19 @@ kbd { border: 1px solid black; border-color: #888 #333 #333 #888; padding: .1em 
 
 #index table.index { margin-left: -.5em; }
 
-#index td, #index th { text-align: right; padding: .25em .5em; border-bottom: 1px solid #eee; }
+#index td, #index th { text-align: right; vertical-align: baseline; padding: .25em .5em; border-bottom: 1px solid #eee; }
 
 @media (prefers-color-scheme: dark) { #index td, #index th { border-color: #333; } }
 
 #index td.name, #index th.name { text-align: left; width: auto; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; min-width: 15em; }
 
-#index th { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; font-style: italic; color: #333; cursor: pointer; }
+#index td.left, #index th.left { text-align: left; }
+
+#index td.spacer, #index th.spacer { border: none; padding: 0; }
+
+#index td.spacer:hover, #index th.spacer:hover { background: inherit; }
+
+#index th { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; font-style: italic; color: #333; border-color: #ccc; cursor: pointer; }
 
 @media (prefers-color-scheme: dark) { #index th { color: #ddd; } }
 
@@ -352,13 +358,15 @@ kbd { border: 1px solid black; border-color: #888 #333 #333 #888; padding: .1em 
 
 #index th[aria-sort="descending"] .arrows::after { content: " ▼"; }
 
+#index tr.grouphead th { cursor: default; font-style: normal; border-color: #999; }
+
 #index td.name { font-size: 1.15em; }
 
 #index td.name a { text-decoration: none; color: inherit; }
 
 #index td.name .no-noun { font-style: italic; }
 
-#index tr.total td, #index tr.total_dynamic td { font-weight: bold; border-top: 1px solid #ccc; border-bottom: none; }
+#index tr.total td, #index tr.total_dynamic td { font-weight: bold; border-bottom: none; }
 
 #index tr.region:hover { background: #eee; }
 
