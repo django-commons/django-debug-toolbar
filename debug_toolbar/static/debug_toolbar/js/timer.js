@@ -1,4 +1,6 @@
-import { $$ } from "./utils.js";
+import { $$, getDebugElement } from "./utils.js";
+
+const djDebug = getDebugElement();
 
 function insertBrowserTiming() {
     const timingOffset = performance.timing.navigationStart;
@@ -58,10 +60,10 @@ function insertBrowserTiming() {
         tbody.appendChild(row);
     }
 
-    const browserTiming = document.getElementById("djDebugBrowserTiming");
+    const browserTiming = djDebug.querySelector("#djDebugBrowserTiming");
     // Determine if the browser timing section has already been rendered.
     if (browserTiming.classList.contains("djdt-hidden")) {
-        const tbody = document.getElementById("djDebugBrowserTimingTableBody");
+        const tbody = djDebug.querySelector("#djDebugBrowserTimingTableBody");
         // This is a reasonably complete and ordered set of timing periods (2 params) and events (1 param)
         addRow(tbody, "domainLookupStart", "domainLookupEnd");
         addRow(tbody, "connectStart", "connectEnd");
@@ -75,7 +77,6 @@ function insertBrowserTiming() {
     }
 }
 
-const djDebug = document.getElementById("djDebug");
 // Insert the browser timing now since it's possible for this
 // script to miss the initial panel load event.
 insertBrowserTiming();
