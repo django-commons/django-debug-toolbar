@@ -41,7 +41,8 @@ class HistoryPanelTestCase(BaseTestCase):
                     "/",
                     data=data,
                     content_type="application/json",
-                    CONTENT_TYPE="application/json",  # Force django test client to add the content-type even if no data
+                    # Force django test client to add the content-type even if no data
+                    CONTENT_TYPE="application/json",
                 )
                 response = self.panel.process_request(self.request)
                 self.panel.generate_stats(self.request, response)
@@ -82,6 +83,7 @@ class HistoryViewsTestCase(IntegrationTestCase):
         "CachePanel",
         "SignalsPanel",
         "CommunityPanel",
+        "TasksPanel",
         "ProfilingPanel",
     }
 
