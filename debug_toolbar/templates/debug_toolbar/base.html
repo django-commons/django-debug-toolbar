@@ -1,43 +1,46 @@
 {% load i18n static %}
-{% block css %}
-<link{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} rel="stylesheet" href="{% static 'debug_toolbar/css/print.css' %}" media="print">
-<link{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} rel="stylesheet" href="{% static 'debug_toolbar/css/toolbar.css' %}">
-{% endblock css %}
-{% block js %}
-<script{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} type="module" src="{% static 'debug_toolbar/js/toolbar.js' %}" async></script>
-{% endblock js %}
-<div id="djDebug" class="djdt-hidden" dir="ltr"
-     {% if not toolbar.should_render_panels %}
-     data-request-id="{{ toolbar.request_id }}"
-     data-render-panel-url="{% url 'djdt:render_panel' %}"
-     {% endif %}
-     {% url 'djdt:history_sidebar' as history_url %}
-     {% if history_url %}
-     data-sidebar-url="{{ history_url }}"
-     {% endif %}
-     data-default-show="{% if toolbar.config.SHOW_COLLAPSED %}false{% else %}true{% endif %}"
-     {{ toolbar.config.ROOT_TAG_EXTRA_ATTRS|safe }}  data-update-on-fetch="{{ toolbar.config.UPDATE_ON_FETCH }}">
-  <div class="djdt-hidden" id="djDebugToolbar">
-    <ul id="djDebugPanelList">
-      <li><a id="djHideToolBarButton" href="#" title="{% translate 'Hide toolbar' %}">{% translate "Hide" %} »</a></li>
-      <li>
-        <a id="djToggleThemeButton" href="#" title="{% translate 'Toggle Theme' %}">
-          {% translate "Toggle Theme" %} {% include "debug_toolbar/includes/theme_selector.html" %}
-        </a>
-      </li>
+<div id="djDebugShadowRootContainer" {{ toolbar.config.ROOT_TAG_EXTRA_ATTRS|safe }}>
+  <template shadowrootmode="open">
+    {% block css %}
+    <link{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} rel="stylesheet" href="{% static 'debug_toolbar/css/print.css' %}" media="print">
+    <link{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} rel="stylesheet" href="{% static 'debug_toolbar/css/toolbar.css' %}">
+    {% endblock css %}
+    {% block js %}
+    <script{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} type="module" src="{% static 'debug_toolbar/js/toolbar.js' %}" async></script>
+    {% endblock js %}
+    <div id="djDebug" class="djdt-hidden" dir="ltr"
+        {% if not toolbar.should_render_panels %}
+        data-request-id="{{ toolbar.request_id }}"
+        data-render-panel-url="{% url 'djdt:render_panel' %}"
+        {% endif %}
+        {% url 'djdt:history_sidebar' as history_url %}
+        {% if history_url %}
+        data-sidebar-url="{{ history_url }}"
+        {% endif %}
+        data-default-show="{% if toolbar.config.SHOW_COLLAPSED %}false{% else %}true{% endif %}"
+        data-update-on-fetch="{{ toolbar.config.UPDATE_ON_FETCH }}">
+      <div class="djdt-hidden" id="djDebugToolbarHandle">
+        <div title="{% translate 'Show toolbar' %}" id="djShowToolBarButton">
+          <span id="djShowToolBarD">D</span><span id="djShowToolBarJ">J</span>DT
+        </div>
+      </div>
+      <div class="djdt-hidden" id="djDebugToolbar">
+        <ul id="djDebugPanelList">
+          <li><a id="djHideToolBarButton" href="#" title="{% translate 'Hide toolbar' %}">{% translate "Hide" %} »</a></li>
+          <li>
+            <a id="djToggleThemeButton" href="#" title="{% translate 'Toggle Theme' %}">
+              {% translate "Toggle Theme" %} {% include "debug_toolbar/includes/theme_selector.html" %}
+            </a>
+          </li>
+          {% for panel in toolbar.panels %}
+            {% include "debug_toolbar/includes/panel_button.html" %}
+          {% endfor %}
+        </ul>
+      </div>
       {% for panel in toolbar.panels %}
-        {% include "debug_toolbar/includes/panel_button.html" %}
+        {% include "debug_toolbar/includes/panel_content.html" %}
       {% endfor %}
-    </ul>
-  </div>
-  <div class="djdt-hidden" id="djDebugToolbarHandle">
-    <div title="{% translate 'Show toolbar' %}" id="djShowToolBarButton">
-      <span id="djShowToolBarD">D</span><span id="djShowToolBarJ">J</span>DT
+      <div id="djDebugWindow" class="djdt-panelContent djdt-hidden"></div>
     </div>
-  </div>
-
-  {% for panel in toolbar.panels %}
-    {% include "debug_toolbar/includes/panel_content.html" %}
-  {% endfor %}
-  <div id="djDebugWindow" class="djdt-panelContent djdt-hidden"></div>
+  </template>
 </div>
