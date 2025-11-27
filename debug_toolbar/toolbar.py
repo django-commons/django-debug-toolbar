@@ -27,6 +27,7 @@ from debug_toolbar._stubs import GetResponse
 from debug_toolbar.store import BaseStore, get_store
 
 from .panels import Panel
+from .utils import get_csp_nonce
 
 logger = logging.getLogger(__name__)
 
@@ -78,11 +79,8 @@ class DebugToolbar:
     def csp_nonce(self) -> str | None:
         """
         Look up the Content Security Policy nonce if there is one.
-
-        This is built specifically for django-csp, which may not always
-        have a nonce associated with the request.
         """
-        return getattr(self.request, "csp_nonce", None)
+        return get_csp_nonce(self.request)
 
     def get_panel_by_id(self, panel_id: str) -> Panel:
         """

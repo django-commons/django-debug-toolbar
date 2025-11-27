@@ -8,3 +8,11 @@ except ImportError:
         """
         view_func.login_required = False
         return view_func
+
+
+try:
+    from django.middleware.csp import get_nonce
+except ImportError:
+    # For Django < 6.0, there is no native CSP support, hence no CSP nonces.
+    def get_nonce(request):
+        return None
