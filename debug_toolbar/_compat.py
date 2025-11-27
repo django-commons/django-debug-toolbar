@@ -1,3 +1,5 @@
+import django
+
 try:
     from django.contrib.auth.decorators import login_not_required
 except ImportError:
@@ -10,9 +12,9 @@ except ImportError:
         return view_func
 
 
-try:
+if django.VERSION >= (6, 0):
     from django.middleware.csp import get_nonce
-except ImportError:
+else:
     # For Django < 6.0, there is no native CSP support, hence no CSP nonces.
     def get_nonce(request):
         return None

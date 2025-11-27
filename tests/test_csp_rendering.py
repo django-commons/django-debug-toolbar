@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from importlib.util import find_spec
-
+import django
 from django.conf import settings
 from django.test.utils import override_settings
 from html5lib.constants import E
@@ -22,7 +21,7 @@ MIDDLEWARE_CSP_LIB_LAST = settings.MIDDLEWARE + ["csp.middleware.CSPMiddleware"]
 
 VALID_MIDDLEWARE_VARIATIONS = [MIDDLEWARE_CSP_LIB_BEFORE, MIDDLEWARE_CSP_LIB_LAST]
 
-django_has_builtin_csp_support = bool(find_spec("django.middleware.csp"))
+django_has_builtin_csp_support = django.VERSION >= (6, 0)
 if django_has_builtin_csp_support:
     MIDDLEWARE_CSP_BUILTIN_BEFORE = settings.MIDDLEWARE.copy()
     MIDDLEWARE_CSP_BUILTIN_BEFORE.insert(
