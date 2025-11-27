@@ -12,20 +12,36 @@
 
 <h4>{% blocktranslate count template_count=templates|length %}Template{% plural %}Templates{% endblocktranslate %}</h4>
 {% if templates %}
-  <dl>
-    {% for template in templates %}
-      <dt><strong><a class="remoteCall toggleTemplate" href="{% url 'djdt:template_source' %}?template={{ template.template.name }}&amp;template_origin={{ template.template.origin_hash }}">{{ template.template.name|addslashes }}</a></strong></dt>
-      <dd><samp>{{ template.template.origin_name|addslashes }}</samp></dd>
-      {% if template.context %}
-        <dd>
-          <details>
-            <summary>{% translate "Toggle context" %}</summary>
-            <code class="djTemplateContext">{{ template.context }}</code>
-          </details>
-        </dd>
-      {% endif %}
-    {% endfor %}
-  </dl>
+  <table>
+    <thead>
+      <tr>
+        <th>{% translate "Template" %}</th>
+        <th>{% translate "Action" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for template in templates %}
+    <tr>
+        <td class="djToggleRow" data-toggle-name="templateDetails" data-toggle-id="{{ template.template.name }}">
+          <strong><a class="remoteCall" href="{% url 'djdt:template_source' %}?template={{ template.template.name }}&amp;template_origin={{ template.template.origin_hash }}">{{ template.template.name|addslashes }}</a></strong>
+          <br>
+          <samp style="color: var(--djdt-stack-span-color);">{{ template.template.origin_name|addslashes }}</samp>
+        </td>
+        <td>
+          <a class="djButton remoteCall toggleTemplate" href="{% url 'djdt:template_source' %}?template={{ template.template.name }}&amp;template_origin={{ template.template.origin_hash }}">{% translate "Source" %}</a>
+        </td>
+      </tr>
+        {% if template.context %}
+          <tr class="djDetailsRow djUnselected" id="templateDetails_{{ template.template.name }}">
+            <td colspan="2">
+              <code class="djTemplateContext">{{ template.context }}</code>
+            </td>
+          </td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </tr>
+  </table>
 {% else %}
   <p>{% translate "None" %}</p>
 {% endif %}

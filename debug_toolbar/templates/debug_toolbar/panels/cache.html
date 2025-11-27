@@ -40,7 +40,7 @@
   <table>
     <thead>
       <tr>
-        <th colspan="2">{% translate "Time (ms)" %}</th>
+        <th>{% translate "Time (ms)" %}</th>
         <th>{% translate "Type" %}</th>
         <th>{% translate "Arguments" %}</th>
         <th>{% translate "Keyword arguments" %}</th>
@@ -49,19 +49,15 @@
     </thead>
     <tbody>
       {% for call in calls %}
-        <tr id="cacheMain_{{ forloop.counter }}">
-          <td class="djdt-toggle">
-            <button class="djToggleSwitch" data-toggle-name="cacheMain" data-toggle-id="{{ forloop.counter }}">+</button>
-          </td>
+        <tr class="djToggleRow" id="cacheMain_{{ forloop.counter }}" data-toggle-name="cacheDetails" data-toggle-id="{{ forloop.counter }}">
           <td>{{ call.time|floatformat:"4" }}</td>
           <td>{{ call.name|escape }}</td>
           <td>{{ call.args|escape }}</td>
           <td>{{ call.kwargs|escape }}</td>
           <td>{{ call.backend }}</td>
         </tr>
-        <tr class="djUnselected djToggleDetails_{{ forloop.counter }}" id="cacheDetails_{{ forloop.counter }}">
-          <td colspan="1"></td>
-          <td colspan="5"><pre class="djdt-stack">{{ call.trace|safe }}</pre></td>
+        <tr class="djDetailsRow djUnselected djToggleDetails_{{ forloop.counter }}" id="cacheDetails_{{ forloop.counter }}">
+          <td colspan="5"><div class="djdt-stack">{{ call.trace|safe }}</div></td>
         </tr>
       {% endfor %}
     </tbody>
