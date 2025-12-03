@@ -16,6 +16,8 @@ Pending
   ``debug_toolbar.store.DatabaseStore`` with ``SKIP_TOOLBAR_QUERIES``.
 * Fixed font family for code blocks and stack traces in the toolbar.
 * Added test to confirm Django's ``TestCase.assertNumQueries`` works.
+* Updated tox configuration to treat ``DeprecationWarning``,
+  ``ResourceWarning``, and ``PendingDeprecationWarning`` as errors.
 
 6.1.0 (2025-10-30)
 ------------------
