@@ -1,4 +1,10 @@
-import { $$, getDebugElement, ajax, debounce, replaceToolbarState } from "./utils.js";
+import {
+    $$,
+    ajax,
+    debounce,
+    getDebugElement,
+    replaceToolbarState,
+} from "./utils.js";
 
 function onKeyDown(event) {
     if (event.keyCode === 27) {
@@ -287,8 +293,7 @@ const djdt = {
         window.removeEventListener("resize", djdt.ensureHandleVisibility);
     },
     updateOnAjax() {
-        const sidebarUrl =
-            getDebugElement().dataset.sidebarUrl;
+        const sidebarUrl = getDebugElement().dataset.sidebarUrl;
         const slowjax = debounce(ajax, 200);
 
         function handleAjaxResponse(requestId) {
