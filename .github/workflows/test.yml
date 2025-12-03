@@ -78,7 +78,7 @@ jobs:
         COVERAGE_FILE: ".coverage.mysql.${{ matrix.python-version }}"
 
     - name: Store coverage file
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: coverage-mysql-${{ matrix.python-version }}
         path: .coverage.mysql.${{ matrix.python-version }}*
@@ -178,7 +178,7 @@ jobs:
         COVERAGE_FILE: ".coverage.${{ matrix.database }}.${{ matrix.python-version }}"
 
     - name: Store coverage file
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: coverage-${{ matrix.database }}-${{ matrix.python-version }}
         path: .coverage.${{ matrix.database }}.${{ matrix.python-version }}*
@@ -231,7 +231,7 @@ jobs:
         COVERAGE_FILE: ".coverage.sqlite.${{ matrix.python-version }}"
 
     - name: Store coverage file
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: coverage-sqlite-${{ matrix.python-version }}
         path: .coverage.sqlite.${{ matrix.python-version }}*
@@ -291,7 +291,7 @@ jobs:
           # Persist the credentials because coverage_comment needs them too.
           persist-credentials: true
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         id: download
         with:
           pattern: coverage-*
@@ -305,7 +305,7 @@ jobs:
           MERGE_COVERAGE_FILES: true
 
       - name: Store Pull Request comment to be posted
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
         with:
           name: python-coverage-comment-action
