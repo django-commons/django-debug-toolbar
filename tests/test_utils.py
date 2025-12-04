@@ -5,6 +5,7 @@ from django.test import override_settings
 
 import debug_toolbar.utils
 from debug_toolbar.utils import (
+    get_editor_url,
     get_name_from_obj,
     get_stack,
     get_stack_trace,
@@ -171,3 +172,34 @@ class SanitizeAndSortRequestVarsTestCase(unittest.TestCase):
         test_input = ["not", "a", "dict"]
         result = sanitize_and_sort_request_vars(test_input)
         self.assertEqual(result["raw"], test_input)
+
+
+class GetEditorUrlTestCase(unittest.TestCase):
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"EDITOR": "vscode"})
+    def test_get_editor_url(self):
+        editors = {
+            "cursor": "cursor://file/test.py:5",
+            "emacs": "emacs://open?url=file://test.py&line=5",
+            "espresso": "x-espresso://open?filepath=test.py&lines=5",
+            "idea": "idea://open?file=test.py&line=5",
+            "idea-remote": "javascript:(()=>{let r=new XMLHttpRequest; r.open('get','http://localhost:63342/api/file/?file=test.py&line=5');r.send();})()",
+            "macvim": "mvim://open/?url=file://test.py&line=5",
+            "nova": "nova://open?path=test.py&line=5",
+            "pycharm": "pycharm://open?file=test.py&line=5",
+            "pycharm-remote": "javascript:(()=>{let r=new XMLHttpRequest; r.open('get','http://localhost:63342/api/file/test.py:5');r.send();})()",
+            "sublime": "subl://open?url=file://test.py&line=5",
+            "vscode": "vscode://file/test.py:5",
+            "vscode-insiders": "vscode-insiders://file/test.py:5",
+            "vscode-remote": "vscode://vscode-remote/test.py:5",
+            "vscode-insiders-remote": "vscode-insiders://vscode-remote/test.py:5",
+            "vscodium": "vscodium://file/test.py:5",
+            "windsurf": "windsurf://file/test.py:5",
+            "non-existent-editor": None,
+        }
+        for editor, expected_url in editors.items():
+            with (
+                self.subTest(editor=editor),
+                override_settings(DEBUG_TOOLBAR_CONFIG={"EDITOR": editor}),
+            ):
+                url = get_editor_url("test.py", 5)
+                self.assertEqual(url, expected_url)
