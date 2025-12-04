@@ -17,6 +17,7 @@ Pending
 * Fixed font family for code blocks and stack traces in the toolbar.
 * Added test to confirm Django's ``TestCase.assertNumQueries`` works.
 * Fixed string representation of values in settings panel.
+* Declared support for Django 6.0.
 
 6.1.0 (2025-10-30)
 ------------------
