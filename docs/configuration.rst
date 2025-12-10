@@ -492,7 +492,7 @@ could add a **debug_toolbar/base.html** template override to your project:
 
     {% block css %}{{ block.super }}
     <style>
-        :host {
+        #djDebug {
             --djdt-font-family-primary: 'Roboto', sans-serif;
         }
     </style>

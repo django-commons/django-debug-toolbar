@@ -76,9 +76,10 @@ function getDebugElement() {
     // everywhere the element is being selected. A fixed reference
     // to the element should be avoided because the entire DOM could
     // be reloaded such as via HTMX boosting.
-    const root = document.getElementById(
-        "djDebugShadowRootContainer"
-    ).shadowRoot;
+    let root = document.getElementById("djDebugRoot");
+    if (root.shadowRoot) {
+        root = root.shadowRoot;
+    }
     return root.querySelector("#djDebug");
 }
 

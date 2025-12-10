@@ -8,6 +8,10 @@ Pending
   fetch requests.
 * Added a note to the prerequisites section of the installation docs
   about requiring an up-to-date browser.
+* Updated to render the toolbar in a shadow DOM for better isolation
+  from the rest of the page. This can be disabled with the setting
+  ``USE_SHADOW_DOM``. Note that this may break custom themes and panes
+  that have not yet been updated for shadow DOM support.
 
 6.3.0 (2026-04-01)
 ------------------
