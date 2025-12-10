@@ -97,7 +97,10 @@ class DebugToolbar:
         if not self.should_render_panels():
             self.init_store()
         try:
-            context = {"toolbar": self}
+            context = {
+                "toolbar": self,
+                "use_shadow_dom": self.config["USE_SHADOW_DOM"],
+            }
             lang = self.config["TOOLBAR_LANGUAGE"] or get_language()
             with lang_override(lang):
                 return render_to_string("debug_toolbar/base.html", context)

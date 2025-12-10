@@ -1,5 +1,5 @@
 /* Variable definitions */
-:host {
+#djDebug {
     /* Font families are the same as in Django admin/css/base.css */
     --djdt-font-family-primary:
         "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif,
@@ -13,7 +13,7 @@
         "Noto Color Emoji";
 }
 
-:host,
+#djDebug,
 #djDebug[data-theme="light"] {
     --djdt-font-color: black;
     --djdt-background-color: white;

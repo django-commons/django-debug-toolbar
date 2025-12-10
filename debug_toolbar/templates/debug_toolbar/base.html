@@ -1,6 +1,6 @@
 {% load i18n static %}
-<div id="djDebugShadowRootContainer" {{ toolbar.config.ROOT_TAG_EXTRA_ATTRS|safe }}>
-  <template shadowrootmode="open">
+<div id="djDebugRoot" {{ toolbar.config.ROOT_TAG_EXTRA_ATTRS|safe }}>
+  {% if use_shadow_dom %}<template shadowrootmode="open">{% endif %}
     {% block css %}
     <link{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} rel="stylesheet" href="{% static 'debug_toolbar/css/print.css' %}" media="print">
     <link{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} rel="stylesheet" href="{% static 'debug_toolbar/css/toolbar.css' %}">
@@ -42,5 +42,5 @@
       {% endfor %}
       <div id="djDebugWindow" class="djdt-panelContent djdt-hidden"></div>
     </div>
-  </template>
+  {% if use_shadow_dom %}</template>{% endif %}
 </div>
