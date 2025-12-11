@@ -8,12 +8,8 @@ build:
   os: ubuntu-24.04
   tools:
     python: "3.10"
+  commands:
+    - pip install --group docs
 
 sphinx:
   configuration: docs/conf.py
-
-python:
-  install:
-  - requirements: requirements_dev.txt
-  - method: pip
-    path: .
