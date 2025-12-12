@@ -48,6 +48,41 @@ urls.Homepage = "https://github.com/django-commons/django-debug-toolbar"
 urls.Issues = "https://github.com/django-commons/django-debug-toolbar/issues"
 urls.Source = "https://github.com/django-commons/django-debug-toolbar"
 
+[dependency-groups]
+dev = [
+  { include-group = "django_async" },
+  { include-group = "docs" },
+  { include-group = "other" },
+  { include-group = "run_time" },
+  { include-group = "test" },
+]
+test = [
+  "black",
+  "coverage[toml]",
+  "django-csp",               # Used in tests/test_csp_rendering
+  "django-template-partials",
+  "html5lib",
+  "selenium",
+  "tox",
+]
+docs = [
+  "sphinx",
+  "sphinx-rtd-theme>1",
+  "sphinxcontrib-spelling",
+]
+run_time = [
+  "django",
+  "jinja2",
+  "sqlparse",
+]
+django_async = [
+  "daphne",     # Integration support
+  "whitenoise",
+]
+other = [
+  "pre-commit",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = [
   "debug_toolbar",
