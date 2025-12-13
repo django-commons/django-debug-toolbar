@@ -1,4 +1,4 @@
-from django.http import HttpResponseBadRequest, JsonResponse
+from django.http import HttpRequest, HttpResponseBadRequest, JsonResponse
 from django.template.loader import render_to_string
 
 from debug_toolbar._compat import login_not_required
@@ -11,15 +11,17 @@ from debug_toolbar.toolbar import DebugToolbar
 @login_not_required
 @require_show_toolbar
 @render_with_toolbar_language
-def history_sidebar(request):
+def history_sidebar(
+    request: HttpRequest,
+) -> HttpResponseBadRequest | JsonResponse:
     """Returns the selected debug toolbar history snapshot."""
     form = HistoryStoreForm(request.GET)
 
     if form.is_valid():
-        request_id = form.cleaned_data["request_id"]
-        toolbar = DebugToolbar.fetch(request_id)
+        request_id: str = form.cleaned_data["request_id"]
+        toolbar: DebugToolbar | None = DebugToolbar.fetch(request_id)
         exclude_history = form.cleaned_data["exclude_history"]
-        context = {}
+        context: dict[str, dict[str, str]] = {}
         if toolbar is None:
             # When the request_id has been popped already due to
             # RESULTS_CACHE_SIZE
@@ -43,12 +45,14 @@ def history_sidebar(request):
 @login_not_required
 @require_show_toolbar
 @render_with_toolbar_language
-def history_refresh(request):
+def history_refresh(
+    request: HttpRequest,
+) -> HttpResponseBadRequest | JsonResponse:
     """Returns the refreshed list of table rows for the History Panel."""
     form = HistoryStoreForm(request.GET)
 
     if form.is_valid():
-        requests = []
+        requests: list[dict[str, str]] = []
         # Convert to list to handle mutations happening in parallel
         for request_id in get_store().request_ids():
             toolbar = DebugToolbar.fetch(request_id)
