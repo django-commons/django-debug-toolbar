@@ -21,7 +21,7 @@
     --djdt-panel-content-table-background-color: var(--djdt-background-color);
     --djdt-panel-title-background-color: #ffc;
     --djdt-djdt-panel-content-table-strip-background-color: #f5f5f5;
-    --djdt--highlighted-background-color: lightgrey;
+    --djdt-highlighted-background-color: lightgrey;
     --djdt-toggle-template-background-color: #bbb;
 
     --djdt-sql-font-color: #333;
@@ -43,7 +43,7 @@
     --djdt-panel-content-table-background-color: var(--djdt-background-color);
     --djdt-panel-title-background-color: #242432;
     --djdt-djdt-panel-content-table-strip-background-color: #324154ff;
-    --djdt--highlighted-background-color: #2c2a7dff;
+    --djdt-highlighted-background-color: #2c2a7dff;
     --djdt-toggle-template-background-color: #282755;
 
     --djdt-sql-font-color: var(--djdt-font-color);
@@ -1147,7 +1147,7 @@ To regenerate:
     max-height: 100%;
 }
 #djDebug .djdt-highlighted {
-    background-color: var(--djdt--highlighted-background-color);
+    background-color: var(--djdt-highlighted-background-color);
 }
 #djDebug tr.djdt-highlighted.djdt-profile-row {
     background-color: #ffc;
