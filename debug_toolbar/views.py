@@ -35,19 +35,19 @@ def render_panel(request):
 @require_GET
 def download_prof_file(request):
     if not (root := dt_settings.get_config()["PROFILER_PROFILE_ROOT"]):
-        raise Http404
+        raise Http404()
 
     if not (file_path := request.GET.get("path")):
-        raise Http404
+        raise Http404()
 
     try:
         filename = signing.loads(file_path)
     except signing.BadSignature:
-        return Http404
+        raise Http404() from None
 
     resolved_path = pathlib.Path(root) / filename
     if not resolved_path.exists():
-        raise Http404
+        raise Http404()
 
     response = FileResponse(
         open(resolved_path, "rb"), content_type="application/octet-stream"
