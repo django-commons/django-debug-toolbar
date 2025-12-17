@@ -161,7 +161,7 @@ class ProfilingDownloadViewTestCase(TestCase):
             url = reverse("djdt:debug_toolbar_download_prof_file")
             # Tamper with the signature
             response = self.client.get(url, {"path": self.signed_path + "bad"})
-            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.status_code, 404)
 
     def test_download_missing_file(self):
         with override_settings(

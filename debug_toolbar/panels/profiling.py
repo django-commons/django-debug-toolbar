@@ -185,8 +185,6 @@ class ProfilingPanel(Panel):
         self.stats = Stats(self.profiler)
         self.stats.calc_callees()
 
-        self.prof_file_path = None
-
         if (
             root := dt_settings.get_config()["PROFILER_PROFILE_ROOT"]
         ) and os.path.exists(root):
@@ -211,6 +209,6 @@ class ProfilingPanel(Panel):
             self.record_stats(
                 {
                     "func_list": [func.serialize() for func in func_list],
-                    "prof_file_path": self.prof_file_path,
+                    "prof_file_path": getattr(self, "prof_file_path", None),
                 }
             )
