@@ -1,11 +1,11 @@
 {% load i18n %}
 
 {% if prof_file_path %}
-  <div style="margin-bottom: 10px;">
-    <a href="{% url 'debug_toolbar_download_prof_file' %}?path={{ prof_file_path|urlencode }}" class="djDebugButton">
+<div class="djdt-profiling-control">
+  <a href="{% url 'djdt:debug_toolbar_download_prof_file' %}?path={{ prof_file_path|urlencode }}" class="djDebugButton">
     Download .prof file
   </a>
-  </div>
+</div>
 {% endif %}
 
 <table>
@@ -22,22 +22,22 @@
   <tbody>
     {% for call in func_list %}
       <tr class="djdt-profile-row {% if call.is_project_func %}djdt-highlighted {% endif %} {% for parent_id in call.parent_ids %} djToggleDetails_{{ parent_id }}{% endfor %}" id="profilingMain_{{ call.id }}">
-        <td>
-          <div data-djdt-styles="paddingLeft:{{ call.indent }}px">
-            {% if call.has_subfuncs %}
+      <td>
+        <div data-djdt-styles="paddingLeft:{{ call.indent }}px">
+          {% if call.has_subfuncs %}
               <button type="button" class="djProfileToggleDetails djToggleSwitch" data-toggle-name="profilingMain" data-toggle-id="{{ call.id }}">-</button>
-            {% else %}
-              <span class="djNoToggleSwitch"></span>
-            {% endif %}
-            <span class="djdt-stack">{{ call.func_std_string|safe }}</span>
-          </div>
-        </td>
-        <td>{{ call.cumtime|floatformat:3 }}</td>
-        <td>{{ call.cumtime_per_call|floatformat:3 }}</td>
-        <td>{{ call.tottime|floatformat:3 }}</td>
-        <td>{{ call.tottime_per_call|floatformat:3 }}</td>
-        <td>{{ call.count }}</td>
-      </tr>
+          {% else %}
+          <span class="djNoToggleSwitch"></span>
+          {% endif %}
+          <span class="djdt-stack">{{ call.func_std_string|safe }}</span>
+        </div>
+      </td>
+      <td>{{ call.cumtime|floatformat:3 }}</td>
+      <td>{{ call.cumtime_per_call|floatformat:3 }}</td>
+      <td>{{ call.tottime|floatformat:3 }}</td>
+      <td>{{ call.tottime_per_call|floatformat:3 }}</td>
+      <td>{{ call.count }}</td>
+    </tr>
     {% endfor %}
   </tbody>
 </table>
