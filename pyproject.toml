@@ -12,21 +12,20 @@ license = { text = "BSD-3-Clause" }
 authors = [
   { name = "Rob Hudson" },
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Environment :: Web Environment",
   "Framework :: Django",
   "Framework :: Django :: 4.2",
-  "Framework :: Django :: 5.0",
   "Framework :: Django :: 5.1",
   "Framework :: Django :: 5.2",
+  "Framework :: Django :: 6.0",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: BSD License",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -58,7 +57,7 @@ packages = [
 path = "debug_toolbar/__init__.py"
 
 [tool.ruff]
-target-version = "py39"
+target-version = "py310"
 
 fix = true
 show-fixes = true
@@ -99,6 +98,7 @@ skip_empty = true
 [tool.coverage.run]
 branch = true
 parallel = true
+relative_files = true
 source = [
   "debug_toolbar",
 ]

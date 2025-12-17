@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.views.decorators.cache import cache_page
 
+from debug_toolbar.utils import get_csp_nonce
 from tests.models import PostgresJSON
 
 
@@ -73,7 +74,8 @@ def regular_view(request, title):
 
 def csp_view(request):
     """Use request.csp_nonce to inject it into the headers"""
-    return render(request, "basic.html", {"title": f"CSP {request.csp_nonce}"})
+    nonce = get_csp_nonce(request)
+    return render(request, "basic.html", {"title": f"CSP {nonce}"})
 
 
 def template_response_view(request, title):

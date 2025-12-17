@@ -387,6 +387,17 @@ Panel options
   skipped by default because the panel HTML can easily grow to hundreds
   of megabytes with many form fields and many options.
 
+* ``SKIP_TOOLBAR_QUERIES``
+
+  Default: ``True``
+
+  Panel: SQL
+
+  The debug toolbar can generate queries if ``TOOLBAR_STORE_CLASS`` is set to
+  use ``DatabaseStore``. This setting controls whether those queries are
+  tracked in the ``SQLPanel``. Set this to ``False`` to see the debug
+  toolbar's queries.
+
 * ``SQL_WARNING_THRESHOLD``
 
   Default: ``500``

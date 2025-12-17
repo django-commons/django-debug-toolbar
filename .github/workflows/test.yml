@@ -2,6 +2,10 @@ name: Test
 
 on:
   push:
+    branches:
+    - main
+    tags:
+    - '**'
   pull_request:
   schedule:
     # Run weekly on Saturday
@@ -17,7 +21,7 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
 
     services:
       mariadb:
@@ -56,6 +60,7 @@ jobs:
           ${{ matrix.python-version }}-v1-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/tox.ini') }}
         restore-keys: |
           ${{ matrix.python-version }}-v1-
+        lookup-only: true
 
     - name: Install dependencies
       run: |
@@ -70,6 +75,14 @@ jobs:
         DB_PASSWORD: debug_toolbar
         DB_HOST: 127.0.0.1
         DB_PORT: 3306
+        COVERAGE_FILE: ".coverage.mysql.${{ matrix.python-version }}"
+
+    - name: Store coverage file
+      uses: actions/upload-artifact@v5
+      with:
+        name: coverage-mysql-${{ matrix.python-version }}
+        path: .coverage.mysql.${{ matrix.python-version }}*
+        include-hidden-files: true
 
 
   postgres:
@@ -78,11 +91,9 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
         database: [postgresql, postgis, psycopg3]
         exclude:
-            - python-version: '3.9'
-              database: psycopg3
             - python-version: '3.13'
               database: postgis
             - python-version: '3.13'
@@ -145,6 +156,7 @@ jobs:
           ${{ matrix.python-version }}-v1-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/tox.ini') }}
         restore-keys: |
           ${{ matrix.python-version }}-v1-
+        lookup-only: true
 
     - name: Install gdal-bin (for postgis)
       run: |
@@ -163,6 +175,14 @@ jobs:
         DB_HOST: localhost
         DB_PORT: 5432
         DJANGO_SELENIUM_TESTS: ${{ matrix.env.DJANGO_SELENIUM_TESTS }}
+        COVERAGE_FILE: ".coverage.${{ matrix.database }}.${{ matrix.python-version }}"
+
+    - name: Store coverage file
+      uses: actions/upload-artifact@v5
+      with:
+        name: coverage-${{ matrix.database }}-${{ matrix.python-version }}
+        path: .coverage.${{ matrix.database }}.${{ matrix.python-version }}*
+        include-hidden-files: true
 
   sqlite:
     runs-on: ubuntu-latest
@@ -170,7 +190,7 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
 
     steps:
     - uses: actions/checkout@v5
@@ -196,6 +216,7 @@ jobs:
           ${{ matrix.python-version }}-v1-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/tox.ini') }}
         restore-keys: |
           ${{ matrix.python-version }}-v1-
+        lookup-only: true
 
     - name: Install dependencies
       run: |
@@ -207,6 +228,14 @@ jobs:
       env:
         DB_BACKEND: sqlite3
         DB_NAME: ":memory:"
+        COVERAGE_FILE: ".coverage.sqlite.${{ matrix.python-version }}"
+
+    - name: Store coverage file
+      uses: actions/upload-artifact@v5
+      with:
+        name: coverage-sqlite-${{ matrix.python-version }}
+        path: .coverage.sqlite.${{ matrix.python-version }}*
+        include-hidden-files: true
 
   lint:
     runs-on: ubuntu-latest
@@ -221,7 +250,7 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
       with:
-        python-version: 3.9
+        python-version: '3.10'
 
     - name: Get pip cache dir
       id: pip-cache
@@ -236,6 +265,7 @@ jobs:
           ${{ matrix.python-version }}-v1-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/tox.ini') }}
         restore-keys: |
           ${{ matrix.python-version }}-v1-
+        lookup-only: true
 
     - name: Install dependencies
       run: |
@@ -244,3 +274,39 @@ jobs:
 
     - name: Test with tox
       run: tox -e docs,packaging
+
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    needs:
+      - mysql
+      - postgres
+      - sqlite
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Persist the credentials because coverage_comment needs them too.
+          persist-credentials: true
+
+      - uses: actions/download-artifact@v6
+        id: download
+        with:
+          pattern: coverage-*
+          merge-multiple: true
+
+      - name: Coverage comment
+        id: coverage_comment
+        uses: py-cov-action/python-coverage-comment-action@e623398c19eb3853a5572d4a516e10b15b5cefbc # v3.39
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_COVERAGE_FILES: true
+
+      - name: Store Pull Request comment to be posted
+        uses: actions/upload-artifact@v5
+        if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
+        with:
+          name: python-coverage-comment-action
+          path: python-coverage-comment-action.txt

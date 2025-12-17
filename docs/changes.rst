@@ -6,6 +6,18 @@ Pending
 
 * Deprecated ``RedirectsPanel`` in favor of ``HistoryPanel`` for viewing
   toolbar data from redirected requests.
+* Fixed support for generating code coverage comments in PRs.
+* Added Django 6.0 to the testing matrix. Removed Django 5.0 to save CI
+  resources.
+* Show the cache backend alias and cache backend class name instead of
+  the cache instance in the cache panel.
+* Dropped support for the Python 3.9, it has reached its end of life date.
+* Toggle tracking the toolbar's queries when using
+  ``debug_toolbar.store.DatabaseStore`` with ``SKIP_TOOLBAR_QUERIES``.
+* Fixed font family for code blocks and stack traces in the toolbar.
+* Added test to confirm Django's ``TestCase.assertNumQueries`` works.
+* Fixed string representation of values in settings panel.
+* Declared support for Django 6.0.
 
 6.1.0 (2025-10-30)
 ------------------
