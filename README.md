@@ -24,7 +24,7 @@
 | debug\_toolbar/panels/headers.py                    |       22 |        0 |        2 |        1 |     96% |    42->44 |
 | debug\_toolbar/panels/history/\_\_init\_\_.py       |        2 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/panels/history/forms.py              |        4 |        0 |        0 |        0 |    100% |           |
-| debug\_toolbar/panels/history/panel.py              |       57 |        5 |        8 |        0 |     92% |70-72, 117-119 |
+| debug\_toolbar/panels/history/panel.py              |       59 |        5 |        8 |        0 |     93% |72-74, 119-121 |
 | debug\_toolbar/panels/history/views.py              |       38 |        0 |       12 |        0 |    100% |           |
 | debug\_toolbar/panels/profiling.py                  |      106 |        8 |       28 |        5 |     90% |31, 34-35, 55, 65, 76, 119, 127 |
 | debug\_toolbar/panels/redirects.py                  |       35 |        0 |        6 |        0 |    100% |           |
@@ -51,8 +51,8 @@
 | debug\_toolbar/toolbar.py                           |      141 |        6 |       30 |        1 |     95% |104-112, 159->171, 211-214 |
 | debug\_toolbar/urls.py                              |        4 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/utils.py                             |      214 |        7 |       68 |        8 |     95% |30, 61, 121, 125->128, 144->143, 195-196, 200, 215 |
-| debug\_toolbar/views.py                             |       19 |        0 |        2 |        0 |    100% |           |
-| **TOTAL**                                           | **2454** |  **108** |  **610** |   **68** | **94%** |           |
+| debug\_toolbar/views.py                             |       20 |        0 |        2 |        0 |    100% |           |
+| **TOTAL**                                           | **2457** |  **108** |  **610** |   **68** | **94%** |           |
 
 
 ## Setup coverage badge
