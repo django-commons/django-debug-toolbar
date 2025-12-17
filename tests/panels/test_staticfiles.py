@@ -5,13 +5,13 @@ from django.contrib.staticfiles import finders, storage
 from django.shortcuts import render
 from django.test import AsyncRequestFactory, RequestFactory
 
-from debug_toolbar.panels.staticfiles import URLMixin
+from debug_toolbar.panels.staticfiles import StaticFilesPanel, URLMixin
 
 from ..base import BaseTestCase
 
 
 class StaticFilesPanelTestCase(BaseTestCase):
-    panel_id = "StaticFilesPanel"
+    panel_id = StaticFilesPanel.panel_id
 
     def test_default_case(self):
         response = self.panel.process_request(self.request)
@@ -23,7 +23,7 @@ class StaticFilesPanelTestCase(BaseTestCase):
         self.assertIn(
             "django.contrib.staticfiles.finders.FileSystemFinder (2 files)", content
         )
-        self.assertEqual(self.panel.num_used, 0)
+        self.assertEqual(self.panel.get_stats()["num_used"], 0)
         self.assertNotEqual(self.panel.num_found, 0)
         expected_apps = ["django.contrib.admin", "debug_toolbar"]
         if settings.USE_GIS:
@@ -42,7 +42,7 @@ class StaticFilesPanelTestCase(BaseTestCase):
         async_request = AsyncRequestFactory().get("/")
         response = await self.panel.process_request(async_request)
         self.panel.generate_stats(self.request, response)
-        self.assertEqual(self.panel.num_used, 1)
+        self.assertEqual(self.panel.get_stats()["num_used"], 1)
 
     def test_insert_content(self):
         """
@@ -65,19 +65,29 @@ class StaticFilesPanelTestCase(BaseTestCase):
 
     def test_path(self):
         def get_response(request):
-            # template contains one static file
             return render(
                 request,
                 "staticfiles/path.html",
-                {"path": Path("additional_static/base.css")},
+                {
+                    "paths": [
+                        Path("additional_static/base.css"),
+                        "additional_static/base.css",
+                        "additional_static/base2.css",
+                    ]
+                },
             )
 
         self._get_response = get_response
         request = RequestFactory().get("/")
         response = self.panel.process_request(request)
         self.panel.generate_stats(self.request, response)
-        self.assertEqual(self.panel.num_used, 1)
-        self.assertIn('"/static/additional_static/base.css"', self.panel.content)
+        self.assertEqual(self.panel.get_stats()["num_used"], 2)
+        self.assertIn(
+            'href="/static/additional_static/base.css"', self.panel.content, 1
+        )
+        self.assertIn(
+            'href="/static/additional_static/base2.css"', self.panel.content, 1
+        )
 
     def test_storage_state_preservation(self):
         """Ensure the URLMixin doesn't affect storage state"""
@@ -104,7 +114,7 @@ class StaticFilesPanelTestCase(BaseTestCase):
             url = storage.staticfiles_storage.url("test.css")
             self.assertTrue(url.startswith("/static/"))
             # Verify file was tracked
-            self.assertIn("test.css", [f.path for f in self.panel.used_paths])
+            self.assertIn("test.css", [f[0] for f in self.panel.used_paths])
         finally:
             request_id_context_var.reset(token)
 

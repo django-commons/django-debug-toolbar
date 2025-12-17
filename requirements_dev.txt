@@ -4,6 +4,10 @@ Django
 sqlparse
 Jinja2
 
+# Django Async
+daphne
+whitenoise  # To avoid dealing with static files
+
 # Testing
 
 coverage[toml]

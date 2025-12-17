@@ -30,7 +30,7 @@ WRAPPED_CACHE_METHODS = [
 ]
 
 
-def _monkey_patch_method(cache, name):
+def _monkey_patch_method(cache, name, alias):
     original_method = getattr(cache, name)
 
     @functools.wraps(original_method)
@@ -39,16 +39,16 @@ def _monkey_patch_method(cache, name):
         if panel is None:
             return original_method(*args, **kwargs)
         else:
-            return panel._record_call(cache, name, original_method, args, kwargs)
+            return panel._record_call(cache, alias, name, original_method, args, kwargs)
 
     setattr(cache, name, wrapper)
 
 
-def _monkey_patch_cache(cache):
-    if not hasattr(cache, "_djdt_patched"):
+def _monkey_patch_cache(cache, alias, panel):
+    if not getattr(cache, "_djdt_panel", None):
         for name in WRAPPED_CACHE_METHODS:
-            _monkey_patch_method(cache, name)
-        cache._djdt_patched = True
+            _monkey_patch_method(cache, name, alias)
+        cache._djdt_panel = panel
 
 
 class CachePanel(Panel):
@@ -95,8 +95,7 @@ class CachePanel(Panel):
                 cache = original_method(self, alias)
                 panel = cls.current_instance()
                 if panel is not None:
-                    _monkey_patch_cache(cache)
-                    cache._djdt_panel = panel
+                    _monkey_patch_cache(cache, alias, panel)
                 return cache
 
             CacheHandler.create_connection = wrapper
@@ -138,7 +137,7 @@ class CachePanel(Panel):
             }
         )
 
-    def _record_call(self, cache, name, original_method, args, kwargs):
+    def _record_call(self, cache, alias, name, original_method, args, kwargs):
         # Some cache backends implement certain cache methods in terms of other cache
         # methods (e.g. get_or_set() in terms of get() and add()).  In order to only
         # record the calls made directly by the user code, set the cache's _djdt_panel
@@ -161,7 +160,7 @@ class CachePanel(Panel):
             kwargs=kwargs,
             trace=get_stack_trace(skip=2),
             template_info=get_template_info(),
-            backend=cache,
+            backend=f"{alias} ({type(cache).__name__})",
         )
         return value
 
@@ -171,16 +170,17 @@ class CachePanel(Panel):
 
     @property
     def nav_subtitle(self):
-        cache_calls = len(self.calls)
+        stats = self.get_stats()
+        cache_calls = len(stats.get("calls"))
         return ngettext(
             "%(cache_calls)d call in %(time).2fms",
             "%(cache_calls)d calls in %(time).2fms",
             cache_calls,
-        ) % {"cache_calls": cache_calls, "time": self.total_time}
+        ) % {"cache_calls": cache_calls, "time": stats.get("total_time")}
 
     @property
     def title(self):
-        count = len(getattr(settings, "CACHES", ["default"]))
+        count = self.get_stats().get("total_caches")
         return ngettext(
             "Cache calls from %(count)d backend",
             "Cache calls from %(count)d backends",
@@ -193,9 +193,8 @@ class CachePanel(Panel):
         # requests.  The monkey patch of CacheHander.create_connection() installed in
         # the .ready() method will ensure that any new cache connections that get opened
         # during this request will also be monkey patched.
-        for cache in caches.all(initialized_only=True):
-            _monkey_patch_cache(cache)
-            cache._djdt_panel = self
+        for cache, alias in self.initialized_caches():
+            _monkey_patch_cache(cache, alias, self)
         # Mark this panel instance as the current one for the active thread/async task
         # context.  This will be used by the CacheHander.create_connection() monkey
         # patch.
@@ -207,6 +206,17 @@ class CachePanel(Panel):
         for cache in caches.all(initialized_only=True):
             cache._djdt_panel = None
 
+    def initialized_caches(self):
+        """
+        Return the initialized caches and aliases.
+
+        This does the same as`caches.all(initialized_only=True)`, but keeps
+        the alias with each cache instance.
+        """
+        for alias in caches:
+            if hasattr(caches._connections, alias):
+                yield caches[alias], alias
+
     def generate_stats(self, request, response):
         self.record_stats(
             {
@@ -216,6 +226,7 @@ class CachePanel(Panel):
                 "hits": self.hits,
                 "misses": self.misses,
                 "counts": self.counts,
+                "total_caches": len(getattr(settings, "CACHES", ["default"])),
             }
         )
 

@@ -8,9 +8,39 @@ from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.views.decorators.cache import cache_page
 
+from debug_toolbar.utils import get_csp_nonce
+from tests.models import PostgresJSON
+
 
 def execute_sql(request):
     list(User.objects.all())
+    return render(request, "base.html")
+
+
+def execute_json_sql(request):
+    list(PostgresJSON.objects.filter(field__contains={"foo": "bar"}))
+    return render(request, "base.html")
+
+
+async def async_execute_json_sql(request):
+    list_store = []
+    # make async query with filter, which is compatible with async for.
+    async for obj in PostgresJSON.objects.filter(field__contains={"foo": "bar"}):
+        list_store.append(obj)
+    return render(request, "base.html")
+
+
+def execute_union_sql(request):
+    list(User.objects.all().union(User.objects.all(), all=True))
+    return render(request, "base.html")
+
+
+async def async_execute_union_sql(request):
+    list_store = []
+    # make async query with filter, which is compatible with async for.
+    users = User.objects.all().union(User.objects.all(), all=True)
+    async for user in users:
+        list_store.append(user)
     return render(request, "base.html")
 
 
@@ -44,7 +74,8 @@ def regular_view(request, title):
 
 def csp_view(request):
     """Use request.csp_nonce to inject it into the headers"""
-    return render(request, "basic.html", {"title": f"CSP {request.csp_nonce}"})
+    nonce = get_csp_nonce(request)
+    return render(request, "basic.html", {"title": f"CSP {nonce}"})
 
 
 def template_response_view(request, title):

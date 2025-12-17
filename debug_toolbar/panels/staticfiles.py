@@ -9,26 +9,6 @@ from django.utils.translation import gettext_lazy as _, ngettext
 
 from debug_toolbar import panels
 
-
-class StaticFile:
-    """
-    Representing the different properties of a static file.
-    """
-
-    def __init__(self, *, path, url):
-        self.path = path
-        self._url = url
-
-    def __str__(self):
-        return self.path
-
-    def real_path(self):
-        return finders.find(self.path)
-
-    def url(self):
-        return self._url
-
-
 # This will record and map the StaticFile instances with its associated
 # request across threads and async concurrent requests state.
 request_id_context_var = ContextVar("djdt_request_id_store")
@@ -36,8 +16,8 @@ record_static_file_signal = Signal()
 
 
 class URLMixin:
-    def url(self, path):
-        url = super().url(path)
+    def url(self, path, *args, **kwargs):
+        url = super().url(path, *args, **kwargs)
         with contextlib.suppress(LookupError):
             # For LookupError:
             # The ContextVar wasn't set yet. Since the toolbar wasn't properly
@@ -46,7 +26,7 @@ class URLMixin:
             request_id = request_id_context_var.get()
             record_static_file_signal.send(
                 sender=self,
-                staticfile=StaticFile(path=str(path), url=url),
+                staticfile=(str(path), url, finders.find(str(path))),
                 request_id=request_id,
             )
         return url
@@ -63,15 +43,16 @@ class StaticFilesPanel(panels.Panel):
 
     @property
     def title(self):
+        stats = self.get_stats()
         return _("Static files (%(num_found)s found, %(num_used)s used)") % {
-            "num_found": self.num_found,
-            "num_used": self.num_used,
+            "num_found": stats.get("num_found"),
+            "num_used": stats.get("num_used"),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.num_found = 0
-        self.used_paths = []
+        self.used_paths = set()
         self.request_id = str(uuid.uuid4())
 
     @classmethod
@@ -87,7 +68,7 @@ class StaticFilesPanel(panels.Panel):
         # concurrent connections and we want to avoid storing of same
         # staticfile from other connections as well.
         if request_id_context_var.get() == self.request_id:
-            self.used_paths.append(staticfile)
+            self.used_paths.add(staticfile)
 
     def enable_instrumentation(self):
         self.ctx_token = request_id_context_var.set(self.request_id)
@@ -97,16 +78,11 @@ class StaticFilesPanel(panels.Panel):
         record_static_file_signal.disconnect(self._store_static_files_signal_handler)
         request_id_context_var.reset(self.ctx_token)
 
-    @property
-    def num_used(self):
-        stats = self.get_stats()
-        return stats and stats["num_used"]
-
     nav_title = _("Static files")
 
     @property
     def nav_subtitle(self):
-        num_used = self.num_used
+        num_used = self.get_stats().get("num_used")
         return ngettext(
             "%(num_used)s file used", "%(num_used)s files used", num_used
         ) % {"num_used": num_used}
@@ -116,7 +92,7 @@ class StaticFilesPanel(panels.Panel):
             {
                 "num_found": self.num_found,
                 "num_used": len(self.used_paths),
-                "staticfiles": self.used_paths,
+                "staticfiles": sorted(self.used_paths),
                 "staticfiles_apps": self.get_staticfiles_apps(),
                 "staticfiles_dirs": self.get_staticfiles_dirs(),
                 "staticfiles_finders": self.get_staticfiles_finders(),

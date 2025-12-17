@@ -39,13 +39,13 @@ const djdt = {
                 const inner = current.querySelector(
                     ".djDebugPanelContent .djdt-scroll"
                 );
-                const storeId = djDebug.dataset.storeId;
-                if (storeId && inner.children.length === 0) {
+                const requestId = djDebug.dataset.requestId;
+                if (requestId && inner.children.length === 0) {
                     const url = new URL(
                         djDebug.dataset.renderPanelUrl,
                         window.location
                     );
-                    url.searchParams.append("store_id", storeId);
+                    url.searchParams.append("request_id", requestId);
                     url.searchParams.append("panel_id", panelId);
                     ajax(url).then((data) => {
                         inner.previousElementSibling.remove(); // Remove AJAX loader
@@ -296,12 +296,12 @@ const djdt = {
             document.getElementById("djDebug").dataset.sidebarUrl;
         const slowjax = debounce(ajax, 200);
 
-        function handleAjaxResponse(storeId) {
-            const encodedStoreId = encodeURIComponent(storeId);
-            const dest = `${sidebarUrl}?store_id=${encodedStoreId}`;
+        function handleAjaxResponse(requestId) {
+            const encodedRequestId = encodeURIComponent(requestId);
+            const dest = `${sidebarUrl}?request_id=${encodedRequestId}`;
             slowjax(dest).then((data) => {
                 if (djdt.needUpdateOnFetch) {
-                    replaceToolbarState(encodedStoreId, data);
+                    replaceToolbarState(encodedRequestId, data);
                 }
             });
         }
@@ -314,9 +314,11 @@ const djdt = {
                 // when the header can't be fetched. While it doesn't impede execution
                 // it's worrisome to developers.
                 if (
-                    this.getAllResponseHeaders().indexOf("djdt-store-id") >= 0
+                    this.getAllResponseHeaders().indexOf("djdt-request-id") >= 0
                 ) {
-                    handleAjaxResponse(this.getResponseHeader("djdt-store-id"));
+                    handleAjaxResponse(
+                        this.getResponseHeader("djdt-request-id")
+                    );
                 }
             });
             origOpen.apply(this, args);
@@ -330,10 +332,10 @@ const djdt = {
             // https://github.com/django-commons/django-debug-toolbar/pull/2100
             const promise = origFetch.apply(this, args);
             return promise.then((response) => {
-                if (response.headers.get("djdt-store-id") !== null) {
+                if (response.headers.get("djdt-request-id") !== null) {
                     try {
                         handleAjaxResponse(
-                            response.headers.get("djdt-store-id")
+                            response.headers.get("djdt-request-id")
                         );
                     } catch (err) {
                         throw new Error(

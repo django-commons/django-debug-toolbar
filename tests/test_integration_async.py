@@ -1,3 +1,4 @@
+import re
 import unittest
 from unittest.mock import patch
 
@@ -11,8 +12,16 @@ from django.test import AsyncRequestFactory
 from django.test.utils import override_settings
 
 from debug_toolbar.forms import SignedDataForm
-from debug_toolbar.middleware import DebugToolbarMiddleware, show_toolbar
+from debug_toolbar.middleware import (
+    DebugToolbarMiddleware,
+    show_toolbar,
+    show_toolbar_with_docker,
+)
 from debug_toolbar.panels import Panel
+from debug_toolbar.panels.history import HistoryPanel
+from debug_toolbar.panels.sql import SQLPanel
+from debug_toolbar.panels.versions import VersionsPanel
+from debug_toolbar.store import get_store
 from debug_toolbar.toolbar import DebugToolbar
 
 from .base import BaseTestCase, IntegrationTestCase
@@ -21,13 +30,13 @@ from .views import regular_view
 arf = AsyncRequestFactory()
 
 
-def toolbar_store_id():
+def toolbar_request_id():
     def get_response(request):
         return HttpResponse()
 
     toolbar = DebugToolbar(arf.get("/"), get_response)
     toolbar.store()
-    return toolbar.store_id
+    return toolbar.request_id
 
 
 class BuggyPanel(Panel):
@@ -59,7 +68,8 @@ class DebugToolbarTestCase(BaseTestCase):
         with self.settings(INTERNAL_IPS=[]):
             # Is true because REMOTE_ADDR is 127.0.0.1 and the 255
             # is shifted to be 1.
-            self.assertTrue(show_toolbar(self.request))
+            self.assertFalse(show_toolbar(self.request))
+            self.assertTrue(show_toolbar_with_docker(self.request))
         mocked_gethostbyname.assert_called_once_with("host.docker.internal")
 
     async def test_not_iterating_over_INTERNAL_IPS(self):
@@ -186,7 +196,7 @@ class DebugToolbarTestCase(BaseTestCase):
 
     async def test_data_gone(self):
         response = await self.async_client.get(
-            "/__debug__/render_panel/?store_id=GONE&panel_id=RequestPanel"
+            "/__debug__/render_panel/?request_id=GONE&panel_id=RequestPanel"
         )
         self.assertIn("Please reload the page and retry.", response.json()["content"])
 
@@ -253,9 +263,13 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
             raise self.failureException(msg)
 
     async def test_render_panel_checks_show_toolbar(self):
-        url = "/__debug__/render_panel/"
-        data = {"store_id": toolbar_store_id(), "panel_id": "VersionsPanel"}
+        request_id = toolbar_request_id()
+        get_store().save_panel(
+            request_id, VersionsPanel.panel_id, {"value": "Test data"}
+        )
+        data = {"request_id": request_id, "panel_id": VersionsPanel.panel_id}
 
+        url = "/__debug__/render_panel/"
         response = await self.async_client.get(url, data)
         self.assertEqual(response.status_code, 200)
 
@@ -265,7 +279,8 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
 
     async def test_middleware_render_toolbar_json(self):
         """Verify the toolbar is rendered and data is stored for a json request."""
-        self.assertEqual(len(DebugToolbar._store), 0)
+        store = get_store()
+        self.assertEqual(len(list(store.request_ids())), 0)
 
         data = {"foo": "bar"}
         response = await self.async_client.get(
@@ -274,11 +289,12 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content.decode("utf-8"), '{"foo": "bar"}')
         # Check the history panel's stats to verify the toolbar rendered properly.
-        self.assertEqual(len(DebugToolbar._store), 1)
-        toolbar = list(DebugToolbar._store.values())[0]
+        request_ids = list(store.request_ids())
+        self.assertEqual(len(request_ids), 1)
+        toolbar = DebugToolbar.fetch(request_ids[0])
         self.assertEqual(
-            toolbar.get_panel_by_id("HistoryPanel").get_stats()["data"],
-            {"foo": ["bar"]},
+            toolbar.get_panel_by_id(HistoryPanel.panel_id).get_stats()["data"],
+            {"foo": "bar"},
         )
 
     async def test_template_source_checks_show_toolbar(self):
@@ -316,15 +332,19 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
         self.assertContains(response, "Template Does Not Exist: does_not_exist.html")
 
     async def test_sql_select_checks_show_toolbar(self):
+        await self.async_client.get("/execute_sql/")
+        request_ids = list(get_store().request_ids())
+        request_id = request_ids[-1]
+        toolbar = DebugToolbar.fetch(request_id, SQLPanel.panel_id)
+        panel = toolbar.get_panel_by_id(SQLPanel.panel_id)
+        djdt_query_id = panel.get_stats()["queries"][-1]["djdt_query_id"]
+
         url = "/__debug__/sql_select/"
         data = {
             "signed": SignedDataForm.sign(
                 {
-                    "sql": "SELECT * FROM auth_user",
-                    "raw_sql": "SELECT * FROM auth_user",
-                    "params": "{}",
-                    "alias": "default",
-                    "duration": "0",
+                    "request_id": request_id,
+                    "djdt_query_id": djdt_query_id,
                 }
             )
         }
@@ -336,15 +356,19 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
             self.assertEqual(response.status_code, 404)
 
     async def test_sql_explain_checks_show_toolbar(self):
+        await self.async_client.get("/execute_sql/")
+        request_ids = list(get_store().request_ids())
+        request_id = request_ids[-1]
+        toolbar = DebugToolbar.fetch(request_id, SQLPanel.panel_id)
+        panel = toolbar.get_panel_by_id(SQLPanel.panel_id)
+        djdt_query_id = panel.get_stats()["queries"][-1]["djdt_query_id"]
+
         url = "/__debug__/sql_explain/"
         data = {
             "signed": SignedDataForm.sign(
                 {
-                    "sql": "SELECT * FROM auth_user",
-                    "raw_sql": "SELECT * FROM auth_user",
-                    "params": "{}",
-                    "alias": "default",
-                    "duration": "0",
+                    "request_id": request_id,
+                    "djdt_query_id": djdt_query_id,
                 }
             )
         }
@@ -362,15 +386,19 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
         """
         Confirm select queries that start with a parenthesis can be explained.
         """
+        await self.async_client.get("/async_execute_union_sql/")
+        request_ids = list(get_store().request_ids())
+        request_id = request_ids[-1]
+        toolbar = DebugToolbar.fetch(request_id, SQLPanel.panel_id)
+        panel = toolbar.get_panel_by_id(SQLPanel.panel_id)
+        djdt_query_id = panel.get_stats()["queries"][-1]["djdt_query_id"]
+
         url = "/__debug__/sql_explain/"
         data = {
             "signed": SignedDataForm.sign(
                 {
-                    "sql": "(SELECT * FROM auth_user) UNION (SELECT * from auth_user)",
-                    "raw_sql": "(SELECT * FROM auth_user) UNION (SELECT * from auth_user)",
-                    "params": "{}",
-                    "alias": "default",
-                    "duration": "0",
+                    "request_id": request_id,
+                    "djdt_query_id": djdt_query_id,
                 }
             )
         }
@@ -382,19 +410,19 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
         connection.vendor == "postgresql", "Test valid only on PostgreSQL"
     )
     async def test_sql_explain_postgres_json_field(self):
+        await self.async_client.get("/async_execute_json_sql/")
+        request_ids = list(get_store().request_ids())
+        request_id = request_ids[-1]
+        toolbar = DebugToolbar.fetch(request_id, SQLPanel.panel_id)
+        panel = toolbar.get_panel_by_id(SQLPanel.panel_id)
+        djdt_query_id = panel.get_stats()["queries"][-1]["djdt_query_id"]
+
         url = "/__debug__/sql_explain/"
-        base_query = (
-            'SELECT * FROM "tests_postgresjson" WHERE "tests_postgresjson"."field" @>'
-        )
-        query = base_query + """ '{"foo": "bar"}'"""
         data = {
             "signed": SignedDataForm.sign(
                 {
-                    "sql": query,
-                    "raw_sql": base_query + " %s",
-                    "params": '["{\\"foo\\": \\"bar\\"}"]',
-                    "alias": "default",
-                    "duration": "0",
+                    "request_id": request_id,
+                    "djdt_query_id": djdt_query_id,
                 }
             )
         }
@@ -405,15 +433,19 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
             self.assertEqual(response.status_code, 404)
 
     async def test_sql_profile_checks_show_toolbar(self):
+        await self.async_client.get("/execute_sql/")
+        request_ids = list(get_store().request_ids())
+        request_id = request_ids[-1]
+        toolbar = DebugToolbar.fetch(request_id, SQLPanel.panel_id)
+        panel = toolbar.get_panel_by_id(SQLPanel.panel_id)
+        djdt_query_id = panel.get_stats()["queries"][-1]["djdt_query_id"]
+
         url = "/__debug__/sql_profile/"
         data = {
             "signed": SignedDataForm.sign(
                 {
-                    "sql": "SELECT * FROM auth_user",
-                    "raw_sql": "SELECT * FROM auth_user",
-                    "params": "{}",
-                    "alias": "default",
-                    "duration": "0",
+                    "request_id": request_id,
+                    "djdt_query_id": djdt_query_id,
                 }
             )
         }
@@ -434,7 +466,7 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
         response = await self.async_client.get(url)
         self.assertIn(b'id="djDebug"', response.content)
         # Verify the store id is not included.
-        self.assertNotIn(b"data-store-id", response.content)
+        self.assertNotIn(b"data-request-id", response.content)
         # Verify the history panel was disabled
         self.assertIn(
             b'<input type="checkbox" data-cookie="djdtHistoryPanel" '
@@ -454,7 +486,7 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
         response = await self.async_client.get(url)
         self.assertIn(b'id="djDebug"', response.content)
         # Verify the store id is included.
-        self.assertIn(b"data-store-id", response.content)
+        self.assertIn(b"data-request-id", response.content)
         # Verify the history panel was not disabled
         self.assertNotIn(
             b'<input type="checkbox" data-cookie="djdtHistoryPanel" '
@@ -475,16 +507,39 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
         # Link to LOCATION header.
         self.assertIn(b'href="/regular/redirect/"', response.content)
 
+    async def test_server_timing_headers(self):
+        response = await self.async_client.get("/execute_sql/")
+        server_timing = response["Server-Timing"]
+        expected_partials = [
+            r'TimerPanel_utime;dur=(\d)*(\.(\d)*)?;desc="User CPU time", ',
+            r'TimerPanel_stime;dur=(\d)*(\.(\d)*)?;desc="System CPU time", ',
+            r'TimerPanel_total;dur=(\d)*(\.(\d)*)?;desc="Total CPU time", ',
+            r'TimerPanel_total_time;dur=(\d)*(\.(\d)*)?;desc="Elapsed time", ',
+            r'SQLPanel_sql_time;dur=(\d)*(\.(\d)*)?;desc="SQL 1 queries", ',
+            r'CachePanel_total_time;dur=0;desc="Cache 0 Calls"',
+        ]
+        for expected in expected_partials:
+            self.assertTrue(re.compile(expected).search(server_timing))
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"RENDER_PANELS": True})
+    async def test_timer_panel(self):
+        response = await self.async_client.get("/regular/basic/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            '<script type="module" src="/static/debug_toolbar/js/timer.js" async>',
+        )
+
     async def test_auth_login_view_without_redirect(self):
         response = await self.async_client.get("/login_without_redirect/")
         self.assertEqual(response.status_code, 200)
         parser = html5lib.HTMLParser()
         doc = parser.parse(response.content)
         el = doc.find(".//*[@id='djDebug']")
-        store_id = el.attrib["data-store-id"]
+        request_id = el.attrib["data-request-id"]
         response = await self.async_client.get(
             "/__debug__/render_panel/",
-            {"store_id": store_id, "panel_id": "TemplatesPanel"},
+            {"request_id": request_id, "panel_id": "TemplatesPanel"},
         )
         self.assertEqual(response.status_code, 200)
         # The key None (without quotes) exists in the list of template

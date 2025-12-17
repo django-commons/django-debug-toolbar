@@ -1,6 +1,6 @@
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
     -   id: check-toml
     -   id: check-yaml
@@ -10,16 +10,16 @@ repos:
     -   id: file-contents-sorter
         files: docs/spelling_wordlist.txt
 -   repo: https://github.com/pycqa/doc8
-    rev: v1.1.2
+    rev: v2.0.0
     hooks:
     -   id: doc8
 -   repo: https://github.com/adamchainz/django-upgrade
-    rev: 1.25.0
+    rev: 1.29.1
     hooks:
     -   id: django-upgrade
         args: [--target-version, "4.2"]
 -   repo: https://github.com/adamchainz/djade-pre-commit
-    rev: "1.4.0"
+    rev: "1.6.0"
     hooks:
     -   id: djade
         args: [--target-version, "4.2"]
@@ -29,18 +29,18 @@ repos:
     -   id: rst-backticks
     -   id: rst-directive-colons
 -   repo: https://github.com/biomejs/pre-commit
-    rev: v2.0.0-beta.5
+    rev: v2.3.8
     hooks:
       - id: biome-check
         verbose: true
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.11.12'
+    rev: 'v0.14.8'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
 -   repo: https://github.com/tox-dev/pyproject-fmt
-    rev: v2.6.0
+    rev: v2.11.1
     hooks:
       - id: pyproject-fmt
 -   repo: https://github.com/abravalheri/validate-pyproject

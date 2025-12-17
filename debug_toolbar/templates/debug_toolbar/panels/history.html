@@ -15,7 +15,7 @@
         </tr>
     </thead>
     <tbody id="djdtHistoryRequests">
-        {% for id, store_context in stores.items %}
+        {% for request_id, history_context in toolbar_history.items %}
             {% include "debug_toolbar/panels/history_tr.html" %}
         {% endfor %}
     </tbody>

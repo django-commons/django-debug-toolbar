@@ -141,11 +141,9 @@ class AlertsPanel(Panel):
         return self.alerts
 
     def generate_stats(self, request, response):
-        if not is_processable_html_response(response):
-            return
-
-        html_content = response.content.decode(response.charset)
-        self.check_invalid_file_form_configuration(html_content)
+        if is_processable_html_response(response):
+            html_content = response.content.decode(response.charset)
+            self.check_invalid_file_form_configuration(html_content)
 
         # Further alert checks can go here
 

@@ -1,17 +1,17 @@
 {% load i18n %}
-<tr class="{% if id == current_store_id %}djdt-highlighted{% endif %}" id="historyMain_{{ id }}" data-store-id="{{ id }}">
+<tr class="{% if request_id == current_request_id %}djdt-highlighted{% endif %}" id="historyMain_{{ request_id }}" data-request-id="{{ request_id }}">
     <td>
-        {{ store_context.toolbar.stats.HistoryPanel.time|escape }}
+        {{ history_context.history_stats.time|escape }}
     </td>
     <td>
-        <p>{{ store_context.toolbar.stats.HistoryPanel.request_method|escape }}</p>
+        <p>{{ history_context.history_stats.request_method|escape }}</p>
     </td>
     <td>
-        <p>{{ store_context.toolbar.stats.HistoryPanel.request_url|truncatechars:100|escape }}</p>
+        <p>{{ history_context.history_stats.request_url|truncatechars:100|escape }}</p>
     </td>
     <td>
-        <button type="button" class="djToggleSwitch" data-toggle-name="historyMain" data-toggle-id="{{ id }}">+</button>
-        <div class="djUnselected djToggleDetails_{{ id }}">
+        <button type="button" class="djToggleSwitch" data-toggle-name="historyMain" data-toggle-id="{{ request_id }}">+</button>
+        <div class="djUnselected djToggleDetails_{{ request_id }}">
           <table>
             <colgroup>
               <col class="djdt-width-20">
@@ -24,7 +24,7 @@
               </tr>
             </thead>
             <tbody>
-              {% for key, value in store_context.toolbar.stats.HistoryPanel.data.items %}
+              {% for key, value in history_context.history_stats.data.items %}
                 <tr>
                   <td><code>{{ key|pprint }}</code></td>
                   <td><code>{{ value|pprint }}</code></td>
@@ -39,12 +39,12 @@
         </div>
     </td>
     <td>
-        <p>{{ store_context.toolbar.stats.HistoryPanel.status_code|escape }}</p>
+        <p>{{ history_context.history_stats.status_code|escape }}</p>
     </td>
     <td class="djdt-actions">
         <form method="get" action="{% url 'djdt:history_sidebar' %}">
-            {{ store_context.form.as_div }}
-            <button data-store-id="{{ id }}" class="switchHistory">Switch</button>
+            {{ history_context.form.as_div }}
+            <button data-request-id="{{ request_id }}" class="switchHistory">Switch</button>
         </form>
     </td>
 </tr>

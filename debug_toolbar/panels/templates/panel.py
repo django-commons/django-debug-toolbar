@@ -15,6 +15,7 @@ from django.utils.translation import gettext_lazy as _
 from debug_toolbar.panels import Panel
 from debug_toolbar.panels.sql.tracking import SQLQueryTriggered, allow_sql
 from debug_toolbar.panels.templates import views
+from debug_toolbar.sanitize import force_str
 
 if find_spec("jinja2"):
     from debug_toolbar.panels.templates.jinja2 import patch_jinja_render
@@ -104,15 +105,16 @@ class TemplatesPanel(Panel):
 
     @property
     def title(self):
-        num_templates = len(self.templates)
+        num_templates = len(self.get_stats()["templates"])
         return _("Templates (%(num_templates)s rendered)") % {
             "num_templates": num_templates
         }
 
     @property
     def nav_subtitle(self):
-        if self.templates:
-            return self.templates[0]["template"].name
+        templates = self.get_stats()["templates"]
+        if templates:
+            return templates[0]["template"]["name"]
         return ""
 
     template = "debug_toolbar/panels/templates.html"
@@ -196,7 +198,11 @@ class TemplatesPanel(Panel):
             else:
                 template.origin_name = _("No origin")
                 template.origin_hash = ""
-            info["template"] = template
+            info["template"] = {
+                "name": template.name,
+                "origin_name": template.origin_name,
+                "origin_hash": template.origin_hash,
+            }
             # Clean up context for better readability
             if self.toolbar.config["SHOW_TEMPLATE_CONTEXT"]:
                 if "context_list" not in template_data:
@@ -208,7 +214,14 @@ class TemplatesPanel(Panel):
 
         # Fetch context_processors/template_dirs from any template
         if self.templates:
-            context_processors = self.templates[0]["context_processors"]
+            context_processors = (
+                {
+                    key: force_str(value)
+                    for key, value in self.templates[0]["context_processors"].items()
+                }
+                if self.templates[0]["context_processors"]
+                else None
+            )
             template = self.templates[0]["template"]
             # django templates have the 'engine' attribute, while jinja
             # templates use 'backend'

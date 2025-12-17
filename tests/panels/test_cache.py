@@ -1,10 +1,12 @@
 from django.core import cache
 
+from debug_toolbar.panels.cache import CachePanel
+
 from ..base import BaseTestCase
 
 
 class CachePanelTestCase(BaseTestCase):
-    panel_id = "CachePanel"
+    panel_id = CachePanel.panel_id
 
     def test_recording(self):
         self.assertEqual(len(self.panel.calls), 0)
@@ -122,10 +124,13 @@ class CachePanelTestCase(BaseTestCase):
         # ensure the panel does not have content yet.
         self.assertNotIn("café", self.panel.content)
         self.panel.generate_stats(self.request, response)
+        self.reload_stats()
         # ensure the panel renders correctly.
         content = self.panel.content
         self.assertIn("café", content)
         self.assertValidHTML(content)
+        # ensure traces aren't escaped
+        self.assertIn('<span class="djdt-path">', content)
 
     def test_generate_server_timing(self):
         self.assertEqual(len(self.panel.calls), 0)
@@ -149,3 +154,7 @@ class CachePanelTestCase(BaseTestCase):
         }
 
         self.assertEqual(self.panel.get_server_timing_stats(), expected_data)
+
+    def test_backend_alias_is_recorded(self):
+        cache.cache.get("foo")
+        self.assertEqual(self.panel.calls[0]["backend"], "default (LocMemCache)")

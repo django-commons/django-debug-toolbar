@@ -1,13 +1,15 @@
 from django.http import QueryDict
 from django.test import RequestFactory
 
+from debug_toolbar.panels.request import RequestPanel
+
 from ..base import BaseTestCase
 
 rf = RequestFactory()
 
 
 class RequestPanelTestCase(BaseTestCase):
-    panel_id = "RequestPanel"
+    panel_id = RequestPanel.panel_id
 
     def test_non_ascii_session(self):
         self.request.session = {"où": "où"}
@@ -52,7 +54,7 @@ class RequestPanelTestCase(BaseTestCase):
     def test_dict_for_request_in_method_get(self):
         """
         Test verifies the correctness of the statistics generation method
-        in the case when the GET request is class Dict
+        in the case when the GET request is class dict
         """
         self.request.GET = {"foo": "bar"}
         response = self.panel.process_request(self.request)
@@ -78,7 +80,7 @@ class RequestPanelTestCase(BaseTestCase):
     def test_dict_for_request_in_method_post(self):
         """
         Test verifies the correctness of the statistics generation method
-        in the case when the POST request is class Dict
+        in the case when the POST request is class dict
         """
         self.request.POST = {"foo": "bar"}
         response = self.panel.process_request(self.request)

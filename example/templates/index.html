@@ -15,6 +15,7 @@
         <li><a href="/prototype/">Prototype 1.7.3.0</a></li>
         <li><a href="{% url 'turbo' %}">Hotwire Turbo</a></li>
         <li><a href="{% url 'htmx' %}">htmx</a></li>
+        <li><a href="{% url 'cache' %}">Cache</a></li>
         <li><a href="{% url 'bad_form' %}">Bad form</a></li>
       </ul>
       <p><a href="/admin/">Django Admin</a></p>
@@ -25,9 +26,14 @@
       <button id="incrementFetch" data-url="{% url 'ajax_increment' %}" type="button">Increment via fetch</button>
       <button id="incrementXHR" data-url="{% url 'ajax_increment' %}" type="button">Increment via XHR</button>
     </p>
+    {% comment %}
+    <button id="asyncRequest" data-url="{% url 'async_db_view' %}" type="button">Make async call</button>
+    {% endcomment %}
+
   <script>
     const incrementFetch = document.querySelector("#incrementFetch");
     const incrementXHR = document.querySelector("#incrementXHR");
+    const asyncButton = document.querySelector("#asyncRequest");
     const value = document.querySelector("#session-value");
     incrementFetch.addEventListener("click", function () {
       fetch(incrementFetch.dataset.url).then( function (response) {
@@ -46,6 +52,14 @@
       xhr.open('GET', incrementXHR.dataset.url, true);
       xhr.send('');
     });
+    asyncButton.addEventListener("click", function () {
+      fetch(asyncButton.dataset.url).then( function (response) {
+        response.json().then(function(data) {
+          console.log(data)
+        });
+      });
+    });
+
   </script>
   </body>
 </html>

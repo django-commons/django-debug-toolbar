@@ -16,7 +16,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString, mark_safe
 from django.views.debug import get_default_exception_reporter_filter
 
-from debug_toolbar import _stubs as stubs, settings as dt_settings
+from debug_toolbar import _compat as compat, _stubs as stubs, settings as dt_settings
 
 _local_data = Local()
 safe_filter = get_default_exception_reporter_filter()
@@ -401,3 +401,17 @@ def is_processable_html_response(response):
         and content_encoding == ""
         and content_type in _HTML_TYPES
     )
+
+
+def get_csp_nonce(request) -> str | None:
+    """
+    Retrieve the Content Security Policy nonce from a request if there is one.
+
+    This supports both the django-csp and the built-in Django implementations.
+    """
+    # django-csp uses request.csp_nonce
+    csp_nonce = getattr(request, "csp_nonce", None)
+    if csp_nonce is not None:
+        return csp_nonce
+    # Django's built-in CSP support uses get_nonce(request)
+    return compat.get_nonce(request)

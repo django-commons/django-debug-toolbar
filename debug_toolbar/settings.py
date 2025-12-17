@@ -23,11 +23,16 @@ CONFIG_DEFAULTS = {
         "debug_toolbar.panels.redirects.RedirectsPanel",
     },
     "INSERT_BEFORE": "</body>",
+    "IS_RUNNING_TESTS": _is_running_tests(),
+    "OBSERVE_REQUEST_CALLBACK": "debug_toolbar.toolbar.observe_request",
     "RENDER_PANELS": None,
     "RESULTS_CACHE_SIZE": 25,
     "ROOT_TAG_EXTRA_ATTRS": "",
     "SHOW_COLLAPSED": False,
     "SHOW_TOOLBAR_CALLBACK": "debug_toolbar.middleware.show_toolbar",
+    "TOOLBAR_LANGUAGE": None,
+    "TOOLBAR_STORE_CLASS": "debug_toolbar.store.MemoryStore",
+    "UPDATE_ON_FETCH": False,
     # Panel options
     "EXTRA_SIGNALS": [],
     "ENABLE_STACKTRACES": True,
@@ -50,11 +55,8 @@ CONFIG_DEFAULTS = {
     "PROFILER_THRESHOLD_RATIO": 8,
     "SHOW_TEMPLATE_CONTEXT": True,
     "SKIP_TEMPLATE_PREFIXES": ("django/forms/widgets/", "admin/widgets/"),
+    "SKIP_TOOLBAR_QUERIES": True,
     "SQL_WARNING_THRESHOLD": 500,  # milliseconds
-    "OBSERVE_REQUEST_CALLBACK": "debug_toolbar.toolbar.observe_request",
-    "TOOLBAR_LANGUAGE": None,
-    "IS_RUNNING_TESTS": _is_running_tests(),
-    "UPDATE_ON_FETCH": False,
 }
 
 
@@ -79,6 +81,7 @@ PANELS_DEFAULTS = [
     "debug_toolbar.panels.alerts.AlertsPanel",
     "debug_toolbar.panels.cache.CachePanel",
     "debug_toolbar.panels.signals.SignalsPanel",
+    "debug_toolbar.panels.community.CommunityPanel",
     "debug_toolbar.panels.redirects.RedirectsPanel",
     "debug_toolbar.panels.profiling.ProfilingPanel",
 ]

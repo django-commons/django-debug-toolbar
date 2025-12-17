@@ -109,4 +109,4 @@ class AlertsPanelTestCase(BaseTestCase):
         response = StreamingHttpResponse(_render())
 
         self.panel.generate_stats(self.request, response)
-        self.assertEqual(self.panel.get_stats(), {})
+        self.assertEqual(self.panel.get_stats(), {"alerts": []})

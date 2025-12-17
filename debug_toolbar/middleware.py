@@ -4,6 +4,7 @@ Debug Toolbar middleware
 
 import re
 import socket
+from collections.abc import Callable
 from functools import cache
 
 from asgiref.sync import (
@@ -13,14 +14,34 @@ from asgiref.sync import (
     sync_to_async,
 )
 from django.conf import settings
+from django.http import HttpRequest, HttpResponse
 from django.utils.module_loading import import_string
 
 from debug_toolbar import settings as dt_settings
+from debug_toolbar._stubs import GetResponse
+from debug_toolbar.panels import Panel
 from debug_toolbar.toolbar import DebugToolbar
 from debug_toolbar.utils import clear_stack_trace_caches, is_processable_html_response
 
+_HTML_TYPES = ("text/html", "application/xhtml+xml")
 
-def show_toolbar(request):
+
+def show_toolbar(request: HttpRequest) -> bool:
+    """
+    Default function to determine whether to show the toolbar on a given page.
+    """
+    if not settings.DEBUG:
+        return False
+
+    # Test: settings
+    if request.META.get("REMOTE_ADDR") in settings.INTERNAL_IPS:
+        return True
+
+    # No test passed
+    return False
+
+
+def show_toolbar_with_docker(request: HttpRequest) -> bool:
     """
     Default function to determine whether to show the toolbar on a given page.
     """
@@ -52,7 +73,7 @@ def show_toolbar(request):
 
 
 @cache
-def show_toolbar_func_or_path():
+def show_toolbar_func_or_path() -> Callable:
     """
     Fetch the show toolbar callback from settings
 
@@ -67,7 +88,7 @@ def show_toolbar_func_or_path():
         return func_or_path
 
 
-def get_show_toolbar(async_mode):
+def get_show_toolbar(async_mode) -> Callable:
     """
     Get the callback function to show the toolbar.
 
@@ -93,7 +114,7 @@ class DebugToolbarMiddleware:
     sync_capable = True
     async_capable = True
 
-    def __init__(self, get_response):
+    def __init__(self, get_response: GetResponse):
         self.get_response = get_response
         # If get_response is a coroutine function, turns us into async mode so
         # a thread is not consumed during a whole request.
@@ -104,10 +125,10 @@ class DebugToolbarMiddleware:
             # __call__ to avoid swapping out dunder methods.
             markcoroutinefunction(self)
 
-    def __call__(self, request):
-        # Decide whether the toolbar is active for this request.
+    def __call__(self, request: HttpRequest) -> HttpResponse:
         if self.async_mode:
             return self.__acall__(request)
+
         # Decide whether the toolbar is active for this request.
         show_toolbar = get_show_toolbar(async_mode=self.async_mode)
 
@@ -129,7 +150,7 @@ class DebugToolbarMiddleware:
 
         return self._postprocess(request, response, toolbar)
 
-    async def __acall__(self, request):
+    async def __acall__(self, request: HttpRequest) -> HttpResponse:
         # Decide whether the toolbar is active for this request.
         show_toolbar = get_show_toolbar(async_mode=self.async_mode)
 
@@ -157,7 +178,9 @@ class DebugToolbarMiddleware:
 
         return self._postprocess(request, response, toolbar)
 
-    def _postprocess(self, request, response, toolbar):
+    def _postprocess(
+        self, request: HttpRequest, response: HttpResponse, toolbar: DebugToolbar
+    ) -> HttpResponse:
         """
         Post-process the response.
         """
@@ -191,7 +214,7 @@ class DebugToolbarMiddleware:
         return response
 
     @staticmethod
-    def get_headers(request, panels):
+    def get_headers(request: HttpRequest, panels: list[Panel]) -> dict[str, str]:
         headers = {}
         for panel in panels:
             for header, value in panel.get_headers(request).items():

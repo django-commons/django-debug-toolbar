@@ -26,6 +26,7 @@ class FunctionCall:
         self.id = id
         self.parent_ids = parent_ids or []
         self.hsv = hsv
+        self.has_subfuncs = False
 
     def parent_classes(self):
         return self.parent_classes
@@ -131,6 +132,21 @@ class FunctionCall:
     def indent(self):
         return 16 * self.depth
 
+    def serialize(self):
+        return {
+            "has_subfuncs": self.has_subfuncs,
+            "id": self.id,
+            "parent_ids": self.parent_ids,
+            "is_project_func": self.is_project_func(),
+            "indent": self.indent(),
+            "func_std_string": self.func_std_string(),
+            "cumtime": self.cumtime(),
+            "cumtime_per_call": self.cumtime_per_call(),
+            "tottime": self.tottime(),
+            "tottime_per_call": self.tottime_per_call(),
+            "count": self.count(),
+        }
+
 
 class ProfilingPanel(Panel):
     """
@@ -149,7 +165,6 @@ class ProfilingPanel(Panel):
 
     def add_node(self, func_list, func, max_depth, cum_time):
         func_list.append(func)
-        func.has_subfuncs = False
         if func.depth < max_depth:
             for subfunc in func.subfuncs():
                 # Always include the user's code
@@ -189,5 +204,8 @@ class ProfilingPanel(Panel):
                 cum_time_threshold,
             )
             self.record_stats(
-                {"func_list": func_list, "prof_file_path": self.prof_file_path}
+                {
+                    "func_list": [func.serialize() for func in func_list],
+                    "prof_file_path": self.prof_file_path,
+                }
             )

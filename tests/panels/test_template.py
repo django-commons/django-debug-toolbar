@@ -6,17 +6,20 @@ from django.template import Context, RequestContext, Template
 from django.test import override_settings
 from django.utils.functional import SimpleLazyObject
 
+from debug_toolbar.panels.sql import SQLPanel
+from debug_toolbar.panels.templates import TemplatesPanel
+
 from ..base import BaseTestCase, IntegrationTestCase
 from ..forms import TemplateReprForm
 from ..models import NonAsciiRepr
 
 
 class TemplatesPanelTestCase(BaseTestCase):
-    panel_id = "TemplatesPanel"
+    panel_id = TemplatesPanel.panel_id
 
     def setUp(self):
         super().setUp()
-        self.sql_panel = self.toolbar.get_panel_by_id("SQLPanel")
+        self.sql_panel = self.toolbar.get_panel_by_id(SQLPanel.panel_id)
         self.sql_panel.enable_instrumentation()
 
     def tearDown(self):
