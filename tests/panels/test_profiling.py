@@ -1,10 +1,16 @@
+import os
+import shutil
 import sys
+import tempfile
 import unittest
 
 from django.contrib.auth.models import User
+from django.core import signing
 from django.db import IntegrityError, transaction
 from django.http import HttpResponse
+from django.test import TestCase
 from django.test.utils import override_settings
+from django.urls import reverse
 
 from debug_toolbar.panels.profiling import ProfilingPanel
 
@@ -77,6 +83,24 @@ class ProfilingPanelTestCase(BaseTestCase):
         response = HttpResponse()
         self.assertIsNone(self.panel.generate_stats(self.request, response))
 
+    @override_settings(
+        DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": tempfile.gettempdir()}
+    )
+    def test_generate_stats_signed_path(self):
+        self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, self.response)
+        path = self.panel.prof_file_path
+        self.assertTrue(path)
+        # Check that it's a valid signature
+        filename = signing.loads(path)
+        self.assertTrue(filename.endswith(".prof"))
+
+    def test_generate_stats_no_root(self):
+        self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, self.response)
+        # Should not have a path if root is not set
+        self.assertFalse(hasattr(self.panel, "prof_file_path"))
+
     def test_generate_stats_no_root_func(self):
         """
         Test generating stats using profiler without root function.
@@ -103,3 +127,48 @@ class ProfilingPanelIntegrationTestCase(IntegrationTestCase):
         with self.assertRaises(IntegrityError), transaction.atomic():
             response = self.client.get("/new_user/")
         self.assertEqual(User.objects.count(), 1)
+
+
+class ProfilingDownloadViewTestCase(TestCase):
+    def setUp(self):
+        self.root = tempfile.mkdtemp()
+        self.filename = "test.prof"
+        self.filepath = os.path.join(self.root, self.filename)
+        with open(self.filepath, "wb") as f:
+            f.write(b"data")
+        self.signed_path = signing.dumps(self.filename)
+
+    def tearDown(self):
+        shutil.rmtree(self.root)
+
+    def test_download_no_root_configured(self):
+        response = self.client.get(reverse("djdt:debug_toolbar_download_prof_file"))
+        self.assertEqual(response.status_code, 404)
+
+    def test_download_valid(self):
+        with override_settings(
+            DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": self.root}
+        ):
+            url = reverse("djdt:debug_toolbar_download_prof_file")
+            response = self.client.get(url, {"path": self.signed_path})
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(list(response.streaming_content), [b"data"])
+
+    def test_download_invalid_signature(self):
+        with override_settings(
+            DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": self.root}
+        ):
+            url = reverse("djdt:debug_toolbar_download_prof_file")
+            # Tamper with the signature
+            response = self.client.get(url, {"path": self.signed_path + "bad"})
+            self.assertEqual(response.status_code, 400)
+
+    def test_download_missing_file(self):
+        with override_settings(
+            DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": self.root}
+        ):
+            url = reverse("djdt:debug_toolbar_download_prof_file")
+            # Sign a filename that doesn't exist
+            path = signing.dumps("missing.prof")
+            response = self.client.get(url, {"path": path})
+            self.assertEqual(response.status_code, 404)

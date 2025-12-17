@@ -185,7 +185,7 @@ class ProfilingPanel(Panel):
         self.stats = Stats(self.profiler)
         self.stats.calc_callees()
 
-        self.stats.calc_callees()
+        self.prof_file_path = None
 
         if (
             root := dt_settings.get_config()["PROFILER_PROFILE_ROOT"]
