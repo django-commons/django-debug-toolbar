@@ -2,6 +2,7 @@ import pathlib
 
 from django.core import signing
 from django.http import FileResponse, Http404, JsonResponse
+from django.http import HttpRequest, JsonResponse
 from django.utils.html import escape
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET
@@ -9,15 +10,18 @@ from django.views.decorators.http import require_GET
 from debug_toolbar import settings as dt_settings
 from debug_toolbar._compat import login_not_required
 from debug_toolbar.decorators import render_with_toolbar_language, require_show_toolbar
-from debug_toolbar.toolbar import DebugToolbar
+from debug_toolbar.panels import Panel
+from debug_toolbar.toolbar import DebugToolbar, StoredDebugToolbar
 
 
 @login_not_required
 @require_show_toolbar
 @render_with_toolbar_language
-def render_panel(request):
+def render_panel(request: HttpRequest) -> JsonResponse:
     """Render the contents of a panel"""
-    toolbar = DebugToolbar.fetch(request.GET["request_id"], request.GET["panel_id"])
+    toolbar: StoredDebugToolbar | None = DebugToolbar.fetch(
+        request.GET["request_id"], request.GET["panel_id"]
+    )
     if toolbar is None:
         content = _(
             "Data for this panel isn't available anymore. "
@@ -26,7 +30,7 @@ def render_panel(request):
         content = f"<p>{escape(content)}</p>"
         scripts = []
     else:
-        panel = toolbar.get_panel_by_id(request.GET["panel_id"])
+        panel: Panel = toolbar.get_panel_by_id(request.GET["panel_id"])
         content = panel.content
         scripts = panel.scripts
     return JsonResponse({"content": content, "scripts": scripts})
