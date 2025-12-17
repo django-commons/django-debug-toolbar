@@ -43,10 +43,10 @@ class TimerPanel(Panel):
     def content(self):
         stats = self.get_stats()
         rows = (
-            (_("User CPU time"), _("%(utime)0.3f msec") % stats),
-            (_("System CPU time"), _("%(stime)0.3f msec") % stats),
-            (_("Total CPU time"), _("%(total)0.3f msec") % stats),
-            (_("Elapsed time"), _("%(total_time)0.3f msec") % stats),
+            (_("User CPU time"), _("%(utime)0.3f ms") % stats),
+            (_("System CPU time"), _("%(stime)0.3f ms") % stats),
+            (_("Total CPU time"), _("%(total)0.3f ms") % stats),
+            (_("Elapsed time"), _("%(total_time)0.3f ms") % stats),
             (
                 _("Context switches"),
                 _("%(vcsw)d voluntary, %(ivcsw)d involuntary") % stats,

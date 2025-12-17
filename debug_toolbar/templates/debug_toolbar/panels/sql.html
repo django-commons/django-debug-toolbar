@@ -33,7 +33,7 @@
         <th></th>
         <th colspan="2">{% translate "Query" %}</th>
         <th>{% translate "Timeline" %}</th>
-        <th>{% translate "Time (ms)" %}</th>
+        <th>{% translate "Time" %}</th>
         <th>{% translate "Action" %}</th>
       </tr>
     </thead>
@@ -71,7 +71,7 @@
             </svg>
           </td>
           <td class="djdt-time">
-            {{ query.duration|floatformat:"2" }}
+            {{ query.duration|floatformat:"2" }}ms
           </td>
           <td class="djdt-actions">
             {% if query.params %}

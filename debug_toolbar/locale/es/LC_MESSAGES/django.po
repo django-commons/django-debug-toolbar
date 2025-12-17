@@ -240,8 +240,8 @@ msgstr "Tiempo en CPU de usuario"
 
 #: panels/timer.py:46
 #, python-format
-msgid "%(utime)0.3f msec"
-msgstr "%(utime)0.3f mseg"
+msgid "%(utime)0.3f ms"
+msgstr "%(utime)0.3f ms"
 
 #: panels/timer.py:47
 msgid "System CPU time"
@@ -249,8 +249,8 @@ msgstr "Tiempo en CPU del sistema"
 
 #: panels/timer.py:47
 #, python-format
-msgid "%(stime)0.3f msec"
-msgstr "%(stime)0.3f mseg"
+msgid "%(stime)0.3f ms"
+msgstr "%(stime)0.3f ms"
 
 #: panels/timer.py:48
 msgid "Total CPU time"
@@ -258,8 +258,8 @@ msgstr "Tiempo total de CPU"
 
 #: panels/timer.py:48
 #, python-format
-msgid "%(total)0.3f msec"
-msgstr "%(total)0.3f mseg"
+msgid "%(total)0.3f ms"
+msgstr "%(total)0.3f ms"
 
 #: panels/timer.py:49
 msgid "Elapsed time"
@@ -267,8 +267,8 @@ msgstr "Tiempo transcurrido"
 
 #: panels/timer.py:49
 #, python-format
-msgid "%(total_time)0.3f msec"
-msgstr "%(total_time)0.3f mseg"
+msgid "%(total_time)0.3f ms"
+msgstr "%(total_time)0.3f ms"
 
 #: panels/timer.py:51
 msgid "Context switches"
@@ -345,8 +345,8 @@ msgstr "Llamadas"
 
 #: templates/debug_toolbar/panels/cache.html:43
 #: templates/debug_toolbar/panels/sql.html:36
-msgid "Time (ms)"
-msgstr "Tiempo (ms)"
+msgid "Time"
+msgstr "Tiempo"
 
 #: templates/debug_toolbar/panels/cache.html:44
 msgid "Type"
@@ -691,8 +691,8 @@ msgid "Timing attribute"
 msgstr "Atributo de tiempo"
 
 #: templates/debug_toolbar/panels/timer.html:37
-msgid "Milliseconds since navigation start (+length)"
-msgstr "Milisegundos desde inicio de la navegación (+longitud)"
+msgid "Time since navigation start (+duration)"
+msgstr "Tiempo desde inicio de la navegación (+duración)"
 
 #: templates/debug_toolbar/panels/versions.html:10
 msgid "Package"

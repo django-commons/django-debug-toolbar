@@ -1111,7 +1111,7 @@ To regenerate:
 #djDebug .djToggleSwitch {
     box-sizing: content-box;
     padding: 1px 2px 3px;
-    margin-top: 7px;
+    margin-top: 5px;
     border: 1px solid var(--djdt-button-border-color);
     border-radius: 2px;
     width: 12px;

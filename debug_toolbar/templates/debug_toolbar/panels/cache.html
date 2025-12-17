@@ -12,7 +12,7 @@
   <tbody>
     <tr>
       <td>{{ total_calls }}</td>
-      <td>{{ total_time }} ms</td>
+      <td>{{ total_time|floatformat:"2" }} ms</td>
       <td>{{ hits }}</td>
       <td>{{ misses }}</td>
     </tr>
@@ -40,7 +40,7 @@
   <table>
     <thead>
       <tr>
-        <th colspan="2">{% translate "Time (ms)" %}</th>
+        <th colspan="2">{% translate "Time" %}</th>
         <th>{% translate "Type" %}</th>
         <th>{% translate "Arguments" %}</th>
         <th>{% translate "Keyword arguments" %}</th>
@@ -53,7 +53,7 @@
           <td class="djdt-toggle">
             <button class="djToggleSwitch" data-toggle-name="cacheMain" data-toggle-id="{{ forloop.counter }}">+</button>
           </td>
-          <td>{{ call.time|floatformat:"4" }}</td>
+          <td>{{ call.time|floatformat:"2" }}ms</td>
           <td>{{ call.name|escape }}</td>
           <td>{{ call.args|escape }}</td>
           <td>{{ call.kwargs|escape }}</td>
