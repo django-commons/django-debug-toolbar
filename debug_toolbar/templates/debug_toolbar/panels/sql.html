@@ -1,5 +1,5 @@
 {% load i18n l10n %}
-<ul>
+<ul class="djdt-databaseLegend">
   {% for alias, info in databases %}
     <li>
       <strong><span class="djdt-color" data-djdt-styles="backgroundColor:rgb({{ info.rgb_color|join:', ' }})"></span> {{ alias }}</strong>
@@ -103,7 +103,7 @@
                 <pre class="djdt-stack">{{ query.stacktrace }}</pre>
               {% endif %}
               {% if query.template_info %}
-                <table>
+                <table class="djdt-codeContext">
                   {% for line in query.template_info.context %}
                     <tr>
                       <td>{{ line.num }}</td>

@@ -21,39 +21,44 @@
     --djdt-panel-content-table-background-color: var(--djdt-background-color);
     --djdt-panel-title-background-color: #ffc;
     --djdt-djdt-panel-content-table-strip-background-color: #f5f5f5;
-    --djdt-highlighted-background-color: lightgrey;
+    --djdt-highlighted-background-color: #ffc;
     --djdt-toggle-template-background-color: #bbb;
 
     --djdt-sql-font-color: #333;
-    --djdt-pre-text-color: #555;
-    --djdt-path-and-locals: #777;
-    --djdt-stack-span-color: black;
+    --djdt-pre-text-color: #666;
+    --djdt-path-and-locals: black;
+    --djdt-stack-span-color: #666;
     --djdt-template-highlight-color: #333;
 
-    --djdt-table-border-color: #ccc;
-    --djdt-button-border-color: var(--djdt-table-border-color);
+    --djdt-table-header-color: #666;
+    --djdt-table-header-background-color: #f8f8f8;
+    --djdt-table-border-color: #ddd;
+    --djdt-button-border-color: #ccc;
+    --djdt-button-hover-border-color: #aaa;
     --djdt-pre-border-color: var(--djdt-table-border-color);
     --djdt-raw-border-color: var(--djdt-table-border-color);
 }
 
 #djDebug[data-theme="dark"] {
     --djdt-font-color: #f8f8f2;
-    --djdt-background-color: #1e293bff;
-    --djdt-panel-content-background-color: #0f1729ff;
+    --djdt-background-color: #121212;
+    --djdt-panel-content-background-color: #121212;
     --djdt-panel-content-table-background-color: var(--djdt-background-color);
-    --djdt-panel-title-background-color: #242432;
-    --djdt-djdt-panel-content-table-strip-background-color: #324154ff;
-    --djdt-highlighted-background-color: #2c2a7dff;
-    --djdt-toggle-template-background-color: #282755;
+    --djdt-panel-title-background-color: #417690;
+    --djdt-djdt-panel-content-table-strip-background-color: #171717;
+    --djdt-highlighted-background-color: #00363a;
+    --djdt-toggle-template-background-color: #353535;
 
     --djdt-sql-font-color: var(--djdt-font-color);
     --djdt-pre-text-color: var(--djdt-font-color);
-    --djdt-path-and-locals: #65758cff;
-    --djdt-stack-span-color: #7c8fa4;
+    --djdt-path-and-locals: #bbb;
+    --djdt-stack-span-color: #ccc;
     --djdt-template-highlight-color: var(--djdt-stack-span-color);
 
-    --djdt-table-border-color: #324154ff;
-    --djdt-button-border-color: var(--djdt-table-border-color);
+    --djdt-table-header-color: #f8f8f8;
+    --djdt-table-header-background-color: #212121;
+    --djdt-table-border-color: #353535;
+    --djdt-button-border-color: #666;
     --djdt-pre-border-color: var(--djdt-table-border-color);
     --djdt-raw-border-color: var(--djdt-table-border-color);
 }
@@ -147,33 +152,27 @@
 }
 
 #djDebug button {
-    background-color: #eee;
-    background-image: linear-gradient(to bottom, #eee, #cccccc);
+    background-color: var(--djdt-background-color);
     border: 1px solid var(--djdt-button-border-color);
-    border-bottom: 1px solid #bbb;
-    border-radius: 3px;
-    color: #333;
+    border-radius: 4px;
+    color: var(--djdt-font-color);
     line-height: 1;
-    padding: 0 8px;
+    padding: 4px 8px;
     text-align: center;
-    text-shadow: 0 1px 0 #eee;
+    text-decoration: none;
+}
+
+#djDebug[data-theme="light"] button {
+    box-shadow: 0 -15px 20px -10px rgba(0, 0, 0, 0.15) inset;
 }
 
 #djDebug button:hover {
-    background-color: #ddd;
-    background-image: linear-gradient(to bottom, #ddd, #bbb);
-    border-color: #bbb;
-    border-bottom-color: #999;
+    border-color: var(--djdt-button-hover-border-color);
     cursor: pointer;
-    text-shadow: 0 1px 0 #ddd;
 }
 
 #djDebug button:active {
     border: 1px solid #aaa;
-    border-bottom: 1px solid #888;
-    box-shadow:
-        inset 0 0 5px 2px #aaa,
-        0 1px 0 0 #eee;
 }
 
 #djDebug #djDebugToolbar {
@@ -321,7 +320,7 @@
     border: 1px solid var(--djdt-pre-border-color);
     border-collapse: collapse;
     background-color: var(--djdt-background-color);
-    padding: 2px 3px;
+    padding: 8px;
     margin-bottom: 3px;
 }
 
@@ -342,7 +341,7 @@
 }
 
 #djDebug .djdt-panelContent > div {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--djdt-table-border-color);
 }
 
 #djDebug .djDebugPanelTitle {
@@ -405,7 +404,7 @@
 
 #djDebug h4 {
     font-size: 20px;
-    font-weight: bold;
+    font-weight: 400;
     margin-top: 0.8em;
 }
 
@@ -421,20 +420,29 @@
 #djDebug .djdt-panelContent tbody > tr:nth-child(odd):not(.djdt-highlighted) {
     background-color: var(--djdt-panel-content-table-strip-background-color);
 }
+#djDebug .djdt-panelContent tbody th {
+    border-top: 1px solid var(--djdt-table-border-color);
+}
 #djDebug .djdt-panelContent tbody td,
 #djDebug .djdt-panelContent tbody th {
     vertical-align: top;
-    padding: 2px 3px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--djdt-table-border-color);
 }
 #djDebug .djdt-panelContent tbody td.djdt-time {
-    text-align: center;
+    text-align: right;
+    min-width: 50px;
 }
 
 #djDebug .djdt-panelContent thead th {
-    padding: 1px 6px 1px 3px;
+    padding: 8px 10px;
+    color: var(--djdt-table-header-color);
+    border-bottom: 1px solid var(--djdt-table-border-color);
+    background-color: var(--djdt-table-header-background-color);
     text-align: left;
+    text-transform: uppercase;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 11px;
     white-space: nowrap;
 }
 #djDebug .djdt-panelContent tbody th {
@@ -442,6 +450,10 @@
     text-align: right;
     color: #666;
     padding-right: 0.5em;
+}
+#djDebug .djdt-panelContent .djdt-codeContext tbody td {
+    padding: 2px 3px;
+    border-bottom: none;
 }
 
 #djDebug .djTemplateContext {
@@ -453,18 +465,19 @@
     top: 4px;
     right: 15px;
     line-height: 16px;
-    border: 6px solid #ddd;
+    border: 3px solid #ddd;
     border-radius: 50%;
     background: #fff;
     color: #ddd;
-    font-weight: 900;
-    font-size: 20px;
+    font-weight: 400;
+    font-size: 24px;
     height: 36px;
     width: 36px;
     padding: 0 0 5px;
     box-sizing: border-box;
     display: grid;
     place-items: center;
+    box-shadow: none;
 }
 
 #djDebug .djdt-panelContent .djDebugClose:hover {
@@ -511,6 +524,9 @@
 
 #djDebug tr.djSelected {
     display: table-row;
+}
+#djDebug .djdt-databaseLegend {
+    margin-top: 1em;
 }
 
 #djDebug .djDebugSql {
@@ -1083,9 +1099,10 @@ To regenerate:
 #djDebug .djdt-panelContent table .djdt-toggle {
     width: 14px;
     padding-top: 3px;
+    padding-right: 0;
 }
 #djDebug .djdt-panelContent table .djdt-actions {
-    min-width: 70px;
+    min-width: 82px;
     white-space: nowrap;
 }
 #djDebug .djdt-color:after {
@@ -1093,12 +1110,12 @@ To regenerate:
 }
 #djDebug .djToggleSwitch {
     box-sizing: content-box;
-    padding: 0;
-    border: 1px solid #999;
-    border-radius: 0;
+    padding: 1px 2px 3px;
+    margin-top: 7px;
+    border: 1px solid var(--djdt-button-border-color);
+    border-radius: 2px;
     width: 12px;
-    color: #777;
-    background: linear-gradient(to bottom, #fff, #dcdcdc);
+    color: var(--djdt-font-color);
 }
 #djDebug .djNoToggleSwitch {
     height: 14px;
