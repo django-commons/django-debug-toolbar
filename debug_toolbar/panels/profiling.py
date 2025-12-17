@@ -1,10 +1,11 @@
 import cProfile
 import os
-import tempfile
+import uuid
 from colorsys import hsv_to_rgb
 from pstats import Stats
 
 from django.conf import settings
+from django.core import signing
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
@@ -184,11 +185,15 @@ class ProfilingPanel(Panel):
         self.stats = Stats(self.profiler)
         self.stats.calc_callees()
 
-        prof_file_path = os.path.join(
-            tempfile.gettempdir(), next(tempfile._get_candidate_names()) + ".prof"
-        )
-        self.profiler.dump_stats(prof_file_path)
-        self.prof_file_path = prof_file_path
+        self.stats.calc_callees()
+
+        if (
+            root := dt_settings.get_config()["PROFILER_PROFILE_ROOT"]
+        ) and os.path.exists(root):
+            filename = f"{uuid.uuid4().hex}.prof"
+            prof_file_path = os.path.join(root, filename)
+            self.profiler.dump_stats(prof_file_path)
+            self.prof_file_path = signing.dumps(filename)
 
         root_func = cProfile.label(super().process_request.__code__)
         if root_func in self.stats.stats:

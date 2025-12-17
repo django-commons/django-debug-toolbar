@@ -351,6 +351,17 @@ Panel options
   This setting affects the depth of function calls in the profiler's
   analysis.
 
+* ``PROFILER_PROFILE_ROOT``
+
+  Default: ``None``
+
+  Panel: profiling
+
+  This setting controls the directory where profile files are saved. If set
+  to ``None`` (the default), the profile file is not saved and the download
+  link is not shown. This directory must exist and be writable by the
+  web server process.
+
 * ``PROFILER_THRESHOLD_RATIO``
 
   Default: ``8``
