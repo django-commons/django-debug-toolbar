@@ -87,8 +87,8 @@ class ProfilingPanelTestCase(BaseTestCase):
         DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": tempfile.gettempdir()}
     )
     def test_generate_stats_signed_path(self):
-        self.panel.process_request(self.request)
-        self.panel.generate_stats(self.request, self.response)
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
         path = self.panel.prof_file_path
         self.assertTrue(path)
         # Check that it's a valid signature
@@ -96,8 +96,8 @@ class ProfilingPanelTestCase(BaseTestCase):
         self.assertTrue(filename.endswith(".prof"))
 
     def test_generate_stats_no_root(self):
-        self.panel.process_request(self.request)
-        self.panel.generate_stats(self.request, self.response)
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
         # Should not have a path if root is not set
         self.assertFalse(hasattr(self.panel, "prof_file_path"))
 
