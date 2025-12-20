@@ -244,7 +244,7 @@ msgstr "Користувацький час CPU"
 
 #: panels/timer.py:46
 #, python-format
-msgid "%(utime)0.3f msec"
+msgid "%(utime)0.3f ms"
 msgstr "%(utime)0.3f мс"
 
 #: panels/timer.py:47
@@ -253,7 +253,7 @@ msgstr "Системний час CPU"
 
 #: panels/timer.py:47
 #, python-format
-msgid "%(stime)0.3f msec"
+msgid "%(stime)0.3f ms"
 msgstr "%(stime)0.3f мс"
 
 #: panels/timer.py:48
@@ -262,7 +262,7 @@ msgstr "Загальний час CPU"
 
 #: panels/timer.py:48
 #, python-format
-msgid "%(total)0.3f msec"
+msgid "%(total)0.3f ms"
 msgstr "%(total)0.3f мс"
 
 #: panels/timer.py:49
@@ -271,7 +271,7 @@ msgstr "Витрачений час"
 
 #: panels/timer.py:49
 #, python-format
-msgid "%(total_time)0.3f msec"
+msgid "%(total_time)0.3f ms"
 msgstr "%(total_time)0.3f мс"
 
 #: panels/timer.py:51
@@ -349,7 +349,7 @@ msgstr "Виклики"
 
 #: templates/debug_toolbar/panels/cache.html:43
 #: templates/debug_toolbar/panels/sql.html:36
-msgid "Time (ms)"
+msgid "Time"
 msgstr "Час (мс)"
 
 #: templates/debug_toolbar/panels/cache.html:44
@@ -703,8 +703,8 @@ msgid "Timing attribute"
 msgstr "Атрибут хронометражу"
 
 #: templates/debug_toolbar/panels/timer.html:37
-msgid "Milliseconds since navigation start (+length)"
-msgstr "Мілісекунд від початку навігації (+тривалість)"
+msgid "Time since navigation start (+duration)"
+msgstr "Час від початку навігації (+тривалість)"
 
 #: templates/debug_toolbar/panels/versions.html:10
 msgid "Package"

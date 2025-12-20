@@ -222,7 +222,7 @@ msgstr "CPU time pengguna"
 
 #: panels/timer.py:46
 #, python-format
-msgid "%(utime)0.3f msec"
+msgid "%(utime)0.3f ms"
 msgstr ""
 
 #: panels/timer.py:47
@@ -231,7 +231,7 @@ msgstr "CPU time sistem"
 
 #: panels/timer.py:47
 #, python-format
-msgid "%(stime)0.3f msec"
+msgid "%(stime)0.3f ms"
 msgstr ""
 
 #: panels/timer.py:48
@@ -240,7 +240,7 @@ msgstr "CPU time total"
 
 #: panels/timer.py:48
 #, python-format
-msgid "%(total)0.3f msec"
+msgid "%(total)0.3f ms"
 msgstr ""
 
 #: panels/timer.py:49
@@ -249,7 +249,7 @@ msgstr "Waktu terlampaui"
 
 #: panels/timer.py:49
 #, python-format
-msgid "%(total_time)0.3f msec"
+msgid "%(total_time)0.3f ms"
 msgstr ""
 
 #: panels/timer.py:51
@@ -327,7 +327,7 @@ msgstr ""
 
 #: templates/debug_toolbar/panels/cache.html:43
 #: templates/debug_toolbar/panels/sql.html:36
-msgid "Time (ms)"
+msgid "Time"
 msgstr "Waktu (milidetik)"
 
 #: templates/debug_toolbar/panels/cache.html:44
@@ -657,7 +657,7 @@ msgid "Timing attribute"
 msgstr ""
 
 #: templates/debug_toolbar/panels/timer.html:37
-msgid "Milliseconds since navigation start (+length)"
+msgid "Time since navigation start (+duration)"
 msgstr ""
 
 #: templates/debug_toolbar/panels/versions.html:10

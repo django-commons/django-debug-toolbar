@@ -229,8 +229,8 @@ msgstr "Потребителско процесорно време "
 
 #: panels/timer.py:46
 #, python-format
-msgid "%(utime)0.3f msec"
-msgstr "%(utime)0.3f msec"
+msgid "%(utime)0.3f ms"
+msgstr "%(utime)0.3f ms"
 
 #: panels/timer.py:47
 msgid "System CPU time"
@@ -238,8 +238,8 @@ msgstr "Системно процесорно време"
 
 #: panels/timer.py:47
 #, python-format
-msgid "%(stime)0.3f msec"
-msgstr "%(stime)0.3f msec"
+msgid "%(stime)0.3f ms"
+msgstr "%(stime)0.3f ms"
 
 #: panels/timer.py:48
 msgid "Total CPU time"
@@ -247,8 +247,8 @@ msgstr "Общо процесорно време"
 
 #: panels/timer.py:48
 #, python-format
-msgid "%(total)0.3f msec"
-msgstr "%(total)0.3f msec"
+msgid "%(total)0.3f ms"
+msgstr "%(total)0.3f ms"
 
 #: panels/timer.py:49
 msgid "Elapsed time"
@@ -256,8 +256,8 @@ msgstr "Изминало време"
 
 #: panels/timer.py:49
 #, python-format
-msgid "%(total_time)0.3f msec"
-msgstr "%(total_time)0.3f msec"
+msgid "%(total_time)0.3f ms"
+msgstr "%(total_time)0.3f ms"
 
 #: panels/timer.py:51
 msgid "Context switches"
@@ -334,8 +334,8 @@ msgstr "Извиквания"
 
 #: templates/debug_toolbar/panels/cache.html:43
 #: templates/debug_toolbar/panels/sql.html:36
-msgid "Time (ms)"
-msgstr "Време (ms)"
+msgid "Time"
+msgstr "Време"
 
 #: templates/debug_toolbar/panels/cache.html:44
 msgid "Type"
@@ -672,8 +672,8 @@ msgid "Timing attribute"
 msgstr "Атрибут на измерването"
 
 #: templates/debug_toolbar/panels/timer.html:37
-msgid "Milliseconds since navigation start (+length)"
-msgstr "Милисекунди от началото на навигацията (+дължината)"
+msgid "Time since navigation start (+duration)"
+msgstr "Време от началото на навигацията (+продължителност)"
 
 #: templates/debug_toolbar/panels/versions.html:10
 msgid "Package"

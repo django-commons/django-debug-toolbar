@@ -39,7 +39,7 @@ function insertBrowserTiming() {
             row.innerHTML = `
 <td>${stat.replace("Start", "")}</td>
 <td><svg class="djDebugLineChart" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 100 5" preserveAspectRatio="none"><rect y="0" height="5" fill="#ccc" /></svg></td>
-<td>${elapsed} (+${duration})</td>
+<td>${elapsed}ms (+${duration}ms)</td>
 `;
             row.querySelector("rect").setAttribute(
                 "width",
@@ -50,7 +50,7 @@ function insertBrowserTiming() {
             row.innerHTML = `
 <td>${stat}</td>
 <td><svg class="djDebugLineChart" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 100 5" preserveAspectRatio="none"><rect y="0" height="5" fill="#ccc" /></svg></td>
-<td>${elapsed}</td>
+<td>${elapsed}ms</td>
 `;
             row.querySelector("rect").setAttribute("width", 2);
         }
