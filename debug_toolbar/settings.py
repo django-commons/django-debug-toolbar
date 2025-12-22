@@ -52,6 +52,7 @@ CONFIG_DEFAULTS = {
     "PRETTIFY_SQL": True,
     "PROFILER_CAPTURE_PROJECT_CODE": True,
     "PROFILER_MAX_DEPTH": 10,
+    "PROFILER_PROFILE_ROOT": None,
     "PROFILER_THRESHOLD_RATIO": 8,
     "SHOW_TEMPLATE_CONTEXT": True,
     "SKIP_TEMPLATE_PREFIXES": ("django/forms/widgets/", "admin/widgets/"),

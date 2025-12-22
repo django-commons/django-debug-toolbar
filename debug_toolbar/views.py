@@ -1,7 +1,12 @@
-from django.http import HttpRequest, JsonResponse
+import pathlib
+
+from django.core import signing
+from django.http import FileResponse, Http404, HttpRequest, JsonResponse
 from django.utils.html import escape
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_GET
 
+from debug_toolbar import settings as dt_settings
 from debug_toolbar._compat import login_not_required
 from debug_toolbar.decorators import render_with_toolbar_language, require_show_toolbar
 from debug_toolbar.panels import Panel
@@ -28,3 +33,27 @@ def render_panel(request: HttpRequest) -> JsonResponse:
         content = panel.content
         scripts = panel.scripts
     return JsonResponse({"content": content, "scripts": scripts})
+
+
+@require_GET
+def download_prof_file(request):
+    if not (root := dt_settings.get_config()["PROFILER_PROFILE_ROOT"]):
+        raise Http404()
+
+    if not (file_path := request.GET.get("path")):
+        raise Http404()
+
+    try:
+        filename = signing.loads(file_path)
+    except signing.BadSignature:
+        raise Http404() from None
+
+    resolved_path = pathlib.Path(root) / filename
+    if not resolved_path.exists():
+        raise Http404()
+
+    response = FileResponse(
+        open(resolved_path, "rb"), content_type="application/octet-stream"
+    )
+    response["Content-Disposition"] = f'attachment; filename="{resolved_path.name}"'
+    return response
