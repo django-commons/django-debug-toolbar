@@ -41,7 +41,7 @@ jobs:
         - 3306:3306
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         persist-credentials: false
 
@@ -57,7 +57,7 @@ jobs:
         echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
 
     - name: Cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ steps.pip-cache.outputs.dir }}
         key:
@@ -82,7 +82,7 @@ jobs:
         COVERAGE_FILE: ".coverage.mysql.${{ matrix.python-version }}"
 
     - name: Store coverage file
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: coverage-mysql-${{ matrix.python-version }}
         path: .coverage.mysql.${{ matrix.python-version }}*
@@ -137,7 +137,7 @@ jobs:
           --health-retries 5
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         persist-credentials: false
 
@@ -153,7 +153,7 @@ jobs:
         echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
 
     - name: Cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ steps.pip-cache.outputs.dir }}
         key:
@@ -182,7 +182,7 @@ jobs:
         COVERAGE_FILE: ".coverage.${{ matrix.database }}.${{ matrix.python-version }}"
 
     - name: Store coverage file
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: coverage-${{ matrix.database }}-${{ matrix.python-version }}
         path: .coverage.${{ matrix.database }}.${{ matrix.python-version }}*
@@ -197,7 +197,7 @@ jobs:
         python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         persist-credentials: false
 
@@ -213,7 +213,7 @@ jobs:
         echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
 
     - name: Cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ steps.pip-cache.outputs.dir }}
         key:
@@ -235,7 +235,7 @@ jobs:
         COVERAGE_FILE: ".coverage.sqlite.${{ matrix.python-version }}"
 
     - name: Store coverage file
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: coverage-sqlite-${{ matrix.python-version }}
         path: .coverage.sqlite.${{ matrix.python-version }}*
@@ -247,7 +247,7 @@ jobs:
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         persist-credentials: false
 
@@ -262,7 +262,7 @@ jobs:
         echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
 
     - name: Cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ steps.pip-cache.outputs.dir }}
         key:
@@ -290,12 +290,12 @@ jobs:
       pull-requests: write
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           # Persist the credentials because coverage_comment needs them too.
           persist-credentials: true
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         id: download
         with:
           pattern: coverage-*
@@ -309,7 +309,7 @@ jobs:
           MERGE_COVERAGE_FILES: true
 
       - name: Store Pull Request comment to be posted
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
         with:
           name: python-coverage-comment-action
