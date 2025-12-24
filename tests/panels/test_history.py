@@ -5,6 +5,7 @@ from django.test import RequestFactory, override_settings
 from django.urls import resolve, reverse
 
 from debug_toolbar.panels.history import HistoryPanel
+from debug_toolbar.panels.redirects import RedirectsPanel
 from debug_toolbar.store import get_store
 from debug_toolbar.toolbar import DebugToolbar
 
@@ -80,6 +81,8 @@ class HistoryViewsTestCase(IntegrationTestCase):
         "AlertsPanel",
         "CachePanel",
         "SignalsPanel",
+        "CommunityPanel",
+        "ProfilingPanel",
     }
 
     def test_history_panel_integration_content(self):
@@ -138,6 +141,7 @@ class HistoryViewsTestCase(IntegrationTestCase):
         self.client.get("/json_view/")
         panel_keys = copy.copy(self.PANEL_KEYS)
         panel_keys.add(HistoryPanel.panel_id)
+        panel_keys.add(RedirectsPanel.panel_id)
         request_id = list(get_store().request_ids())[0]
         data = {"request_id": request_id}
         response = self.client.get(reverse("djdt:history_sidebar"), data=data)

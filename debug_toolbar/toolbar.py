@@ -2,24 +2,32 @@
 The main DebugToolbar class that loads and renders the Toolbar.
 """
 
+from __future__ import annotations
+
 import logging
 import re
 import uuid
+from collections.abc import Callable
 from functools import cache
 
 from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.dispatch import Signal
+from django.http import HttpRequest
 from django.template import TemplateSyntaxError
 from django.template.loader import render_to_string
-from django.urls import include, path, re_path, resolve
+from django.urls import URLPattern, URLResolver, include, path, re_path, resolve
 from django.urls.exceptions import Resolver404
 from django.utils.module_loading import import_string
 from django.utils.translation import get_language, override as lang_override
 
 from debug_toolbar import APP_NAME, settings as dt_settings
-from debug_toolbar.store import get_store
+from debug_toolbar._stubs import GetResponse
+from debug_toolbar.store import BaseStore, get_store
+
+from .panels import Panel
+from .utils import get_csp_nonce
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +35,14 @@ logger = logging.getLogger(__name__)
 class DebugToolbar:
     # for internal testing use only
     _created = Signal()
-    store = None
+    store: BaseStore = None
 
-    def __init__(self, request, get_response, request_id=None):
+    def __init__(
+        self,
+        request: HttpRequest,
+        get_response: GetResponse,
+        request_id: str | None = None,
+    ):
         self.request = request
         self.config = dt_settings.get_config().copy()
         panels = []
@@ -49,30 +62,27 @@ class DebugToolbar:
     # Manage panels
 
     @property
-    def panels(self):
+    def panels(self) -> list[Panel]:
         """
         Get a list of all available panels.
         """
         return list(self._panels.values())
 
     @property
-    def enabled_panels(self):
+    def enabled_panels(self) -> list[Panel]:
         """
         Get a list of panels enabled for the current request.
         """
         return [panel for panel in self._panels.values() if panel.enabled]
 
     @property
-    def csp_nonce(self):
+    def csp_nonce(self) -> str | None:
         """
         Look up the Content Security Policy nonce if there is one.
-
-        This is built specifically for django-csp, which may not always
-        have a nonce associated with the request.
         """
-        return getattr(self.request, "csp_nonce", None)
+        return get_csp_nonce(self.request)
 
-    def get_panel_by_id(self, panel_id):
+    def get_panel_by_id(self, panel_id: str) -> Panel:
         """
         Get the panel with the given id, which is the class name by default.
         """
@@ -80,7 +90,7 @@ class DebugToolbar:
 
     # Handle rendering the toolbar in HTML
 
-    def render_toolbar(self):
+    def render_toolbar(self) -> str:
         """
         Renders the overall Toolbar with panels inside.
         """
@@ -101,7 +111,7 @@ class DebugToolbar:
             else:
                 raise
 
-    def should_render_panels(self):
+    def should_render_panels(self) -> bool:
         """Determine whether the panels should be rendered during the request
 
         If False, the panels will be loaded via Ajax.
@@ -121,17 +131,19 @@ class DebugToolbar:
         self.store.set(self.request_id)
 
     @classmethod
-    def fetch(cls, request_id, panel_id=None):
+    def fetch(
+        cls, request_id: str, panel_id: str | None = None
+    ) -> StoredDebugToolbar | None:
         if get_store().exists(request_id):
             return StoredDebugToolbar.from_store(request_id, panel_id=panel_id)
 
     # Manually implement class-level caching of panel classes and url patterns
     # because it's more obvious than going through an abstraction.
 
-    _panel_classes = None
+    _panel_classes: list[Panel] | None = None
 
     @classmethod
-    def get_panel_classes(cls):
+    def get_panel_classes(cls) -> list[type[Panel]] | None:
         if cls._panel_classes is None:
             # Load panels in a temporary variable for thread safety.
             panel_classes = [
@@ -140,10 +152,10 @@ class DebugToolbar:
             cls._panel_classes = panel_classes
         return cls._panel_classes
 
-    _urlpatterns = None
+    _urlpatterns: list[URLPattern | URLResolver] | None = None
 
     @classmethod
-    def get_urls(cls):
+    def get_urls(cls) -> list[URLPattern | URLResolver]:
         if cls._urlpatterns is None:
             from . import views
 
@@ -159,7 +171,7 @@ class DebugToolbar:
         return cls._urlpatterns
 
     @classmethod
-    def is_toolbar_request(cls, request):
+    def is_toolbar_request(cls, request: HttpRequest) -> bool:
         """
         Determine if the request is for a DebugToolbar view.
         """
@@ -171,11 +183,14 @@ class DebugToolbar:
             )
         except Resolver404:
             return False
-        return resolver_match.namespaces and resolver_match.namespaces[-1] == APP_NAME
+        return (
+            bool(resolver_match.namespaces)
+            and resolver_match.namespaces[-1] == APP_NAME
+        )
 
     @staticmethod
     @cache
-    def get_observe_request():
+    def get_observe_request() -> Callable:
         # If OBSERVE_REQUEST_CALLBACK is a string, which is the recommended
         # setup, resolve it to the corresponding callable.
         func_or_path = dt_settings.get_config()["OBSERVE_REQUEST_CALLBACK"]
@@ -185,14 +200,14 @@ class DebugToolbar:
             return func_or_path
 
 
-def observe_request(request):
+def observe_request(request: HttpRequest) -> bool:
     """
     Determine whether to update the toolbar from a client side request.
     """
     return True
 
 
-def from_store_get_response(request):
+def from_store_get_response(request: HttpRequest | None) -> None:
     logger.warning(
         "get_response was called for debug toolbar after being loaded from the store. No request exists in this scenario as the request is not stored, only the panel's data."
     )
@@ -200,7 +215,12 @@ def from_store_get_response(request):
 
 
 class StoredDebugToolbar(DebugToolbar):
-    def __init__(self, request, get_response, request_id=None):
+    def __init__(
+        self,
+        request: HttpRequest | None,
+        get_response: GetResponse,
+        request_id: str | None = None,
+    ):
         self.request = None
         self.config = dt_settings.get_config().copy()
         self.process_request = get_response
@@ -210,7 +230,9 @@ class StoredDebugToolbar(DebugToolbar):
         self.init_store()
 
     @classmethod
-    def from_store(cls, request_id, panel_id=None):
+    def from_store(
+        cls, request_id: str, panel_id: str | None = None
+    ) -> StoredDebugToolbar:
         toolbar = StoredDebugToolbar(
             None, from_store_get_response, request_id=request_id
         )
@@ -221,13 +243,12 @@ class StoredDebugToolbar(DebugToolbar):
             if panel_id and panel.panel_id != panel_id:
                 continue
             data = toolbar.store.panel(toolbar.request_id, panel.panel_id)
-            if data:
-                panel.load_stats_from_store(data)
-                toolbar._panels[panel.panel_id] = panel
+            panel.load_stats_from_store(data)
+            toolbar._panels[panel.panel_id] = panel
         return toolbar
 
 
-def debug_toolbar_urls(prefix="__debug__"):
+def debug_toolbar_urls(prefix: str = "__debug__") -> list[URLPattern | URLResolver]:
     """
     Return a URL pattern for serving toolbar in debug mode.
 

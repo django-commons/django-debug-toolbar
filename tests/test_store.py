@@ -14,6 +14,12 @@ class SerializationTestCase(TestCase):
             '{"hello": {"foo": "bar"}}',
         )
 
+    def test_serialize_logs_on_failure(self):
+        self.assertEqual(
+            store.serialize({"hello": {"foo": b"bar"}}),
+            '{"hello": {"foo": "bar"}}',
+        )
+
     def test_deserialize(self):
         self.assertEqual(
             store.deserialize('{"hello": {"foo": "bar"}}'),
@@ -126,6 +132,9 @@ class GetStoreTestCase(TestCase):
         self.assertIs(store.get_store(), StubStore)
 
 
+@override_settings(
+    DEBUG_TOOLBAR_CONFIG={"TOOLBAR_STORE_CLASS": "debug_toolbar.store.DatabaseStore"}
+)
 class DatabaseStoreTestCase(TestCase):
     @classmethod
     def setUpTestData(cls) -> None:

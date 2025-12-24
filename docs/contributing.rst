@@ -12,6 +12,8 @@ You can report bugs and request features in the `bug tracker
 
 Please search the existing database for duplicates before filing an issue.
 
+.. _code:
+
 Code
 ----
 
@@ -39,6 +41,9 @@ You can run now run the example application::
 For convenience, there's an alias for the second command::
 
     $ make example
+
+The default password is ``p``, it can be overridden by setting the environment
+variable ``DJANGO_SUPERUSER_PASSWORD``.
 
 Look at ``example/settings.py`` for running the example with another database
 than SQLite.
@@ -150,7 +155,7 @@ Translations
 ------------
 
 Translation efforts are coordinated on `Transifex
-<https://www.transifex.com/projects/p/django-debug-toolbar/>`_.
+<https://explore.transifex.com/django-debug-toolbar/django-debug-toolbar/>`_.
 
 Help translate the Debug Toolbar in your language!
 
@@ -204,3 +209,69 @@ The release itself requires the following steps:
 #. **After the publishing completed** edit the automatically created GitHub
    release to include the release notes (you may use GitHub's "Generate release
    notes" button for this).
+
+
+Building the documentation locally
+----------------------------------
+
+The project's documentation is built using `Sphinx <https://www.sphinx-doc.org>`_.
+You can generate it locally to preview your changes before submitting a pull
+request.
+
+
+Prerequisites
+--------------
+
+Before building the documentation, ensure that all dependencies are installed
+as described in :ref:`the setup instructions <code>`.
+
+Additionally, to build the documentation with proper spell checking,
+you need to install:
+
+- **Enchant Library** - This is required by the sphinxcontrib-spelling
+        extension via the pyenchant package. For detailed installation
+        instructions, see the
+        `pyenchant installation documentation <https://pyenchant.github.io/pyenchant/install.html#installing-the-enchant-c-library>`_.
+
+
+
+
+Using Tox (Cross-Platform)
+------------------------------------
+
+To build the documentation using Tox, run from the project root:
+
+.. code-block:: bash
+
+    tox -e docs -- html
+
+This will generate the HTML files in ``docs/_build/html/``.
+
+You can then open the documentation in your browser:
+
+- **Linux:** ``xdg-open docs/_build/html/index.html``
+- **macOS:** ``open docs/_build/html/index.html``
+- **Windows:** ``start docs\_build\html\index.html``
+
+*Tox automatically installs the necessary dependencies, so you don’t need
+to activate a virtual environment manually.*
+
+
+Troubleshooting
+----------------
+
+
+If you encounter an error about a missing dependency such as
+``sphinx-build: command not found``, ensure that your virtual environment is
+activated and all dependencies are installed:
+
+.. code-block:: bash
+
+    pip install -r requirements_dev.txt
+
+Alternatively, you can build the documentation using Tox, which automatically
+handles dependencies and environment setup:
+
+.. code-block:: bash
+
+    tox -e docs -- html

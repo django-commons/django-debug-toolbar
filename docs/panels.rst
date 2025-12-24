@@ -108,10 +108,24 @@ Signals
 
 List of signals and receivers.
 
+Community
+~~~~~~~~~
+
+.. class:: debug_toolbar.panels.community.CommunityPanel
+
+A panel that provides links to the Django Debug Toolbar community.
+
 Redirects
 ~~~~~~~~~
 
 .. class:: debug_toolbar.panels.redirects.RedirectsPanel
+
+.. deprecated:: 6.0
+
+The RedirectsPanel is deprecated and will be removed in a future version.
+The HistoryPanel now provides the ability to view toolbar data for redirected
+requests. If you have a use case for this panel, please comment on the
+GitHub issue <https://github.com/django-commons/django-debug-toolbar/issues/2216>`_.
 
 When this panel is enabled, the debug toolbar will show an intermediate page
 upon redirect so you can view any debug information prior to redirecting. This
@@ -371,6 +385,8 @@ There is no public CSS API at this time.
     .. automethod:: debug_toolbar.panels.Panel.get_headers
 
     .. automethod:: debug_toolbar.panels.Panel.run_checks
+
+.. autoclass:: debug_toolbar._stubs.GetResponse
 
 .. _javascript-api:
 

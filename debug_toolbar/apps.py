@@ -24,6 +24,35 @@ class DebugToolbarConfig(AppConfig):
         # allows panels like CachePanel to enable their instrumentation immediately.
         for cls in DebugToolbar.get_panel_classes():
             cls.ready()
+        _manage_migrations_visibility(self.name)
+
+    def import_models(self):
+        """
+        Override import models to avoid allowing users to dynamically fetch a model
+        that doesn't have a table behind it unless they are using the DatabaseStore.
+        This also prevents the command `migrate --run-syncdb` from creating tables
+        for the models.
+        """
+        dt_config = dt_settings.get_config()
+        if dt_config["TOOLBAR_STORE_CLASS"] == "debug_toolbar.store.DatabaseStore":
+            return super().import_models()
+        # Not using the database store, don't import the models
+        self.models = {}
+
+
+def _manage_migrations_visibility(app_name):
+    """
+    Adjust the toolbar's migration visibility by manipulating the
+    project's settings.
+
+    This is a hack since it's manipulating settings.
+    """
+    if (
+        dt_settings.get_config()["TOOLBAR_STORE_CLASS"]
+        != "debug_toolbar.store.DatabaseStore"
+    ):
+        # This effectively hides the migrations by telling Django they don't exist.
+        settings.MIGRATION_MODULES.setdefault(app_name, None)
 
 
 def check_template_config(config):

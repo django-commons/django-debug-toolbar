@@ -183,9 +183,10 @@ You should also modify your URLconf file:
 .. code-block:: python
 
     from django.conf import settings
-    from debug_toolbar.toolbar import debug_toolbar_urls
 
     if not settings.TESTING:
+        from debug_toolbar.toolbar import debug_toolbar_urls
+
         urlpatterns = [
             *urlpatterns,
         ] + debug_toolbar_urls()
@@ -272,12 +273,13 @@ And for Apache:
 Django Channels & Async
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The Debug Toolbar currently has experimental support for Django Channels and
-async projects. The Debug Toolbar is compatible with the following exceptions:
+The Debug Toolbar currently has experimental support for async projects.
+The Debug Toolbar is compatible with the following exceptions:
 
 - Concurrent requests aren't supported
 - ``TimerPanel``, ``RequestPanel`` and ``ProfilingPanel`` can't be used
   in async contexts.
+- Django Channels is not supported yet.
 
 HTMX
 ^^^^

@@ -1,4 +1,4 @@
-import asyncio
+import sys
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
@@ -6,6 +6,11 @@ from django.http import HttpResponse
 from django.test import AsyncRequestFactory, RequestFactory, TestCase, override_settings
 
 from debug_toolbar.middleware import DebugToolbarMiddleware
+
+if sys.version_info >= (3, 12):
+    from inspect import iscoroutinefunction
+else:
+    from asyncio import iscoroutinefunction
 
 
 def show_toolbar_if_staff(request):
@@ -35,7 +40,7 @@ class MiddlewareSyncAsyncCompatibilityTestCase(TestCase):
             lambda x: HttpResponse("<html><body>Test app</body></html>")
         )
 
-        self.assertFalse(asyncio.iscoroutinefunction(middleware))
+        self.assertFalse(iscoroutinefunction(middleware))
 
         response = middleware(request)
         self.assertEqual(response.status_code, 200)
@@ -54,7 +59,7 @@ class MiddlewareSyncAsyncCompatibilityTestCase(TestCase):
         middleware = DebugToolbarMiddleware(get_response)
         request = self.async_factory.get("/")
 
-        self.assertTrue(asyncio.iscoroutinefunction(middleware))
+        self.assertTrue(iscoroutinefunction(middleware))
 
         response = await middleware(request)
         self.assertEqual(response.status_code, 200)

@@ -32,6 +32,7 @@ default value is::
         'debug_toolbar.panels.alerts.AlertsPanel',
         'debug_toolbar.panels.cache.CachePanel',
         'debug_toolbar.panels.signals.SignalsPanel',
+        'debug_toolbar.panels.community.CommunityPanel',
         'debug_toolbar.panels.redirects.RedirectsPanel',
         'debug_toolbar.panels.profiling.ProfilingPanel',
     ]
@@ -195,15 +196,15 @@ Toolbar options
   The DatabaseStore provides persistence and automatically cleans up old
   entries based on the ``RESULTS_CACHE_SIZE`` setting.
 
-  Note: For full functionality, DatabaseStore requires migrations for
-  the debug_toolbar app:
+  Note: When using ``DatabaseStore`` migrations are required for
+  the ``debug_toolbar`` app:
 
   .. code-block:: bash
 
       python manage.py migrate debug_toolbar
 
-  For the DatabaseStore to work properly, you need to run migrations for the
-  debug_toolbar app. The migrations create the necessary database table to store
+  For the ``DatabaseStore`` to work properly, you need to run migrations for the
+  ``debug_toolbar`` app. The migrations create the necessary database table to store
   toolbar data.
 
 .. _TOOLBAR_LANGUAGE:
@@ -385,6 +386,17 @@ Panel options
   rendered templates and contexts. Template-based form widgets are
   skipped by default because the panel HTML can easily grow to hundreds
   of megabytes with many form fields and many options.
+
+* ``SKIP_TOOLBAR_QUERIES``
+
+  Default: ``True``
+
+  Panel: SQL
+
+  The debug toolbar can generate queries if ``TOOLBAR_STORE_CLASS`` is set to
+  use ``DatabaseStore``. This setting controls whether those queries are
+  tracked in the ``SQLPanel``. Set this to ``False`` to see the debug
+  toolbar's queries.
 
 * ``SQL_WARNING_THRESHOLD``
 
