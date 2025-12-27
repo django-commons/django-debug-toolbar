@@ -1,7 +1,6 @@
 import contextlib
 import contextvars
 import datetime
-import json
 from time import perf_counter
 
 import django.test.testcases
