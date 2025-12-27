@@ -1,7 +1,6 @@
 import contextlib
 import contextvars
 import datetime
-import json
 from time import perf_counter
 
 import django.test.testcases
@@ -133,6 +132,11 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
         if isinstance(param, dict):
             return {key: self._decode(value) for key, value in param.items()}
 
+        # Binary data (bytes, bytearray) is handled by DebugToolbarJSONEncoder
+        # in store.py, so pass it through unchanged
+        if isinstance(param, (bytes, bytearray)):
+            return param
+
         # make sure datetime, date and time are converted to string by force_str
         CONVERT_TYPES = (datetime.datetime, datetime.date, datetime.time)
         return force_str(param, strings_only=not isinstance(param, CONVERT_TYPES))
@@ -165,10 +169,11 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
         finally:
             stop_time = perf_counter()
             duration = (stop_time - start_time) * 1000
-            _params = ""
+            _params = None
             with contextlib.suppress(TypeError):
-                # object JSON serializable?
-                _params = json.dumps(self._decode(params))
+                # Decode params - binary data will be handled by DebugToolbarJSONEncoder
+                # in store.py when the panel data is serialized
+                _params = self._decode(params)
             template_info = get_template_info()
 
             # Sql might be an object (such as psycopg Composed).

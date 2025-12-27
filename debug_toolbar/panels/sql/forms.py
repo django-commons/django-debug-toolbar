@@ -69,10 +69,15 @@ class SQLSelectForm(forms.Form):
         cleaned_data["query"] = query
         return cleaned_data
 
+    def _get_query_params(self):
+        """Get parameters for the current query."""
+        query = self.cleaned_data["query"]
+        return query["params"]
+
     def select(self):
         query = self.cleaned_data["query"]
         sql = query["raw_sql"]
-        params = json.loads(query["params"])
+        params = self._get_query_params()
         with self.cursor as cursor:
             cursor.execute(sql, params)
             headers = [d[0] for d in cursor.description]
@@ -82,7 +87,7 @@ class SQLSelectForm(forms.Form):
     def explain(self):
         query = self.cleaned_data["query"]
         sql = query["raw_sql"]
-        params = json.loads(query["params"])
+        params = self._get_query_params()
         vendor = query["vendor"]
         with self.cursor as cursor:
             if vendor == "sqlite":
@@ -101,7 +106,7 @@ class SQLSelectForm(forms.Form):
     def profile(self):
         query = self.cleaned_data["query"]
         sql = query["raw_sql"]
-        params = json.loads(query["params"])
+        params = self._get_query_params()
         with self.cursor as cursor:
             cursor.execute("SET PROFILING=1")  # Enable profiling
             cursor.execute(sql, params)  # Execute SELECT

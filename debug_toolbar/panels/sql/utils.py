@@ -88,7 +88,8 @@ class EscapedStringSerializer:
 
 def is_select_query(sql):
     # UNION queries can start with "(".
-    return sql.lower().lstrip(" (").startswith("select")
+    # Strip whitespace (including newlines) and opening parentheses.
+    return sql.lower().lstrip().lstrip("(").startswith("select")
 
 
 def reformat_sql(sql, *, with_toggle=False):
