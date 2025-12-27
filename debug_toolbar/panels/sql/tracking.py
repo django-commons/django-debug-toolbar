@@ -1,4 +1,3 @@
-import base64
 import contextlib
 import contextvars
 import datetime
@@ -134,10 +133,10 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
         if isinstance(param, dict):
             return {key: self._decode(value) for key, value in param.items()}
 
-        # Handle binary data (e.g., GeoDjango EWKB geometry data)
+        # Binary data (bytes, bytearray) is handled by DebugToolbarJSONEncoder
+        # in store.py, so pass it through unchanged
         if isinstance(param, (bytes, bytearray)):
-            # Mark as binary data for later reconstruction
-            return {"__djdt_binary__": base64.b64encode(param).decode("ascii")}
+            return param
 
         # make sure datetime, date and time are converted to string by force_str
         CONVERT_TYPES = (datetime.datetime, datetime.date, datetime.time)
@@ -171,10 +170,11 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
         finally:
             stop_time = perf_counter()
             duration = (stop_time - start_time) * 1000
-            _params = ""
+            _params = None
             with contextlib.suppress(TypeError):
-                # object JSON serializable?
-                _params = json.dumps(self._decode(params))
+                # Decode params - binary data will be handled by DebugToolbarJSONEncoder
+                # in store.py when the panel data is serialized
+                _params = self._decode(params)
             template_info = get_template_info()
 
             # Sql might be an object (such as psycopg Composed).

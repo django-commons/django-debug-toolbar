@@ -1,137 +1,97 @@
 """
 Tests for GeoDjango binary parameter handling fix
+
+These tests verify that binary data (such as GeoDjango EWKB geometry data)
+is properly encoded and decoded through the Store's serialize/deserialize
+functions using DebugToolbarJSONEncoder and DebugToolbarJSONDecoder.
 """
 
-import base64
-import json
-
-from debug_toolbar.panels.sql.decoders import DebugToolbarJSONDecoder
-from debug_toolbar.panels.sql.tracking import NormalCursorMixin
+from debug_toolbar.store import deserialize, serialize
 
 from ..base import BaseTestCase
-
-
-class MockCursor:
-    """Mock cursor for testing"""
-
-
-class MockConnection:
-    """Mock database connection for testing"""
-
-    vendor = "postgresql"
-    alias = "default"
-
-
-class MockLogger:
-    """Mock logger for testing"""
-
-    def record(self, **kwargs):
-        pass
-
-
-class StubCursor(NormalCursorMixin):
-    """Test cursor that can be instantiated"""
-
-    def __init__(self):
-        self.cursor = MockCursor()
-        self.db = MockConnection()
-        self.logger = MockLogger()
 
 
 class GeoDjangoBinaryParameterTest(BaseTestCase):
     """Test cases for GeoDjango binary parameter handling"""
 
     def test_binary_parameter_encoding_decoding(self):
-        """Test that binary parameters are properly encoded and decoded"""
-        cursor = TestCursor()
-
+        """Test that binary parameters are properly encoded and decoded through the store"""
         # Test binary data similar to GeoDjango EWKB geometry
         binary_data = b"\x01\x01\x00\x00\x20\xe6\x10\x00\x00\xff\xfe\xfd"
-        encoded = cursor._decode(binary_data)
+        params = {"geometry": binary_data, "name": "Point A"}
 
-        self.assertIsInstance(encoded, dict)
-        self.assertIn("__djdt_binary__", encoded)
+        # Serialize through the store (simulating storage)
+        serialized = serialize(params)
 
-        expected_b64 = base64.b64encode(binary_data).decode("ascii")
-        self.assertEqual(encoded["__djdt_binary__"], expected_b64)
+        # Deserialize through the store (simulating retrieval)
+        reconstructed = deserialize(serialized)
 
-        json_params = json.dumps([encoded])
-        reconstructed = json.loads(json_params, cls=DebugToolbarJSONDecoder)
-
-        self.assertEqual(len(reconstructed), 1)
-        self.assertEqual(reconstructed[0], binary_data)
-        self.assertIsInstance(reconstructed[0], bytes)
+        # Verify the binary data is reconstructed correctly
+        self.assertEqual(reconstructed["geometry"], binary_data)
+        self.assertIsInstance(reconstructed["geometry"], bytes)
+        self.assertEqual(reconstructed["name"], "Point A")
 
     def test_mixed_parameter_types(self):
-        """Test that mixed parameter types are handled correctly"""
-        cursor = TestCursor()
+        """Test that mixed parameter types are handled correctly through the store"""
+        params = {
+            "text": "string_param",
+            "count": 42,
+            "geometry": b"\x01\x02\x03",
+            "optional": None,
+            "tags": ["tag1", "tag2"],
+        }
 
-        params = [
-            "string_param",
-            42,
-            b"\x01\x02\x03",
-            None,
-            ["nested", "list"],
-        ]
+        # Serialize and deserialize through the store
+        serialized = serialize(params)
+        reconstructed = deserialize(serialized)
 
-        encoded_params = [cursor._decode(p) for p in params]
-
-        json_str = json.dumps(encoded_params)
-        reconstructed = json.loads(json_str, cls=DebugToolbarJSONDecoder)
-
-        self.assertEqual(reconstructed[0], "string_param")  # string unchanged
-        self.assertEqual(reconstructed[1], 42)  # int unchanged
-        self.assertEqual(reconstructed[2], b"\x01\x02\x03")  # binary restored
-        self.assertIsNone(reconstructed[3])  # None unchanged
-        self.assertEqual(reconstructed[4], ["nested", "list"])  # list unchanged
+        # Verify all types are preserved correctly
+        self.assertEqual(reconstructed["text"], "string_param")
+        self.assertEqual(reconstructed["count"], 42)
+        self.assertEqual(reconstructed["geometry"], b"\x01\x02\x03")
+        self.assertIsNone(reconstructed["optional"])
+        self.assertEqual(reconstructed["tags"], ["tag1", "tag2"])
 
     def test_nested_binary_data(self):
-        """Test binary data nested in lists and dicts"""
-        cursor = TestCursor()
+        """Test binary data nested in lists and dicts through the store"""
+        params = {
+            "geometries": [b"\x01\x02", b"\x03\x04"],
+            "metadata": {"shape": b"\x05\x06", "description": "Polygon"},
+        }
 
-        nested_params = [
-            [b"\x01\x02", "string", b"\x03\x04"],
-            {"key": b"\x05\x06", "other": "value"},
-        ]
+        # Serialize and deserialize through the store
+        serialized = serialize(params)
+        reconstructed = deserialize(serialized)
 
-        encoded = [cursor._decode(p) for p in nested_params]
-
-        json_str = json.dumps(encoded)
-        reconstructed = json.loads(json_str, cls=DebugToolbarJSONDecoder)
-
-        self.assertEqual(reconstructed[0][0], b"\x01\x02")
-        self.assertEqual(reconstructed[0][1], "string")
-        self.assertEqual(reconstructed[0][2], b"\x03\x04")
-
-        self.assertEqual(reconstructed[1]["key"], b"\x05\x06")
-        self.assertEqual(reconstructed[1]["other"], "value")
+        # Verify nested binary data is reconstructed correctly
+        self.assertEqual(reconstructed["geometries"][0], b"\x01\x02")
+        self.assertEqual(reconstructed["geometries"][1], b"\x03\x04")
+        self.assertEqual(reconstructed["metadata"]["shape"], b"\x05\x06")
+        self.assertEqual(reconstructed["metadata"]["description"], "Polygon")
 
     def test_empty_binary_data(self):
-        """Test handling of empty binary data"""
-        cursor = TestCursor()
+        """Test handling of empty binary data through the store"""
+        params = {"empty_geometry": b"", "name": "Empty"}
 
-        empty_bytes = b""
-        encoded = cursor._decode(empty_bytes)
+        # Serialize and deserialize through the store
+        serialized = serialize(params)
+        reconstructed = deserialize(serialized)
 
-        self.assertIsInstance(encoded, dict)
-        self.assertIn("__djdt_binary__", encoded)
-
-        json_str = json.dumps([encoded])
-        reconstructed = json.loads(json_str, cls=DebugToolbarJSONDecoder)
-
-        self.assertEqual(reconstructed[0], empty_bytes)
+        # Verify empty binary data is handled correctly
+        self.assertEqual(reconstructed["empty_geometry"], b"")
+        self.assertIsInstance(reconstructed["empty_geometry"], bytes)
+        self.assertEqual(reconstructed["name"], "Empty")
 
     def test_bytearray_support(self):
-        """Test that bytearray is also handled as binary data"""
-        cursor = TestCursor()
-
+        """Test that bytearray is also handled as binary data through the store"""
         byte_array = bytearray(b"\x01\x02\x03\x04")
-        encoded = cursor._decode(byte_array)
+        params = {"data": byte_array, "type": "bytearray"}
 
-        self.assertIn("__djdt_binary__", encoded)
+        # Serialize and deserialize through the store
+        serialized = serialize(params)
+        reconstructed = deserialize(serialized)
 
-        json_str = json.dumps([encoded])
-        reconstructed = json.loads(json_str, cls=DebugToolbarJSONDecoder)
-
-        self.assertEqual(reconstructed[0], byte_array)
-        self.assertIsInstance(reconstructed[0], bytes)
+        # Verify bytearray is reconstructed (as bytes, since JSON doesn't distinguish)
+        self.assertEqual(reconstructed["data"], bytes(byte_array))
+        self.assertIsInstance(reconstructed["data"], bytes)
+        self.assertEqual(reconstructed["type"], "bytearray")
