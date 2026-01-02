@@ -1,3 +1,5 @@
+import functools
+
 import django
 from django.utils.translation import gettext_lazy as _, ngettext
 
@@ -40,18 +42,16 @@ class TasksPanel(Panel):
             return
         from django.tasks import Task
 
-        print("[TasksPanel] instrumentation enabled:", hasattr(Task, "enqueue"))
-
         # Store original enqueue method
-        if hasattr(Task, "enqueue"):
-            self._original_enqueue = Task.enqueue
+        self._original_enqueue = Task.enqueue
 
-            def wrapped_enqueue(task, *args, **kwargs):
-                result = self._original_enqueue(task, *args, **kwargs).return_value
-                self._record_task(task, args, kwargs, result)
-                return result
+        @functools.wraps(self._original_enqueue)
+        def wrapped_enqueue(task, *args, **kwargs):
+            result = self._original_enqueue(task, *args, **kwargs).return_value
+            self._record_task(task, args, kwargs, result)
+            return result
 
-            Task.enqueue = wrapped_enqueue
+        Task.enqueue = wrapped_enqueue
 
     def _record_task(self, task, args, kwargs, result):
         """Record a task that was queued"""
