@@ -44,6 +44,10 @@ Pending
 6.2.0 (2026-01-20)
 ------------------
 
+* Added ``SQL_PRETTIFY_MAX_LENGTH`` setting to skip SQL formatting for
+  queries exceeding the threshold. This prevents the SQL panel from freezing
+  or crashing when queries contain large IN clauses with thousands of
+  parameters.
 * Deprecated ``RedirectsPanel`` in favor of ``HistoryPanel`` for viewing
   toolbar data from redirected requests.
 * Fixed support for generating code coverage comments in PRs.
