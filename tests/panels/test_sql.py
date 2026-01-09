@@ -885,9 +885,11 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertIn("SELECT", result)
 
         # Long SQL should skip formatting and show a message
-        long_sql = "SELECT * FROM auth_user WHERE id IN (" + ", ".join(
-            [f"'{i}'" for i in range(100)]
-        ) + ")"
+        long_sql = (
+            "SELECT * FROM auth_user WHERE id IN ("
+            + ", ".join([f"'{i}'" for i in range(100)])
+            + ")"
+        )
         result = reformat_sql(long_sql, with_toggle=True)
         self.assertIn("SQL formatting skipped", result)
         self.assertIn("exceeds threshold", result)
@@ -898,9 +900,11 @@ class SQLPanelTestCase(BaseTestCase):
         """
         from debug_toolbar.panels.sql.utils import reformat_sql
 
-        long_sql = "SELECT * FROM auth_user WHERE id IN (" + ", ".join(
-            [f"'{i}'" for i in range(100)]
-        ) + ")"
+        long_sql = (
+            "SELECT * FROM auth_user WHERE id IN ("
+            + ", ".join([f"'{i}'" for i in range(100)])
+            + ")"
+        )
 
         with override_settings(
             DEBUG_TOOLBAR_CONFIG={"SQL_PRETTIFY_MAX_LENGTH": 0, "PRETTIFY_SQL": True}
