@@ -20,7 +20,7 @@
     --djdt-panel-content-background-color: #eee;
     --djdt-panel-content-table-background-color: var(--djdt-background-color);
     --djdt-panel-title-background-color: #ffc;
-    --djdt-djdt-panel-content-table-strip-background-color: #f5f5f5;
+    --djdt-panel-content-table-strip-background-color: #f9f9f9;
     --djdt-highlighted-background-color: #ffc;
     --djdt-toggle-template-background-color: #bbb;
 
@@ -45,7 +45,7 @@
     --djdt-panel-content-background-color: #121212;
     --djdt-panel-content-table-background-color: var(--djdt-background-color);
     --djdt-panel-title-background-color: #417690;
-    --djdt-djdt-panel-content-table-strip-background-color: #171717;
+    --djdt-panel-content-table-strip-background-color: #171717;
     --djdt-highlighted-background-color: #00363a;
     --djdt-toggle-template-background-color: #353535;
 
