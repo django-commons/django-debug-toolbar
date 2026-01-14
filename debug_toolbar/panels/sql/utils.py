@@ -117,7 +117,7 @@ def _format_skipped_sql(sql, reason):
         f'<span class="djdt-sql-skipped">'
         f"<em>SQL formatting skipped ({reason})</em>"
         f"</span>"
-        f"<pre>{escape(preview)}{suffix}</pre>"
+        f"<pre>{preview}{suffix}</pre>"
     )
 
 
