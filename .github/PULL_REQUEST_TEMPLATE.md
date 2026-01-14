@@ -12,4 +12,4 @@ Fixes # (issue)
 - [ ] I have added an item to the Pending section of ``docs/changes.rst``.
 
 #### AI/LLM Usage
-- [ ] This PR includes code generated with the help of an AI/LLM 
+- [ ] This PR includes code generated with the help of an AI/LLM
