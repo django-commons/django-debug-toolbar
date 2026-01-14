@@ -50,37 +50,27 @@ urls.Source = "https://github.com/django-commons/django-debug-toolbar"
 
 [dependency-groups]
 dev = [
-  { include-group = "django_async" },
-  { include-group = "docs" },
-  { include-group = "other" },
-  { include-group = "run_time" },
-  { include-group = "test" },
-]
-test = [
   "black",
   "coverage[toml]",
-  "django-csp",               # Used in tests/test_csp_rendering
+  "daphne",         # async in Example app
+  "django",
+  "django-csp",     # Used in tests/test_csp_rendering
+
   "django-template-partials",
   "html5lib",
+  "jinja2",
+
+  "pre-commit",
   "selenium",
+  "sqlparse",
   "tox",
+  "whitenoise", # To avoid dealing with static files
+
 ]
 docs = [
   "sphinx",
   "sphinx-rtd-theme>1",
   "sphinxcontrib-spelling",
-]
-run_time = [
-  "django",
-  "jinja2",
-  "sqlparse",
-]
-django_async = [
-  "daphne",     # Integration support
-  "whitenoise",
-]
-other = [
-  "pre-commit",
 ]
 
 [tool.hatch.build.targets.wheel]
