@@ -8,13 +8,6 @@ from sqlparse import tokens as T
 
 from debug_toolbar import settings as dt_settings
 
-# Import SQLParseError for graceful exception handling
-try:
-    from sqlparse.exceptions import SQLParseError
-except ImportError:
-    # Older sqlparse versions don't have this exception
-    SQLParseError = None
-
 
 class ElideSelectListsFilter:
     """sqlparse filter to elide the select list from top-level SELECT ... FROM clauses,
@@ -134,22 +127,10 @@ def reformat_sql(sql, *, with_toggle=False):
             return f'<span class="djDebugUncollapsed">{skipped}</span>'
         return skipped
 
-    try:
-        formatted = parse_sql(sql)
-        if not with_toggle:
-            return formatted
-        simplified = parse_sql(sql, simplify=True)
-    except Exception as e:
-        # Handle sqlparse exceptions (e.g., MAX_GROUPING_TOKENS exceeded in >= 0.5.5)
-        if SQLParseError is not None and isinstance(e, SQLParseError):
-            reason = f"sqlparse error: {e}"
-        else:
-            # Re-raise unexpected exceptions
-            raise
-        skipped = _format_skipped_sql(sql, reason)
-        if with_toggle:
-            return f'<span class="djDebugUncollapsed">{skipped}</span>'
-        return skipped
+    formatted = parse_sql(sql)
+    if not with_toggle:
+        return formatted
+    simplified = parse_sql(sql, simplify=True)
 
     uncollapsed = f'<span class="djDebugUncollapsed">{simplified}</span>'
     collapsed = f'<span class="djDebugCollapsed djdt-hidden">{formatted}</span>'
