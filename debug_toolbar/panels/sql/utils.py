@@ -8,6 +8,13 @@ from sqlparse import tokens as T
 
 from debug_toolbar import settings as dt_settings
 
+# Import SQLParseError for graceful exception handling
+try:
+    from sqlparse.exceptions import SQLParseError
+except ImportError:
+    # Older sqlparse versions don't have this exception
+    SQLParseError = None
+
 
 class ElideSelectListsFilter:
     """sqlparse filter to elide the select list from top-level SELECT ... FROM clauses,
@@ -91,11 +98,59 @@ def is_select_query(sql):
     return sql.lower().lstrip(" (").startswith("select")
 
 
+def _format_skipped_sql(sql, reason):
+    """
+    Format SQL that was skipped from prettification.
+
+    Shows a notice and the first portion of raw SQL for debugging.
+    """
+    preview_length = 500
+    preview = escape(sql[:preview_length])
+    total_length = len(sql)
+
+    if total_length > preview_length:
+        suffix = f"\n\n... ({total_length - preview_length:,} more characters)"
+    else:
+        suffix = ""
+
+    return (
+        f'<span class="djdt-sql-skipped">'
+        f"<em>SQL formatting skipped ({reason})</em>"
+        f"</span>"
+        f"<pre>{escape(preview)}{suffix}</pre>"
+    )
+
+
 def reformat_sql(sql, *, with_toggle=False):
-    formatted = parse_sql(sql)
-    if not with_toggle:
-        return formatted
-    simplified = parse_sql(sql, simplify=True)
+    # Check length threshold to prevent slow formatting of large queries
+    max_length = dt_settings.get_config()["SQL_PRETTIFY_MAX_LENGTH"]
+    if max_length and len(sql) > max_length:
+        skipped = _format_skipped_sql(
+            sql,
+            f"query length {len(sql):,} exceeds threshold {max_length:,}",
+        )
+        if with_toggle:
+            # Return as non-collapsible since both versions would be the same
+            return f'<span class="djDebugUncollapsed">{skipped}</span>'
+        return skipped
+
+    try:
+        formatted = parse_sql(sql)
+        if not with_toggle:
+            return formatted
+        simplified = parse_sql(sql, simplify=True)
+    except Exception as e:
+        # Handle sqlparse exceptions (e.g., MAX_GROUPING_TOKENS exceeded in >= 0.5.5)
+        if SQLParseError is not None and isinstance(e, SQLParseError):
+            reason = f"sqlparse error: {e}"
+        else:
+            # Re-raise unexpected exceptions
+            raise
+        skipped = _format_skipped_sql(sql, reason)
+        if with_toggle:
+            return f'<span class="djDebugUncollapsed">{skipped}</span>'
+        return skipped
+
     uncollapsed = f'<span class="djDebugUncollapsed">{simplified}</span>'
     collapsed = f'<span class="djDebugCollapsed djdt-hidden">{formatted}</span>'
     return collapsed + uncollapsed

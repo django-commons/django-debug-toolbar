@@ -50,6 +50,7 @@ CONFIG_DEFAULTS = {
         "django.utils.functional",
     ),
     "PRETTIFY_SQL": True,
+    "SQL_PRETTIFY_MAX_LENGTH": 50000,  # Skip formatting for SQL longer than this
     "PROFILER_CAPTURE_PROJECT_CODE": True,
     "PROFILER_MAX_DEPTH": 10,
     "PROFILER_THRESHOLD_RATIO": 8,
