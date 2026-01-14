@@ -869,6 +869,46 @@ class SQLPanelTestCase(BaseTestCase):
         query = self.panel._queries[0]
         self.assertTrue(query["is_select"])
 
+    @override_settings(
+        DEBUG_TOOLBAR_CONFIG={"SQL_PRETTIFY_MAX_LENGTH": 100, "PRETTIFY_SQL": True}
+    )
+    def test_sql_prettify_max_length(self):
+        """
+        Test that SQL formatting is skipped for queries exceeding the max length threshold.
+        """
+        from debug_toolbar.panels.sql.utils import reformat_sql
+
+        # Short SQL should be formatted normally
+        short_sql = "SELECT * FROM auth_user WHERE id = 1"
+        result = reformat_sql(short_sql, with_toggle=True)
+        self.assertNotIn("SQL formatting skipped", result)
+        self.assertIn("SELECT", result)
+
+        # Long SQL should skip formatting and show a message
+        long_sql = "SELECT * FROM auth_user WHERE id IN (" + ", ".join(
+            [f"'{i}'" for i in range(100)]
+        ) + ")"
+        result = reformat_sql(long_sql, with_toggle=True)
+        self.assertIn("SQL formatting skipped", result)
+        self.assertIn("exceeds threshold", result)
+
+    def test_sql_prettify_max_length_disabled(self):
+        """
+        Test that SQL_PRETTIFY_MAX_LENGTH=0 or None disables the length check.
+        """
+        from debug_toolbar.panels.sql.utils import reformat_sql
+
+        long_sql = "SELECT * FROM auth_user WHERE id IN (" + ", ".join(
+            [f"'{i}'" for i in range(100)]
+        ) + ")"
+
+        with override_settings(
+            DEBUG_TOOLBAR_CONFIG={"SQL_PRETTIFY_MAX_LENGTH": 0, "PRETTIFY_SQL": True}
+        ):
+            result = reformat_sql(long_sql, with_toggle=True)
+            # When max_length is 0 (falsy), formatting should not be skipped
+            self.assertNotIn("SQL formatting skipped", result)
+
 
 class SQLPanelMultiDBTestCase(BaseMultiDBTestCase):
     panel_id = SQLPanel.panel_id
