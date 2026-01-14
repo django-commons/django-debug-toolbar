@@ -457,7 +457,9 @@
 }
 
 #djDebug .djTemplateContext {
-    background-color: var(--djdt-background-color);
+    padding: 8px;
+    background-color: var(--djdt-panel-content-table-strip-background-color);
+    border: 1px solid var(--djdt-pre-border-color);
 }
 
 #djDebug .djdt-panelContent .djDebugClose {
