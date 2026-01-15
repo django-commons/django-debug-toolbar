@@ -448,12 +448,6 @@
     font-size: 11px;
     white-space: nowrap;
 }
-#djDebug .djdt-panelContent tbody th {
-    width: 12em;
-    text-align: right;
-    color: #666;
-    padding-right: 0.5em;
-}
 #djDebug .djdt-panelContent .djdt-codeContext tbody td {
     padding: 2px 3px;
     border-bottom: none;
