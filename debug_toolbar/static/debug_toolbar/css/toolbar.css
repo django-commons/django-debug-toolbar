@@ -1171,12 +1171,6 @@ To regenerate:
 #djDebug .djdt-highlighted {
     background-color: var(--djdt-highlighted-background-color);
 }
-#djDebug tr.djdt-highlighted.djdt-profile-row {
-    background-color: #ffc;
-}
-#djDebug tr.djdt-highlighted.djdt-profile-row:nth-child(2n + 1) {
-    background-color: #dd9;
-}
 @keyframes djdt-flash-new {
     from {
         background-color: green;
