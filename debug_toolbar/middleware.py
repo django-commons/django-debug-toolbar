@@ -62,8 +62,7 @@ def show_toolbar_with_docker(request: HttpRequest) -> bool:
         # This is not guaranteed to work.
         docker_ip = (
             # Convert the last segment of the IP address to be .1
-            ".".join(socket.gethostbyname(host).rsplit(".")[:-1])
-            + ".1"
+            ".".join(socket.gethostbyname(host).rsplit(".")[:-1]) + ".1"
         )
         if request.META.get("REMOTE_ADDR") == docker_ip:
             return True
