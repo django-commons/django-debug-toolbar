@@ -67,6 +67,13 @@ Toolbar options
   This setting is a set of the full Python paths to each panel that you
   want disabled (but still displayed) by default.
 
+* ``DOCKER_COMPOSE_SERVICE``
+
+  Default: ``None``
+
+  If you use docker compose, besides the ``show_toolbar_with_docker`` you also
+  need to configure this setting to tell the name of the docker compose service.
+
 * ``INSERT_BEFORE``
 
   Default: ``'</body>'``

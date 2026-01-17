@@ -54,12 +54,15 @@ def show_toolbar_with_docker(request: HttpRequest) -> bool:
 
     # Test: Docker
     try:
+        host = getattr(settings, "DEBUG_TOOLBAR_CONFIG", {}).get(
+            "DOCKER_COMPOSE_SERVICE", "host.docker.internal"
+        )
         # This is a hack for docker installations. It attempts to look
         # up the IP address of the docker host.
         # This is not guaranteed to work.
         docker_ip = (
             # Convert the last segment of the IP address to be .1
-            ".".join(socket.gethostbyname("host.docker.internal").rsplit(".")[:-1])
+            ".".join(socket.gethostbyname(host).rsplit(".")[:-1])
             + ".1"
         )
         if request.META.get("REMOTE_ADDR") == docker_ip:
