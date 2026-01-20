@@ -21,6 +21,8 @@ Pending
 * Added test to confirm Django's ``TestCase.assertNumQueries`` works.
 * Fixed string representation of values in settings panel.
 * Declared support for Django 6.0.
+* Modernize some panel styles and colors.
+* Standardize use of time/duration units and labels across panels.
 
 6.1.0 (2025-10-30)
 ------------------

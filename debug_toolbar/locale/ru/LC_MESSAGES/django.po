@@ -247,7 +247,7 @@ msgstr "User CPU time"
 
 #: panels/timer.py:46
 #, python-format
-msgid "%(utime)0.3f msec"
+msgid "%(utime)0.3f ms"
 msgstr "%(utime)0.3f мс"
 
 #: panels/timer.py:47
@@ -256,7 +256,7 @@ msgstr "System CPU time"
 
 #: panels/timer.py:47
 #, python-format
-msgid "%(stime)0.3f msec"
+msgid "%(stime)0.3f ms"
 msgstr "%(stime)0.3f мс"
 
 #: panels/timer.py:48
@@ -265,7 +265,7 @@ msgstr "Total CPU time"
 
 #: panels/timer.py:48
 #, python-format
-msgid "%(total)0.3f msec"
+msgid "%(total)0.3f ms"
 msgstr "%(total)0.3f мс"
 
 #: panels/timer.py:49
@@ -274,7 +274,7 @@ msgstr "Затраченное время"
 
 #: panels/timer.py:49
 #, python-format
-msgid "%(total_time)0.3f msec"
+msgid "%(total_time)0.3f ms"
 msgstr "%(total_time)0.3f мс"
 
 #: panels/timer.py:51
@@ -352,7 +352,7 @@ msgstr "Вызовы"
 
 #: templates/debug_toolbar/panels/cache.html:43
 #: templates/debug_toolbar/panels/sql.html:36
-msgid "Time (ms)"
+msgid "Time"
 msgstr "Время (мс)"
 
 #: templates/debug_toolbar/panels/cache.html:44
@@ -706,8 +706,8 @@ msgid "Timing attribute"
 msgstr "Событие"
 
 #: templates/debug_toolbar/panels/timer.html:37
-msgid "Milliseconds since navigation start (+length)"
-msgstr "С начала навигации в мс (+продолжительность)"
+msgid "Time since navigation start (+duration)"
+msgstr "Время с начала навигации (+продолжительность)"
 
 #: templates/debug_toolbar/panels/versions.html:10
 msgid "Package"
