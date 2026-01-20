@@ -70,6 +70,19 @@ const $$ = {
     },
 };
 
+function getDebugElement() {
+    // Fetch the debug element from the DOM.
+    // This is used to avoid writing the element's id
+    // everywhere the element is being selected. A fixed reference
+    // to the element should be avoided because the entire DOM could
+    // be reloaded such as via HTMX boosting.
+    let root = document.getElementById("djDebugRoot");
+    if (root.shadowRoot) {
+        root = root.shadowRoot;
+    }
+    return root.querySelector("#djDebug");
+}
+
 function ajax(url, init) {
     return fetch(url, Object.assign({ credentials: "same-origin" }, init))
         .then((response) => {
@@ -89,7 +102,8 @@ function ajax(url, init) {
             );
         })
         .catch((error) => {
-            const win = document.getElementById("djDebugWindow");
+            const djDebug = getDebugElement();
+            const win = djDebug.querySelector("#djDebugWindow");
             win.innerHTML = `<div class="djDebugPanelTitle"><h3>${error.message}</h3><button type="button" class="djDebugClose">»</button></div>`;
             $$.show(win);
             throw error;
@@ -110,14 +124,14 @@ function ajaxForm(element) {
 }
 
 function replaceToolbarState(newRequestId, data) {
-    const djDebug = document.getElementById("djDebug");
+    const djDebug = getDebugElement();
     djDebug.setAttribute("data-request-id", newRequestId);
     // Check if response is empty, it could be due to an expired requestId.
     for (const panelId of Object.keys(data)) {
-        const panel = document.getElementById(panelId);
+        const panel = djDebug.querySelector(`#${panelId}`);
         if (panel) {
             panel.outerHTML = data[panelId].content;
-            document.getElementById(`djdt-${panelId}`).outerHTML =
+            djDebug.querySelector(`#djdt-${panelId}`).outerHTML =
                 data[panelId].button;
         }
     }
@@ -141,4 +155,4 @@ function debounce(func, delay) {
     };
 }
 
-export { $$, ajax, ajaxForm, replaceToolbarState, debounce };
+export { $$, getDebugElement, ajax, ajaxForm, replaceToolbarState, debounce };
