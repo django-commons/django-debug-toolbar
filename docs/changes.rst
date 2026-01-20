@@ -4,10 +4,10 @@ Change log
 Pending
 -------
 
-* Added ``SQL_PRETTIFY_MAX_LENGTH`` setting to skip SQL formatting for
-  queries exceeding the threshold. This prevents the SQL panel from freezing
-  or crashing when queries contain large IN clauses with thousands of
-  parameters.
+* Added graceful degradation for SQL queries that exceed sqlparse's token
+  limits. When ``SQLParseError`` is raised, the SQL panel now automatically
+  disables grouping and retries formatting, preventing crashes with large
+  queries.
 * Deprecated ``RedirectsPanel`` in favor of ``HistoryPanel`` for viewing
   toolbar data from redirected requests.
 * Fixed support for generating code coverage comments in PRs.

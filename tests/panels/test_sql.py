@@ -869,49 +869,49 @@ class SQLPanelTestCase(BaseTestCase):
         query = self.panel._queries[0]
         self.assertTrue(query["is_select"])
 
-    @override_settings(
-        DEBUG_TOOLBAR_CONFIG={"SQL_PRETTIFY_MAX_LENGTH": 100, "PRETTIFY_SQL": True}
-    )
-    def test_sql_prettify_max_length(self):
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"PRETTIFY_SQL": True})
+    def test_sql_parse_error_graceful_degradation(self):
         """
-        Test that SQL formatting is skipped for queries exceeding the max length threshold.
+        Test that SQLParseError is handled gracefully by disabling grouping.
         """
-        from debug_toolbar.panels.sql.utils import reformat_sql
+        from unittest.mock import patch
 
-        # Short SQL should be formatted normally
-        short_sql = "SELECT * FROM auth_user WHERE id = 1"
-        result = reformat_sql(short_sql, with_toggle=True)
-        self.assertNotIn("SQL formatting skipped", result)
-        self.assertIn("SELECT", result)
+        from sqlparse.exceptions import SQLParseError
 
-        # Long SQL should skip formatting and show a message
-        long_sql = (
-            "SELECT * FROM auth_user WHERE id IN ("
-            + ", ".join([f"'{i}'" for i in range(100)])
-            + ")"
-        )
-        result = reformat_sql(long_sql, with_toggle=True)
-        self.assertIn("SQL formatting skipped", result)
-        self.assertIn("exceeds threshold", result)
+        from debug_toolbar.panels.sql.utils import parse_sql
 
-    def test_sql_prettify_max_length_disabled(self):
-        """
-        Test that SQL_PRETTIFY_MAX_LENGTH=0 or None disables the length check.
-        """
-        from debug_toolbar.panels.sql.utils import reformat_sql
+        # Clear the cache to ensure our mock is used
+        parse_sql.cache_clear()
 
-        long_sql = (
-            "SELECT * FROM auth_user WHERE id IN ("
-            + ", ".join([f"'{i}'" for i in range(100)])
-            + ")"
-        )
+        # Mock the filter stack to raise SQLParseError on first call
+        call_count = 0
+        original_run = None
 
-        with override_settings(
-            DEBUG_TOOLBAR_CONFIG={"SQL_PRETTIFY_MAX_LENGTH": 0, "PRETTIFY_SQL": True}
-        ):
-            result = reformat_sql(long_sql, with_toggle=True)
-            # When max_length is 0 (falsy), formatting should not be skipped
-            self.assertNotIn("SQL formatting skipped", result)
+        def mock_run(sql):
+            nonlocal call_count, original_run
+            call_count += 1
+            if call_count == 1:
+                raise SQLParseError("Token limit exceeded")
+            # On retry, return a simple result
+            return [sql]
+
+        with patch(
+            "debug_toolbar.panels.sql.utils.get_filter_stack"
+        ) as mock_get_stack:
+            mock_stack = mock_get_stack.return_value
+            mock_stack.run = mock_run
+            mock_stack._grouping = True
+
+            result = parse_sql("SELECT * FROM test")
+
+            # Should have been called twice (once for error, once for retry)
+            self.assertEqual(call_count, 2)
+            # On retry, _grouping should be set to False
+            self.assertFalse(mock_stack._grouping)
+            self.assertIn("SELECT", result)
+
+        # Clear the cache after the test
+        parse_sql.cache_clear()
 
 
 class SQLPanelMultiDBTestCase(BaseMultiDBTestCase):

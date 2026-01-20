@@ -5,6 +5,7 @@ import sqlparse
 from django.dispatch import receiver
 from django.test.signals import setting_changed
 from sqlparse import tokens as T
+from sqlparse.exceptions import SQLParseError
 
 from debug_toolbar import settings as dt_settings
 
@@ -91,42 +92,7 @@ def is_select_query(sql):
     return sql.lower().lstrip(" (").startswith("select")
 
 
-def _format_skipped_sql(sql, reason):
-    """
-    Format SQL that was skipped from prettification.
-
-    Shows a notice and the first portion of raw SQL for debugging.
-    """
-    preview_length = 500
-    preview = escape(sql[:preview_length])
-    total_length = len(sql)
-
-    if total_length > preview_length:
-        suffix = f"\n\n... ({total_length - preview_length:,} more characters)"
-    else:
-        suffix = ""
-
-    return (
-        f'<span class="djdt-sql-skipped">'
-        f"<em>SQL formatting skipped ({reason})</em>"
-        f"</span>"
-        f"<pre>{preview}{suffix}</pre>"
-    )
-
-
 def reformat_sql(sql, *, with_toggle=False):
-    # Check length threshold to prevent slow formatting of large queries
-    max_length = dt_settings.get_config()["SQL_PRETTIFY_MAX_LENGTH"]
-    if max_length and len(sql) > max_length:
-        skipped = _format_skipped_sql(
-            sql,
-            f"query length {len(sql):,} exceeds threshold {max_length:,}",
-        )
-        if with_toggle:
-            # Return as non-collapsible since both versions would be the same
-            return f'<span class="djDebugUncollapsed">{skipped}</span>'
-        return skipped
-
     formatted = parse_sql(sql)
     if not with_toggle:
         return formatted
@@ -140,7 +106,15 @@ def reformat_sql(sql, *, with_toggle=False):
 @lru_cache(maxsize=128)
 def parse_sql(sql, *, simplify=False):
     stack = get_filter_stack(simplify=simplify)
-    return "".join(stack.run(sql))
+    try:
+        return "".join(stack.run(sql))
+    except SQLParseError:
+        # The query either exceeds the number of tokens or depth of tokens.
+        # Recreate the FilterStack and explicitly disable the grouping to avoid
+        # those errors.
+        stack = get_filter_stack(simplify=simplify)
+        stack._grouping = False
+        return "".join(stack.run(sql))
 
 
 @cache
