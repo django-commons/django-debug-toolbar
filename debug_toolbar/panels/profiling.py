@@ -1,9 +1,11 @@
 import cProfile
 import os
+import uuid
 from colorsys import hsv_to_rgb
 from pstats import Stats
 
 from django.conf import settings
+from django.core import signing
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
@@ -183,8 +185,15 @@ class ProfilingPanel(Panel):
         self.stats = Stats(self.profiler)
         self.stats.calc_callees()
 
-        root_func = cProfile.label(super().process_request.__code__)
+        if (
+            root := dt_settings.get_config()["PROFILER_PROFILE_ROOT"]
+        ) and os.path.exists(root):
+            filename = f"{uuid.uuid4().hex}.prof"
+            prof_file_path = os.path.join(root, filename)
+            self.profiler.dump_stats(prof_file_path)
+            self.prof_file_path = signing.dumps(filename)
 
+        root_func = cProfile.label(super().process_request.__code__)
         if root_func in self.stats.stats:
             root = FunctionCall(self.stats, root_func, depth=0)
             func_list = []
@@ -197,4 +206,9 @@ class ProfilingPanel(Panel):
                 dt_settings.get_config()["PROFILER_MAX_DEPTH"],
                 cum_time_threshold,
             )
-            self.record_stats({"func_list": [func.serialize() for func in func_list]})
+            self.record_stats(
+                {
+                    "func_list": [func.serialize() for func in func_list],
+                    "prof_file_path": getattr(self, "prof_file_path", None),
+                }
+            )

@@ -1223,3 +1223,7 @@ To regenerate:
 #djDebug .djdt-community-panel a:hover {
     text-decoration: underline;
 }
+
+#djDebug .djdt-profiling-control {
+    margin-bottom: 10px;
+}
