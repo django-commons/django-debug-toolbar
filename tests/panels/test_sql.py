@@ -895,9 +895,7 @@ class SQLPanelTestCase(BaseTestCase):
             # On retry, return a simple result
             return [sql]
 
-        with patch(
-            "debug_toolbar.panels.sql.utils.get_filter_stack"
-        ) as mock_get_stack:
+        with patch("debug_toolbar.panels.sql.utils.get_filter_stack") as mock_get_stack:
             mock_stack = mock_get_stack.return_value
             mock_stack.run = mock_run
             mock_stack._grouping = True
