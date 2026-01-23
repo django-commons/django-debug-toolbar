@@ -4,8 +4,14 @@ Change log
 Pending
 -------
 
+* Added graceful degradation for SQL queries that exceed sqlparse's token
+  limits. When ``SQLParseError`` is raised, the SQL panel now automatically
+  disables grouping and retries formatting, preventing crashes with large
+  queries.
+
 6.2.0 (2026-01-20)
 ------------------
+
 
 * Deprecated ``RedirectsPanel`` in favor of ``HistoryPanel`` for viewing
   toolbar data from redirected requests.
