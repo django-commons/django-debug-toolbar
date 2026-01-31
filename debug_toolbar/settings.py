@@ -18,6 +18,8 @@ def _is_running_tests():
 
 CONFIG_DEFAULTS = {
     # Toolbar options
+    "CACHE_BACKEND": "default",
+    "CACHE_KEY_PREFIX": "djdt:",
     "DISABLE_PANELS": {
         "debug_toolbar.panels.profiling.ProfilingPanel",
         "debug_toolbar.panels.redirects.RedirectsPanel",

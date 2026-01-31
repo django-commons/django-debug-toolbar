@@ -251,3 +251,100 @@ class DatabaseStoreTestCase(TestCase):
 
             # Check that only the most recent 2 entries remain
             self.assertEqual(len(list(self.store.request_ids())), 2)
+
+
+@override_settings(
+    DEBUG_TOOLBAR_CONFIG={
+        "CACHES": {
+            "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+        },
+        "TOOLBAR_STORE_CLASS": "debug_toolbar.store.CacheStore",
+    }
+)
+class CacheStoreTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls) -> None:
+        cls.store = store.CacheStore
+
+    def tearDown(self) -> None:
+        self.store.clear()
+
+    def test_ids(self):
+        self.store.set("foo")
+        self.store.set("bar")
+        self.assertEqual(list(self.store.request_ids()), ["foo", "bar"])
+
+    def test_exists(self):
+        self.assertFalse(self.store.exists("missing"))
+        self.store.set("exists")
+        self.assertTrue(self.store.exists("exists"))
+
+    def test_set(self):
+        self.store.set("foo")
+        self.assertEqual(list(self.store.request_ids()), ["foo"])
+
+    def test_set_max_size(self):
+        with self.settings(DEBUG_TOOLBAR_CONFIG={"RESULTS_CACHE_SIZE": 1}):
+            self.store.save_panel("foo", "foo.panel", "foo.value")
+            self.store.save_panel("bar", "bar.panel", {"a": 1})
+            self.assertEqual(list(self.store.request_ids()), ["bar"])
+            self.assertEqual(self.store.panel("foo", "foo.panel"), {})
+            self.assertEqual(self.store.panel("bar", "bar.panel"), {"a": 1})
+
+    def test_clear(self):
+        self.store.save_panel("bar", "bar.panel", {"a": 1})
+        self.store.clear()
+        self.assertEqual(list(self.store.request_ids()), [])
+        self.assertEqual(self.store.panel("bar", "bar.panel"), {})
+
+    def test_delete(self):
+        self.store.save_panel("bar", "bar.panel", {"a": 1})
+        self.store.delete("bar")
+        self.assertEqual(list(self.store.request_ids()), [])
+        self.assertEqual(self.store.panel("bar", "bar.panel"), {})
+        # Make sure it doesn't error
+        self.store.delete("bar")
+
+    def test_save_panel(self):
+        self.store.save_panel("bar", "bar.panel", {"a": 1})
+        self.assertEqual(list(self.store.request_ids()), ["bar"])
+        self.assertEqual(self.store.panel("bar", "bar.panel"), {"a": 1})
+
+    def test_panel(self):
+        self.assertEqual(self.store.panel("missing", "missing"), {})
+        self.store.save_panel("bar", "bar.panel", {"a": 1})
+        self.assertEqual(self.store.panel("bar", "bar.panel"), {"a": 1})
+
+    def test_panels(self):
+        self.store.save_panel("bar", "panel1", {"a": 1})
+        self.store.save_panel("bar", "panel2", {"b": 2})
+        panels = dict(self.store.panels("bar"))
+        self.assertEqual(len(panels), 2)
+        self.assertEqual(panels["panel1"], {"a": 1})
+        self.assertEqual(panels["panel2"], {"b": 2})
+
+    def test_panels_nonexistent_request(self):
+        panels = dict(self.store.panels("missing"))
+        self.assertEqual(panels, {})
+
+    def test_custom_cache_backend(self):
+        with self.settings(
+            DEBUG_TOOLBAR_CONFIG={
+                "TOOLBAR_STORE_CLASS": "debug_toolbar.store.CacheStore",
+                "CACHE_BACKEND": "default",
+            }
+        ):
+            self.store.save_panel("test", "test.panel", {"value": 123})
+            self.assertEqual(self.store.panel("test", "test.panel"), {"value": 123})
+
+    def test_custom_key_prefix(self):
+        with self.settings(
+            DEBUG_TOOLBAR_CONFIG={
+                "TOOLBAR_STORE_CLASS": "debug_toolbar.store.CacheStore",
+                "CACHE_KEY_PREFIX": "custom:",
+            }
+        ):
+            # Verify the key prefix is used
+            self.assertEqual(self.store._get_key_prefix(), "custom:")
+            self.assertEqual(self.store._request_ids_key(), "custom:request_ids")
+            self.assertEqual(self.store._request_key("test"), "custom:req:test")
