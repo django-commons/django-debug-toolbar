@@ -16,9 +16,14 @@ requests and return responses. Putting the debug toolbar middleware *after* the
 ``FlatpageFallbackMiddleware`` middleware, for example, means the toolbar will
 not show up on flatpages.
 
+Check your browser's caching
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Browsers have become more aggressive with caching static assets, such as
 JavaScript and CSS files. Check your browser's development console, and if
-you see errors, try a hard browser refresh or clearing your cache.
+you see errors, try a hard browser refresh or clearing your cache. There
+should be an option on the network panel to disable caching, enable that
+at least temporarily to make sure you're using the latest static assets.
 
 Working with htmx and Turbo
 ----------------------------
