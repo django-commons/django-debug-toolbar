@@ -195,7 +195,10 @@ class DebugToolbarMiddleware:
         rendered = toolbar.render_toolbar()
 
         for header, value in self.get_headers(request, toolbar.enabled_panels).items():
-            response.headers[header] = value
+            if header in response.headers:
+                response.headers[header] += f", {value}"
+            else:
+                response.headers[header] = value
 
         # Check for responses where the toolbar can't be inserted.
         if not is_processable_html_response(response):

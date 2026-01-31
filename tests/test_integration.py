@@ -626,6 +626,21 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
         for expected in expected_partials:
             self.assertTrue(re.compile(expected).search(server_timing))
 
+    def test_server_timing_headers_with_existing_value(self):
+        response = self.client.get("/server-timing/")
+        server_timing = response["Server-Timing"]
+        expected_partials = [
+            'existing_key;dur=100;desc="Details"',
+            r'TimerPanel_utime;dur=(\d)*(\.(\d)*)?;desc="User CPU time", ',
+            r'TimerPanel_stime;dur=(\d)*(\.(\d)*)?;desc="System CPU time", ',
+            r'TimerPanel_total;dur=(\d)*(\.(\d)*)?;desc="Total CPU time", ',
+            r'TimerPanel_total_time;dur=(\d)*(\.(\d)*)?;desc="Elapsed time", ',
+            r'SQLPanel_sql_time;dur=(\d)*(\.(\d)*)?;desc="SQL 1 queries", ',
+            r'CachePanel_total_time;dur=0;desc="Cache 0 Calls"',
+        ]
+        for expected in expected_partials:
+            self.assertTrue(re.compile(expected).search(server_timing))
+
     @override_settings(DEBUG_TOOLBAR_CONFIG={"RENDER_PANELS": True})
     def test_timer_panel(self):
         response = self.client.get("/regular/basic/")
