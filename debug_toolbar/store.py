@@ -4,6 +4,7 @@ from collections import defaultdict, deque
 from collections.abc import Iterable
 from typing import Any
 
+from django.core.cache import caches
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction
 from django.utils.module_loading import import_string
@@ -217,6 +218,145 @@ class DatabaseStore(BaseStore):
                 yield panel_id, deserialize(panel_data)
         except HistoryEntry.DoesNotExist:
             return {}
+
+
+class _UntrackedCache:
+    """
+    Wrapper around a Django cache backend that suppresses debug toolbar tracking.
+
+    The cache panel's monkey-patched methods check ``cache._djdt_panel`` and skip
+    recording when it is ``None``.  This proxy temporarily sets that attribute to
+    ``None`` around every call so the toolbar's own cache operations are invisible.
+    """
+
+    def __init__(self, cache):
+        self._cache = cache
+
+    def __getattr__(self, name):
+        attr = getattr(self._cache, name)
+        if not callable(attr):
+            return attr
+
+        def untracked(*args, **kwargs):
+            panel = getattr(self._cache, "_djdt_panel", None)
+            self._cache._djdt_panel = None
+            try:
+                return attr(*args, **kwargs)
+            finally:
+                self._cache._djdt_panel = panel
+
+        return untracked
+
+
+class CacheStore(BaseStore):
+    """
+    Store that uses Django's cache framework to persist debug toolbar data.
+    """
+
+    @classmethod
+    def _get_cache(cls):
+        """Get the Django cache backend, wrapped to bypass toolbar tracking."""
+        return _UntrackedCache(caches[dt_settings.get_config()["CACHE_BACKEND"]])
+
+    @classmethod
+    def _key_prefix(cls) -> str:
+        """Get the cache key prefix from settings."""
+        return dt_settings.get_config()["CACHE_KEY_PREFIX"]
+
+    @classmethod
+    def _request_ids_key(cls) -> str:
+        """Return the cache key for the request IDs list."""
+        return f"{cls._key_prefix()}request_ids"
+
+    @classmethod
+    def _request_key(cls, request_id: str) -> str:
+        """Return the cache key for a specific request's data."""
+        return f"{cls._key_prefix()}req:{request_id}"
+
+    @classmethod
+    def request_ids(cls) -> Iterable:
+        """The stored request ids."""
+        return cls._get_cache().get(cls._request_ids_key(), [])
+
+    @classmethod
+    def exists(cls, request_id: str) -> bool:
+        """Does the given request_id exist in the store."""
+        return request_id in cls.request_ids()
+
+    @classmethod
+    def set(cls, request_id: str):
+        """Set a request_id in the store."""
+        cache = cls._get_cache()
+        ids_key = cls._request_ids_key()
+        request_ids = list(cache.get(ids_key, []))
+
+        if request_id not in request_ids:
+            request_ids.append(request_id)
+
+        # Enforce RESULTS_CACHE_SIZE limit
+        max_size = dt_settings.get_config()["RESULTS_CACHE_SIZE"]
+        while len(request_ids) > max_size:
+            removed_id = request_ids.pop(0)
+            cache.delete(cls._request_key(removed_id))
+
+        cache.set(ids_key, request_ids, None)
+
+    @classmethod
+    def clear(cls):
+        """Remove all requests from the request store."""
+        cache = cls._get_cache()
+        ids_key = cls._request_ids_key()
+        request_ids = cache.get(ids_key, [])
+
+        # Delete all request data
+        for request_id in request_ids:
+            cache.delete(cls._request_key(request_id))
+
+        # Clear the request IDs list
+        cache.delete(ids_key)
+
+    @classmethod
+    def delete(cls, request_id: str):
+        """Delete the stored request for the given request_id."""
+        cache = cls._get_cache()
+        ids_key = cls._request_ids_key()
+        request_ids = list(cache.get(ids_key, []))
+
+        # Remove from the list if present
+        if request_id in request_ids:
+            request_ids.remove(request_id)
+            cache.set(ids_key, request_ids, None)
+
+        # Delete the request data
+        cache.delete(cls._request_key(request_id))
+
+    @classmethod
+    def save_panel(cls, request_id: str, panel_id: str, data: Any = None):
+        """Save the panel data for the given request_id."""
+        cls.set(request_id)
+        cache = cls._get_cache()
+        request_key = cls._request_key(request_id)
+        request_data = cache.get(request_key, {})
+        request_data[panel_id] = serialize(data)
+        cache.set(request_key, request_data, None)
+
+    @classmethod
+    def panel(cls, request_id: str, panel_id: str) -> Any:
+        """Fetch the panel data for the given request_id."""
+        cache = cls._get_cache()
+        request_data = cache.get(cls._request_key(request_id), {})
+        panel_data = request_data.get(panel_id)
+        if panel_data is None:
+            return {}
+        return deserialize(panel_data)
+
+    @classmethod
+    def panels(cls, request_id: str) -> Any:
+        """Fetch all the panel data for the given request_id."""
+        cache = cls._get_cache()
+        request_data = cache.get(cls._request_key(request_id), {})
+        for panel_id, panel_data in request_data.items():
+            yield panel_id, deserialize(panel_data)
 
 
 def get_store() -> BaseStore:
