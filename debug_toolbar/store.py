@@ -311,8 +311,8 @@ class CacheStore(BaseStore):
         request_ids = cache.get(ids_key, [])
 
         # Delete all request data
-        for request_id in request_ids:
-            cache.delete(cls._request_key(request_id))
+        if request_ids:
+            cache.delete_many([cls._request_key(_id) for _id in request_ids])
 
         # Clear the request IDs list
         cache.delete(ids_key)
