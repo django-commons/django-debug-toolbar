@@ -1,4 +1,5 @@
 import contextlib
+import functools
 import json
 from collections import defaultdict, deque
 from collections.abc import Iterable
@@ -237,6 +238,7 @@ class _UntrackedCache:
         if not callable(attr):
             return attr
 
+        @functools.wraps(attr)
         def untracked(*args, **kwargs):
             panel = getattr(self._cache, "_djdt_panel", None)
             self._cache._djdt_panel = None
