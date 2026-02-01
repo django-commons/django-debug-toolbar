@@ -290,7 +290,7 @@ class CacheStore(BaseStore):
         """Set a request_id in the store."""
         cache = cls._get_cache()
         ids_key = cls._request_ids_key()
-        request_ids = list(cache.get(ids_key, []))
+        request_ids = deque(cache.get(ids_key, []))
 
         if request_id not in request_ids:
             request_ids.append(request_id)
@@ -298,10 +298,10 @@ class CacheStore(BaseStore):
         # Enforce RESULTS_CACHE_SIZE limit
         max_size = dt_settings.get_config()["RESULTS_CACHE_SIZE"]
         while len(request_ids) > max_size:
-            removed_id = request_ids.pop(0)
+            removed_id = request_ids.popleft()
             cache.delete(cls._request_key(removed_id))
 
-        cache.set(ids_key, request_ids, None)
+        cache.set(ids_key, list(request_ids), None)
 
     @classmethod
     def clear(cls):
