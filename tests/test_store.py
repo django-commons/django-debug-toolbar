@@ -1,10 +1,12 @@
 import uuid
 
-from django.test import TestCase
+from django.http import HttpResponse
+from django.test import RequestFactory, TestCase
 from django.test.utils import override_settings
 from django.utils.safestring import SafeData, mark_safe
 
 from debug_toolbar import store
+from debug_toolbar.toolbar import DebugToolbar
 
 
 class SerializationTestCase(TestCase):
@@ -30,7 +32,9 @@ class SerializationTestCase(TestCase):
 class BaseStoreTestCase(TestCase):
     def test_methods_are_not_implemented(self):
         # Find all the non-private and dunder class methods
-        methods = [member for member in vars(store.BaseStore) if not member.startswith("_")]
+        methods = [
+            member for member in vars(store.BaseStore) if not member.startswith("_")
+        ]
         self.assertEqual(len(methods), 7)
         with self.assertRaises(NotImplementedError):
             store.BaseStore.request_ids()
@@ -123,7 +127,9 @@ class GetStoreTestCase(TestCase):
     def test_get_store(self):
         self.assertIs(store.get_store(), store.MemoryStore)
 
-    @override_settings(DEBUG_TOOLBAR_CONFIG={"TOOLBAR_STORE_CLASS": "tests.test_store.StubStore"})
+    @override_settings(
+        DEBUG_TOOLBAR_CONFIG={"TOOLBAR_STORE_CLASS": "tests.test_store.StubStore"}
+    )
     def test_get_store_with_setting(self):
         self.assertIs(store.get_store(), StubStore)
 
@@ -344,3 +350,33 @@ class CacheStoreTestCase(TestCase):
             self.assertEqual(self.store._key_prefix(), "custom:")
             self.assertEqual(self.store._request_ids_key(), "custom:request_ids")
             self.assertEqual(self.store._request_key("test"), "custom:req:test")
+
+    def test_cache_store_operations_not_tracked_by_cache_panel(self):
+        """Verify that CacheStore operations don't appear in CachePanel data."""
+        # Set up a toolbar with CachePanel
+        request = RequestFactory().get("/")
+        toolbar = DebugToolbar(request, lambda req: HttpResponse())
+        panel = toolbar.get_panel_by_id("CachePanel")
+        panel.enable_instrumentation()
+
+        try:
+            # Record the initial number of cache calls
+            initial_call_count = len(panel.calls)
+
+            # Perform various CacheStore operations
+            self.store.set("test_req")
+            self.store.save_panel("test_req", "test.panel", {"data": "value"})
+            self.store.exists("test_req")
+            self.store.panel("test_req", "test.panel")
+            self.store.panels("test_req")
+            self.store.delete("test_req")
+
+            # Verify that no cache operations were recorded
+            # All CacheStore operations should be invisible to the CachePanel
+            self.assertEqual(
+                len(panel.calls),
+                initial_call_count,
+                "CacheStore operations should not be tracked by CachePanel",
+            )
+        finally:
+            panel.disable_instrumentation()
