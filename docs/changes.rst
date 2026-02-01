@@ -4,6 +4,8 @@ Change log
 Pending
 -------
 
+* Fix Server-Timing header not being overridden if it exists in header already
+
 6.2.0 (2026-01-20)
 ------------------
 
