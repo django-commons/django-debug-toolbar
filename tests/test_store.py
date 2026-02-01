@@ -30,7 +30,9 @@ class SerializationTestCase(TestCase):
 class BaseStoreTestCase(TestCase):
     def test_methods_are_not_implemented(self):
         # Find all the non-private and dunder class methods
-        methods = [member for member in vars(store.BaseStore) if not member.startswith("_")]
+        methods = [
+            member for member in vars(store.BaseStore) if not member.startswith("_")
+        ]
         self.assertEqual(len(methods), 7)
         with self.assertRaises(NotImplementedError):
             store.BaseStore.request_ids()
@@ -123,7 +125,9 @@ class GetStoreTestCase(TestCase):
     def test_get_store(self):
         self.assertIs(store.get_store(), store.MemoryStore)
 
-    @override_settings(DEBUG_TOOLBAR_CONFIG={"TOOLBAR_STORE_CLASS": "tests.test_store.StubStore"})
+    @override_settings(
+        DEBUG_TOOLBAR_CONFIG={"TOOLBAR_STORE_CLASS": "tests.test_store.StubStore"}
+    )
     def test_get_store_with_setting(self):
         self.assertIs(store.get_store(), StubStore)
 
