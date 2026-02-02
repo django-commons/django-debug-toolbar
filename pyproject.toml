@@ -95,14 +95,6 @@ lint.mccabe.max-complexity = 16
 skip_covered = true
 skip_empty = true
 
-[tool.coverage.run]
-branch = true
-parallel = true
-relative_files = true
-source = [
-  "debug_toolbar",
-]
-
 [tool.coverage.paths]
 source = [
   "src",
@@ -113,3 +105,10 @@ source = [
 # Update coverage badge link in README.rst when fail_under changes
 fail_under = 94
 show_missing = true
+[tool.coverage.run]
+branch = true
+parallel = true
+relative_files = true
+source = [
+  "debug_toolbar",
+]
