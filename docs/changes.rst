@@ -4,6 +4,9 @@ Change log
 Pending
 -------
 
+6.2.0 (2026-01-20)
+------------------
+
 * Deprecated ``RedirectsPanel`` in favor of ``HistoryPanel`` for viewing
   toolbar data from redirected requests.
 * Fixed support for generating code coverage comments in PRs.
