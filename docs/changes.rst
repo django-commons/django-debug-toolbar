@@ -3,6 +3,10 @@ Change log
 
 Pending
 -------
+* Added the ability to download the profiling data as a file. This feature is
+  disabled by default and requires the ``PROFILER_PROFILE_ROOT`` setting to be
+  configured.
+
 
 6.2.0 (2026-01-20)
 ------------------
@@ -21,9 +25,6 @@ Pending
 * Added test to confirm Django's ``TestCase.assertNumQueries`` works.
 * Fixed string representation of values in settings panel.
 * Declared support for Django 6.0.
-* Added the ability to download the profiling data as a file. This feature is
-  disabled by default and requires the ``PROFILER_PROFILE_ROOT`` setting to be
-  configured.
 
 6.1.0 (2025-10-30)
 ------------------
