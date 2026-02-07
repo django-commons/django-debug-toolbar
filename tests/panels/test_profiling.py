@@ -3,6 +3,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 from django.contrib.auth.models import User
 from django.core import signing
@@ -83,17 +84,16 @@ class ProfilingPanelTestCase(BaseTestCase):
         response = HttpResponse()
         self.assertIsNone(self.panel.generate_stats(self.request, response))
 
-    @override_settings(
-        DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": tempfile.gettempdir()}
-    )
     def test_generate_stats_signed_path(self):
-        response = self.panel.process_request(self.request)
-        self.panel.generate_stats(self.request, response)
-        path = self.panel.prof_file_path
-        self.assertTrue(path)
-        # Check that it's a valid signature
-        filename = signing.loads(path)
-        self.assertTrue(filename.endswith(".prof"))
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with self.settings(DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": tmpdir}):
+                response = self.panel.process_request(self.request)
+                self.panel.generate_stats(self.request, response)
+                path = self.panel.prof_file_path
+                self.assertTrue(path)
+                # Check that it's a valid signature
+                filename = signing.loads(path)
+                self.assertTrue(filename.endswith(".prof"))
 
     def test_generate_stats_no_root(self):
         response = self.panel.process_request(self.request)
@@ -111,6 +111,20 @@ class ProfilingPanelTestCase(BaseTestCase):
         self.panel.profiler.disable()
         self.panel.generate_stats(self.request, response)
         self.assertNotIn("func_list", self.panel.get_stats())
+
+    @mock.patch("cProfile.Profile.dump_stats")
+    def test_generate_stats_oserror(self, mock_dump_stats):
+        mock_dump_stats.side_effect = OSError
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with self.settings(DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": tmpdir}):
+                response = self.panel.process_request(self.request)
+                with self.assertLogs(
+                    "debug_toolbar.panels.profiling", level="ERROR"
+                ) as cm:
+                    self.panel.generate_stats(self.request, response)
+                self.assertIn("Failed to dump profiling stats", cm.output[0])
+                # Ensure prof_file_path is not set/updated if dump fails
+                self.assertFalse(hasattr(self.panel, "prof_file_path"))
 
 
 @override_settings(
@@ -170,5 +184,37 @@ class ProfilingDownloadViewTestCase(TestCase):
             url = reverse("djdt:debug_toolbar_download_prof_file")
             # Sign a filename that doesn't exist
             path = signing.dumps("missing.prof")
+            response = self.client.get(url, {"path": path})
+            self.assertEqual(response.status_code, 404)
+
+    def test_download_path_traversal(self):
+        with override_settings(
+            DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": self.root}
+        ):
+            url = reverse("djdt:debug_toolbar_download_prof_file")
+            # Sign a filename that traverses safely out of the root
+            path = signing.dumps("../passwd")
+            response = self.client.get(url, {"path": path})
+            self.assertEqual(response.status_code, 404)
+
+    def test_download_absolute_path(self):
+        with override_settings(
+            DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": self.root}
+        ):
+            url = reverse("djdt:debug_toolbar_download_prof_file")
+            # Create a file outside the root and try to access it via absolute path
+            with tempfile.NamedTemporaryFile() as tmp:
+                path = signing.dumps(tmp.name)
+                response = self.client.get(url, {"path": path})
+                self.assertEqual(response.status_code, 404)
+
+    def test_download_recursive_traversal(self):
+        with override_settings(
+            DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": self.root}
+        ):
+            url = reverse("djdt:debug_toolbar_download_prof_file")
+            # Try a convoluted path that resolves outside
+            # e.g. root/subdir/../../outside_root
+            path = signing.dumps(os.path.join("subdir", "..", "..", "passwd"))
             response = self.client.get(url, {"path": path})
             self.assertEqual(response.status_code, 404)

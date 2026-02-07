@@ -1,4 +1,5 @@
 import cProfile
+import logging
 import os
 import uuid
 from colorsys import hsv_to_rgb
@@ -11,6 +12,8 @@ from django.utils.translation import gettext_lazy as _
 
 from debug_toolbar import settings as dt_settings
 from debug_toolbar.panels import Panel
+
+logger = logging.getLogger(__name__)
 
 
 class FunctionCall:
@@ -186,14 +189,24 @@ class ProfilingPanel(Panel):
         self.stats.calc_callees()
 
         if (
-            root := dt_settings.get_config()["PROFILER_PROFILE_ROOT"]
-        ) and os.path.exists(root):
+            profile_root := dt_settings.get_config()["PROFILER_PROFILE_ROOT"]
+        ) and os.path.exists(profile_root):
             filename = f"{uuid.uuid4().hex}.prof"
-            prof_file_path = os.path.join(root, filename)
-            self.profiler.dump_stats(prof_file_path)
-            self.prof_file_path = signing.dumps(filename)
+            prof_file_path = os.path.join(profile_root, filename)
+            try:
+                self.profiler.dump_stats(prof_file_path)
+                self.prof_file_path = signing.dumps(filename)
+            except OSError:
+                logger.error(
+                    "Failed to dump profiling stats to %s",
+                    prof_file_path,
+                    exc_info=True,
+                )
+                # If writing to the file fails, we don't want to break the
+                # whole page.
 
-        root_func = cProfile.label(super().process_request.__code__)
+        code = super().process_request.__code__
+        root_func = (code.co_filename, code.co_firstlineno, code.co_name)
         if root_func in self.stats.stats:
             root = FunctionCall(self.stats, root_func, depth=0)
             func_list = []

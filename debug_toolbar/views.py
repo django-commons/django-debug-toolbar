@@ -36,6 +36,7 @@ def render_panel(request: HttpRequest) -> JsonResponse:
 
 
 @require_GET
+@login_not_required
 def download_prof_file(request):
     if not (root := dt_settings.get_config()["PROFILER_PROFILE_ROOT"]):
         raise Http404()
@@ -48,12 +49,14 @@ def download_prof_file(request):
     except signing.BadSignature:
         raise Http404() from None
 
-    resolved_path = pathlib.Path(root) / filename
-    if not resolved_path.exists():
+    root_path = pathlib.Path(root).resolve()
+    resolved_path = (root_path / filename).resolve()
+    if not resolved_path.is_relative_to(root_path) or not resolved_path.exists():
         raise Http404()
 
-    response = FileResponse(
-        open(resolved_path, "rb"), content_type="application/octet-stream"
+    return FileResponse(
+        open(resolved_path, "rb"),
+        as_attachment=True,
+        filename=resolved_path.name,
+        content_type="application/octet-stream",
     )
-    response["Content-Disposition"] = f'attachment; filename="{resolved_path.name}"'
-    return response
