@@ -1,6 +1,4 @@
-import pathlib
-
-from django.core import signing
+from django.core.files.storage import FileSystemStorage
 from django.http import FileResponse, Http404, HttpRequest, JsonResponse
 from django.utils.html import escape
 from django.utils.translation import gettext as _
@@ -38,25 +36,19 @@ def render_panel(request: HttpRequest) -> JsonResponse:
 @require_GET
 @login_not_required
 def download_prof_file(request):
-    if not (root := dt_settings.get_config()["PROFILER_PROFILE_ROOT"]):
-        raise Http404()
+    root = dt_settings.get_config()["PROFILER_PROFILE_ROOT"]
+    # If root is None, FileSystemStorage defaults to MEDIA_ROOT
+    storage = FileSystemStorage(location=root)
 
-    if not (file_path := request.GET.get("path")):
+    if not (filename := request.GET.get("path")):
         raise Http404()
 
     try:
-        filename = signing.loads(file_path)
-    except signing.BadSignature:
+        return FileResponse(
+            storage.open(filename),
+            as_attachment=True,
+            filename=filename,
+            content_type="application/octet-stream",
+        )
+    except FileNotFoundError:
         raise Http404() from None
-
-    root_path = pathlib.Path(root).resolve()
-    resolved_path = (root_path / filename).resolve()
-    if not resolved_path.is_relative_to(root_path) or not resolved_path.exists():
-        raise Http404()
-
-    return FileResponse(
-        open(resolved_path, "rb"),
-        as_attachment=True,
-        filename=resolved_path.name,
-        content_type="application/octet-stream",
-    )

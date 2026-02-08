@@ -2,7 +2,7 @@
 
 {% if prof_file_path %}
 <div class="djdt-profiling-control">
-  <a href="{% url 'djdt:debug_toolbar_download_prof_file' %}?path={{ prof_file_path|urlencode }}" class="djDebugButton">
+  <a href="{% url 'djdt:debug_toolbar_download_prof_file' %}?path={{ prof_file_path|urlencode }}" class="djDebugButton" target="_blank">
     Download .prof file
   </a>
 </div>

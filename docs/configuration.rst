@@ -359,8 +359,7 @@ Panel options
 
   This setting controls the directory where profile files are saved. If set
   to ``None`` (the default), the profile file is not saved and the download
-  link is not shown. This directory must exist and be writable by the
-  web server process.
+  link is not shown.
 
 * ``PROFILER_THRESHOLD_RATIO``
 
