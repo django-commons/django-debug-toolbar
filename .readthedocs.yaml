@@ -10,7 +10,7 @@ build:
     python: "3.13"
   jobs:
     install:
-      - pip install --group docs
+      - python -m pip install --group docs
 
 sphinx:
   configuration: docs/conf.py
