@@ -4,6 +4,9 @@ Change log
 Pending
 -------
 
+* Highlighted the documentation about disabling the browser's caching to
+  ensure the latest static assets are used.
+
 6.2.0 (2026-01-20)
 ------------------
 
