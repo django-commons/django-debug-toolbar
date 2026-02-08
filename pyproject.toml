@@ -59,8 +59,9 @@ dev = [
   "django-template-partials",
   "html5lib",
   "jinja2",
-
   "pre-commit",
+  "pygments",
+
   "selenium",
   "sqlparse",
   "tox",
