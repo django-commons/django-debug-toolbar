@@ -4,6 +4,9 @@ Change log
 Pending
 -------
 
+* Updated tox configuration to treat ``DeprecationWarning``,
+  ``ResourceWarning``, and ``PendingDeprecationWarning`` as errors.
+
 6.2.0 (2026-01-20)
 ------------------
 
