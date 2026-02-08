@@ -20,6 +20,7 @@ classifiers = [
   "Framework :: Django :: 4.2",
   "Framework :: Django :: 5.1",
   "Framework :: Django :: 5.2",
+  "Framework :: Django :: 6.0",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: BSD License",
   "Operating System :: OS Independent",
@@ -94,14 +95,6 @@ lint.mccabe.max-complexity = 16
 skip_covered = true
 skip_empty = true
 
-[tool.coverage.run]
-branch = true
-parallel = true
-relative_files = true
-source = [
-  "debug_toolbar",
-]
-
 [tool.coverage.paths]
 source = [
   "src",
@@ -112,3 +105,11 @@ source = [
 # Update coverage badge link in README.rst when fail_under changes
 fail_under = 94
 show_missing = true
+
+[tool.coverage.run]
+branch = true
+parallel = true
+relative_files = true
+source = [
+  "debug_toolbar",
+]

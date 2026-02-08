@@ -4,6 +4,12 @@ Change log
 Pending
 -------
 
+* Updated tox configuration to treat ``DeprecationWarning``,
+  ``ResourceWarning``, and ``PendingDeprecationWarning`` as errors.
+
+6.2.0 (2026-01-20)
+------------------
+
 * Deprecated ``RedirectsPanel`` in favor of ``HistoryPanel`` for viewing
   toolbar data from redirected requests.
 * Fixed support for generating code coverage comments in PRs.
@@ -16,8 +22,8 @@ Pending
   ``debug_toolbar.store.DatabaseStore`` with ``SKIP_TOOLBAR_QUERIES``.
 * Fixed font family for code blocks and stack traces in the toolbar.
 * Added test to confirm Django's ``TestCase.assertNumQueries`` works.
-* Updated tox configuration to treat ``DeprecationWarning``,
-  ``ResourceWarning``, and ``PendingDeprecationWarning`` as errors.
+* Fixed string representation of values in settings panel.
+* Declared support for Django 6.0.
 
 6.1.0 (2025-10-30)
 ------------------
