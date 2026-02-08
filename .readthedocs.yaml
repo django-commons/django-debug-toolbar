@@ -8,8 +8,9 @@ build:
   os: ubuntu-24.04
   tools:
     python: "3.10"
-  commands:
-    - pip install --group docs
+  jobs:
+    install:
+      - pip install --group docs
 
 sphinx:
   configuration: docs/conf.py
