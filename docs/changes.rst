@@ -4,7 +4,7 @@ Change log
 Pending
 -------
 
-* Replaced requirements_dev.txt file for pyproject.toml support with
+* Replaced ``requirements_dev.txt`` file for ``pyproject.toml`` support with
   dependency groups.
 
 6.2.0 (2026-01-20)
