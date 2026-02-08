@@ -105,6 +105,7 @@ source = [
 # Update coverage badge link in README.rst when fail_under changes
 fail_under = 94
 show_missing = true
+
 [tool.coverage.run]
 branch = true
 parallel = true
