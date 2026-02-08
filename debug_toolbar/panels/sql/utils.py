@@ -5,6 +5,7 @@ import sqlparse
 from django.dispatch import receiver
 from django.test.signals import setting_changed
 from sqlparse import tokens as T
+from sqlparse.exceptions import SQLParseError
 
 from debug_toolbar import settings as dt_settings
 
@@ -96,6 +97,7 @@ def reformat_sql(sql, *, with_toggle=False):
     if not with_toggle:
         return formatted
     simplified = parse_sql(sql, simplify=True)
+
     uncollapsed = f'<span class="djDebugUncollapsed">{simplified}</span>'
     collapsed = f'<span class="djDebugCollapsed djdt-hidden">{formatted}</span>'
     return collapsed + uncollapsed
@@ -104,7 +106,15 @@ def reformat_sql(sql, *, with_toggle=False):
 @lru_cache(maxsize=128)
 def parse_sql(sql, *, simplify=False):
     stack = get_filter_stack(simplify=simplify)
-    return "".join(stack.run(sql))
+    try:
+        return "".join(stack.run(sql))
+    except SQLParseError:
+        # The query either exceeds the number of tokens or depth of tokens.
+        # Recreate the FilterStack and explicitly disable the grouping to avoid
+        # those errors.
+        stack = get_filter_stack(simplify=simplify)
+        stack._grouping = False
+        return "".join(stack.run(sql))
 
 
 @cache
