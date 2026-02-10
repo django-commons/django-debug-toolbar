@@ -1,14 +1,20 @@
 import cProfile
+import logging
 import os
+import tempfile
 from colorsys import hsv_to_rgb
 from pstats import Stats
 
 from django.conf import settings
+from django.core.files.base import ContentFile
+from django.core.files.storage import FileSystemStorage
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from debug_toolbar import settings as dt_settings
 from debug_toolbar.panels import Panel
+
+logger = logging.getLogger(__name__)
 
 
 class FunctionCall:
@@ -183,8 +189,27 @@ class ProfilingPanel(Panel):
         self.stats = Stats(self.profiler)
         self.stats.calc_callees()
 
-        root_func = cProfile.label(super().process_request.__code__)
+        profile_root = dt_settings.get_config()["PROFILER_PROFILE_ROOT"]
+        storage = FileSystemStorage(location=profile_root)
+        filename = f"djdt_profile_{self.toolbar.request_id}.prof"
+        try:
+            with tempfile.NamedTemporaryFile() as tmp:
+                self.profiler.dump_stats(tmp.name)
+                if storage.exists(filename):
+                    storage.delete(filename)
+                # ContentFile reads the stream, so we point back to start
+                tmp.seek(0)
+                saved_name = storage.save(filename, ContentFile(tmp.read()))
+            self.prof_file_path = saved_name
+        except Exception:
+            logger.exception(
+                "Failed to dump profiling stats to %s",
+                filename,
+            )
+            # If writing to the file fails, we don't want to break the
+            # whole page.
 
+        root_func = cProfile.label(super().process_request.__code__)
         if root_func in self.stats.stats:
             root = FunctionCall(self.stats, root_func, depth=0)
             func_list = []
@@ -197,4 +222,9 @@ class ProfilingPanel(Panel):
                 dt_settings.get_config()["PROFILER_MAX_DEPTH"],
                 cum_time_threshold,
             )
-            self.record_stats({"func_list": [func.serialize() for func in func_list]})
+            self.record_stats(
+                {
+                    "func_list": [func.serialize() for func in func_list],
+                    "prof_file_path": getattr(self, "prof_file_path", None),
+                }
+            )
