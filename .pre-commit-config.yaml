@@ -19,7 +19,7 @@ repos:
     -   id: django-upgrade
         args: [--target-version, "4.2"]
 -   repo: https://github.com/adamchainz/djade-pre-commit
-    rev: "1.6.0"
+    rev: "1.7.0"
     hooks:
     -   id: djade
         args: [--target-version, "4.2"]
@@ -29,21 +29,21 @@ repos:
     -   id: rst-backticks
     -   id: rst-directive-colons
 -   repo: https://github.com/biomejs/pre-commit
-    rev: v2.3.8
+    rev: v2.3.10
     hooks:
       - id: biome-check
         verbose: true
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.14.8'
+    rev: 'v0.14.14'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
 -   repo: https://github.com/tox-dev/pyproject-fmt
-    rev: v2.11.1
+    rev: v2.12.1
     hooks:
       - id: pyproject-fmt
 -   repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.24.1
+    rev: v0.25
     hooks:
       - id: validate-pyproject

@@ -126,9 +126,9 @@ class DebugToolbarMiddleware:
             markcoroutinefunction(self)
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
-        # Decide whether the toolbar is active for this request.
         if self.async_mode:
             return self.__acall__(request)
+
         # Decide whether the toolbar is active for this request.
         show_toolbar = get_show_toolbar(async_mode=self.async_mode)
 

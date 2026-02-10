@@ -48,6 +48,32 @@ urls.Homepage = "https://github.com/django-commons/django-debug-toolbar"
 urls.Issues = "https://github.com/django-commons/django-debug-toolbar/issues"
 urls.Source = "https://github.com/django-commons/django-debug-toolbar"
 
+[dependency-groups]
+dev = [
+  "black",
+  "coverage[toml]",
+  "daphne",         # async in Example app
+  "django",
+  "django-csp",     # Used in tests/test_csp_rendering
+
+  "django-template-partials",
+  "html5lib",
+  "jinja2",
+  "pre-commit",
+  "pygments",
+
+  "selenium",
+  "sqlparse",
+  "tox",
+  "whitenoise", # To avoid dealing with static files
+
+]
+docs = [
+  "sphinx",
+  "sphinx-rtd-theme>1",
+  "sphinxcontrib-spelling",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = [
   "debug_toolbar",
@@ -95,14 +121,6 @@ lint.mccabe.max-complexity = 16
 skip_covered = true
 skip_empty = true
 
-[tool.coverage.run]
-branch = true
-parallel = true
-relative_files = true
-source = [
-  "debug_toolbar",
-]
-
 [tool.coverage.paths]
 source = [
   "src",
@@ -113,3 +131,11 @@ source = [
 # Update coverage badge link in README.rst when fail_under changes
 fail_under = 94
 show_missing = true
+
+[tool.coverage.run]
+branch = true
+parallel = true
+relative_files = true
+source = [
+  "debug_toolbar",
+]
