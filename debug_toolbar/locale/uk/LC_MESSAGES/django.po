@@ -231,7 +231,9 @@ msgstr "CPU: %(cum)0.2f мс (%(total)0.2f мс)"
 msgid "Total: %0.2fms"
 msgstr "Загалом: %0.2f мс"
 
-#: panels/timer.py:38 templates/debug_toolbar/panels/history.html:9
+#: panels/timer.py:38 templates/debug_toolbar/panels/cache.html:43
+#: templates/debug_toolbar/panels/history.html:9
+#: templates/debug_toolbar/panels/sql.html:36
 #: templates/debug_toolbar/panels/sql_explain.html:11
 #: templates/debug_toolbar/panels/sql_profile.html:12
 #: templates/debug_toolbar/panels/sql_select.html:11
@@ -346,12 +348,6 @@ msgstr "Команди"
 #: templates/debug_toolbar/panels/cache.html:39
 msgid "Calls"
 msgstr "Виклики"
-
-#: templates/debug_toolbar/panels/cache.html:43
-#: templates/debug_toolbar/panels/sql.html:36
-msgid "Time"
-msgstr "Час (мс)"
-
 #: templates/debug_toolbar/panels/cache.html:44
 msgid "Type"
 msgstr "Тип"

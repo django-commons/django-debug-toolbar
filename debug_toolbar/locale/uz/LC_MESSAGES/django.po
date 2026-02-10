@@ -3,356 +3,418 @@
 #
 #
 # Translators:
-# Shinya Okano <tokibito@gmail.com>, 2012,2014,2020
+# Hojiakbar Barotov <barotovhojiakbar.me@gmail.com>, 2026
 msgid ""
 msgstr ""
 "Project-Id-Version: Django Debug Toolbar\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-06 07:12-0500\n"
+"POT-Creation-Date: 2025-10-16 19:11-0500\n"
 "PO-Revision-Date: 2010-11-30 00:00+0000\n"
-"Last-Translator: Shinya Okano <tokibito@gmail.com>, 2012,2014,2020\n"
-"Language-Team: Japanese (http://app.transifex.com/django-debug-toolbar/django-debug-toolbar/language/ja/)\n"
+"Last-Translator: Hojiakbar Barotov <barotovhojiakbar.me@gmail.com>, 2026\n"
+"Language-Team: Uzbek (http://app.transifex.com/django-debug-toolbar/django-debug-toolbar/language/uz/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ja\n"
+"Language: uz\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: apps.py:18
 msgid "Debug Toolbar"
-msgstr "デバッグツールバー"
+msgstr "Tekshiruv Paneli"
+
+#: models.py:11
+msgid "history entry"
+msgstr "tarix yozuvi"
+
+#: models.py:12
+msgid "history entries"
+msgstr "tarix yozuvlari"
 
 #: panels/alerts.py:67
 #, python-brace-format
 msgid ""
 "Form with id \"{form_id}\" contains file input, but does not have the "
 "attribute enctype=\"multipart/form-data\"."
-msgstr ""
+msgstr "\"{form_id}\" identifikatorli forma fayl maydonini o'z ichiga oladi, lekin enctype=\"multipart/form-data\" atributiga ega emas."
 
 #: panels/alerts.py:70
 msgid ""
 "Form contains file input, but does not have the attribute "
 "enctype=\"multipart/form-data\"."
-msgstr ""
+msgstr "Forma fayl maydonini o'z ichiga oladi, lekin enctype=\"multipart/form-data\" atributiga ega emas."
 
 #: panels/alerts.py:73
 #, python-brace-format
 msgid ""
 "Input element references form with id \"{form_id}\", but the form does not "
 "have the attribute enctype=\"multipart/form-data\"."
-msgstr ""
+msgstr "Kiritish elementi \"{form_id}\" formaga bog'langan, lekin unda enctype=\"multipart/form-data\" atributi yo'q."
 
 #: panels/alerts.py:77
 msgid "Alerts"
-msgstr ""
+msgstr "Ogohlantirishlar"
 
-#: panels/cache.py:168
+#: panels/cache.py:170
 msgid "Cache"
-msgstr "キャッシュ"
+msgstr "Kesh"
 
-#: panels/cache.py:174
+#: panels/cache.py:177
 #, python-format
 msgid "%(cache_calls)d call in %(time).2fms"
 msgid_plural "%(cache_calls)d calls in %(time).2fms"
-msgstr[0] ""
+msgstr[0] "%(time).2fmillisekundda %(cache_calls)dta chaqiruvlar"
 
-#: panels/cache.py:183
+#: panels/cache.py:186
 #, python-format
 msgid "Cache calls from %(count)d backend"
 msgid_plural "Cache calls from %(count)d backends"
-msgstr[0] ""
+msgstr[0] "%(count)dta backend'dan kesh chaqiruvlari"
+
+#: panels/community.py:13
+msgid "Community"
+msgstr "Hamjamiyat"
 
 #: panels/headers.py:31
 msgid "Headers"
-msgstr "ヘッダー"
+msgstr "Sarlavhalar"
 
-#: panels/history/panel.py:19 panels/history/panel.py:20
+#: panels/history/panel.py:20 panels/history/panel.py:21
 msgid "History"
-msgstr ""
+msgstr "Tarix"
 
-#: panels/profiling.py:140
+#: panels/profiling.py:156
 msgid "Profiling"
-msgstr "プロファイル"
+msgstr "Ishlash tahlili"
 
-#: panels/redirects.py:17
+#: panels/redirects.py:18
 msgid "Intercept redirects"
-msgstr "リダイレクトに割込み"
+msgstr "Yo‘naltirishni to'xtatish"
 
 #: panels/request.py:16
 msgid "Request"
-msgstr "リクエスト"
+msgstr "So'rov"
 
-#: panels/request.py:38
+#: panels/request.py:36
 msgid "<no view>"
-msgstr ""
+msgstr "<view yo'q>"
 
-#: panels/request.py:55
+#: panels/request.py:53
 msgid "<unavailable>"
-msgstr "<利用不可>"
+msgstr "<mavjud emas>"
 
-#: panels/settings.py:17
+#: panels/settings.py:19
 msgid "Settings"
-msgstr "設定"
+msgstr "Sozlamalar"
 
-#: panels/settings.py:20
+#: panels/settings.py:22
 #, python-format
 msgid "Settings from %s"
-msgstr ""
+msgstr "%sdan sozlamalar"
 
-#: panels/signals.py:57
+#: panels/signals.py:59
 #, python-format
 msgid "%(num_receivers)d receiver of 1 signal"
 msgid_plural "%(num_receivers)d receivers of 1 signal"
-msgstr[0] ""
+msgstr[0] "1 signaldan %(num_receivers)dta qabul qiluvchilar"
 
-#: panels/signals.py:62
+#: panels/signals.py:64
 #, python-format
 msgid "%(num_receivers)d receiver of %(num_signals)d signals"
 msgid_plural "%(num_receivers)d receivers of %(num_signals)d signals"
-msgstr[0] ""
+msgstr[0] "%(num_signals)dta signaldan %(num_receivers)dta qabul qiluvchilar"
 
-#: panels/signals.py:67
+#: panels/signals.py:69
 msgid "Signals"
-msgstr "シグナル"
+msgstr "Signallar"
 
-#: panels/sql/panel.py:30 panels/sql/panel.py:41
+#: panels/sql/forms.py:56
+msgid "Data for this panel isn't available anymore."
+msgstr "Bu panel uchun ma’lumotlar endi mavjud emas."
+
+#: panels/sql/forms.py:68
+msgid "Invalid query id."
+msgstr "So‘rov identifikatori yaroqsiz."
+
+#: panels/sql/panel.py:32 panels/sql/panel.py:43
 msgid "Read uncommitted"
-msgstr ""
+msgstr "Tasdiqlanmaganini o'qish"
 
-#: panels/sql/panel.py:31 panels/sql/panel.py:43
+#: panels/sql/panel.py:33 panels/sql/panel.py:45
 msgid "Read committed"
-msgstr ""
+msgstr "Tasdiqlanganini o'qish"
 
-#: panels/sql/panel.py:32 panels/sql/panel.py:45
+#: panels/sql/panel.py:34 panels/sql/panel.py:47
 msgid "Repeatable read"
-msgstr ""
+msgstr "Takrorlanadigan o'qish"
 
-#: panels/sql/panel.py:33 panels/sql/panel.py:47
+#: panels/sql/panel.py:35 panels/sql/panel.py:49
 msgid "Serializable"
-msgstr ""
+msgstr "Serializatsiyalangan"
 
-#: panels/sql/panel.py:39
+#: panels/sql/panel.py:41
 msgid "Autocommit"
-msgstr ""
-
-#: panels/sql/panel.py:61 panels/sql/panel.py:71
-msgid "Idle"
-msgstr ""
-
-#: panels/sql/panel.py:62 panels/sql/panel.py:72
-msgid "Active"
-msgstr ""
+msgstr "Avtomatik saqlash"
 
 #: panels/sql/panel.py:63 panels/sql/panel.py:73
-msgid "In transaction"
-msgstr ""
+msgid "Idle"
+msgstr "Bo'sh"
 
 #: panels/sql/panel.py:64 panels/sql/panel.py:74
-msgid "In error"
-msgstr ""
+msgid "Active"
+msgstr "Aktiv"
 
 #: panels/sql/panel.py:65 panels/sql/panel.py:75
-msgid "Unknown"
-msgstr ""
+msgid "In transaction"
+msgstr "Tranzaksiya ichida"
 
-#: panels/sql/panel.py:162
+#: panels/sql/panel.py:66 panels/sql/panel.py:76
+msgid "In error"
+msgstr "Xatolik holatida"
+
+#: panels/sql/panel.py:67 panels/sql/panel.py:77
+msgid "Unknown"
+msgstr "Noma'lum"
+
+#: panels/sql/panel.py:165
 msgid "SQL"
 msgstr "SQL"
 
-#: panels/sql/panel.py:168
+#: panels/sql/panel.py:172
 #, python-format
 msgid "%(query_count)d query in %(sql_time).2fms"
 msgid_plural "%(query_count)d queries in %(sql_time).2fms"
-msgstr[0] ""
+msgstr[0] "%(sql_time).2fmillisekundda %(query_count)dta so'rovlar"
 
-#: panels/sql/panel.py:180
+#: panels/sql/panel.py:184
 #, python-format
 msgid "SQL queries from %(count)d connection"
 msgid_plural "SQL queries from %(count)d connections"
-msgstr[0] ""
+msgstr[0] "%(count)dta ulanishdan SQL so'rovlari"
 
-#: panels/staticfiles.py:82
+#: panels/staticfiles.py:47
 #, python-format
 msgid "Static files (%(num_found)s found, %(num_used)s used)"
-msgstr ""
+msgstr "Statik fayllar (%(num_found)sta  topildi, %(num_used)sta ishlatilgan)"
 
-#: panels/staticfiles.py:103
+#: panels/staticfiles.py:81
 msgid "Static files"
-msgstr "静的ファイル"
+msgstr "Statik fayllar"
 
-#: panels/staticfiles.py:109
+#: panels/staticfiles.py:87
 #, python-format
 msgid "%(num_used)s file used"
 msgid_plural "%(num_used)s files used"
-msgstr[0] ""
+msgstr[0] "%(num_used)sta fayl ishlatilgan"
 
-#: panels/templates/panel.py:101
+#: panels/templates/panel.py:104
 msgid "Templates"
-msgstr "テンプレート"
+msgstr "Shablonlar"
 
-#: panels/templates/panel.py:106
+#: panels/templates/panel.py:109
 #, python-format
 msgid "Templates (%(num_templates)s rendered)"
-msgstr ""
+msgstr "Shablonlar (%(num_templates)sta ishlatilgan)"
 
-#: panels/templates/panel.py:195
+#: panels/templates/panel.py:199
 msgid "No origin"
-msgstr ""
+msgstr "Manbasi yo'q"
 
 #: panels/timer.py:27
 #, python-format
 msgid "CPU: %(cum)0.2fms (%(total)0.2fms)"
-msgstr ""
+msgstr "CPU:%(cum)0.2fmillisekund (%(total)0.2fmillisekund)"
 
 #: panels/timer.py:32
 #, python-format
 msgid "Total: %0.2fms"
-msgstr ""
+msgstr "Jami: %0.2fmillisekund"
 
-#: panels/timer.py:38 templates/debug_toolbar/panels/cache.html:43
-#: templates/debug_toolbar/panels/history.html:9
-#: templates/debug_toolbar/panels/sql.html:36
+#: panels/timer.py:38 templates/debug_toolbar/panels/history.html:9
 #: templates/debug_toolbar/panels/sql_explain.html:11
 #: templates/debug_toolbar/panels/sql_profile.html:12
 #: templates/debug_toolbar/panels/sql_select.html:11
 msgid "Time"
-msgstr "時間"
+msgstr "Vaqt"
 
 #: panels/timer.py:46
 msgid "User CPU time"
-msgstr ""
+msgstr "Foydalanuvchi CPU vaqti"
 
 #: panels/timer.py:46
 #, python-format
-msgid "%(utime)0.3f ms"
-msgstr ""
+msgid "%(utime)0.3f msec"
+msgstr "%(utime)0.3fmillisekund"
 
 #: panels/timer.py:47
 msgid "System CPU time"
-msgstr ""
+msgstr "Sistema CPU vaqti"
 
 #: panels/timer.py:47
 #, python-format
-msgid "%(stime)0.3f ms"
-msgstr ""
+msgid "%(stime)0.3f msec"
+msgstr "%(stime)0.3fmillisekund"
 
 #: panels/timer.py:48
 msgid "Total CPU time"
-msgstr ""
+msgstr "Umumiy CPU vaqti"
 
 #: panels/timer.py:48
 #, python-format
-msgid "%(total)0.3f ms"
-msgstr ""
+msgid "%(total)0.3f msec"
+msgstr "%(total)0.3fmillisekund"
 
 #: panels/timer.py:49
 msgid "Elapsed time"
-msgstr ""
+msgstr "O‘tgan vaqt"
 
 #: panels/timer.py:49
 #, python-format
-msgid "%(total_time)0.3f ms"
-msgstr ""
+msgid "%(total_time)0.3f msec"
+msgstr "%(total_time)0.3fmillisekund"
 
 #: panels/timer.py:51
 msgid "Context switches"
-msgstr ""
+msgstr "Kontekst almashishlari"
 
 #: panels/timer.py:52
 #, python-format
 msgid "%(vcsw)d voluntary, %(ivcsw)d involuntary"
-msgstr ""
+msgstr "%(vcsw)dta ixtiyoriy, %(ivcsw)dta majburiy"
 
-#: panels/versions.py:19
+#: panels/versions.py:21
 msgid "Versions"
-msgstr "バージョン"
+msgstr "Versiyalar"
 
-#: templates/debug_toolbar/base.html:23
+#: templates/debug_toolbar/base.html:22
 msgid "Hide toolbar"
-msgstr "ツールバーを隠す"
+msgstr "Uskunalar panelini berkitish"
 
-#: templates/debug_toolbar/base.html:23
+#: templates/debug_toolbar/base.html:22
 msgid "Hide"
-msgstr "隠す"
+msgstr "Berkitish"
 
-#: templates/debug_toolbar/base.html:25 templates/debug_toolbar/base.html:26
+#: templates/debug_toolbar/base.html:24 templates/debug_toolbar/base.html:25
 msgid "Toggle Theme"
-msgstr ""
+msgstr "Mavzuni almashtirish"
 
-#: templates/debug_toolbar/base.html:35
+#: templates/debug_toolbar/base.html:34
 msgid "Show toolbar"
-msgstr "ツールバーを表示"
+msgstr "Uskunalar panelini ko'rsatish"
 
 #: templates/debug_toolbar/includes/panel_button.html:4
 msgid "Disable for next and successive requests"
-msgstr ""
+msgstr "Keyingi so‘rovlar uchun faolsizlantirish"
 
 #: templates/debug_toolbar/includes/panel_button.html:4
 msgid "Enable for next and successive requests"
-msgstr ""
+msgstr "Keyingi va keyingi so‘rovlar uchun faollashtirish"
 
 #: templates/debug_toolbar/panels/alerts.html:4
 msgid "Alerts found"
-msgstr ""
+msgstr "Ogohlantirishlar topildi"
 
 #: templates/debug_toolbar/panels/alerts.html:11
 msgid "No alerts found"
-msgstr ""
+msgstr "Ogohlantirishlar topilmadi"
 
 #: templates/debug_toolbar/panels/cache.html:2
 msgid "Summary"
-msgstr ""
+msgstr "Qisqacha ma'lumot"
 
 #: templates/debug_toolbar/panels/cache.html:6
 msgid "Total calls"
-msgstr ""
+msgstr "Jami chaqiruvlar"
 
 #: templates/debug_toolbar/panels/cache.html:7
 msgid "Total time"
-msgstr ""
+msgstr "Umumiy vaqt"
 
 #: templates/debug_toolbar/panels/cache.html:8
 msgid "Cache hits"
-msgstr ""
+msgstr "Keshga tushgan so'rovlar"
 
 #: templates/debug_toolbar/panels/cache.html:9
 msgid "Cache misses"
-msgstr ""
+msgstr "Keshda topilmaganlar"
 
 #: templates/debug_toolbar/panels/cache.html:21
 msgid "Commands"
-msgstr ""
+msgstr "Buyruqlar"
 
 #: templates/debug_toolbar/panels/cache.html:39
 msgid "Calls"
-msgstr ""
+msgstr "Chaqiruvlar"
+
+#: templates/debug_toolbar/panels/cache.html:43
+#: templates/debug_toolbar/panels/sql.html:36
+msgid "Time (ms)"
+msgstr "Vaqt (ms)"
+
 #: templates/debug_toolbar/panels/cache.html:44
 msgid "Type"
-msgstr ""
+msgstr "Tur"
 
 #: templates/debug_toolbar/panels/cache.html:45
 #: templates/debug_toolbar/panels/request.html:8
 msgid "Arguments"
-msgstr "引数"
+msgstr "Argumentlar"
 
 #: templates/debug_toolbar/panels/cache.html:46
 #: templates/debug_toolbar/panels/request.html:9
 msgid "Keyword arguments"
-msgstr "キーワード引数"
+msgstr "Kalit so'zli argumentlar"
 
 #: templates/debug_toolbar/panels/cache.html:47
 msgid "Backend"
-msgstr "バックエンド"
+msgstr "Backend"
+
+#: templates/debug_toolbar/panels/community.html:5
+msgid "Community & Contribution"
+msgstr "Hamjamiyat & Hissa qo'shish"
+
+#: templates/debug_toolbar/panels/community.html:8
+msgid ""
+"Want to contribute to Django Debug Toolbar? Get involved in our community!"
+msgstr "Django Tekshiruv Paneliga hissa qo'shmoqchimisiz? Hamjamiyatimizga qo'shiling!"
+
+#: templates/debug_toolbar/panels/community.html:14
+msgid "Join Discussions"
+msgstr "Muhokamalarga Qo'shilish"
+
+#: templates/debug_toolbar/panels/community.html:19
+msgid "View Issues"
+msgstr "Muammolarni Ko'rish"
+
+#: templates/debug_toolbar/panels/community.html:24
+msgid "Contribution Guide"
+msgstr "Hissa Qo'shish Qo'llanmasi"
+
+#: templates/debug_toolbar/panels/community.html:31
+msgid "Django Debug Toolbar Documentation"
+msgstr "Django Tekshiruv Paneli Dokumentatsiyasi"
+
+#: templates/debug_toolbar/panels/community.html:34
+msgid ""
+"Explore the official documentation to learn more about Django Debug Toolbar."
+msgstr "Django Tekshiruv Paneli haqida batafsil ma’lumot olish uchun rasmiy dokumentatsiya bilan tanishib chiqing."
+
+#: templates/debug_toolbar/panels/community.html:39
+msgid "Read Documentation"
+msgstr "Dokumentatsiyani o'qish"
+
+#: templates/debug_toolbar/panels/community.html:44
+msgid "How to Use Django Debug Toolbar"
+msgstr "Django Tekshiruv Panelidan Foydalanish"
 
 #: templates/debug_toolbar/panels/headers.html:3
 msgid "Request headers"
-msgstr "リクエストヘッダー"
+msgstr "So'rov sarlavhalari"
 
 #: templates/debug_toolbar/panels/headers.html:8
 #: templates/debug_toolbar/panels/headers.html:27
 #: templates/debug_toolbar/panels/headers.html:48
 msgid "Key"
-msgstr "キー"
+msgstr "Kalit"
 
 #: templates/debug_toolbar/panels/headers.html:9
 #: templates/debug_toolbar/panels/headers.html:28
@@ -362,226 +424,226 @@ msgstr "キー"
 #: templates/debug_toolbar/panels/settings.html:6
 #: templates/debug_toolbar/panels/timer.html:11
 msgid "Value"
-msgstr "値"
+msgstr "Qiymat"
 
 #: templates/debug_toolbar/panels/headers.html:22
 msgid "Response headers"
-msgstr "レスポンスヘッダー"
+msgstr "Javob sarlavhalari"
 
 #: templates/debug_toolbar/panels/headers.html:41
 msgid "WSGI environ"
-msgstr ""
+msgstr "WSGI muhiti"
 
 #: templates/debug_toolbar/panels/headers.html:43
 msgid ""
 "Since the WSGI environ inherits the environment of the server, only a "
 "significant subset is shown below."
-msgstr ""
+msgstr "WSGI server muhitini meros qilib olganligi sababli, quyida faqat muhim qism to‘plamlari ko‘rsatilgan."
 
 #: templates/debug_toolbar/panels/history.html:10
 msgid "Method"
-msgstr ""
+msgstr "Metod"
 
 #: templates/debug_toolbar/panels/history.html:11
 #: templates/debug_toolbar/panels/staticfiles.html:43
 msgid "Path"
-msgstr "パス"
+msgstr "Manzil"
 
 #: templates/debug_toolbar/panels/history.html:12
 msgid "Request Variables"
-msgstr ""
+msgstr "So'rov O'zgaruvchilari"
 
 #: templates/debug_toolbar/panels/history.html:13
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: templates/debug_toolbar/panels/history.html:14
 #: templates/debug_toolbar/panels/sql.html:37
 msgid "Action"
-msgstr ""
+msgstr "Amal"
 
 #: templates/debug_toolbar/panels/history_tr.html:22
 #: templates/debug_toolbar/panels/request_variables.html:11
 msgid "Variable"
-msgstr "変数"
+msgstr "O'zgaruvchi"
 
 #: templates/debug_toolbar/panels/profiling.html:5
 msgid "Call"
-msgstr ""
+msgstr "Chaqiruv"
 
 #: templates/debug_toolbar/panels/profiling.html:6
 msgid "CumTime"
-msgstr ""
+msgstr "KumVaqt"
 
 #: templates/debug_toolbar/panels/profiling.html:7
 #: templates/debug_toolbar/panels/profiling.html:9
 msgid "Per"
-msgstr ""
+msgstr "Har biriga"
 
 #: templates/debug_toolbar/panels/profiling.html:8
 msgid "TotTime"
-msgstr ""
+msgstr "JamiVaqt"
 
 #: templates/debug_toolbar/panels/profiling.html:10
 msgid "Count"
-msgstr ""
+msgstr "Miqdor"
 
 #: templates/debug_toolbar/panels/request.html:3
 msgid "View information"
-msgstr "ビューの情報"
+msgstr "Ma'lumotlarni ko'rish"
 
 #: templates/debug_toolbar/panels/request.html:7
 msgid "View function"
-msgstr "ビュー関数"
+msgstr "Funksiyani ko'rish"
 
 #: templates/debug_toolbar/panels/request.html:10
 msgid "URL name"
-msgstr "URL名"
+msgstr "URL nomi"
 
 #: templates/debug_toolbar/panels/request.html:24
 msgid "Cookies"
-msgstr "クッキー"
+msgstr "Cookie'lar"
 
 #: templates/debug_toolbar/panels/request.html:27
 msgid "No cookies"
-msgstr "クッキーはありません"
+msgstr "Cookie'lar mavjud emas"
 
 #: templates/debug_toolbar/panels/request.html:31
 msgid "Session data"
-msgstr "セッションデータ"
+msgstr "Sessiya ma'lumotlari"
 
 #: templates/debug_toolbar/panels/request.html:34
 msgid "No session data"
-msgstr "セッションデータはありません"
+msgstr "Sessiya ma'lumotlari mavjud emas"
 
 #: templates/debug_toolbar/panels/request.html:38
 msgid "GET data"
-msgstr ""
+msgstr "GET ma'lumotlari"
 
 #: templates/debug_toolbar/panels/request.html:41
 msgid "No GET data"
-msgstr ""
+msgstr "GET ma'lumotlari mavjud emas"
 
 #: templates/debug_toolbar/panels/request.html:45
 msgid "POST data"
-msgstr ""
+msgstr "POST ma'lumotlari"
 
 #: templates/debug_toolbar/panels/request.html:48
 msgid "No POST data"
-msgstr ""
+msgstr "POST ma'lumotlari mavjud emas"
 
 #: templates/debug_toolbar/panels/settings.html:5
 msgid "Setting"
-msgstr "設定項目"
+msgstr "Sozlama"
 
 #: templates/debug_toolbar/panels/signals.html:5
 msgid "Signal"
-msgstr "シグナル"
+msgstr "Signal"
 
 #: templates/debug_toolbar/panels/signals.html:6
 msgid "Receivers"
-msgstr "レシーバー"
+msgstr "Qabul qiluvchilar"
 
 #: templates/debug_toolbar/panels/sql.html:6
 #, python-format
 msgid "%(num)s query"
 msgid_plural "%(num)s queries"
-msgstr[0] ""
+msgstr[0] "%(num)sta so'rov"
 
 #: templates/debug_toolbar/panels/sql.html:8
 #, python-format
 msgid ""
 "including <abbr title=\"Similar queries are queries with the same SQL, but "
 "potentially different parameters.\">%(count)s similar</abbr>"
-msgstr ""
+msgstr "shu jumladan <abbr title=\"Similar queries are queries with the same SQL, but potentially different parameters.\">%(count)sta o'xshash</abbr>"
 
 #: templates/debug_toolbar/panels/sql.html:12
 #, python-format
 msgid ""
 "and <abbr title=\"Duplicate queries are identical to each other: they "
 "execute exactly the same SQL and parameters.\">%(dupes)s duplicates</abbr>"
-msgstr ""
+msgstr "va <abbr title=\"Duplicate queries are identical to each other: they execute exactly the same SQL and parameters.\">%(dupes)sta duplikat</abbr>"
 
 #: templates/debug_toolbar/panels/sql.html:34
 msgid "Query"
-msgstr ""
+msgstr "So'rov"
 
 #: templates/debug_toolbar/panels/sql.html:35
 #: templates/debug_toolbar/panels/timer.html:36
 msgid "Timeline"
-msgstr "タイムライン"
+msgstr "Xronologiya"
 
 #: templates/debug_toolbar/panels/sql.html:52
 #, python-format
 msgid "%(count)s similar queries."
-msgstr ""
+msgstr "%(count)sta o'xshash so'rovlar."
 
 #: templates/debug_toolbar/panels/sql.html:58
 #, python-format
 msgid "Duplicated %(dupes)s times."
-msgstr ""
+msgstr "%(dupes)smarta takrorlangan."
 
 #: templates/debug_toolbar/panels/sql.html:95
 msgid "Connection:"
-msgstr ""
+msgstr "Ulanish:"
 
 #: templates/debug_toolbar/panels/sql.html:97
 msgid "Isolation level:"
-msgstr ""
+msgstr "Izolyatsiya darajasi:"
 
 #: templates/debug_toolbar/panels/sql.html:100
 msgid "Transaction status:"
-msgstr ""
+msgstr "Tranzaksiya statusi:"
 
 #: templates/debug_toolbar/panels/sql.html:114
 msgid "(unknown)"
-msgstr ""
+msgstr "(noma'lum)"
 
 #: templates/debug_toolbar/panels/sql.html:123
 msgid "No SQL queries were recorded during this request."
-msgstr ""
+msgstr "Bu so‘rov paytida hech qanday SQL so‘rovi qayd qilinmadi."
 
-#: templates/debug_toolbar/panels/sql_explain.html:4
+#: templates/debug_toolbar/panels/sql_explain.html:3
 msgid "SQL explained"
-msgstr ""
+msgstr "Tushuntirilgan SQL so'rovi"
 
 #: templates/debug_toolbar/panels/sql_explain.html:9
 #: templates/debug_toolbar/panels/sql_profile.html:10
 #: templates/debug_toolbar/panels/sql_select.html:9
 msgid "Executed SQL"
-msgstr "実行されたSQL"
+msgstr "Ijro etilgan SQL so'rovi"
 
 #: templates/debug_toolbar/panels/sql_explain.html:13
 #: templates/debug_toolbar/panels/sql_profile.html:14
 #: templates/debug_toolbar/panels/sql_select.html:13
 msgid "Database"
-msgstr "データベース"
+msgstr "Ma'lumotlar bazasi"
 
-#: templates/debug_toolbar/panels/sql_profile.html:4
+#: templates/debug_toolbar/panels/sql_profile.html:3
 msgid "SQL profiled"
-msgstr ""
+msgstr "Tahlil qilingan SQL so'rovi"
 
 #: templates/debug_toolbar/panels/sql_profile.html:37
 msgid "Error"
-msgstr "エラー"
+msgstr "Xatolik"
 
-#: templates/debug_toolbar/panels/sql_select.html:4
+#: templates/debug_toolbar/panels/sql_select.html:3
 msgid "SQL selected"
-msgstr ""
+msgstr "Tanlangan SQL so'rovi"
 
 #: templates/debug_toolbar/panels/sql_select.html:36
 msgid "Empty set"
-msgstr ""
+msgstr "Bo'sh to'plam"
 
 #: templates/debug_toolbar/panels/staticfiles.html:3
 msgid "Static file path"
 msgid_plural "Static file paths"
-msgstr[0] "静的ファイルのパス"
+msgstr[0] "Statik fayl manzillari"
 
 #: templates/debug_toolbar/panels/staticfiles.html:7
 #, python-format
 msgid "(prefix %(prefix)s)"
-msgstr ""
+msgstr "(old qo'shimcha %(prefix)s)"
 
 #: templates/debug_toolbar/panels/staticfiles.html:11
 #: templates/debug_toolbar/panels/staticfiles.html:22
@@ -590,97 +652,97 @@ msgstr ""
 #: templates/debug_toolbar/panels/templates.html:30
 #: templates/debug_toolbar/panels/templates.html:47
 msgid "None"
-msgstr "ありません"
+msgstr "Yo'q"
 
 #: templates/debug_toolbar/panels/staticfiles.html:14
 msgid "Static file app"
 msgid_plural "Static file apps"
-msgstr[0] "静的ファイルを含むアプリケーション"
+msgstr[0] "Statik fayl ilovalari"
 
 #: templates/debug_toolbar/panels/staticfiles.html:25
 msgid "Static file"
 msgid_plural "Static files"
-msgstr[0] "静的ファイル"
+msgstr[0] "Statik fayllar"
 
 #: templates/debug_toolbar/panels/staticfiles.html:39
 #, python-format
 msgid "%(payload_count)s file"
 msgid_plural "%(payload_count)s files"
-msgstr[0] ""
+msgstr[0] "%(payload_count)sta fayl"
 
 #: templates/debug_toolbar/panels/staticfiles.html:44
 msgid "Location"
-msgstr ""
+msgstr "Joylashuv"
 
-#: templates/debug_toolbar/panels/template_source.html:4
+#: templates/debug_toolbar/panels/template_source.html:3
 msgid "Template source:"
-msgstr ""
+msgstr "Shablon manbasi"
 
 #: templates/debug_toolbar/panels/templates.html:2
 msgid "Template path"
 msgid_plural "Template paths"
-msgstr[0] ""
+msgstr[0] "Shablon manzillari"
 
 #: templates/debug_toolbar/panels/templates.html:13
 msgid "Template"
 msgid_plural "Templates"
-msgstr[0] "テンプレート"
+msgstr[0] "Shablonlar"
 
 #: templates/debug_toolbar/panels/templates.html:22
 #: templates/debug_toolbar/panels/templates.html:40
 msgid "Toggle context"
-msgstr ""
+msgstr "Kontekstni yoqib o'chirish"
 
 #: templates/debug_toolbar/panels/templates.html:33
 msgid "Context processor"
 msgid_plural "Context processors"
-msgstr[0] "コンテキストプロセッサー"
+msgstr[0] "Kontekst protsessorlari"
 
 #: templates/debug_toolbar/panels/timer.html:2
 msgid "Resource usage"
-msgstr ""
+msgstr "Resurs sarfi"
 
 #: templates/debug_toolbar/panels/timer.html:10
 msgid "Resource"
-msgstr "リソース"
+msgstr "Resurs"
 
 #: templates/debug_toolbar/panels/timer.html:26
 msgid "Browser timing"
-msgstr ""
+msgstr "Brauzer vaqti"
 
 #: templates/debug_toolbar/panels/timer.html:35
 msgid "Timing attribute"
-msgstr ""
+msgstr "Vaqt ko'rsatkichi"
 
 #: templates/debug_toolbar/panels/timer.html:37
-msgid "Time since navigation start (+duration)"
-msgstr ""
+msgid "Milliseconds since navigation start (+length)"
+msgstr "Navigatsiya boshlanganidan beri o'tgan millisoniyalar (+muddat)"
 
 #: templates/debug_toolbar/panels/versions.html:10
 msgid "Package"
-msgstr ""
+msgstr "Paket"
 
 #: templates/debug_toolbar/panels/versions.html:11
 msgid "Name"
-msgstr "名前"
+msgstr "Nom"
 
 #: templates/debug_toolbar/panels/versions.html:12
 msgid "Version"
-msgstr "バージョン"
+msgstr "Versiya"
 
 #: templates/debug_toolbar/redirect.html:10
 msgid "Location:"
-msgstr ""
+msgstr "Joylashuv:"
 
 #: templates/debug_toolbar/redirect.html:12
 msgid ""
 "The Django Debug Toolbar has intercepted a redirect to the above URL for "
 "debug viewing purposes. You can click the above link to continue with the "
 "redirect as normal."
-msgstr ""
+msgstr "Django Tekshiruv Paneli paneli nosozliklarni tuzatish maqsadlarida yuqoridagi URL manzilga yo‘naltirishni to'xtatdi. Qayta yo‘naltirishni odatdagidek davom ettirish uchun yuqoridagi havolani bosishingiz mumkin."
 
-#: views.py:16
+#: views.py:18
 msgid ""
 "Data for this panel isn't available anymore. Please reload the page and "
 "retry."
-msgstr ""
+msgstr "Bu panel uchun ma’lumotlar endi mavjud emas. Sahifani qayta yuklang va qayta urinib ko'ring."

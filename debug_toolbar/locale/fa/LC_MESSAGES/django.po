@@ -217,7 +217,9 @@ msgstr "پردازنده: %(cum)0.2f میلی‌ثانیه (%(total)0.2f میل�
 msgid "Total: %0.2fms"
 msgstr "مجموع: %0.2f میلی‌ثانیه"
 
-#: panels/timer.py:38 templates/debug_toolbar/panels/history.html:9
+#: panels/timer.py:38 templates/debug_toolbar/panels/cache.html:43
+#: templates/debug_toolbar/panels/history.html:9
+#: templates/debug_toolbar/panels/sql.html:36
 #: templates/debug_toolbar/panels/sql_explain.html:11
 #: templates/debug_toolbar/panels/sql_profile.html:12
 #: templates/debug_toolbar/panels/sql_select.html:11
@@ -332,12 +334,6 @@ msgstr "دستورات"
 #: templates/debug_toolbar/panels/cache.html:39
 msgid "Calls"
 msgstr "فراخوانی ها"
-
-#: templates/debug_toolbar/panels/cache.html:43
-#: templates/debug_toolbar/panels/sql.html:36
-msgid "Time"
-msgstr "زمان (میلی ثانیه)"
-
 #: templates/debug_toolbar/panels/cache.html:44
 msgid "Type"
 msgstr "نوع"

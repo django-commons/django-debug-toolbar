@@ -209,7 +209,9 @@ msgstr "CPU: %(cum)0.2f 毫秒 (总耗时: %(total)0.2f 毫秒)"
 msgid "Total: %0.2fms"
 msgstr "总共：%0.2f 毫秒"
 
-#: panels/timer.py:38 templates/debug_toolbar/panels/history.html:9
+#: panels/timer.py:38 templates/debug_toolbar/panels/cache.html:43
+#: templates/debug_toolbar/panels/history.html:9
+#: templates/debug_toolbar/panels/sql.html:36
 #: templates/debug_toolbar/panels/sql_explain.html:11
 #: templates/debug_toolbar/panels/sql_profile.html:12
 #: templates/debug_toolbar/panels/sql_select.html:11
@@ -324,12 +326,6 @@ msgstr "命令"
 #: templates/debug_toolbar/panels/cache.html:39
 msgid "Calls"
 msgstr "调用"
-
-#: templates/debug_toolbar/panels/cache.html:43
-#: templates/debug_toolbar/panels/sql.html:36
-msgid "Time"
-msgstr "时间(毫秒)"
-
 #: templates/debug_toolbar/panels/cache.html:44
 msgid "Type"
 msgstr "类型"
