@@ -227,7 +227,9 @@ msgstr "CPU: %(cum)0.2fms (%(total)0.2fms)"
 msgid "Total: %0.2fms"
 msgstr "Total: %0.2fms"
 
-#: panels/timer.py:38 templates/debug_toolbar/panels/history.html:9
+#: panels/timer.py:38 templates/debug_toolbar/panels/cache.html:43
+#: templates/debug_toolbar/panels/history.html:9
+#: templates/debug_toolbar/panels/sql.html:36
 #: templates/debug_toolbar/panels/sql_explain.html:11
 #: templates/debug_toolbar/panels/sql_profile.html:12
 #: templates/debug_toolbar/panels/sql_select.html:11
@@ -240,8 +242,8 @@ msgstr "Tiempo en CPU de usuario"
 
 #: panels/timer.py:46
 #, python-format
-msgid "%(utime)0.3f msec"
-msgstr "%(utime)0.3f mseg"
+msgid "%(utime)0.3f ms"
+msgstr "%(utime)0.3f ms"
 
 #: panels/timer.py:47
 msgid "System CPU time"
@@ -249,8 +251,8 @@ msgstr "Tiempo en CPU del sistema"
 
 #: panels/timer.py:47
 #, python-format
-msgid "%(stime)0.3f msec"
-msgstr "%(stime)0.3f mseg"
+msgid "%(stime)0.3f ms"
+msgstr "%(stime)0.3f ms"
 
 #: panels/timer.py:48
 msgid "Total CPU time"
@@ -258,8 +260,8 @@ msgstr "Tiempo total de CPU"
 
 #: panels/timer.py:48
 #, python-format
-msgid "%(total)0.3f msec"
-msgstr "%(total)0.3f mseg"
+msgid "%(total)0.3f ms"
+msgstr "%(total)0.3f ms"
 
 #: panels/timer.py:49
 msgid "Elapsed time"
@@ -267,8 +269,8 @@ msgstr "Tiempo transcurrido"
 
 #: panels/timer.py:49
 #, python-format
-msgid "%(total_time)0.3f msec"
-msgstr "%(total_time)0.3f mseg"
+msgid "%(total_time)0.3f ms"
+msgstr "%(total_time)0.3f ms"
 
 #: panels/timer.py:51
 msgid "Context switches"
@@ -342,12 +344,6 @@ msgstr "Comandos"
 #: templates/debug_toolbar/panels/cache.html:39
 msgid "Calls"
 msgstr "Llamadas"
-
-#: templates/debug_toolbar/panels/cache.html:43
-#: templates/debug_toolbar/panels/sql.html:36
-msgid "Time (ms)"
-msgstr "Tiempo (ms)"
-
 #: templates/debug_toolbar/panels/cache.html:44
 msgid "Type"
 msgstr "Tipo"
@@ -691,8 +687,8 @@ msgid "Timing attribute"
 msgstr "Atributo de tiempo"
 
 #: templates/debug_toolbar/panels/timer.html:37
-msgid "Milliseconds since navigation start (+length)"
-msgstr "Milisegundos desde inicio de la navegación (+longitud)"
+msgid "Time since navigation start (+duration)"
+msgstr "Tiempo desde inicio de la navegación (+duración)"
 
 #: templates/debug_toolbar/panels/versions.html:10
 msgid "Package"

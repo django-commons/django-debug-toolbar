@@ -217,7 +217,9 @@ msgstr "پردازنده: %(cum)0.2f میلی‌ثانیه (%(total)0.2f میل�
 msgid "Total: %0.2fms"
 msgstr "مجموع: %0.2f میلی‌ثانیه"
 
-#: panels/timer.py:38 templates/debug_toolbar/panels/history.html:9
+#: panels/timer.py:38 templates/debug_toolbar/panels/cache.html:43
+#: templates/debug_toolbar/panels/history.html:9
+#: templates/debug_toolbar/panels/sql.html:36
 #: templates/debug_toolbar/panels/sql_explain.html:11
 #: templates/debug_toolbar/panels/sql_profile.html:12
 #: templates/debug_toolbar/panels/sql_select.html:11
@@ -230,7 +232,7 @@ msgstr "زمان سی پی یو کاربر"
 
 #: panels/timer.py:46
 #, python-format
-msgid "%(utime)0.3f msec"
+msgid "%(utime)0.3f ms"
 msgstr "%(utime)0.3f میلی‌ثانیه"
 
 #: panels/timer.py:47
@@ -239,7 +241,7 @@ msgstr "زمان CPU سیستم"
 
 #: panels/timer.py:47
 #, python-format
-msgid "%(stime)0.3f msec"
+msgid "%(stime)0.3f ms"
 msgstr "%(stime)0.3f میلی‌ثانیه"
 
 #: panels/timer.py:48
@@ -248,7 +250,7 @@ msgstr "زمان کل سی پی یو"
 
 #: panels/timer.py:48
 #, python-format
-msgid "%(total)0.3f msec"
+msgid "%(total)0.3f ms"
 msgstr "%(total)0.3f میلی ثانیه"
 
 #: panels/timer.py:49
@@ -257,7 +259,7 @@ msgstr "زمان سپری شده"
 
 #: panels/timer.py:49
 #, python-format
-msgid "%(total_time)0.3f msec"
+msgid "%(total_time)0.3f ms"
 msgstr "%(total_time)0.3f میلی‌ثانیه"
 
 #: panels/timer.py:51
@@ -332,12 +334,6 @@ msgstr "دستورات"
 #: templates/debug_toolbar/panels/cache.html:39
 msgid "Calls"
 msgstr "فراخوانی ها"
-
-#: templates/debug_toolbar/panels/cache.html:43
-#: templates/debug_toolbar/panels/sql.html:36
-msgid "Time (ms)"
-msgstr "زمان (میلی ثانیه)"
-
 #: templates/debug_toolbar/panels/cache.html:44
 msgid "Type"
 msgstr "نوع"
@@ -673,8 +669,8 @@ msgid "Timing attribute"
 msgstr "ویژگی زمان بندی"
 
 #: templates/debug_toolbar/panels/timer.html:37
-msgid "Milliseconds since navigation start (+length)"
-msgstr "میلی‌ثانیه از آغاز ناوبری (+length)"
+msgid "Time since navigation start (+duration)"
+msgstr "زمان از آغاز ناوبری (+مدت)"
 
 #: templates/debug_toolbar/panels/versions.html:10
 msgid "Package"
