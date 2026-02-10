@@ -9,6 +9,7 @@ Pending
 * Updated ReadTheDocs Python version to 3.13.
 * Modernize some panel styles and colors.
 * Standardize use of time/duration units and labels across panels.
+* Added translations for Lithuanian, Turkish and Uzbek.
 * Update the translations.
 
 6.2.0 (2026-01-20)
