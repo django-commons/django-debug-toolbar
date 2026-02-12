@@ -1,5 +1,7 @@
+import unittest
 import uuid
 
+from django.core.management import call_command
 from django.db import connection
 from django.http import HttpResponse
 from django.test import RequestFactory, TestCase
@@ -396,3 +398,53 @@ class CacheStoreWithDatabaseBackendTestCase(CommonStoreTestsMixin, TestCase):
             self.assertEqual(self.store.panel(foo_id, "foo.panel"), {})
             self.assertEqual(self.store.panel(bar_id, "bar.panel"), {"a": 1})
 
+    @unittest.expectedFailure
+    def test_database_backend_not_tracked_by_sql_panel(self):
+        """
+        Verify that CacheStore operations using DatabaseCache backend
+        don't appear in SQLPanel data.
+
+        EXPECTED TO FAIL: This test demonstrates that DatabaseCache queries
+        are currently tracked by SQLPanel because the cache table is not
+        in DDT_MODELS and therefore not filtered by SKIP_TOOLBAR_QUERIES.
+
+        The _UntrackedCache wrapper only prevents CachePanel tracking by
+        setting cache._djdt_panel = None. It doesn't prevent SQL tracking.
+        When DatabaseCache executes SQL queries (to tables like django_cache),
+        those queries aren't filtered because they're not in DDT_MODELS
+        (which only contains debug_toolbar_historyentry).
+        """
+        # Set up a toolbar with SQLPanel
+        request = RequestFactory().get("/")
+        toolbar = DebugToolbar(request, lambda req: HttpResponse())
+        sql_panel = toolbar.get_panel_by_id("SQLPanel")
+        sql_panel.enable_instrumentation()
+
+        try:
+            # Record the initial number of SQL queries
+            initial_query_count = len(sql_panel._queries)
+
+            # Perform various CacheStore operations that will trigger DatabaseCache SQL queries
+            self.store.set("test_req")
+            self.store.save_panel("test_req", "test.panel", {"data": "value"})
+            self.store.exists("test_req")
+            self.store.panel("test_req", "test.panel")
+            self.store.panels("test_req")
+            self.store.delete("test_req")
+
+            # Verify that no SQL queries to the cache table were recorded
+            # All CacheStore DatabaseCache operations should be invisible to the SQLPanel
+            cache_queries = [
+                q
+                for q in sql_panel._queries[initial_query_count:]
+                if "test_cache_store_table" in q.get("sql", "").lower()
+            ]
+
+            self.assertEqual(
+                len(cache_queries),
+                0,
+                f"CacheStore DatabaseCache operations should not be tracked by SQLPanel, "
+                f"but found {len(cache_queries)} queries to 'test_cache_store_table' table",
+            )
+        finally:
+            sql_panel.disable_instrumentation()
