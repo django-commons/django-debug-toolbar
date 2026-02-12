@@ -277,7 +277,11 @@ class DatabaseStoreTestCase(CommonStoreTestsMixin, TestCase):
         "TOOLBAR_STORE_CLASS": "debug_toolbar.store.CacheStore",
     }
 )
-class CacheStoreTestCase(CommonStoreTestsMixin, TestCase):
+class CacheStoreWithMemoryBackendTestCase(CommonStoreTestsMixin, TestCase):
+    """
+    Test CacheStore with LocMemCache backend (in-memory caching).
+    """
+
     @classmethod
     def setUpTestData(cls) -> None:
         cls.store = store.CacheStore
@@ -336,3 +340,59 @@ class CacheStoreTestCase(CommonStoreTestsMixin, TestCase):
             )
         finally:
             panel.disable_instrumentation()
+
+
+@override_settings(
+    DEBUG_TOOLBAR_CONFIG={
+        "TOOLBAR_STORE_CLASS": "debug_toolbar.store.CacheStore",
+        "CACHE_BACKEND": "ddt_db_cache",
+    },
+    CACHES={
+        "ddt_db_cache": {
+            "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+            "LOCATION": "test_cache_store_table",
+        }
+    },
+)
+class CacheStoreWithDatabaseBackendTestCase(CommonStoreTestsMixin, TestCase):
+    """
+    Test CacheStore with DatabaseCache backend.
+    This ensures CacheStore works correctly when using database-backed caching.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # Create the database cache table
+        call_command("createcachetable", "test_cache_store_table", verbosity=0)
+        cls.store = store.CacheStore
+
+    @classmethod
+    def tearDownClass(cls):
+        # Drop the cache table
+        with connection.cursor() as cursor:
+            cursor.execute("DROP TABLE IF EXISTS test_cache_store_table")
+        super().tearDownClass()
+
+    def tearDown(self) -> None:
+        self.store.clear()
+
+    def test_set_max_size(self):
+        """Override to preserve cache backend settings."""
+        foo_id = self._get_request_id("foo")
+        bar_id = self._get_request_id("bar")
+        with self.settings(
+            DEBUG_TOOLBAR_CONFIG={
+                "RESULTS_CACHE_SIZE": 1,
+                "TOOLBAR_STORE_CLASS": "debug_toolbar.store.CacheStore",
+                "CACHE_BACKEND": "ddt_db_cache",
+            }
+        ):
+            self.store.save_panel(foo_id, "foo.panel", "foo.value")
+            self.store.save_panel(bar_id, "bar.panel", {"a": 1})
+            request_ids = [str(id) for id in self.store.request_ids()]
+            self.assertEqual(len(request_ids), 1)
+            self.assertIn(str(bar_id), request_ids)
+            self.assertEqual(self.store.panel(foo_id, "foo.panel"), {})
+            self.assertEqual(self.store.panel(bar_id, "bar.panel"), {"a": 1})
+
