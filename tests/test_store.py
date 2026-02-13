@@ -1,4 +1,3 @@
-import unittest
 import uuid
 
 from django.core.management import call_command
@@ -398,21 +397,15 @@ class CacheStoreWithDatabaseBackendTestCase(CommonStoreTestsMixin, TestCase):
             self.assertEqual(self.store.panel(foo_id, "foo.panel"), {})
             self.assertEqual(self.store.panel(bar_id, "bar.panel"), {"a": 1})
 
-    @unittest.expectedFailure
     def test_database_backend_not_tracked_by_sql_panel(self):
         """
         Verify that CacheStore operations using DatabaseCache backend
         don't appear in SQLPanel data.
 
-        EXPECTED TO FAIL: This test demonstrates that DatabaseCache queries
-        are currently tracked by SQLPanel because the cache table is not
-        in DDT_MODELS and therefore not filtered by SKIP_TOOLBAR_QUERIES.
-
-        The _UntrackedCache wrapper only prevents CachePanel tracking by
-        setting cache._djdt_panel = None. It doesn't prevent SQL tracking.
-        When DatabaseCache executes SQL queries (to tables like django_cache),
-        those queries aren't filtered because they're not in DDT_MODELS
-        (which only contains debug_toolbar_historyentry).
+        The _UntrackedCache wrapper prevents CachePanel tracking by setting
+        cache._djdt_panel = None. Additionally, SQL queries to the cache table
+        are filtered out because the cache table is dynamically added to
+        DDT_MODELS when CacheStore is configured with DatabaseCache.
         """
         # Set up a toolbar with SQLPanel
         request = RequestFactory().get("/")

@@ -255,10 +255,40 @@ class CacheStore(BaseStore):
     Store that uses Django's cache framework to persist debug toolbar data.
     """
 
+    _cache_table_registered = False
+
     @classmethod
     def _get_cache(cls):
         """Get the Django cache backend, wrapped to bypass toolbar tracking."""
-        return _UntrackedCache(caches[dt_settings.get_config()["CACHE_BACKEND"]])
+        cache = _UntrackedCache(caches[dt_settings.get_config()["CACHE_BACKEND"]])
+
+        # Register the cache table with DDT_MODELS to filter SQL queries
+        if not cls._cache_table_registered:
+            cls._register_cache_table_for_sql_filtering(cache._cache)
+            cls._cache_table_registered = True
+
+        return cache
+
+    @classmethod
+    def _register_cache_table_for_sql_filtering(cls, cache):
+        """
+        Add the cache table to DDT_MODELS.
+
+        This ensures that when using DatabaseCache, the cache table's SQL queries
+        don't appear in the SQLPanel.
+        """
+        # Only proceed if this is a DatabaseCache backend
+        if cache.__class__.__name__ != "DatabaseCache":
+            return
+
+        # Get the cache table name
+        cache_table = getattr(cache, "_table", None)
+        if cache_table:
+            # Import here to avoid circular dependency:
+            # store.py -> panels/sql/tracking.py -> panels/sql/forms.py -> toolbar.py -> store.py
+            from debug_toolbar.panels.sql import tracking
+
+            tracking.DDT_MODELS.add(cache_table)
 
     @classmethod
     def _key_prefix(cls) -> str:
