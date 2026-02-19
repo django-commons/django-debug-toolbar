@@ -11,6 +11,7 @@ Pending
 * Standardize use of time/duration units and labels across panels.
 * Added translations for Lithuanian, Turkish and Uzbek.
 * Update the translations.
+* Expose a ``py.typed`` marker file.
 
 6.2.0 (2026-01-20)
 ------------------
