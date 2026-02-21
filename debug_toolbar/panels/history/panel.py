@@ -9,7 +9,7 @@ from django.urls import URLPattern, path
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from debug_toolbar.panels import Panel
+from debug_toolbar.panels import Panel, PanelHeaders
 from debug_toolbar.panels.history import views
 from debug_toolbar.panels.history.forms import HistoryStoreForm
 
@@ -22,12 +22,12 @@ class HistoryPanel(Panel):
     nav_title = _("History")
     template = "debug_toolbar/panels/history.html"
 
-    def get_headers(self, request: HttpRequest) -> dict:
-        headers: dict = super().get_headers(request)
+    def get_headers(self, request: HttpRequest) -> PanelHeaders:
+        headers: PanelHeaders = super().get_headers(request)
         observe_request = self.toolbar.get_observe_request()
         request_id = self.toolbar.request_id
         if request_id and observe_request(request):
-            headers["djdt-request-id"] = request_id
+            headers.update["djdt-request-id"] = request_id
         return headers
 
     @property

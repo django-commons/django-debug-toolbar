@@ -125,3 +125,9 @@ def redirect_view(request):
 
 def ajax_view(request):
     return render(request, "ajax/ajax.html")
+
+
+def server_timing(request):
+    response = execute_sql(request)
+    response.headers["Server-Timing"] = 'existing_key;dur=100;desc="Details"'
+    return response

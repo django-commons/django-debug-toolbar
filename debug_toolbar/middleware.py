@@ -194,7 +194,9 @@ class DebugToolbarMiddleware:
         # included in the response.
         rendered = toolbar.render_toolbar()
 
-        for header, value in self.get_headers(request, toolbar.enabled_panels).items():
+        for header, value in self.get_headers(
+            request, response, toolbar.enabled_panels
+        ).items():
             response.headers[header] = value
 
         # Check for responses where the toolbar can't be inserted.
@@ -214,12 +216,19 @@ class DebugToolbarMiddleware:
         return response
 
     @staticmethod
-    def get_headers(request: HttpRequest, panels: list[Panel]) -> dict[str, str]:
-        headers = {}
+    def get_headers(
+        request: HttpRequest, response: HttpResponse, panels: list[Panel]
+    ) -> dict[str, str]:
+        update, append = {}, {}
         for panel in panels:
-            for header, value in panel.get_headers(request).items():
-                if header in headers:
-                    headers[header] += f", {value}"
-                else:
-                    headers[header] = value
-        return headers
+            panel_headers = panel.get_headers(request)
+            update.update(panel_headers.update)
+            for key, value in panel_headers.append.items():
+                append.setdefault(key, response.headers.get(key, ""))
+                append[key] += f", {value}"
+        # Only include the append headers when no panel updated the value
+        # entirely.
+        for key, value in append.items():
+            if key not in update:
+                update[key] = value
+        return update
