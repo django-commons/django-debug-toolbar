@@ -30,6 +30,10 @@ Pending
 * Added test to confirm Django's ``TestCase.assertNumQueries`` works.
 * Fixed string representation of values in settings panel.
 * Declared support for Django 6.0.
+* Fixed SQL Explain functionality for GeoDjango queries with binary parameters.
+  Binary data (such as EWKB geometry) is now properly handled through base64
+  encoding, preventing "parse error - invalid geometry" errors when using
+  Explain on spatial queries.
 
 6.1.0 (2025-10-30)
 ------------------
