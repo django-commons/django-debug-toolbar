@@ -29,7 +29,7 @@ you'll have to deactivate it for this repository::
 Once you've obtained a checkout, you should create a virtualenv_ and install
 the libraries required for working on the Debug Toolbar::
 
-    $ python -m pip install -r requirements_dev.txt
+    $ python -m pip install --group dev --group docs
 
 .. _virtualenv: https://virtualenv.pypa.io/
 
@@ -267,7 +267,7 @@ activated and all dependencies are installed:
 
 .. code-block:: bash
 
-    pip install -r requirements_dev.txt
+    pip install --group dev --group docs
 
 Alternatively, you can build the documentation using Tox, which automatically
 handles dependencies and environment setup:

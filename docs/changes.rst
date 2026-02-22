@@ -4,6 +4,14 @@ Change log
 Pending
 -------
 
+* Replaced ``requirements_dev.txt`` file for ``pyproject.toml`` support with
+  dependency groups.
+* Updated ReadTheDocs Python version to 3.13.
+* Modernize some panel styles and colors.
+* Standardize use of time/duration units and labels across panels.
+* Added translations for Lithuanian, Turkish and Uzbek.
+* Update the translations.
+* Expose a ``py.typed`` marker file.
 * Highlighted the documentation about disabling the browser's caching to
   ensure the latest static assets are used.
 
