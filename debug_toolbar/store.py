@@ -188,19 +188,28 @@ class DatabaseStore(BaseStore):
 
     @classmethod
     def save_panel(cls, request_id: str, panel_id: str, data: Any = None):
-        """Save the panel data for the given request_id"""
+        """Save the panel data for the given request_id with compression"""
         with transaction.atomic():
-            obj, _ = HistoryEntry.objects.get_or_create(request_id=request_id)
-            store_data = obj.data
+            # Get or create the history entry
+            obj, created = HistoryEntry.objects.get_or_create(request_id=request_id)
+            
+            # Get existing data (will be decompressed automatically by the model)
+            store_data = obj.get_data()
+            
+            # Update with new panel data
             store_data[panel_id] = serialize(data)
-            obj.data = store_data
+            
+            # Use the model's set_data method for compression
+            obj.set_data(store_data)
             obj.save()
 
     @classmethod
     def panel(cls, request_id: str, panel_id: str) -> Any:
         """Fetch the panel data for the given request_id"""
         try:
-            data = HistoryEntry.objects.get(request_id=request_id).data
+            obj = HistoryEntry.objects.get(request_id=request_id)
+            # Use get_data() which handles decompression
+            data = obj.get_data()
             panel_data = data.get(panel_id)
             if panel_data is None:
                 return {}
@@ -212,7 +221,9 @@ class DatabaseStore(BaseStore):
     def panels(cls, request_id: str) -> Any:
         """Fetch all panel data for the given request_id"""
         try:
-            data = HistoryEntry.objects.get(request_id=request_id).data
+            obj = HistoryEntry.objects.get(request_id=request_id)
+            # Use get_data() which handles decompression
+            data = obj.get_data()
             for panel_id, panel_data in data.items():
                 yield panel_id, deserialize(panel_data)
         except HistoryEntry.DoesNotExist:
