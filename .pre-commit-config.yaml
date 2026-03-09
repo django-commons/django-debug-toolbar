@@ -14,12 +14,12 @@ repos:
     hooks:
     -   id: doc8
 -   repo: https://github.com/adamchainz/django-upgrade
-    rev: 1.29.1
+    rev: 1.30.0
     hooks:
     -   id: django-upgrade
         args: [--target-version, "4.2"]
 -   repo: https://github.com/adamchainz/djade-pre-commit
-    rev: "1.7.0"
+    rev: "1.9.0"
     hooks:
     -   id: djade
         args: [--target-version, "4.2"]
@@ -29,18 +29,18 @@ repos:
     -   id: rst-backticks
     -   id: rst-directive-colons
 -   repo: https://github.com/biomejs/pre-commit
-    rev: v2.3.15
+    rev: v2.4.6
     hooks:
       - id: biome-check
         verbose: true
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.15.1'
+    rev: 'v0.15.5'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
 -   repo: https://github.com/tox-dev/pyproject-fmt
-    rev: v2.16.0
+    rev: v2.16.2
     hooks:
       - id: pyproject-fmt
 -   repo: https://github.com/abravalheri/validate-pyproject
