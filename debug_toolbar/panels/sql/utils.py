@@ -5,7 +5,7 @@ from itertools import cycle
 import sqlparse
 from django.dispatch import receiver
 from django.test.signals import setting_changed
-from sqlparse import tokens as T, exceptions as sqlparse_exceptions
+from sqlparse import tokens as T
 
 from debug_toolbar import settings as dt_settings
 
@@ -94,24 +94,25 @@ def is_select_query(sql):
 
 def reformat_sql(sql, *, with_toggle=False):
     import logging
+
     logger = logging.getLogger(__name__)
-    
+
     # Try to format the full SQL
     try:
         formatted = parse_sql(sql)
     except (sqlparse.exceptions.SQLParseError, RecursionError) as e:
         logger.warning(f"Failed to format SQL query: {e}")
         formatted = f"-- SQL formatting failed (query too large)\n{sql}"
-    
+
     if not with_toggle:
         return formatted
-    
+
     try:
         simplified = parse_sql(sql, simplify=True)
     except (sqlparse.exceptions.SQLParseError, RecursionError) as e:
         logger.warning(f"Failed to simplify SQL query: {e}")
         simplified = f"-- Simplified formatting failed\n{sql}"
-    
+
     uncollapsed = f'<span class="djDebugUncollapsed">{simplified}</span>'
     collapsed = f'<span class="djDebugCollapsed djdt-hidden">{formatted}</span>'
     return collapsed + uncollapsed
