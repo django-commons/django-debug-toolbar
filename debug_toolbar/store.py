@@ -21,10 +21,34 @@ class DebugToolbarJSONEncoder(DjangoJSONEncoder):
             return force_str(o)
 
 
+def _convert_keys_to_strings(obj):
+    """
+    Recursively convert non-string dictionary keys to strings.
+    
+    Handles:
+    - Dictionaries: converts non-string keys to strings
+    - Lists/Tuples: processes each item
+    - Other types: returns unchanged
+    
+    This prevents JSON serialization errors with non-string keys.
+    """
+    if isinstance(obj, dict):
+        return {
+            str(k) if not isinstance(k, (str, int, float, bool, type(None))) else k: 
+            _convert_keys_to_strings(v) 
+            for k, v in obj.items()
+        }
+    elif isinstance(obj, (list, tuple)):
+        return [_convert_keys_to_strings(item) for item in obj]
+    return obj
+
+
+
 def serialize(data: Any) -> str:
     # If this starts throwing an exceptions, consider
     # Subclassing DjangoJSONEncoder and using force_str to
     # make it JSON serializable.
+    data = _convert_keys_to_strings(data)
     return json.dumps(data, cls=DebugToolbarJSONEncoder)
 
 
