@@ -145,10 +145,10 @@ class DatabaseStore(BaseStore):
         Enforce the cache size limit - keeping only the most recently used entries
         up to RESULTS_CACHE_SIZE.
         """
-        # Determine which entries to keep
+       
         keep_ids = cls.request_ids()
 
-        # Delete all entries not in the keep list
+       
         if keep_ids:
             HistoryEntry.objects.exclude(request_id__in=keep_ids).delete()
 
@@ -169,10 +169,10 @@ class DatabaseStore(BaseStore):
     def set(cls, request_id: str):
         """Set a request_id in the store and clean up old entries"""
         with transaction.atomic():
-            # Create the entry if it doesn't exist (ignore otherwise)
+            
             _, created = HistoryEntry.objects.get_or_create(request_id=request_id)
 
-            # Only enforce cache size limit when new entries are created
+            
             if created:
                 cls._cleanup_old_entries()
 
@@ -189,18 +189,16 @@ class DatabaseStore(BaseStore):
     @classmethod
     def save_panel(cls, request_id: str, panel_id: str, data: Any = None):
         """Save the panel data for the given request_id with compression"""
+        
         with transaction.atomic():
-            # Get or create the history entry
             obj, created = HistoryEntry.objects.get_or_create(request_id=request_id)
-            
-            # Get existing data (will be decompressed automatically by the model)
-            store_data = obj.get_data()
-            
-            # Update with new panel data
+        
+            store_data = obj.data
+        
+        
             store_data[panel_id] = serialize(data)
-            
-            # Use the model's set_data method for compression
-            obj.set_data(store_data)
+        
+            obj.data = store_data
             obj.save()
 
     @classmethod
@@ -208,8 +206,8 @@ class DatabaseStore(BaseStore):
         """Fetch the panel data for the given request_id"""
         try:
             obj = HistoryEntry.objects.get(request_id=request_id)
-            # Use get_data() which handles decompression
-            data = obj.get_data()
+        
+            data = obj.data
             panel_data = data.get(panel_id)
             if panel_data is None:
                 return {}
@@ -222,13 +220,12 @@ class DatabaseStore(BaseStore):
         """Fetch all panel data for the given request_id"""
         try:
             obj = HistoryEntry.objects.get(request_id=request_id)
-            # Use get_data() which handles decompression
-            data = obj.get_data()
+
+            data = obj.data
             for panel_id, panel_data in data.items():
                 yield panel_id, deserialize(panel_data)
         except HistoryEntry.DoesNotExist:
             return {}
-
 
 def get_store() -> BaseStore:
     return import_string(dt_settings.get_config()["TOOLBAR_STORE_CLASS"])
