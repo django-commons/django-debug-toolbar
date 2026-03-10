@@ -12,6 +12,8 @@ Pending
 * Added translations for Lithuanian, Turkish and Uzbek.
 * Update the translations.
 * Expose a ``py.typed`` marker file.
+* Updated ``RedirectsPanel`` to emit the deprecation warning when it's used
+  rather than on instantiation.
 
 6.2.0 (2026-01-20)
 ------------------
