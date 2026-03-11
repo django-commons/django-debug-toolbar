@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from debug_toolbar.panels import Panel
 from debug_toolbar.utils import get_name_from_obj, sanitize_and_sort_request_vars
+
 from .utils import convert_keys_to_strings
 
 
@@ -29,20 +30,20 @@ class RequestPanel(Panel):
         try:
             post_dict = dict(request.POST)
         except (TypeError, ValueError):
-            post_dict = {'_raw_post_data': str(request.POST)}
+            post_dict = {"_raw_post_data": str(request.POST)}
         post_data = convert_keys_to_strings(post_dict)
         cookies_data = convert_keys_to_strings(dict(request.COOKIES))
-        
+
         stats = {
             "get": sanitize_and_sort_request_vars(get_data),
             "post": sanitize_and_sort_request_vars(post_data),
             "cookies": sanitize_and_sort_request_vars(cookies_data),
         }
-        
+
         if hasattr(request, "session"):
             session_data = convert_keys_to_strings(dict(request.session))
             stats["session"] = sanitize_and_sort_request_vars(session_data)
-        
+
         self.record_stats(stats)
 
         view_info = {

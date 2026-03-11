@@ -9,12 +9,12 @@ rf = RequestFactory()
 
 
 class RequestPanelTestCase(BaseTestCase):
-
     panel_id = RequestPanel.panel_id
 
     def setUp(self):
         super().setUp()
         from django.contrib.sessions.middleware import SessionMiddleware
+
         middleware = SessionMiddleware(lambda req: None)
         middleware.process_request(self.request)
         self.request.session.save()
@@ -131,7 +131,7 @@ class RequestPanelTestCase(BaseTestCase):
         }
         expected_data = {
             "list": [(1, "value"), ("data", ["foo", "bar", 1]), ("(2, 3)", "tuple_key")]
-            }
+        }
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)
         panel_stats = self.panel.get_stats()
@@ -222,24 +222,22 @@ class RequestPanelTestCase(BaseTestCase):
 
     def test_session_with_tuple_keys_are_converted(self):
         """Test that session data with tuple keys is properly converted."""
-        
+
         self.request.session["lookup"] = {(1, 2): "foo", (3, 4): "bar"}
 
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)
         stats = self.panel.get_stats()
 
-        
-        session = stats.get('session', {})
-        session_list = session.get('list', [])
-        
-       
+        session = stats.get("session", {})
+        session_list = session.get("list", [])
+
         lookup_data = None
         for key, value in session_list:
-            if key == 'lookup':
+            if key == "lookup":
                 lookup_data = value
                 break
-        
+
         self.assertIsNotNone(lookup_data)
         self.assertIn("(1, 2)", lookup_data)
         self.assertIn("(3, 4)", lookup_data)
@@ -248,31 +246,27 @@ class RequestPanelTestCase(BaseTestCase):
 
     def test_nested_non_string_keys_are_converted(self):
         """Test that deeply nested non-string keys are converted."""
-        
+
         self.request.session["complex"] = {
-            (1, 2): {
-                (3, 4): ["value1", {"nested": (5, 6)}]
-            }
+            (1, 2): {(3, 4): ["value1", {"nested": (5, 6)}]}
         }
 
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)
         stats = self.panel.get_stats()
 
-        
+        session = stats.get("session", {})
+        session_list = session.get("list", [])
 
-        session = stats.get('session', {})
-        session_list = session.get('list', [])
-        
         complex_data = None
         for key, value in session_list:
-            if key == 'complex':
+            if key == "complex":
                 complex_data = value
                 break
-        
+
         self.assertIsNotNone(complex_data)
         self.assertIn("(1, 2)", complex_data)
-        
+
         nested = complex_data["(1, 2)"]
         self.assertIn("(3, 4)", nested)
         self.assertEqual(nested["(3, 4)"][0], "value1")

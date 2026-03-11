@@ -8,8 +8,8 @@ from django.utils.translation import gettext_lazy as _, ngettext
 
 from debug_toolbar.panels import Panel
 from debug_toolbar.utils import get_stack_trace, get_template_info, render_stacktrace
-from .utils import convert_keys_to_strings
 
+from .utils import convert_keys_to_strings
 
 # The order of the methods in this list determines the order in which they are listed in
 # the Commands table in the panel content.
