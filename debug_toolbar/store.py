@@ -145,10 +145,9 @@ class DatabaseStore(BaseStore):
         Enforce the cache size limit - keeping only the most recently used entries
         up to RESULTS_CACHE_SIZE.
         """
-       
+
         keep_ids = cls.request_ids()
 
-       
         if keep_ids:
             HistoryEntry.objects.exclude(request_id__in=keep_ids).delete()
 
@@ -169,10 +168,8 @@ class DatabaseStore(BaseStore):
     def set(cls, request_id: str):
         """Set a request_id in the store and clean up old entries"""
         with transaction.atomic():
-            
             _, created = HistoryEntry.objects.get_or_create(request_id=request_id)
 
-            
             if created:
                 cls._cleanup_old_entries()
 
@@ -189,15 +186,14 @@ class DatabaseStore(BaseStore):
     @classmethod
     def save_panel(cls, request_id: str, panel_id: str, data: Any = None):
         """Save the panel data for the given request_id with compression"""
-        
+
         with transaction.atomic():
             obj, created = HistoryEntry.objects.get_or_create(request_id=request_id)
-        
+
             store_data = obj.data
-        
-        
+
             store_data[panel_id] = serialize(data)
-        
+
             obj.data = store_data
             obj.save()
 
@@ -206,7 +202,7 @@ class DatabaseStore(BaseStore):
         """Fetch the panel data for the given request_id"""
         try:
             obj = HistoryEntry.objects.get(request_id=request_id)
-        
+
             data = obj.data
             panel_data = data.get(panel_id)
             if panel_data is None:
@@ -226,6 +222,7 @@ class DatabaseStore(BaseStore):
                 yield panel_id, deserialize(panel_data)
         except HistoryEntry.DoesNotExist:
             return {}
+
 
 def get_store() -> BaseStore:
     return import_string(dt_settings.get_config()["TOOLBAR_STORE_CLASS"])

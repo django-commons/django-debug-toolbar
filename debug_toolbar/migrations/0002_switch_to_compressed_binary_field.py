@@ -1,11 +1,13 @@
 import json
-import zlib
-from django.db import migrations, models
+
+from django.db import migrations
+
 import debug_toolbar.fields
+
 
 def convert_to_binary(apps, schema_editor):
     """Convert existing text data to binary format."""
-    HistoryEntry = apps.get_model('debug_toolbar', 'HistoryEntry')
+    HistoryEntry = apps.get_model("debug_toolbar", "HistoryEntry")
     for entry in HistoryEntry.objects.all():
         if entry.data:
             try:
@@ -21,15 +23,16 @@ def convert_to_binary(apps, schema_editor):
                 # If not valid JSON, skip
                 pass
 
+
 class Migration(migrations.Migration):
     dependencies = [
-        ('debug_toolbar', '0001_initial'),
+        ("debug_toolbar", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='historyentry',
-            name='data',
+            model_name="historyentry",
+            name="data",
             field=debug_toolbar.fields.CompressedJSONField(default=dict),
         ),
         migrations.RunPython(convert_to_binary, migrations.RunPython.noop),

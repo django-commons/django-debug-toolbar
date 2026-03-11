@@ -1,15 +1,15 @@
+import json
 import uuid
 
+import pytest
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.utils.safestring import SafeData, mark_safe
 
 from debug_toolbar import store
-import pytest
-import json
-import uuid
 from debug_toolbar.models import HistoryEntry
 from debug_toolbar.store import DatabaseStore, get_store
+
 
 class SerializationTestCase(TestCase):
     def test_serialize(self):
@@ -257,12 +257,9 @@ class DatabaseStoreTestCase(TestCase):
             self.assertEqual(len(list(self.store.request_ids())), 2)
 
 
-
-
-
 class CompressedJSONFieldTestCase(TestCase):
     """Test the CompressedJSONField functionality."""
-    
+
     def test_compress_decompress_cycle(self):
         """Test that data survives compression/decompression."""
         original = {"key": "value", "nested": {"data": [1, 2, 3]}}
@@ -274,11 +271,9 @@ class CompressedJSONFieldTestCase(TestCase):
         """Test reading old JSONField data (JSON string)."""
         old_data = {"test": True}
         entry = HistoryEntry.objects.create(
-            request_id=uuid.uuid4(),
-            data=json.dumps(old_data)
+            request_id=uuid.uuid4(), data=json.dumps(old_data)
         )
         entry.refresh_from_db()
-        
 
         if isinstance(entry.data, str):
             self.assertEqual(json.loads(entry.data), old_data)
@@ -300,8 +295,7 @@ class CompressedJSONFieldTestCase(TestCase):
     def test_malformed_data_fallback(self):
         """Test fallback when data is malformed."""
         entry = HistoryEntry.objects.create(
-            request_id=uuid.uuid4(),
-            data="this is not valid JSON"
+            request_id=uuid.uuid4(), data="this is not valid JSON"
         )
         entry.refresh_from_db()
         self.assertEqual(entry.data, "this is not valid JSON")
@@ -310,38 +304,37 @@ class CompressedJSONFieldTestCase(TestCase):
 @pytest.mark.django_db
 class TestDatabaseStoreCompression:
     """Test DatabaseStore works with compressed data."""
-    
+
     def test_save_and_retrieve_with_compression(self):
         """Test basic save/retrieve with compression."""
         store = DatabaseStore()
         request_id = uuid.uuid4()
         panel_id = "SQLPanel"
         data = {"queries": [{"sql": "SELECT 1"}]}
-        
+
         store.save_panel(request_id, panel_id, data)
         retrieved = store.panel(request_id, panel_id)
-        
+
         assert retrieved == data
 
         obj = HistoryEntry.objects.get(request_id=request_id)
         assert obj.data != json.dumps({panel_id: data})
-    
+
     def test_large_data_compression(self):
         """Test that large data is compressed."""
         store = DatabaseStore()
         request_id = uuid.uuid4()
         panel_id = "SQLPanel"
-        
-        
+
         large_data = {
             "queries": [{"sql": "x" * 5000, "duration": i} for i in range(1000)]
         }
-        
+
         store.save_panel(request_id, panel_id, large_data)
         retrieved = store.panel(request_id, panel_id)
-        
+
         assert retrieved == large_data
-      
+
         obj = HistoryEntry.objects.get(request_id=request_id)
         raw_json = json.dumps({panel_id: large_data})
         assert len(obj.data) < len(raw_json)
@@ -350,35 +343,32 @@ class TestDatabaseStoreCompression:
 @pytest.mark.django_db
 class TestStoreIntegration:
     """Test integration with the actual store implementation."""
-    
+
     def test_get_store_function(self):
         """Test that get_store() returns a working store."""
         store = get_store()
-       
+
         assert store is not None
-    
+
     def test_store_respects_cache_size(self, settings):
         """Test that RESULTS_CACHE_SIZE is respected."""
         from django.conf import settings as django_settings
+
         from debug_toolbar import settings as dt_settings
-        
-        
+
         django_settings.DEBUG_TOOLBAR_CONFIG = {"RESULTS_CACHE_SIZE": 2}
-        
-        
-        dt_settings._config = None  
-        
+
+        dt_settings._config = None
+
         store = DatabaseStore()
-        
-        
+
         req1 = uuid.uuid4()
         req2 = uuid.uuid4()
         req3 = uuid.uuid4()
-        
+
         store.save_panel(req1, "SQLPanel", {})
         store.save_panel(req2, "SQLPanel", {})
         store.save_panel(req3, "SQLPanel", {})
-        
-        
+
         request_ids = store.request_ids()
-        assert len(request_ids) <= 3  
+        assert len(request_ids) <= 3
