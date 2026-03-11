@@ -7,10 +7,13 @@ def convert_to_binary(apps, schema_editor):
     """Convert existing text data to binary format."""
     HistoryEntry = apps.get_model('debug_toolbar', 'HistoryEntry')
     for entry in HistoryEntry.objects.all():
-        if entry.data and isinstance(entry.data, str):
+        if entry.data:
             try:
-                # Try to parse as JSON (old format)
-                data_dict = json.loads(entry.data)
+                # Try to parse as JSON if it's a string
+                if isinstance(entry.data, str):
+                    data_dict = json.loads(entry.data)
+                else:
+                    data_dict = entry.data
                 # Re-save with new field (will trigger compression)
                 entry.data = data_dict
                 entry.save()
@@ -20,7 +23,7 @@ def convert_to_binary(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('debug_toolbar', '0002_switch_to_compressed_textfield'),
+        ('debug_toolbar', '0001_initial'),
     ]
 
     operations = [
