@@ -158,3 +158,42 @@ class CachePanelTestCase(BaseTestCase):
     def test_backend_alias_is_recorded(self):
         cache.cache.get("foo")
         self.assertEqual(self.panel.calls[0]["backend"], "default (LocMemCache)")
+
+    def test_non_string_keys_are_converted(self):
+        """Test that non-string keys in cache operations are converted."""
+        from uuid import UUID
+        
+        
+        self.panel.calls = []
+        
+        
+        tuple_key = (1, 2)
+        cache.cache.set(tuple_key, "tuple_value")
+        
+        self.assertEqual(len(self.panel.calls), 1)
+        call = self.panel.calls[0]
+        self.assertEqual(call['name'], "set")
+        self.assertIsInstance(call['args'][0], str)
+        self.assertEqual(call['args'][0], "(1, 2)")
+        self.assertEqual(call['args'][1], "tuple_value")
+        
+       
+        uuid_key = UUID("aaaaaaaa-0000-0000-0000-000000000001")
+        cache.cache.set(uuid_key, "uuid_value")
+        
+        self.assertEqual(len(self.panel.calls), 2)
+        call = self.panel.calls[1]
+        self.assertEqual(call['name'], "set")
+        self.assertIsInstance(call['args'][0], str)
+        self.assertEqual(call['args'][0], "aaaaaaaa-0000-0000-0000-000000000001")
+        self.assertEqual(call['args'][1], "uuid_value")
+        
+        
+        cache.cache.get(tuple_key)
+        self.assertEqual(len(self.panel.calls), 3)
+        call = self.panel.calls[2]
+        self.assertEqual(call['name'], "get")
+        self.assertIsInstance(call['args'][0], str)
+        self.assertEqual(call['args'][0], "(1, 2)")
+
+    

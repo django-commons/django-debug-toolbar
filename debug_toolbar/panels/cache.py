@@ -8,6 +8,8 @@ from django.utils.translation import gettext_lazy as _, ngettext
 
 from debug_toolbar.panels import Panel
 from debug_toolbar.utils import get_stack_trace, get_template_info, render_stacktrace
+from .utils import convert_keys_to_strings
+
 
 # The order of the methods in this list determines the order in which they are listed in
 # the Commands table in the panel content.
@@ -125,12 +127,16 @@ class CachePanel(Panel):
 
         self.total_time += time_taken
         self.counts[name] += 1
+
+        converted_args = tuple(convert_keys_to_strings(arg) for arg in args)
+        converted_kwargs = {k: convert_keys_to_strings(v) for k, v in kwargs.items()}
+
         self.calls.append(
             {
                 "time": time_taken,
                 "name": name,
-                "args": args,
-                "kwargs": kwargs,
+                "args": converted_args,
+                "kwargs": converted_kwargs,
                 "trace": render_stacktrace(trace),
                 "template_info": template_info,
                 "backend": backend,
