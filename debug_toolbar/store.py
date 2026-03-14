@@ -13,13 +13,14 @@ from debug_toolbar import settings as dt_settings
 from debug_toolbar.models import HistoryEntry
 from debug_toolbar.sanitize import force_str
 
+BINARY_SENTINEL = "__djdt_binary__"
+
 
 class DebugToolbarJSONEncoder(DjangoJSONEncoder):
     def default(self, o):
         # Handle binary data (e.g., GeoDjango EWKB geometry data)
         if isinstance(o, (bytes, bytearray)):
-            # Mark as binary data for later reconstruction
-            return {"__djdt_binary__": base64.b64encode(o).decode("ascii")}
+            return {BINARY_SENTINEL: base64.b64encode(o).decode("ascii")}
         try:
             return super().default(o)
         except (TypeError, ValueError):
@@ -34,8 +35,8 @@ def _binary_object_hook(obj):
     the special __djdt_binary__ key, which indicates base64-encoded binary data
     that needs to be reconstructed.
     """
-    if "__djdt_binary__" in obj:
-        return base64.b64decode(obj["__djdt_binary__"])
+    if BINARY_SENTINEL in obj:
+        return base64.b64decode(obj[BINARY_SENTINEL])
     return obj
 
 

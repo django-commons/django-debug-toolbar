@@ -14,11 +14,28 @@ class SerializationTestCase(TestCase):
             '{"hello": {"foo": "bar"}}',
         )
 
-    def test_serialize_logs_on_failure(self):
+    def test_serialize_binary_data(self):
         self.assertEqual(
             store.serialize({"hello": {"foo": b"bar"}}),
-            '{"hello": {"foo": "bar"}}',
+            '{"hello": {"foo": {"__djdt_binary__": "YmFy"}}}',
         )
+
+    def test_deserialize_binary_data(self):
+        self.assertEqual(
+            store.deserialize('{"hello": {"foo": {"__djdt_binary__": "YmFy"}}}'),
+            {"hello": {"foo": b"bar"}},
+        )
+
+    def test_binary_roundtrip(self):
+        data = {"geometry": b"\x01\x01\x00\x00\x20\xe6\x10\x00\x00", "name": "test"}
+        self.assertEqual(store.deserialize(store.serialize(data)), data)
+
+    def test_nested_binary_roundtrip(self):
+        data = {
+            "geometries": [b"\x01\x02", b"\x03\x04"],
+            "metadata": {"shape": b"\x05\x06"},
+        }
+        self.assertEqual(store.deserialize(store.serialize(data)), data)
 
     def test_deserialize(self):
         self.assertEqual(
