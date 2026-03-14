@@ -1,3 +1,4 @@
+import base64
 import contextlib
 import json
 from collections import defaultdict, deque
@@ -12,13 +13,41 @@ from debug_toolbar import settings as dt_settings
 from debug_toolbar.models import HistoryEntry
 from debug_toolbar.sanitize import force_str
 
+BINARY_SENTINEL = "__djdt_binary__"
+
 
 class DebugToolbarJSONEncoder(DjangoJSONEncoder):
     def default(self, o):
+        # Handle binary data (e.g., GeoDjango EWKB geometry data)
+        if isinstance(o, (bytes, bytearray)):
+            return {BINARY_SENTINEL: base64.b64encode(o).decode("ascii")}
         try:
             return super().default(o)
         except (TypeError, ValueError):
             return force_str(o)
+
+
+def _binary_object_hook(obj):
+    """
+    Object hook for JSON decoder that reconstructs binary data.
+
+    This hook is called for every JSON object decoded and checks if it contains
+    the special __djdt_binary__ key, which indicates base64-encoded binary data
+    that needs to be reconstructed.
+    """
+    if BINARY_SENTINEL in obj:
+        return base64.b64decode(obj[BINARY_SENTINEL])
+    return obj
+
+
+class DebugToolbarJSONDecoder(json.JSONDecoder):
+    """Custom JSON decoder that reconstructs binary data during parsing."""
+
+    def __init__(self, *args, **kwargs):
+        # Set object_hook if not already provided
+        if "object_hook" not in kwargs:
+            kwargs["object_hook"] = _binary_object_hook
+        super().__init__(*args, **kwargs)
 
 
 def serialize(data: Any) -> str:
@@ -29,7 +58,7 @@ def serialize(data: Any) -> str:
 
 
 def deserialize(data: str) -> Any:
-    return json.loads(data)
+    return json.loads(data, cls=DebugToolbarJSONDecoder)
 
 
 class BaseStore:

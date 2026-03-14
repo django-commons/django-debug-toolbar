@@ -400,21 +400,21 @@ class SQLPanelTestCase(BaseTestCase):
         if connection.vendor == "mysql" and django.VERSION >= (4, 1):
             # Django 4.1 started passing true/false back for boolean
             # comparisons in MySQL.
-            expected_bools = '["Foo", true, false]'
+            expected_bools = ["Foo", True, False]
         else:
-            expected_bools = '["Foo"]'
+            expected_bools = ["Foo"]
 
         if connection.vendor == "postgresql":
             # PostgreSQL always includes timezone
-            expected_datetime = '["2017-12-22 16:07:01+00:00"]'
+            expected_datetime = ["2017-12-22 16:07:01+00:00"]
         else:
-            expected_datetime = '["2017-12-22 16:07:01"]'
+            expected_datetime = ["2017-12-22 16:07:01"]
 
         self.assertEqual(
             tuple(query["params"] for query in self.panel._queries),
             (
                 expected_bools,
-                "[10, 1]",
+                [10, 1],
                 expected_datetime,
             ),
         )
