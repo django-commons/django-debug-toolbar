@@ -69,11 +69,6 @@ class SQLSelectForm(forms.Form):
         cleaned_data["query"] = query
         return cleaned_data
 
-    def _get_query_params(self):
-        """Get parameters for the current query."""
-        query = self.cleaned_data["query"]
-        return query["params"]
-
     def select(self):
         query = self.cleaned_data["query"]
         sql = query["raw_sql"]
