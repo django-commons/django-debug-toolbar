@@ -141,4 +141,4 @@ function debounce(func, delay) {
     };
 }
 
-export { $$, ajax, ajaxForm, replaceToolbarState, debounce };
+export { $$, ajax, ajaxForm, debounce, replaceToolbarState };
