@@ -49,7 +49,7 @@ class TimerPanel(Panel):
             (_("Elapsed time"), _("%(total_time)0.3f ms") % stats),
             (
                 _("Toolbar time"),
-                _("%(toolbar_time)0.3f msec") % stats,
+                _("%(toolbar_time)0.3f ms") % stats,
             ),
             (
                 _("Context switches"),
@@ -138,5 +138,5 @@ class TimerPanel(Panel):
     def enable_instrumentation(self):
         self._toolbar_start_time = perf_counter()
 
-    def aenable_instrumentation(self):
+    async def aenable_instrumentation(self):
         self._toolbar_start_time = perf_counter()
