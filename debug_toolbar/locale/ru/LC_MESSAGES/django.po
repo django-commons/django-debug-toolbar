@@ -3,17 +3,18 @@
 #
 #
 # Translators:
+# Andrei Satsevich, 2025
 # Dmitri Bogomolov <4glitch@gmail.com>, 2014
 # Ilya Baryshev <baryshev@gmail.com>, 2013
 # Mikhail Korobov, 2009
-# Алексей Борискин <sun.void@gmail.com>, 2013,2015
+# Алексей Борискин <sun.void@gmail.com>, 2013,2015,2024
 msgid ""
 msgstr ""
 "Project-Id-Version: Django Debug Toolbar\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-06 07:12-0500\n"
 "PO-Revision-Date: 2010-11-30 00:00+0000\n"
-"Last-Translator: Алексей Борискин <sun.void@gmail.com>, 2013,2015\n"
+"Last-Translator: Andrei Satsevich, 2025\n"
 "Language-Team: Russian (http://app.transifex.com/django-debug-toolbar/django-debug-toolbar/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -30,24 +31,24 @@ msgstr "Панель отладки"
 msgid ""
 "Form with id \"{form_id}\" contains file input, but does not have the "
 "attribute enctype=\"multipart/form-data\"."
-msgstr ""
+msgstr "Форма с идентификатором \"{form_id}\" содержит файл, но не имеет атрибута enctype=\"multipart/form-data\"."
 
 #: panels/alerts.py:70
 msgid ""
 "Form contains file input, but does not have the attribute "
 "enctype=\"multipart/form-data\"."
-msgstr ""
+msgstr "Форма содержит файл, но не имеет атрибута enctype=\"multipart/form-data\"."
 
 #: panels/alerts.py:73
 #, python-brace-format
 msgid ""
 "Input element references form with id \"{form_id}\", but the form does not "
 "have the attribute enctype=\"multipart/form-data\"."
-msgstr ""
+msgstr "Элемент ввода ссылается на форму с id \"{form_id}\", но форма не имеет атрибута enctype=\"multipart/form-data\"."
 
 #: panels/alerts.py:77
 msgid "Alerts"
-msgstr ""
+msgstr "Оповещения"
 
 #: panels/cache.py:168
 msgid "Cache"
@@ -77,7 +78,7 @@ msgstr "Заголовки"
 
 #: panels/history/panel.py:19 panels/history/panel.py:20
 msgid "History"
-msgstr ""
+msgstr "История"
 
 #: panels/profiling.py:140
 msgid "Profiling"
@@ -106,7 +107,7 @@ msgstr "Настройки"
 #: panels/settings.py:20
 #, python-format
 msgid "Settings from %s"
-msgstr ""
+msgstr "Настройки из %s"
 
 #: panels/signals.py:57
 #, python-format
@@ -178,19 +179,19 @@ msgstr "SQL"
 #, python-format
 msgid "%(query_count)d query in %(sql_time).2fms"
 msgid_plural "%(query_count)d queries in %(sql_time).2fms"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "%(query_count)d запрос за %(sql_time).2f мс "
+msgstr[1] "%(query_count)d запросов за %(sql_time).2f мс"
+msgstr[2] "%(query_count)d запросов за %(sql_time).2f мс"
+msgstr[3] "%(query_count)d запросов за %(sql_time).2f мс"
 
 #: panels/sql/panel.py:180
 #, python-format
 msgid "SQL queries from %(count)d connection"
 msgid_plural "SQL queries from %(count)d connections"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "SQL-запросы из %(count)d соединения"
+msgstr[1] "SQL-запросы из %(count)d соединений"
+msgstr[2] "SQL-запросы из %(count)d соединений"
+msgstr[3] "SQL-запросы из %(count)d соединений"
 
 #: panels/staticfiles.py:82
 #, python-format
@@ -221,7 +222,7 @@ msgstr "Шаблоны (обработано %(num_templates)s)"
 
 #: panels/templates/panel.py:195
 msgid "No origin"
-msgstr ""
+msgstr "Без происхождения"
 
 #: panels/timer.py:27
 #, python-format
@@ -233,7 +234,9 @@ msgstr "CPU: %(cum)0.2fms (%(total)0.2fms)"
 msgid "Total: %0.2fms"
 msgstr "Итого: %0.2fms"
 
-#: panels/timer.py:38 templates/debug_toolbar/panels/history.html:9
+#: panels/timer.py:38 templates/debug_toolbar/panels/cache.html:43
+#: templates/debug_toolbar/panels/history.html:9
+#: templates/debug_toolbar/panels/sql.html:36
 #: templates/debug_toolbar/panels/sql_explain.html:11
 #: templates/debug_toolbar/panels/sql_profile.html:12
 #: templates/debug_toolbar/panels/sql_select.html:11
@@ -246,7 +249,7 @@ msgstr "User CPU time"
 
 #: panels/timer.py:46
 #, python-format
-msgid "%(utime)0.3f msec"
+msgid "%(utime)0.3f ms"
 msgstr "%(utime)0.3f мс"
 
 #: panels/timer.py:47
@@ -255,7 +258,7 @@ msgstr "System CPU time"
 
 #: panels/timer.py:47
 #, python-format
-msgid "%(stime)0.3f msec"
+msgid "%(stime)0.3f ms"
 msgstr "%(stime)0.3f мс"
 
 #: panels/timer.py:48
@@ -264,7 +267,7 @@ msgstr "Total CPU time"
 
 #: panels/timer.py:48
 #, python-format
-msgid "%(total)0.3f msec"
+msgid "%(total)0.3f ms"
 msgstr "%(total)0.3f мс"
 
 #: panels/timer.py:49
@@ -273,7 +276,7 @@ msgstr "Затраченное время"
 
 #: panels/timer.py:49
 #, python-format
-msgid "%(total_time)0.3f msec"
+msgid "%(total_time)0.3f ms"
 msgstr "%(total_time)0.3f мс"
 
 #: panels/timer.py:51
@@ -299,7 +302,7 @@ msgstr "Скрыть"
 
 #: templates/debug_toolbar/base.html:25 templates/debug_toolbar/base.html:26
 msgid "Toggle Theme"
-msgstr ""
+msgstr "Переключатель темы"
 
 #: templates/debug_toolbar/base.html:35
 msgid "Show toolbar"
@@ -315,11 +318,11 @@ msgstr "Включить для последующих запросов"
 
 #: templates/debug_toolbar/panels/alerts.html:4
 msgid "Alerts found"
-msgstr ""
+msgstr "Найдены оповещения"
 
 #: templates/debug_toolbar/panels/alerts.html:11
 msgid "No alerts found"
-msgstr ""
+msgstr "Оповещения не найдены"
 
 #: templates/debug_toolbar/panels/cache.html:2
 msgid "Summary"
@@ -348,12 +351,6 @@ msgstr "Команды"
 #: templates/debug_toolbar/panels/cache.html:39
 msgid "Calls"
 msgstr "Вызовы"
-
-#: templates/debug_toolbar/panels/cache.html:43
-#: templates/debug_toolbar/panels/sql.html:36
-msgid "Time (ms)"
-msgstr "Время (мс)"
-
 #: templates/debug_toolbar/panels/cache.html:44
 msgid "Type"
 msgstr "Тип"
@@ -417,11 +414,11 @@ msgstr "Путь"
 
 #: templates/debug_toolbar/panels/history.html:12
 msgid "Request Variables"
-msgstr ""
+msgstr "Запрос переменных"
 
 #: templates/debug_toolbar/panels/history.html:13
 msgid "Status"
-msgstr ""
+msgstr "Статус"
 
 #: templates/debug_toolbar/panels/history.html:14
 #: templates/debug_toolbar/panels/sql.html:37
@@ -524,14 +521,14 @@ msgstr[3] "%(num)s запросов"
 msgid ""
 "including <abbr title=\"Similar queries are queries with the same SQL, but "
 "potentially different parameters.\">%(count)s similar</abbr>"
-msgstr ""
+msgstr "включая <abbr title=\"Similar queries are queries with the same SQL, but potentially different parameters.\">%(count)s похожий</abbr>"
 
 #: templates/debug_toolbar/panels/sql.html:12
 #, python-format
 msgid ""
 "and <abbr title=\"Duplicate queries are identical to each other: they "
 "execute exactly the same SQL and parameters.\">%(dupes)s duplicates</abbr>"
-msgstr ""
+msgstr "и <abbr title=\"Duplicate queries are identical to each other: they execute exactly the same SQL and parameters.\">%(dupes)s дубликаты</abbr>"
 
 #: templates/debug_toolbar/panels/sql.html:34
 msgid "Query"
@@ -545,12 +542,12 @@ msgstr "Временная диаграмма"
 #: templates/debug_toolbar/panels/sql.html:52
 #, python-format
 msgid "%(count)s similar queries."
-msgstr ""
+msgstr "%(count)s похожих запросов."
 
 #: templates/debug_toolbar/panels/sql.html:58
 #, python-format
 msgid "Duplicated %(dupes)s times."
-msgstr ""
+msgstr "Дублируется %(dupes)s раз."
 
 #: templates/debug_toolbar/panels/sql.html:95
 msgid "Connection:"
@@ -705,12 +702,12 @@ msgid "Timing attribute"
 msgstr "Событие"
 
 #: templates/debug_toolbar/panels/timer.html:37
-msgid "Milliseconds since navigation start (+length)"
-msgstr "С начала навигации в мс (+продолжительность)"
+msgid "Time since navigation start (+duration)"
+msgstr "Время с начала навигации (+продолжительность)"
 
 #: templates/debug_toolbar/panels/versions.html:10
 msgid "Package"
-msgstr ""
+msgstr "Пакет"
 
 #: templates/debug_toolbar/panels/versions.html:11
 msgid "Name"

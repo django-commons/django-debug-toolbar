@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
+
 {% block content %}
 Test for {{ title }} (Jinja)
 {% for i in range(10) %}{{ i }}{% endfor %} {# Jinja2 supports range(), Django templates do not #}
-{% endblock %}
+{% endblock content %}

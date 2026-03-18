@@ -1,13 +1,15 @@
 from django.http import QueryDict
 from django.test import RequestFactory
 
+from debug_toolbar.panels.request import RequestPanel
+
 from ..base import BaseTestCase
 
 rf = RequestFactory()
 
 
 class RequestPanelTestCase(BaseTestCase):
-    panel_id = "RequestPanel"
+    panel_id = RequestPanel.panel_id
 
     def test_non_ascii_session(self):
         self.request.session = {"où": "où"}
@@ -52,7 +54,7 @@ class RequestPanelTestCase(BaseTestCase):
     def test_dict_for_request_in_method_get(self):
         """
         Test verifies the correctness of the statistics generation method
-        in the case when the GET request is class Dict
+        in the case when the GET request is class dict
         """
         self.request.GET = {"foo": "bar"}
         response = self.panel.process_request(self.request)
@@ -78,7 +80,7 @@ class RequestPanelTestCase(BaseTestCase):
     def test_dict_for_request_in_method_post(self):
         """
         Test verifies the correctness of the statistics generation method
-        in the case when the POST request is class Dict
+        in the case when the POST request is class dict
         """
         self.request.POST = {"foo": "bar"}
         response = self.panel.process_request(self.request)
@@ -136,3 +138,76 @@ class RequestPanelTestCase(BaseTestCase):
         self.panel.generate_stats(self.request, response)
         panel_stats = self.panel.get_stats()
         self.assertEqual(panel_stats["session"], data)
+
+    def test_sensitive_post_data_sanitized(self):
+        """Test that sensitive POST data is redacted."""
+        self.request.POST = {"username": "testuser", "password": "secret123"}
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+
+        # Check that password is redacted in panel content
+        content = self.panel.content
+        self.assertIn("username", content)
+        self.assertIn("testuser", content)
+        self.assertIn("password", content)
+        self.assertNotIn("secret123", content)
+        self.assertIn("********************", content)
+
+    def test_sensitive_get_data_sanitized(self):
+        """Test that sensitive GET data is redacted."""
+        self.request.GET = {"api_key": "abc123", "q": "search term"}
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+
+        # Check that api_key is redacted in panel content
+        content = self.panel.content
+        self.assertIn("api_key", content)
+        self.assertNotIn("abc123", content)
+        self.assertIn("********************", content)
+        self.assertIn("q", content)
+        self.assertIn("search term", content)
+
+    def test_sensitive_cookie_data_sanitized(self):
+        """Test that sensitive cookie data is redacted."""
+        self.request.COOKIES = {"session_id": "abc123", "auth_token": "xyz789"}
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+
+        # Check that auth_token is redacted in panel content
+        content = self.panel.content
+        self.assertIn("session_id", content)
+        self.assertIn("abc123", content)
+        self.assertIn("auth_token", content)
+        self.assertNotIn("xyz789", content)
+        self.assertIn("********************", content)
+
+    def test_sensitive_session_data_sanitized(self):
+        """Test that sensitive session data is redacted."""
+        self.request.session = {"user_id": 123, "auth_token": "xyz789"}
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+
+        # Check that auth_token is redacted in panel content
+        content = self.panel.content
+        self.assertIn("user_id", content)
+        self.assertIn("123", content)
+        self.assertIn("auth_token", content)
+        self.assertNotIn("xyz789", content)
+        self.assertIn("********************", content)
+
+    def test_querydict_sanitized(self):
+        """Test that sensitive data in QueryDict objects is properly redacted."""
+        query_dict = QueryDict("username=testuser&password=secret123&token=abc456")
+        self.request.GET = query_dict
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+
+        # Check that sensitive data is redacted in panel content
+        content = self.panel.content
+        self.assertIn("username", content)
+        self.assertIn("testuser", content)
+        self.assertIn("password", content)
+        self.assertNotIn("secret123", content)
+        self.assertIn("token", content)
+        self.assertNotIn("abc456", content)
+        self.assertIn("********************", content)

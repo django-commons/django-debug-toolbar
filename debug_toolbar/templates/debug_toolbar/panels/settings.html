@@ -2,15 +2,15 @@
 <table>
   <thead>
     <tr>
-      <th>{% trans "Setting" %}</th>
-      <th>{% trans "Value" %}</th>
+      <th>{% translate "Setting" %}</th>
+      <th>{% translate "Value" %}</th>
     </tr>
   </thead>
   <tbody>
     {% for name, value in settings.items %}
       <tr>
         <td>{{ name }}</td>
-        <td><code>{{ value|pprint }}</code></td>
+        <td><code>{{ value }}</code></td>
       </tr>
     {% endfor %}
   </tbody>

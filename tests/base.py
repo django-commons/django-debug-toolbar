@@ -1,5 +1,4 @@
 import contextvars
-from typing import Optional
 
 import html5lib
 from asgiref.local import Local
@@ -14,6 +13,7 @@ from django.test import (
 )
 
 from debug_toolbar.panels import Panel
+from debug_toolbar.store import get_store
 from debug_toolbar.toolbar import DebugToolbar
 
 data_contextvar = contextvars.ContextVar("djdt_toolbar_test_client")
@@ -69,7 +69,7 @@ class BaseMixin:
     client_class = ToolbarTestClient
     async_client_class = AsyncToolbarTestClient
 
-    panel: Optional[Panel] = None
+    panel: Panel | None = None
     panel_id = None
 
     def setUp(self):
@@ -111,6 +111,10 @@ class BaseMixin:
                 msg_parts.append(f"    {lines[position[0] - 1]}")
             raise self.failureException("\n".join(msg_parts))
 
+    def reload_stats(self):
+        data = self.toolbar.store.panel(self.toolbar.request_id, self.panel_id)
+        self.panel.load_stats_from_store(data)
+
 
 class BaseTestCase(BaseMixin, TestCase):
     pass
@@ -127,6 +131,5 @@ class IntegrationTestCase(TestCase):
         # The HistoryPanel keeps track of previous stores in memory.
         # This bleeds into other tests and violates their idempotency.
         # Clear the store before each test.
-        for key in list(DebugToolbar._store.keys()):
-            del DebugToolbar._store[key]
+        get_store().clear()
         super().setUp()

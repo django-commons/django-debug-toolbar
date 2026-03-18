@@ -108,10 +108,24 @@ Signals
 
 List of signals and receivers.
 
+Community
+~~~~~~~~~
+
+.. class:: debug_toolbar.panels.community.CommunityPanel
+
+A panel that provides links to the Django Debug Toolbar community.
+
 Redirects
 ~~~~~~~~~
 
 .. class:: debug_toolbar.panels.redirects.RedirectsPanel
+
+.. deprecated:: 6.0
+
+The RedirectsPanel is deprecated and will be removed in a future version.
+The HistoryPanel now provides the ability to view toolbar data for redirected
+requests. If you have a use case for this panel, please comment on the
+GitHub issue <https://github.com/django-commons/django-debug-toolbar/issues/2216>`_.
 
 When this panel is enabled, the debug toolbar will show an intermediate page
 upon redirect so you can view any debug information prior to redirecting. This
@@ -121,6 +135,11 @@ ready.
 Since this behavior is annoying when you aren't debugging a redirect, this
 panel is included but inactive by default. You can activate it by default with
 the ``DISABLE_PANELS`` configuration option.
+
+To further customize the behavior, you can subclass the ``RedirectsPanel``
+and override the ``get_interception_response`` method to manipulate the
+response directly. To use a custom ``RedirectsPanel``, you need to replace
+the original one in ``DEBUG_TOOLBAR_PANELS`` in your ``settings.py``.
 
 .. _profiling-panel:
 
@@ -321,7 +340,7 @@ Panels can ship their own templates, static files and views.
 Any views defined for the third-party panel use the following decorators:
 
 - ``debug_toolbar.decorators.require_show_toolbar`` - Prevents unauthorized
-  access to the view.
+  access to the view. This decorator is compatible with async views.
 - ``debug_toolbar.decorators.render_with_toolbar_language`` - Supports
   internationalization for any content rendered by the view. This will render
   the response with the :ref:`TOOLBAR_LANGUAGE <TOOLBAR_LANGUAGE>` rather than
@@ -366,6 +385,8 @@ There is no public CSS API at this time.
     .. automethod:: debug_toolbar.panels.Panel.get_headers
 
     .. automethod:: debug_toolbar.panels.Panel.run_checks
+
+.. autoclass:: debug_toolbar._stubs.GetResponse
 
 .. _javascript-api:
 

@@ -6,6 +6,8 @@ from django.db import IntegrityError, transaction
 from django.http import HttpResponse
 from django.test.utils import override_settings
 
+from debug_toolbar.panels.profiling import ProfilingPanel
+
 from ..base import BaseTestCase, IntegrationTestCase
 from ..views import listcomp_view, regular_view
 
@@ -14,7 +16,7 @@ from ..views import listcomp_view, regular_view
     DEBUG_TOOLBAR_PANELS=["debug_toolbar.panels.profiling.ProfilingPanel"]
 )
 class ProfilingPanelTestCase(BaseTestCase):
-    panel_id = "ProfilingPanel"
+    panel_id = ProfilingPanel.panel_id
 
     def test_regular_view(self):
         self._get_response = lambda request: regular_view(request, "profiling")
@@ -33,11 +35,14 @@ class ProfilingPanelTestCase(BaseTestCase):
         # ensure the panel does not have content yet.
         self.assertNotIn("regular_view", self.panel.content)
         self.panel.generate_stats(self.request, response)
+        self.reload_stats()
         # ensure the panel renders correctly.
         content = self.panel.content
         self.assertIn("regular_view", content)
         self.assertIn("render", content)
         self.assertValidHTML(content)
+        # ensure traces aren't escaped
+        self.assertIn('<span class="djdt-path">', content)
 
     @override_settings(DEBUG_TOOLBAR_CONFIG={"PROFILER_THRESHOLD_RATIO": 1})
     def test_cum_time_threshold(self):

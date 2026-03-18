@@ -1,26 +1,29 @@
-from django.http import HttpResponseBadRequest, JsonResponse
+from django.http import HttpRequest, HttpResponseBadRequest, JsonResponse
 from django.template.loader import render_to_string
 
 from debug_toolbar._compat import login_not_required
 from debug_toolbar.decorators import render_with_toolbar_language, require_show_toolbar
 from debug_toolbar.panels.history.forms import HistoryStoreForm
+from debug_toolbar.store import get_store
 from debug_toolbar.toolbar import DebugToolbar
 
 
 @login_not_required
 @require_show_toolbar
 @render_with_toolbar_language
-def history_sidebar(request):
+def history_sidebar(
+    request: HttpRequest,
+) -> HttpResponseBadRequest | JsonResponse:
     """Returns the selected debug toolbar history snapshot."""
     form = HistoryStoreForm(request.GET)
 
     if form.is_valid():
-        store_id = form.cleaned_data["store_id"]
-        toolbar = DebugToolbar.fetch(store_id)
+        request_id: str = form.cleaned_data["request_id"]
+        toolbar: DebugToolbar | None = DebugToolbar.fetch(request_id)
         exclude_history = form.cleaned_data["exclude_history"]
-        context = {}
+        context: dict[str, dict[str, str]] = {}
         if toolbar is None:
-            # When the store_id has been popped already due to
+            # When the request_id has been popped already due to
             # RESULTS_CACHE_SIZE
             return JsonResponse(context)
         for panel in toolbar.panels:
@@ -36,32 +39,37 @@ def history_sidebar(request):
                 ),
             }
         return JsonResponse(context)
-    return HttpResponseBadRequest("Form errors")
+    return HttpResponseBadRequest(f"Form errors: {form.errors}")
 
 
 @login_not_required
 @require_show_toolbar
 @render_with_toolbar_language
-def history_refresh(request):
+def history_refresh(
+    request: HttpRequest,
+) -> HttpResponseBadRequest | JsonResponse:
     """Returns the refreshed list of table rows for the History Panel."""
     form = HistoryStoreForm(request.GET)
 
     if form.is_valid():
-        requests = []
+        requests: list[dict[str, str]] = []
         # Convert to list to handle mutations happening in parallel
-        for id, toolbar in list(DebugToolbar._store.items()):
+        for request_id in get_store().request_ids():
+            toolbar = DebugToolbar.fetch(request_id)
             requests.append(
                 {
-                    "id": id,
+                    "id": request_id,
                     "content": render_to_string(
                         "debug_toolbar/panels/history_tr.html",
                         {
-                            "id": id,
-                            "store_context": {
-                                "toolbar": toolbar,
+                            "request_id": request_id,
+                            "history_context": {
+                                "history_stats": toolbar.store.panel(
+                                    request_id, "HistoryPanel"
+                                ),
                                 "form": HistoryStoreForm(
                                     initial={
-                                        "store_id": id,
+                                        "request_id": request_id,
                                         "exclude_history": True,
                                     }
                                 ),

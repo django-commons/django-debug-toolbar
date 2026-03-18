@@ -1,20 +1,45 @@
 from __future__ import annotations
 
-from typing import cast
-from xml.etree.ElementTree import Element
-
+import django
 from django.conf import settings
-from django.http.response import HttpResponse
-from django.test.utils import ContextList, override_settings
+from django.test.utils import override_settings
 from html5lib.constants import E
 from html5lib.html5parser import HTMLParser
 
+from debug_toolbar.store import get_store
 from debug_toolbar.toolbar import DebugToolbar
+from debug_toolbar.utils import get_csp_nonce
 
 from .base import IntegrationTestCase
 
+MIDDLEWARE_CSP_LIB_BEFORE = settings.MIDDLEWARE.copy()
+MIDDLEWARE_CSP_LIB_BEFORE.insert(
+    MIDDLEWARE_CSP_LIB_BEFORE.index("debug_toolbar.middleware.DebugToolbarMiddleware"),
+    "csp.middleware.CSPMiddleware",
+)
+MIDDLEWARE_CSP_LIB_LAST = settings.MIDDLEWARE + ["csp.middleware.CSPMiddleware"]
 
-def get_namespaces(element: Element) -> dict[str, str]:
+VALID_MIDDLEWARE_VARIATIONS = [MIDDLEWARE_CSP_LIB_BEFORE, MIDDLEWARE_CSP_LIB_LAST]
+
+django_has_builtin_csp_support = django.VERSION >= (6, 0)
+if django_has_builtin_csp_support:
+    MIDDLEWARE_CSP_BUILTIN_BEFORE = settings.MIDDLEWARE.copy()
+    MIDDLEWARE_CSP_BUILTIN_BEFORE.insert(
+        MIDDLEWARE_CSP_BUILTIN_BEFORE.index(
+            "debug_toolbar.middleware.DebugToolbarMiddleware"
+        ),
+        "django.middleware.csp.ContentSecurityPolicyMiddleware",
+    )
+    MIDDLEWARE_CSP_BUILTIN_LAST = settings.MIDDLEWARE + [
+        "django.middleware.csp.ContentSecurityPolicyMiddleware"
+    ]
+    VALID_MIDDLEWARE_VARIATIONS += [
+        MIDDLEWARE_CSP_BUILTIN_BEFORE,
+        MIDDLEWARE_CSP_BUILTIN_LAST,
+    ]
+
+
+def get_namespaces(element):
     """
     Return the default `xmlns`. See
     https://docs.python.org/3/library/xml.etree.elementtree.html#parsing-xml-with-namespaces
@@ -32,9 +57,7 @@ class CspRenderingTestCase(IntegrationTestCase):
         super().setUp()
         self.parser = HTMLParser()
 
-    def _fail_if_missing(
-        self, root: Element, path: str, namespaces: dict[str, str], nonce: str
-    ):
+    def _fail_if_missing(self, root, path, namespaces, nonce):
         """
         Search elements, fail if a `nonce` attribute is missing on them.
         """
@@ -43,7 +66,7 @@ class CspRenderingTestCase(IntegrationTestCase):
             if item.attrib.get("nonce") != nonce:
                 raise self.failureException(f"{item} has no nonce attribute.")
 
-    def _fail_if_found(self, root: Element, path: str, namespaces: dict[str, str]):
+    def _fail_if_found(self, root, path, namespaces):
         """
         Search elements, fail if a `nonce` attribute is found on them.
         """
@@ -52,7 +75,7 @@ class CspRenderingTestCase(IntegrationTestCase):
             if "nonce" in item.attrib:
                 raise self.failureException(f"{item} has a nonce attribute.")
 
-    def _fail_on_invalid_html(self, content: bytes, parser: HTMLParser):
+    def _fail_on_invalid_html(self, content, parser):
         """Fail if the passed HTML is invalid."""
         if parser.errors:
             default_msg = ["Content is invalid HTML:"]
@@ -63,77 +86,106 @@ class CspRenderingTestCase(IntegrationTestCase):
             msg = self._formatMessage(None, "\n".join(default_msg))
             raise self.failureException(msg)
 
-    @override_settings(
-        MIDDLEWARE=settings.MIDDLEWARE + ["csp.middleware.CSPMiddleware"]
-    )
     def test_exists(self):
         """A `nonce` should exist when using the `CSPMiddleware`."""
-        response = cast(HttpResponse, self.client.get(path="/regular/basic/"))
-        self.assertEqual(response.status_code, 200)
+        for middleware in VALID_MIDDLEWARE_VARIATIONS:
+            with self.settings(MIDDLEWARE=middleware):
+                response = self.client.get(path="/csp_view/")
+                self.assertEqual(response.status_code, 200)
 
-        html_root: Element = self.parser.parse(stream=response.content)
-        self._fail_on_invalid_html(content=response.content, parser=self.parser)
-        self.assertContains(response, "djDebug")
+                html_root = self.parser.parse(stream=response.content)
+                self._fail_on_invalid_html(content=response.content, parser=self.parser)
+                self.assertContains(response, "djDebug")
 
-        namespaces = get_namespaces(element=html_root)
-        toolbar = list(DebugToolbar._store.values())[0]
-        nonce = str(toolbar.request.csp_nonce)
-        self._fail_if_missing(
-            root=html_root, path=".//link", namespaces=namespaces, nonce=nonce
-        )
-        self._fail_if_missing(
-            root=html_root, path=".//script", namespaces=namespaces, nonce=nonce
-        )
+                namespaces = get_namespaces(element=html_root)
+                nonce = get_csp_nonce(response.context["request"])
+                assert nonce is not None
+                self._fail_if_missing(
+                    root=html_root, path=".//link", namespaces=namespaces, nonce=nonce
+                )
+                self._fail_if_missing(
+                    root=html_root, path=".//script", namespaces=namespaces, nonce=nonce
+                )
+
+    def test_does_not_exist_nonce_wasnt_used(self):
+        """
+        A `nonce` should not exist even when using the `CSPMiddleware`
+        if the view didn't access the request's CSP nonce.
+        """
+        for middleware in VALID_MIDDLEWARE_VARIATIONS:
+            with self.settings(MIDDLEWARE=middleware):
+                response = self.client.get(path="/regular/basic/")
+                self.assertEqual(response.status_code, 200)
+
+                html_root = self.parser.parse(stream=response.content)
+                self._fail_on_invalid_html(content=response.content, parser=self.parser)
+                self.assertContains(response, "djDebug")
+
+                namespaces = get_namespaces(element=html_root)
+                self._fail_if_found(
+                    root=html_root, path=".//link", namespaces=namespaces
+                )
+                self._fail_if_found(
+                    root=html_root, path=".//script", namespaces=namespaces
+                )
 
     @override_settings(
         DEBUG_TOOLBAR_CONFIG={"DISABLE_PANELS": set()},
-        MIDDLEWARE=settings.MIDDLEWARE + ["csp.middleware.CSPMiddleware"],
     )
     def test_redirects_exists(self):
-        response = cast(HttpResponse, self.client.get(path="/regular/basic/"))
-        self.assertEqual(response.status_code, 200)
+        for middleware in VALID_MIDDLEWARE_VARIATIONS:
+            with self.settings(MIDDLEWARE=middleware):
+                response = self.client.get(path="/csp_view/")
+                self.assertEqual(response.status_code, 200)
 
-        html_root: Element = self.parser.parse(stream=response.content)
-        self._fail_on_invalid_html(content=response.content, parser=self.parser)
-        self.assertContains(response, "djDebug")
+                html_root = self.parser.parse(stream=response.content)
+                self._fail_on_invalid_html(content=response.content, parser=self.parser)
+                self.assertContains(response, "djDebug")
 
-        namespaces = get_namespaces(element=html_root)
-        context: ContextList = response.context  # pyright: ignore[reportAttributeAccessIssue]
-        nonce = str(context["toolbar"].request.csp_nonce)
-        self._fail_if_missing(
-            root=html_root, path=".//link", namespaces=namespaces, nonce=nonce
-        )
-        self._fail_if_missing(
-            root=html_root, path=".//script", namespaces=namespaces, nonce=nonce
-        )
+                namespaces = get_namespaces(element=html_root)
+                context = response.context
+                nonce = str(context["toolbar"].csp_nonce)
+                self._fail_if_missing(
+                    root=html_root, path=".//link", namespaces=namespaces, nonce=nonce
+                )
+                self._fail_if_missing(
+                    root=html_root, path=".//script", namespaces=namespaces, nonce=nonce
+                )
 
-    @override_settings(
-        MIDDLEWARE=settings.MIDDLEWARE + ["csp.middleware.CSPMiddleware"]
-    )
     def test_panel_content_nonce_exists(self):
-        response = cast(HttpResponse, self.client.get(path="/regular/basic/"))
-        self.assertEqual(response.status_code, 200)
+        store = get_store()
+        for middleware in VALID_MIDDLEWARE_VARIATIONS:
+            with self.settings(MIDDLEWARE=middleware):
+                response = self.client.get(path="/csp_view/")
+                self.assertEqual(response.status_code, 200)
 
-        toolbar = list(DebugToolbar._store.values())[0]
-        panels_to_check = ["HistoryPanel", "TimerPanel"]
-        for panel in panels_to_check:
-            content = toolbar.get_panel_by_id(panel).content
-            html_root: Element = self.parser.parse(stream=content)
-            namespaces = get_namespaces(element=html_root)
-            nonce = str(toolbar.request.csp_nonce)
-            self._fail_if_missing(
-                root=html_root, path=".//link", namespaces=namespaces, nonce=nonce
-            )
-            self._fail_if_missing(
-                root=html_root, path=".//script", namespaces=namespaces, nonce=nonce
-            )
+                request_ids = list(store.request_ids())
+                toolbar = DebugToolbar.fetch(request_ids[-1])
+                panels_to_check = ["HistoryPanel", "TimerPanel"]
+                for panel in panels_to_check:
+                    content = toolbar.get_panel_by_id(panel).content
+                    html_root = self.parser.parse(stream=content)
+                    namespaces = get_namespaces(element=html_root)
+                    nonce = str(toolbar.csp_nonce)
+                    self._fail_if_missing(
+                        root=html_root,
+                        path=".//link",
+                        namespaces=namespaces,
+                        nonce=nonce,
+                    )
+                    self._fail_if_missing(
+                        root=html_root,
+                        path=".//script",
+                        namespaces=namespaces,
+                        nonce=nonce,
+                    )
 
     def test_missing(self):
         """A `nonce` should not exist when not using the `CSPMiddleware`."""
-        response = cast(HttpResponse, self.client.get(path="/regular/basic/"))
+        response = self.client.get(path="/regular/basic/")
         self.assertEqual(response.status_code, 200)
 
-        html_root: Element = self.parser.parse(stream=response.content)
+        html_root = self.parser.parse(stream=response.content)
         self._fail_on_invalid_html(content=response.content, parser=self.parser)
         self.assertContains(response, "djDebug")
 

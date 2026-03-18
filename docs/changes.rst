@@ -4,6 +4,140 @@ Change log
 Pending
 -------
 
+* Replaced ``requirements_dev.txt`` file for ``pyproject.toml`` support with
+  dependency groups.
+* Updated ReadTheDocs Python version to 3.13.
+* Modernize some panel styles and colors.
+* Standardize use of time/duration units and labels across panels.
+* Added translations for Lithuanian, Turkish and Uzbek.
+* Update the translations.
+* Expose a ``py.typed`` marker file.
+* Updated ``RedirectsPanel`` to emit the deprecation warning when it's used
+  rather than on instantiation.
+* Highlighted the documentation about disabling the browser's caching to
+  ensure the latest static assets are used.
+
+6.2.0 (2026-01-20)
+------------------
+
+* Deprecated ``RedirectsPanel`` in favor of ``HistoryPanel`` for viewing
+  toolbar data from redirected requests.
+* Fixed support for generating code coverage comments in PRs.
+* Added Django 6.0 to the testing matrix. Removed Django 5.0 to save CI
+  resources.
+* Show the cache backend alias and cache backend class name instead of
+  the cache instance in the cache panel.
+* Dropped support for the Python 3.9, it has reached its end of life date.
+* Toggle tracking the toolbar's queries when using
+  ``debug_toolbar.store.DatabaseStore`` with ``SKIP_TOOLBAR_QUERIES``.
+* Fixed font family for code blocks and stack traces in the toolbar.
+* Added test to confirm Django's ``TestCase.assertNumQueries`` works.
+* Fixed string representation of values in settings panel.
+* Declared support for Django 6.0.
+
+6.1.0 (2025-10-30)
+------------------
+
+* Added support for async to timer panel.
+* Added a note about the default password in ``make example``.
+* Removed logging about the toolbar failing to serialize a value into JSON.
+* Moved the the import statement of ``debug_toolbar.urls`` to within the if
+  statement's scope on the installation documentation.
+* Changed ``StoredDebugToolbar.from_store`` to always create a panel key and
+  class instance, regardless if any data was generated.
+* Fixed selenium tests for CI by using psycopg for Python 3.13 runs.
+* Added ``CommunityPanel`` containing links to documentation and resources.
+* Upgraded CI ``postgis`` version to 17-3.5.
+* Added how to generate the documentation locally to the contributing
+  documentation.
+* Updated logic that forces values to strings (``force_str``) to render
+  "Django Debug Toolbar was unable to parse value." when there's a decoding
+  error.
+* Updated docs to show incompatibility with Django Channels.
+* Hide the toolbar's migrations unless ``debug_toolbar.store.DatabaseStore``
+  is being used. This may change in the future.
+* Hide ``debug_toolbar.HistoryEntry`` as a model unless
+  ``debug_toolbar.store.DatabaseStore`` is being used. This may change in the
+  future.
+
+6.0.0 (2025-07-22)
+------------------
+
+* Added support for checking if pytest as the test runner when determining
+  if tests are running.
+* Added ``show_toolbar_with_docker`` function to check Docker host IP address
+  when running inside Docker containers.
+* Defines the ``BaseStore`` interface for request storage mechanisms.
+* Added the setting ``TOOLBAR_STORE_CLASS`` to configure the request
+  storage mechanism. Defaults to ``debug_toolbar.store.MemoryStore``.
+* Rename ``store_id`` properties to ``request_id`` and ``Toolbar.store`` to
+  ``Toolbar.init_store``.
+* Support ``Panel`` instances with stored stats via
+  ``Panel.load_stats_from_store``.
+* Swapped ``Toolbar._store`` for the ``get_store()`` class.
+* Created a ``StoredDebugToolbar`` that support creating an instance of the
+  toolbar representing an old request. It should only be used for fetching
+  panels' contents.
+* Drop ``raw_params`` from query data.
+* Queries now have a unique ``djdt_query_id``. The SQL forms now reference
+  this id and avoid passing SQL to be executed.
+* Move the formatting logic of SQL queries to just before rendering in
+  ``SQLPanel.content``.
+* Make ``Panel.panel_id`` a class member.
+* Update all panels to utilize data from ``Panel.get_stats()`` to load content
+  to render. Specifically for ``Panel.title`` and ``Panel.nav_title``.
+* Extend example app to contain an async version.
+* Added ``debug_toolbar.store.DatabaseStore`` for persistent debug data
+  storage.
+* Deduplicated static files in the staticfiles panel.
+
+5.2.0 (2025-04-29)
+------------------
+
+* Added hook to RedirectsPanel for subclass customization.
+* Added feature to sanitize sensitive data in the Request Panel.
+* Fixed dark mode conflict in code block toolbar CSS.
+* Properly allowed overriding the system theme preference by using the theme
+  selector. Removed the ``DEFAULT_THEME`` setting, we should always default to
+  system-level defaults where possible.
+* Added support for using django-template-partials with the template panel's
+  source view functionality. The same change possibly adds support for other
+  template loaders.
+* Introduced `djade <https://github.com/adamchainz/djade>`__ to format Django
+  templates.
+* Swapped display order of panel header and close button to prevent style
+  conflicts
+* Added CSS for resetting the height of elements too to avoid problems with
+  global CSS of a website where the toolbar is used.
+
+5.1.0 (2025-03-20)
+------------------
+
+* Added Django 5.2 to the tox matrix.
+* Updated package metadata to include well-known labels.
+* Added resources section to the documentation.
+* Wrap ``SHOW_TOOLBAR_CALLBACK`` function with ``sync_to_async``
+  or ``async_to_sync`` to allow sync/async compatibility.
+* Make ``require_toolbar`` decorator compatible to async views.
+* Added link to contributing documentation in ``CONTRIBUTING.md``.
+* Replaced ESLint and prettier with biome in our pre-commit configuration.
+* Added a Makefile target (``make help``) to get a quick overview
+  of each target.
+* Avoided reinitializing the staticfiles storage during instrumentation.
+* Avoided a "forked" Promise chain in the rebound ``window.fetch`` function
+  with missing exception handling.
+* Fixed the pygments code highlighting when using dark mode.
+* Fix for exception-unhandled "forked" Promise chain in rebound window.fetch
+* Create a CSP nonce property on the toolbar ``Toolbar().csp_nonce``.
+
+
+5.0.1 (2025-01-13)
+------------------
+* Fixing the build and release process. No functional changes.
+
+5.0.0 (2025-01-11)
+------------------
+
 * Added Python 3.13 to the CI matrix.
 * Removed support for Python 3.8 as it has reached end of life.
 * Converted to Django Commons PyPI release process.
@@ -11,6 +145,8 @@ Pending
 * Documented experimental async support.
 * Improved troubleshooting doc for incorrect mime types for .js static files
 * Added toolbar time to the timer panel.
+
+Please see everything under 5.0.0-alpha as well.
 
 5.0.0-alpha (2024-09-01)
 ------------------------
@@ -158,7 +294,6 @@ Pending
 
 4.1.0 (2023-05-15)
 ------------------
-
 * Improved SQL statement formatting performance.  Additionally, fixed the
   indentation of ``CASE`` statements and stopped simplifying ``.count()``
   queries.

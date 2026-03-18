@@ -32,6 +32,7 @@ default value is::
         'debug_toolbar.panels.alerts.AlertsPanel',
         'debug_toolbar.panels.cache.CachePanel',
         'debug_toolbar.panels.signals.SignalsPanel',
+        'debug_toolbar.panels.community.CommunityPanel',
         'debug_toolbar.panels.redirects.RedirectsPanel',
         'debug_toolbar.panels.profiling.ProfilingPanel',
     ]
@@ -77,7 +78,7 @@ Toolbar options
 
 * ``IS_RUNNING_TESTS``
 
-  Default: ``"test" in sys.argv``
+  Default: ``"test" in sys.argv or "PYTEST_VERSION" in os.environ``
 
   This setting whether the application is running tests. If this resolves to
   ``True``, the toolbar will prevent you from running tests. This should only
@@ -109,7 +110,8 @@ Toolbar options
 
   Default: ``25``
 
-  The toolbar keeps up to this many results in memory.
+  The toolbar keeps up to this many results in memory or persistent storage.
+
 
 .. _ROOT_TAG_EXTRA_ATTRS:
 
@@ -178,6 +180,33 @@ Toolbar options
   toolbar should update on AJAX requests or not. The default implementation
   always returns ``True``.
 
+.. _TOOLBAR_STORE_CLASS:
+
+* ``TOOLBAR_STORE_CLASS``
+
+  Default: ``"debug_toolbar.store.MemoryStore"``
+
+  The path to the class to be used for storing the toolbar's data per request.
+
+  Available store classes:
+
+  * ``debug_toolbar.store.MemoryStore`` - Stores data in memory
+  * ``debug_toolbar.store.DatabaseStore`` - Stores data in the database
+
+  The DatabaseStore provides persistence and automatically cleans up old
+  entries based on the ``RESULTS_CACHE_SIZE`` setting.
+
+  Note: When using ``DatabaseStore`` migrations are required for
+  the ``debug_toolbar`` app:
+
+  .. code-block:: bash
+
+      python manage.py migrate debug_toolbar
+
+  For the ``DatabaseStore`` to work properly, you need to run migrations for the
+  ``debug_toolbar`` app. The migrations create the necessary database table to store
+  toolbar data.
+
 .. _TOOLBAR_LANGUAGE:
 
 * ``TOOLBAR_LANGUAGE``
@@ -201,13 +230,6 @@ Toolbar options
   request when it occurs. This is especially useful when using htmx
   boosting or similar JavaScript techniques.
 
-.. _DEFAULT_THEME:
-
-* ``DEFAULT_THEME``
-
-  Default: ``"auto"``
-
-  This controls which theme will use the toolbar by default.
 
 Panel options
 ~~~~~~~~~~~~~
@@ -365,6 +387,17 @@ Panel options
   skipped by default because the panel HTML can easily grow to hundreds
   of megabytes with many form fields and many options.
 
+* ``SKIP_TOOLBAR_QUERIES``
+
+  Default: ``True``
+
+  Panel: SQL
+
+  The debug toolbar can generate queries if ``TOOLBAR_STORE_CLASS`` is set to
+  use ``DatabaseStore``. This setting controls whether those queries are
+  tracked in the ``SQLPanel``. Set this to ``False`` to see the debug
+  toolbar's queries.
+
 * ``SQL_WARNING_THRESHOLD``
 
   Default: ``500``
@@ -383,6 +416,14 @@ Here's what a slightly customized toolbar configuration might look like::
         'SHOW_COLLAPSED': True,
         # Panel options
         'SQL_WARNING_THRESHOLD': 100,   # milliseconds
+    }
+
+Here's an example of using a persistent store to keep debug data between server
+restarts::
+
+    DEBUG_TOOLBAR_CONFIG = {
+        'TOOLBAR_STORE_CLASS': 'debug_toolbar.store.DatabaseStore',
+        'RESULTS_CACHE_SIZE': 100,  # Store up to 100 requests
     }
 
 Theming support

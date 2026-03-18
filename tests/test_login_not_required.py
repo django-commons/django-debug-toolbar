@@ -4,6 +4,10 @@ import django
 from django.test import SimpleTestCase, override_settings
 from django.urls import reverse
 
+from debug_toolbar.panels.versions import VersionsPanel
+from debug_toolbar.store import get_store
+from tests.test_integration import toolbar_request_id
+
 
 @unittest.skipIf(
     django.VERSION < (5, 1),
@@ -33,7 +37,11 @@ class LoginNotRequiredTestCase(SimpleTestCase):
                 self.assertNotEqual(response.status_code, 200)
 
     def test_render_panel(self):
-        response = self.client.get(
-            reverse("djdt:render_panel"), query_params={"store_id": "store_id"}
+        request_id = toolbar_request_id()
+        get_store().save_panel(
+            request_id, VersionsPanel.panel_id, {"value": "Test data"}
         )
+        data = {"request_id": request_id, "panel_id": VersionsPanel.panel_id}
+
+        response = self.client.get(reverse("djdt:render_panel"), query_params=data)
         self.assertEqual(response.status_code, 200)

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block content %}
   <div id="click_for_ajax">click for ajax</div>
 
@@ -18,4 +19,4 @@
   }
   document.addEventListener("click", (event) => {send_ajax()});
   </script>
-{% endblock %}
+{% endblock content %}

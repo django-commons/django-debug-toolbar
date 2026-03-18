@@ -7,6 +7,7 @@ from example.views import (
     async_db,
     async_db_concurrent,
     async_home,
+    cache_view,
     increment,
     jinja2_view,
 )
@@ -47,6 +48,7 @@ urlpatterns = [
         ),
         name="turbo2",
     ),
+    path("cache/", cache_view, name="cache"),
     path("admin/", admin.site.urls),
     path("ajax/increment", increment, name="ajax_increment"),
 ] + debug_toolbar_urls()

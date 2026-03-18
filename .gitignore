@@ -12,6 +12,8 @@ htmlcov
 .tox
 geckodriver.log
 coverage.xml
+venv
 .direnv/
 .envrc
-venv
+.venv
+.vscode

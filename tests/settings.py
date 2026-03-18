@@ -7,6 +7,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
 
+DEBUG = False
 SECRET_KEY = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
 INTERNAL_IPS = ["127.0.0.1"]
@@ -27,6 +28,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "debug_toolbar",
+    # We are not actively using template-partials; we just want more nesting
+    # in our template loader configuration, see
+    # https://github.com/django-commons/django-debug-toolbar/issues/2109
+    "template_partials",
     "tests",
 ]
 
@@ -123,11 +128,16 @@ DATABASES = {
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
+# Force the MIGRATION_MODULES to always find our migrations.
+# See debug_toolbar/apps.py::_manage_migrations_visibility
+MIGRATION_MODULES = {"debug_toolbar": "debug_toolbar.migrations"}
+
 # Debug Toolbar configuration
 
 DEBUG_TOOLBAR_CONFIG = {
     # Django's test client sets wsgi.multiprocess to True inappropriately
     "RENDER_PANELS": False,
+    "RESULTS_CACHE_SIZE": 3,
     # IS_RUNNING_TESTS must be False even though we're running tests because we're running the toolbar's own tests.
     "IS_RUNNING_TESTS": False,
 }

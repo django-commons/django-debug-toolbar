@@ -1,3 +1,4 @@
+import warnings
 from inspect import iscoroutine
 
 from django.template.response import SimpleTemplateResponse
@@ -22,20 +23,8 @@ class RedirectsPanel(Panel):
         Common response processing logic.
         """
         if 300 <= response.status_code < 400:
-            redirect_to = response.get("Location")
-            if redirect_to:
-                status_line = f"{response.status_code} {response.reason_phrase}"
-                cookies = response.cookies
-                context = {
-                    "redirect_to": redirect_to,
-                    "status_line": status_line,
-                    "toolbar": self.toolbar,
-                }
-                # Using SimpleTemplateResponse avoids running global context processors.
-                response = SimpleTemplateResponse(
-                    "debug_toolbar/redirect.html", context
-                )
-                response.cookies = cookies
+            if redirect_to := response.get("Location"):
+                response = self.get_interception_response(response, redirect_to)
                 response.render()
         return response
 
@@ -53,3 +42,31 @@ class RedirectsPanel(Panel):
         if iscoroutine(response):
             return self.aprocess_request(request, response)
         return self._process_response(response)
+
+    def get_interception_response(self, response, redirect_to):
+        """
+        Hook method to allow subclasses to customize the interception response.
+        """
+        status_line = f"{response.status_code} {response.reason_phrase}"
+        cookies = response.cookies
+        original_response = response
+        context = {
+            "redirect_to": redirect_to,
+            "status_line": status_line,
+            "toolbar": self.toolbar,
+            "original_response": original_response,
+        }
+        # Using SimpleTemplateResponse avoids running global context processors.
+        response = SimpleTemplateResponse("debug_toolbar/redirect.html", context)
+        response.cookies = cookies
+        response.original_response = original_response
+
+        warnings.warn(
+            "The RedirectsPanel is deprecated and will be removed in a future version. "
+            "The HistoryPanel now provides the ability to view toolbar data for redirected requests. "
+            "If you still have a use case for this panel, please comment on "
+            "https://github.com/django-commons/django-debug-toolbar/issues/2216",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return response

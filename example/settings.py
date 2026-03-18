@@ -29,6 +29,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -72,7 +73,7 @@ ASGI_APPLICATION = "example.asgi.application"
 
 # Cache and database
 
-CACHES = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
+CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
 
 DATABASES = {
     "default": {

@@ -6,17 +6,20 @@ from django.template import Context, RequestContext, Template
 from django.test import override_settings
 from django.utils.functional import SimpleLazyObject
 
+from debug_toolbar.panels.sql import SQLPanel
+from debug_toolbar.panels.templates import TemplatesPanel
+
 from ..base import BaseTestCase, IntegrationTestCase
 from ..forms import TemplateReprForm
 from ..models import NonAsciiRepr
 
 
 class TemplatesPanelTestCase(BaseTestCase):
-    panel_id = "TemplatesPanel"
+    panel_id = TemplatesPanel.panel_id
 
     def setUp(self):
         super().setUp()
-        self.sql_panel = self.toolbar.get_panel_by_id("SQLPanel")
+        self.sql_panel = self.toolbar.get_panel_by_id(SQLPanel.panel_id)
         self.sql_panel.enable_instrumentation()
 
     def tearDown(self):
@@ -131,6 +134,24 @@ class TemplatesPanelTestCase(BaseTestCase):
         self.assertEqual(t.render(c), "lazy_value")
         self.panel.generate_stats(self.request, response)
         self.assertIn("lazy_value", self.panel.content)
+
+    @override_settings(
+        DEBUG=True,
+        DEBUG_TOOLBAR_PANELS=["debug_toolbar.panels.templates.TemplatesPanel"],
+    )
+    def test_template_source(self):
+        from django.core import signing
+        from django.template.loader import get_template
+
+        template = get_template("basic.html")
+        url = "/__debug__/template_source/"
+        data = {
+            "template": template.template.name,
+            "template_origin": signing.dumps(template.template.origin.name),
+        }
+
+        response = self.client.get(url, data)
+        self.assertEqual(response.status_code, 200)
 
 
 @override_settings(

@@ -1,24 +1,24 @@
 {% load i18n %}
-<h4>{% trans "Summary" %}</h4>
+<h4>{% translate "Summary" %}</h4>
 <table>
   <thead>
     <tr>
-      <th>{% trans "Total calls" %}</th>
-      <th>{% trans "Total time" %}</th>
-      <th>{% trans "Cache hits" %}</th>
-      <th>{% trans "Cache misses" %}</th>
+      <th>{% translate "Total calls" %}</th>
+      <th>{% translate "Total time" %}</th>
+      <th>{% translate "Cache hits" %}</th>
+      <th>{% translate "Cache misses" %}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td>{{ total_calls }}</td>
-      <td>{{ total_time }} ms</td>
+      <td>{{ total_time|floatformat:"2" }} ms</td>
       <td>{{ hits }}</td>
       <td>{{ misses }}</td>
     </tr>
   </tbody>
 </table>
-<h4>{% trans "Commands" %}</h4>
+<h4>{% translate "Commands" %}</h4>
 <table>
   <thead>
     <tr>
@@ -36,15 +36,15 @@
   </tbody>
 </table>
 {% if calls %}
-  <h4>{% trans "Calls" %}</h4>
+  <h4>{% translate "Calls" %}</h4>
   <table>
     <thead>
       <tr>
-        <th colspan="2">{% trans "Time (ms)" %}</th>
-        <th>{% trans "Type" %}</th>
-        <th>{% trans "Arguments" %}</th>
-        <th>{% trans "Keyword arguments" %}</th>
-        <th>{% trans "Backend" %}</th>
+        <th colspan="2">{% translate "Time" %}</th>
+        <th>{% translate "Type" %}</th>
+        <th>{% translate "Arguments" %}</th>
+        <th>{% translate "Keyword arguments" %}</th>
+        <th>{% translate "Backend" %}</th>
       </tr>
     </thead>
     <tbody>
@@ -53,7 +53,7 @@
           <td class="djdt-toggle">
             <button class="djToggleSwitch" data-toggle-name="cacheMain" data-toggle-id="{{ forloop.counter }}">+</button>
           </td>
-          <td>{{ call.time|floatformat:"4" }}</td>
+          <td>{{ call.time|floatformat:"2" }}ms</td>
           <td>{{ call.name|escape }}</td>
           <td>{{ call.args|escape }}</td>
           <td>{{ call.kwargs|escape }}</td>
@@ -61,7 +61,7 @@
         </tr>
         <tr class="djUnselected djToggleDetails_{{ forloop.counter }}" id="cacheDetails_{{ forloop.counter }}">
           <td colspan="1"></td>
-          <td colspan="5"><pre class="djdt-stack">{{ call.trace }}</pre></td>
+          <td colspan="5"><pre class="djdt-stack">{{ call.trace|safe }}</pre></td>
         </tr>
       {% endfor %}
     </tbody>

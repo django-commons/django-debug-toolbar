@@ -4,11 +4,13 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.test import AsyncRequestFactory
 
+from debug_toolbar.panels.redirects import RedirectsPanel
+
 from ..base import BaseTestCase
 
 
 class RedirectsPanelTestCase(BaseTestCase):
-    panel_id = "RedirectsPanel"
+    panel_id = RedirectsPanel.panel_id
 
     def test_regular_response(self):
         not_redirect = HttpResponse()
@@ -60,18 +62,6 @@ class RedirectsPanelTestCase(BaseTestCase):
         response = self.panel.process_request(self.request)
         self.assertContains(response, "369 Look Ma!")
 
-    def test_insert_content(self):
-        """
-        Test that the panel only inserts content after generate_stats and
-        not the process_request.
-        """
-        redirect = HttpResponse(status=304)
-        self._get_response = lambda request: redirect
-        response = self.panel.process_request(self.request)
-        self.assertIsNotNone(response)
-        response = self.panel.generate_stats(self.request, redirect)
-        self.assertIsNone(response)
-
     async def test_async_compatibility(self):
         redirect = HttpResponse(status=302)
 
@@ -85,3 +75,28 @@ class RedirectsPanelTestCase(BaseTestCase):
         response = await self.panel.process_request(self.request)
         self.assertIsInstance(response, HttpResponse)
         self.assertTrue(response is await_response)
+
+    def test_original_response_preserved(self):
+        redirect = HttpResponse(status=302)
+        redirect["Location"] = "http://somewhere/else/"
+        self._get_response = lambda request: redirect
+        response = self.panel.process_request(self.request)
+        self.assertFalse(response is redirect)
+        self.assertTrue(hasattr(response, "original_response"))
+        self.assertTrue(response.original_response is redirect)
+        self.assertIsNone(response.get("Location"))
+        self.assertEqual(
+            response.original_response.get("Location"), "http://somewhere/else/"
+        )
+
+    def test_deprecation_warning(self):
+        """Test that a deprecation warning is shown when RedirectsPanel used."""
+        redirect = HttpResponse(status=304)
+        redirect["Location"] = "http://somewhere/else/"
+        self._get_response = lambda request: redirect
+
+        with self.assertWarns(DeprecationWarning) as cm:
+            self.panel.process_request(self.request)
+
+        self.assertIn("RedirectsPanel is deprecated", str(cm.warning))
+        self.assertIn("HistoryPanel", str(cm.warning))
