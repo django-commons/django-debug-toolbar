@@ -16,6 +16,8 @@ Pending
   rather than on instantiation.
 * Highlighted the documentation about disabling the browser's caching to
   ensure the latest static assets are used.
+* Fixed bug with ``CachePanel`` so the cache patching is only applied
+  once.
 
 6.2.0 (2026-01-20)
 ------------------
