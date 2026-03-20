@@ -16,6 +16,12 @@ Pending
   rather than on instantiation.
 * Highlighted the documentation about disabling the browser's caching to
   ensure the latest static assets are used.
+* Added ``debug_toolbar.store.CacheStore`` for storing toolbar data using
+  Django's cache framework. This provides persistence without requiring
+  database migrations, and works with any cache backend (Memcached, Redis,
+  database, file-based, etc.).
+* Added ``CACHE_BACKEND`` and ``CACHE_KEY_PREFIX`` settings to configure the
+  ``CacheStore``.
 
 6.2.0 (2026-01-20)
 ------------------
