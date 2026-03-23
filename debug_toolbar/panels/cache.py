@@ -29,8 +29,6 @@ WRAPPED_CACHE_METHODS = [
     "decr_version",
 ]
 
-MONKEY_PATCHED_DISABLED = object()
-
 
 def _monkey_patch_method(cache, name, alias):
     original_method = getattr(cache, name)
