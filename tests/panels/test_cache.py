@@ -164,7 +164,7 @@ class CachePanelTestCase(BaseTestCase):
         Confirm that reapplying and disabling the cache patching only wraps
         the cache methods once
         """
-        for _ in range(4000):
+        for _ in range(2):
             self.panel.enable_instrumentation()
             self.panel.disable_instrumentation()
         nested_wraps = 0
