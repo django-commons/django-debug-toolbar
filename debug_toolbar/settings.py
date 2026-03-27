@@ -82,6 +82,7 @@ PANELS_DEFAULTS = [
     "debug_toolbar.panels.cache.CachePanel",
     "debug_toolbar.panels.signals.SignalsPanel",
     "debug_toolbar.panels.community.CommunityPanel",
+    "debug_toolbar.panels.tasks.TasksPanel",
     "debug_toolbar.panels.redirects.RedirectsPanel",
     "debug_toolbar.panels.profiling.ProfilingPanel",
 ]
