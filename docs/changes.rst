@@ -3,6 +3,10 @@ Change log
 
 Pending
 -------
+* Added the ability to download the profiling data as a file. This feature is
+  disabled by default and requires the ``PROFILER_PROFILE_ROOT`` setting to be
+  configured.
+
 
 * Replaced ``requirements_dev.txt`` file for ``pyproject.toml`` support with
   dependency groups.
