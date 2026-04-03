@@ -1,10 +1,16 @@
+import os
+import shutil
 import sys
+import tempfile
 import unittest
+from unittest import mock
 
 from django.contrib.auth.models import User
 from django.db import IntegrityError, transaction
 from django.http import HttpResponse
+from django.test import TestCase
 from django.test.utils import override_settings
+from django.urls import reverse
 
 from debug_toolbar.panels.profiling import ProfilingPanel
 
@@ -77,6 +83,41 @@ class ProfilingPanelTestCase(BaseTestCase):
         response = HttpResponse()
         self.assertIsNone(self.panel.generate_stats(self.request, response))
 
+    def test_generate_stats_signed_path(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with self.settings(DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": tmpdir}):
+                response = self.panel.process_request(self.request)
+                self.panel.generate_stats(self.request, response)
+                path = self.panel.prof_file_path
+                self.assertTrue(path)
+                # Check that it's a valid signature
+                filename = path
+                self.assertTrue(filename.endswith(".prof"))
+
+    def test_generate_stats_no_root(self):
+        # If PROFILER_PROFILE_ROOT is None, it should default to MEDIA_ROOT (or default storage location)
+        # We need to ensure we can write to it for this test to pass without logging an error.
+        # But wait, BaseTestCase might not set up MEDIA_ROOT.
+        # let's override settings to be safe, pointing MEDIA_ROOT to a temp dir.
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with self.settings(
+                DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": None},
+                MEDIA_ROOT=tmpdir,
+                STORAGES={
+                    "default": {
+                        "BACKEND": "django.core.files.storage.FileSystemStorage",
+                    }
+                },
+            ):
+                response = self.panel.process_request(self.request)
+                self.panel.generate_stats(self.request, response)
+                # Should now have a path because we fall back to default storage
+                self.assertTrue(hasattr(self.panel, "prof_file_path"))
+                self.assertTrue(self.panel.prof_file_path.endswith(".prof"))
+                # Verify it was written to tmpdir
+                full_path = os.path.join(tmpdir, self.panel.prof_file_path)
+                self.assertTrue(os.path.exists(full_path))
+
     def test_generate_stats_no_root_func(self):
         """
         Test generating stats using profiler without root function.
@@ -87,6 +128,20 @@ class ProfilingPanelTestCase(BaseTestCase):
         self.panel.profiler.disable()
         self.panel.generate_stats(self.request, response)
         self.assertNotIn("func_list", self.panel.get_stats())
+
+    @mock.patch("django.core.files.storage.FileSystemStorage.save")
+    def test_generate_stats_oserror(self, mock_save):
+        mock_save.side_effect = OSError
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with self.settings(DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": tmpdir}):
+                response = self.panel.process_request(self.request)
+                with self.assertLogs(
+                    "debug_toolbar.panels.profiling", level="ERROR"
+                ) as cm:
+                    self.panel.generate_stats(self.request, response)
+                self.assertIn("Failed to dump profiling stats", cm.output[0])
+                # Ensure prof_file_path is not set/updated if dump fails
+                self.assertFalse(hasattr(self.panel, "prof_file_path"))
 
 
 @override_settings(
@@ -103,3 +158,54 @@ class ProfilingPanelIntegrationTestCase(IntegrationTestCase):
         with self.assertRaises(IntegrityError), transaction.atomic():
             response = self.client.get("/new_user/")
         self.assertEqual(User.objects.count(), 1)
+
+
+class ProfilingDownloadViewTestCase(TestCase):
+    def setUp(self):
+        self.root = tempfile.mkdtemp()
+        self.filename = "test.prof"
+        self.filepath = os.path.join(self.root, self.filename)
+        with open(self.filepath, "wb") as f:
+            f.write(b"data")
+        self.path = self.filename
+
+    def tearDown(self):
+        shutil.rmtree(self.root)
+
+    def test_download_default_storage(self):
+        # Verify downloading works if PROFILER_PROFILE_ROOT is unset (None),
+        # falling back to default storage (which often uses MEDIA_ROOT for FileSystemStorage default).
+        # We simulate this by setting MEDIA_ROOT to our temp dir and PROFILER_PROFILE_ROOT to None.
+        with override_settings(
+            DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": None},
+            MEDIA_ROOT=self.root,
+            STORAGES={
+                "default": {
+                    "BACKEND": "django.core.files.storage.FileSystemStorage",
+                }
+            },
+        ):
+            url = reverse("djdt:debug_toolbar_download_prof_file")
+            # The file 'test.prof' exists in self.root (which is now MEDIA_ROOT)
+            response = self.client.get(url, {"path": self.filename})
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(list(response.streaming_content), [b"data"])
+
+    def test_download_valid(self):
+        with override_settings(
+            DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": self.root}
+        ):
+            url = reverse("djdt:debug_toolbar_download_prof_file")
+            response = self.client.get(url, {"path": self.path})
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(list(response.streaming_content), [b"data"])
+
+    def test_download_missing_file(self):
+        with override_settings(
+            DEBUG_TOOLBAR_CONFIG={"PROFILER_PROFILE_ROOT": self.root}
+        ):
+            url = reverse("djdt:debug_toolbar_download_prof_file")
+            # Sign a filename that doesn't exist
+            path = "missing.prof"
+            response = self.client.get(url, {"path": path})
+            self.assertEqual(response.status_code, 404)

@@ -3,6 +3,10 @@ Change log
 
 Pending
 -------
+* Added the ability to download the profiling data as a file. This feature is
+  disabled by default and requires the ``PROFILER_PROFILE_ROOT`` setting to be
+  configured.
+
 
 6.3.0 (2026-04-01)
 ------------------
