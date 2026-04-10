@@ -3,6 +3,7 @@ Change log
 
 Pending
 -------
+* Prevent check from failing when ``ROOT_URLCONF`` is not defined.
 
 6.3.0 (2026-04-01)
 ------------------
