@@ -7,7 +7,7 @@
 | debug\_toolbar/\_\_init\_\_.py                      |        4 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/\_compat.py                          |       11 |        0 |        2 |        0 |    100% |           |
 | debug\_toolbar/\_stubs.py                           |       18 |        0 |        0 |        0 |    100% |           |
-| debug\_toolbar/apps.py                              |      110 |        4 |       40 |        2 |     96% |150, 181, 188-189 |
+| debug\_toolbar/apps.py                              |      112 |        5 |       42 |        3 |     95% |150, 181, 188-189, 255 |
 | debug\_toolbar/decorators.py                        |       28 |        0 |        6 |        0 |    100% |           |
 | debug\_toolbar/forms.py                             |       24 |        0 |        2 |        0 |    100% |           |
 | debug\_toolbar/management/\_\_init\_\_.py           |        0 |        0 |        0 |        0 |    100% |           |
@@ -52,7 +52,7 @@
 | debug\_toolbar/urls.py                              |        4 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/utils.py                             |      214 |        7 |       68 |        8 |     95% |30, 61, 121, 125-\>128, 144-\>143, 195-196, 200, 215 |
 | debug\_toolbar/views.py                             |       20 |        0 |        2 |        0 |    100% |           |
-| **TOTAL**                                           | **2543** |  **104** |  **626** |   **66** | **94%** |           |
+| **TOTAL**                                           | **2545** |  **105** |  **628** |   **67** | **94%** |           |
 
 
 ## Setup coverage badge
