@@ -255,18 +255,11 @@ class CacheStore(BaseStore):
     Store that uses Django's cache framework to persist debug toolbar data.
     """
 
-    _cache_table_registered = False
-
     @classmethod
     def _get_cache(cls):
         """Get the Django cache backend, wrapped to bypass toolbar tracking."""
         cache = _UntrackedCache(caches[dt_settings.get_config()["CACHE_BACKEND"]])
-
-        # Register the cache table with DDT_MODELS to filter SQL queries
-        if not cls._cache_table_registered:
-            cls._register_cache_table_for_sql_filtering(cache._cache)
-            cls._cache_table_registered = True
-
+        cls._register_cache_table_for_sql_filtering(cache._cache)
         return cache
 
     @classmethod
