@@ -19,6 +19,24 @@ permissions:
   contents: read
 
 jobs:
+  vitest:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f  # v6.3.0
+        with:
+          node-version-file: package.json
+          cache: npm
+      - name: Install Node dependencies
+        run: npm ci
+      - run: npm test
+      - name: Store coverage file
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f  # v7.0.0
+        with:
+          name: coverage-vitest
+          path: coverage/*
+          include-hidden-files: true
+
   mysql:
     runs-on: ubuntu-latest
     strategy:
