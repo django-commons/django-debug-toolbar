@@ -1,4 +1,4 @@
-const $$ = {
+export const $$ = {
     on(root, eventName, selector, fn) {
         root.removeEventListener(eventName, fn);
         root.addEventListener(eventName, (event) => {
@@ -70,7 +70,7 @@ const $$ = {
     },
 };
 
-async function ajax(url, init) {
+export async function ajax(url, init) {
     try {
         const response = await fetch(url, {
             credentials: "same-origin",
@@ -81,7 +81,7 @@ async function ajax(url, init) {
                 return response.json();
             } catch (error) {
                 throw new Error(
-                    u`The response is a invalid Json object : ${error}`
+                    `The response is a invalid Json object : ${error}`
                 );
             }
         }
@@ -94,7 +94,7 @@ async function ajax(url, init) {
     }
 }
 
-function ajaxForm(element) {
+export function ajaxForm(element) {
     const form = element.closest("form");
     const url = new URL(form.action);
     const formData = new FormData(form);
@@ -107,7 +107,7 @@ function ajaxForm(element) {
     return ajax(url, ajaxData);
 }
 
-function replaceToolbarState(newRequestId, data) {
+export function replaceToolbarState(newRequestId, data) {
     const djDebug = document.getElementById("djDebug");
     djDebug.setAttribute("data-request-id", newRequestId);
     // Check if response is empty, it could be due to an expired requestId.
@@ -121,7 +121,7 @@ function replaceToolbarState(newRequestId, data) {
     }
 }
 
-function debounce(func, delay) {
+export function debounce(func, delay) {
     let timer = null;
     let resolves = [];
 
@@ -138,5 +138,3 @@ function debounce(func, delay) {
         return await new Promise((r) => resolves.push(r));
     };
 }
-
-export { $$, ajax, ajaxForm, debounce, replaceToolbarState };
