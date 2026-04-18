@@ -8,15 +8,15 @@ const $$ = {
             }
         });
     },
+    /**
+     * This is a helper function to attach a handler for a `djdt.panel.render`
+     * event of a specific panel.
+     *
+     * root: The container element that the listener should be attached to.
+     * panelId: The Id of the panel.
+     * fn: A function to execute when the event is triggered.
+     */
     onPanelRender(root, panelId, fn) {
-        /*
-        This is a helper function to attach a handler for a `djdt.panel.render`
-        event of a specific panel.
-
-        root: The container element that the listener should be attached to.
-        panelId: The Id of the panel.
-        fn: A function to execute when the event is triggered.
-         */
         root.addEventListener("djdt.panel.render", (event) => {
             if (event.detail.panelId === panelId) {
                 fn.call(event);
@@ -48,12 +48,12 @@ const $$ = {
             document.head.appendChild(el);
         }
     },
+    /**
+     * Given a container element, apply styles set via data-djdt-styles attribute.
+     * The format is data-djdt-styles="styleName1:value;styleName2:value2"
+     * The style names should use the CSSStyleDeclaration camel cased names.
+     */
     applyStyles(container) {
-        /*
-         * Given a container element, apply styles set via data-djdt-styles attribute.
-         * The format is data-djdt-styles="styleName1:value;styleName2:value2"
-         * The style names should use the CSSStyleDeclaration camel cased names.
-         */
         for (const element of container.querySelectorAll(
             "[data-djdt-styles]"
         )) {
