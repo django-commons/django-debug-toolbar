@@ -72,24 +72,20 @@ const $$ = {
 
 async function ajax(url, init) {
     try {
-        const response = await fetch(
-            url,
-            Object.assign({ credentials: "same-origin" }, init)
-        );
+        const response = await fetch(url, {
+            credentials: "same-origin",
+            ...init,
+        });
         if (response.ok) {
-            return response
-                .json()
-                .catch((error) =>
-                    Promise.reject(
-                        new Error(
-                            `The response  is a invalid Json object : ${error}`
-                        )
-                    )
+            try {
+                return response.json();
+            } catch (error) {
+                throw new Error(
+                    u`The response is a invalid Json object : ${error}`
                 );
+            }
         }
-        return Promise.reject(
-            new Error(`${response.status}: ${response.statusText}`)
-        );
+        throw new Error(`${response.status}: ${response.statusText}`);
     } catch (error) {
         const win = document.getElementById("djDebugWindow");
         win.innerHTML = `<div class="djDebugPanelTitle"><h3>${error.message}</h3><button type="button" class="djDebugClose">»</button></div>`;
