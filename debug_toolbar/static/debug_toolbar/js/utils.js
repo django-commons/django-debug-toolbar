@@ -70,30 +70,32 @@ const $$ = {
     },
 };
 
-function ajax(url, init) {
-    return fetch(url, Object.assign({ credentials: "same-origin" }, init))
-        .then((response) => {
-            if (response.ok) {
-                return response
-                    .json()
-                    .catch((error) =>
-                        Promise.reject(
-                            new Error(
-                                `The response  is a invalid Json object : ${error}`
-                            )
+async function ajax(url, init) {
+    try {
+        const response = await fetch(
+            url,
+            Object.assign({ credentials: "same-origin" }, init)
+        );
+        if (response.ok) {
+            return response
+                .json()
+                .catch((error) =>
+                    Promise.reject(
+                        new Error(
+                            `The response  is a invalid Json object : ${error}`
                         )
-                    );
-            }
-            return Promise.reject(
-                new Error(`${response.status}: ${response.statusText}`)
-            );
-        })
-        .catch((error) => {
-            const win = document.getElementById("djDebugWindow");
-            win.innerHTML = `<div class="djDebugPanelTitle"><h3>${error.message}</h3><button type="button" class="djDebugClose">»</button></div>`;
-            $$.show(win);
-            throw error;
-        });
+                    )
+                );
+        }
+        return Promise.reject(
+            new Error(`${response.status}: ${response.statusText}`)
+        );
+    } catch (error) {
+        const win = document.getElementById("djDebugWindow");
+        win.innerHTML = `<div class="djDebugPanelTitle"><h3>${error.message}</h3><button type="button" class="djDebugClose">»</button></div>`;
+        $$.show(win);
+        throw error;
+    }
 }
 
 function ajaxForm(element) {
@@ -127,7 +129,7 @@ function debounce(func, delay) {
     let timer = null;
     let resolves = [];
 
-    return (...args) => {
+    return async (...args) => {
         clearTimeout(timer);
         timer = setTimeout(() => {
             const result = func(...args);
@@ -137,7 +139,7 @@ function debounce(func, delay) {
             resolves = [];
         }, delay);
 
-        return new Promise((r) => resolves.push(r));
+        return await new Promise((r) => resolves.push(r));
     };
 }
 

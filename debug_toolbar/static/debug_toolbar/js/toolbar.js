@@ -43,7 +43,7 @@ const djdt = {
                 if (requestId && inner.children.length === 0) {
                     const url = new URL(
                         djDebug.dataset.renderPanelUrl,
-                        window.location
+                        globalThis.location
                     );
                     url.searchParams.append("request_id", requestId);
                     url.searchParams.append("panel_id", panelId);
@@ -166,8 +166,8 @@ const djdt = {
 
                 if (top < 0) {
                     top = 0;
-                } else if (top + handle.offsetHeight > window.innerHeight) {
-                    top = window.innerHeight - handle.offsetHeight;
+                } else if (top + handle.offsetHeight > globalThis.innerHeight) {
+                    top = globalThis.innerHeight - handle.offsetHeight;
                 }
 
                 handle.style.top = `${top}px`;
@@ -212,19 +212,20 @@ const djdt = {
             djdt.updateOnAjax();
         }
 
-        const prefersDark = window.matchMedia(
+        const prefersDark = globalThis.matchMedia(
             "(prefers-color-scheme: dark)"
         ).matches;
         const themeList = prefersDark
             ? ["auto", "light", "dark"]
             : ["auto", "dark", "light"];
-        const setTheme = (theme) => {
+
+        function setTheme(theme) {
             djDebug.setAttribute(
                 "data-theme",
                 theme === "auto" ? (prefersDark ? "dark" : "light") : theme
             );
             djDebug.setAttribute("data-user-theme", theme);
-        };
+        }
 
         // Updates the theme using user settings
         let userTheme = localStorage.getItem("djdt.user-theme") || "auto";
@@ -253,7 +254,7 @@ const djdt = {
         // set handle position
         const handleTop = Math.min(
             localStorage.getItem("djdt.top") || 265,
-            window.innerHeight - handle.offsetWidth
+            globalThis.innerHeight - handle.offsetWidth
         );
         handle.style.top = `${handleTop}px`;
     },
@@ -265,7 +266,7 @@ const djdt = {
         const handle = document.getElementById("djDebugToolbarHandle");
         $$.show(handle);
         djdt.ensureHandleVisibility();
-        window.addEventListener("resize", djdt.ensureHandleVisibility);
+        globalThis.addEventListener("resize", djdt.ensureHandleVisibility);
         document.removeEventListener("keydown", onKeyDown);
 
         localStorage.setItem("djdt.show", "false");
@@ -289,7 +290,7 @@ const djdt = {
         $$.hide(document.getElementById("djDebugToolbarHandle"));
         $$.show(document.getElementById("djDebugToolbar"));
         localStorage.setItem("djdt.show", "true");
-        window.removeEventListener("resize", djdt.ensureHandleVisibility);
+        globalThis.removeEventListener("resize", djdt.ensureHandleVisibility);
     },
     updateOnAjax() {
         const sidebarUrl =
@@ -324,8 +325,8 @@ const djdt = {
             origOpen.apply(this, args);
         };
 
-        const origFetch = window.fetch;
-        window.fetch = function (...args) {
+        const origFetch = globalThis.fetch;
+        globalThis.fetch = function (...args) {
             // Heads up! Before modifying this code, please be aware of the
             // possible unhandled errors that might arise from changing this.
             // For details, see
@@ -388,7 +389,7 @@ const djdt = {
         },
     },
 };
-window.djdt = {
+globalThis.djdt = {
     show_toolbar: djdt.showToolbar,
     hide_toolbar: djdt.hideToolbar,
     init: djdt.init,
