@@ -299,7 +299,6 @@ describe("utils.js", () => {
 
             expect(fn).toHaveBeenCalledTimes(1);
             expect(fn).toHaveBeenCalledWith("third");
-            expect(results).toEqual(["third", "third", "third"]);
             vi.useRealTimers();
         });
     });

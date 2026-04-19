@@ -121,20 +121,23 @@ export function replaceToolbarState(newRequestId, data) {
     }
 }
 
-export function debounce(func, delay) {
-    let timer = null;
-    let resolves = [];
-
+/**
+ * Debounce async functions.
+ *
+ * @param {Function} func - Function to be executed.
+ * @param {number} timeout - Time to wait before executing function in milliseconds.
+ * @returns {Function} - Debounced function.
+ */
+export function debounce(func, timeout) {
+    let timer;
     return async (...args) => {
         clearTimeout(timer);
-        timer = setTimeout(() => {
-            const result = func(...args);
-            for (const r of resolves) {
-                r(result);
-            }
-            resolves = [];
-        }, delay);
-
-        return await new Promise((r) => resolves.push(r));
+        return await new Promise((resolve, reject) => {
+            timer = setTimeout(() => {
+                Promise.resolve(func.apply(this, [...args]))
+                    .then(resolve)
+                    .catch(reject);
+            }, timeout);
+        });
     };
 }

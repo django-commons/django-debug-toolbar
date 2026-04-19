@@ -295,17 +295,15 @@ const djdt = {
     updateOnAjax() {
         const sidebarUrl =
             document.getElementById("djDebug").dataset.sidebarUrl;
-        const slowjax = debounce(ajax, 200);
 
-        function handleAjaxResponse(requestId) {
+        const handleAjaxResponse = debounce(async (requestId) => {
             const encodedRequestId = encodeURIComponent(requestId);
             const dest = `${sidebarUrl}?request_id=${encodedRequestId}`;
-            slowjax(dest).then((data) => {
-                if (djdt.needUpdateOnFetch) {
-                    replaceToolbarState(encodedRequestId, data);
-                }
-            });
-        }
+            const data = await ajax(dest);
+            if (djdt.needUpdateOnFetch) {
+                replaceToolbarState(encodedRequestId, data);
+            }
+        }, 100);
 
         // Patch XHR / traditional AJAX requests
         const origOpen = XMLHttpRequest.prototype.open;
