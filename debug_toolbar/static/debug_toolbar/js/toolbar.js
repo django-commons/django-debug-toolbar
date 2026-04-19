@@ -292,20 +292,23 @@ const djdt = {
         window.removeEventListener("resize", djdt.ensureHandleVisibility);
     },
     updateOnAjax() {
-        const sidebarUrl =
-            document.getElementById("djDebug").dataset.sidebarUrl;
-        const slowjax = debounce(ajax, 200);
+        const handleAjaxResponse = debounce(async (requestId) => {
+            const sidebarUrl =
+                document.getElementById("djDebug").dataset.sidebarUrl;
 
-        function handleAjaxResponse(requestId) {
             const encodedRequestId = encodeURIComponent(requestId);
             const dest = `${sidebarUrl}?request_id=${encodedRequestId}`;
-            slowjax(dest).then((data) => {
-                if (djdt.needUpdateOnFetch) {
+            if (djdt.needUpdateOnFetch) {
+                try {
+                    const data = await ajax(dest);
                     replaceToolbarState(encodedRequestId, data);
+                } catch (error) {
+                    throw new Error(
+                        `"${error.name}" occurred within django-debug-toolbar: ${error.message}`
+                    );
                 }
-            });
-        }
-
+            }
+        }, 200);
         // Patch XHR / traditional AJAX requests
         const origOpen = XMLHttpRequest.prototype.open;
         XMLHttpRequest.prototype.open = function (...args) {
@@ -333,15 +336,7 @@ const djdt = {
             const promise = origFetch.apply(this, args);
             return promise.then((response) => {
                 if (response.headers.get("djdt-request-id") !== null) {
-                    try {
-                        handleAjaxResponse(
-                            response.headers.get("djdt-request-id")
-                        );
-                    } catch (err) {
-                        throw new Error(
-                            `"${err.name}" occurred within django-debug-toolbar: ${err.message}`
-                        );
-                    }
+                    handleAjaxResponse(response.headers.get("djdt-request-id"));
                 }
                 return response;
             });

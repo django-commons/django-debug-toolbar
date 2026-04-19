@@ -282,25 +282,41 @@ describe("utils.js", () => {
     });
 
     describe("debounce", () => {
-        it("debounces function calls", async () => {
+        beforeEach(() => {
             vi.useFakeTimers();
+        });
+        afterEach(() => {
+            vi.useRealTimers();
+        });
+        it("debounces sync function calls", async () => {
             const fn = vi.fn((val) => val);
             const debounced = debounce(fn, 100);
 
-            const promise1 = debounced("first");
-            const promise2 = debounced("second");
+            debounced("first");
+            debounced("second");
 
             vi.advanceTimersByTime(50);
-            const promise3 = debounced("third");
+            debounced("third");
 
             vi.advanceTimersByTime(100);
 
-            const results = await Promise.all([promise1, promise2, promise3]);
+            expect(fn).toHaveBeenCalledTimes(1);
+            expect(fn).toHaveBeenCalledWith("third");
+        });
+        it("debounces async function calls", async () => {
+            const fn = vi.fn(async (val) => val);
+            const debounced = debounce(fn, 100);
+
+            debounced("first");
+            debounced("second");
+
+            vi.advanceTimersByTime(50);
+            debounced("third");
+
+            vi.advanceTimersByTime(100);
 
             expect(fn).toHaveBeenCalledTimes(1);
             expect(fn).toHaveBeenCalledWith("third");
-            expect(results).toEqual(["third", "third", "third"]);
-            vi.useRealTimers();
         });
     });
 });

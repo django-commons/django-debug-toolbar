@@ -123,22 +123,21 @@ function replaceToolbarState(newRequestId, data) {
     }
 }
 
-function debounce(func, delay) {
-    let timer = null;
-    let resolves = [];
-
+/**
+ * Return function that delays invoking `func` until after `timeout` elapsed.
+ *
+ * Previous calls will be dismissed if the timeout hasn't elapsed.
+ *
+ * @param {Function} func - Function to be executed.
+ * @param {number} timeout - Time to wait before executing function in milliseconds.
+ * @returns {Function} - Debounced function.
+ */
+export function debounce(func, timeout) {
+    let timer;
     return (...args) => {
         clearTimeout(timer);
-        timer = setTimeout(() => {
-            const result = func(...args);
-            for (const r of resolves) {
-                r(result);
-            }
-            resolves = [];
-        }, delay);
-
-        return new Promise((r) => resolves.push(r));
+        timer = setTimeout(() => Promise.try(func, ...args), timeout);
     };
 }
 
-export { $$, ajax, ajaxForm, debounce, replaceToolbarState };
+export { $$, ajax, ajaxForm, replaceToolbarState };
