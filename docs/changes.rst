@@ -8,6 +8,7 @@ Pending
 6.3.0 (2026-04-01)
 ------------------
 
+* Fix Server-Timing header not being overridden if it exists in header already
 * Replaced ``requirements_dev.txt`` file for ``pyproject.toml`` support with
   dependency groups.
 * Updated ReadTheDocs Python version to 3.13.

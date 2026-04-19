@@ -1,3 +1,5 @@
+from dataclasses import dataclass, field
+
 from django.core.handlers.asgi import ASGIRequest
 from django.template.loader import render_to_string
 from django.utils.functional import classproperty
@@ -5,6 +7,17 @@ from django.utils.functional import classproperty
 from debug_toolbar import settings as dt_settings
 from debug_toolbar._stubs import GetResponse
 from debug_toolbar.utils import get_name_from_obj
+
+
+@dataclass
+class PanelHeaders:
+    """
+    A data-structure to allow panels to update headers or append to existing
+    values.
+    """
+
+    append: dict[str, str] = field(default_factory=dict)
+    update: dict[str, str] = field(default_factory=dict)
 
 
 class Panel:
@@ -230,7 +243,7 @@ class Panel:
         """
         return self.get_response(request)
 
-    def get_headers(self, request):
+    def get_headers(self, request) -> PanelHeaders:
         """
         Get headers the panel needs to set.
 
@@ -254,7 +267,7 @@ class Panel:
                 )
                 for key, record in stats.items()
             )
-        return headers
+        return PanelHeaders(append=headers)
 
     def generate_stats(self, request, response):
         """
