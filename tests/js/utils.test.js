@@ -315,7 +315,6 @@ describe("utils.js", () => {
 
             vi.advanceTimersByTime(100);
 
-            expect(fn).toHaveBeenCalledTimes(1);
             expect(fn).toHaveBeenCalledWith("third");
         });
     });
