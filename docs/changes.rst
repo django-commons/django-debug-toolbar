@@ -4,7 +4,7 @@ Change log
 Pending
 -------
 * Prevent check from failing when ``ROOT_URLCONF`` is not defined.
-* Prevent debounce race condition in the history panel for rapid
+* Prevent debounce race conditions in the history panel for rapid
   fetch requests.
 
 6.3.0 (2026-04-01)
