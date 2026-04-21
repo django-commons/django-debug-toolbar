@@ -17,6 +17,7 @@ biome
 checkbox
 contrib
 csp
+debounce
 deduplicated
 dicts
 django
