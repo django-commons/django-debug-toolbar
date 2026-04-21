@@ -303,8 +303,9 @@ const djdt = {
                     const data = await ajax(dest);
                     replaceToolbarState(encodedRequestId, data);
                 } catch (error) {
-                    throw new Error(
-                        `"${error.name}" occurred within django-debug-toolbar: ${error.message}`
+                    console.error(
+                        `"${error.name}" occurred within django-debug-toolbar: ${error.message}`,
+                        error
                     );
                 }
             }
