@@ -70,6 +70,10 @@ Second, ensure that your ``TEMPLATES`` setting contains a
         }
     ]
 
+Third, the Debug Toolbar requires a modern browser. Since the toolbar is a
+development tool, this is generally not an issue — if you need to test in an
+older browser, simply disable the toolbar for that session.
+
 3. Install the App
 ^^^^^^^^^^^^^^^^^^
 
