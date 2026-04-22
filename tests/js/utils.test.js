@@ -153,15 +153,21 @@ describe("utils.js", () => {
 
         beforeEach(() => {
             vi.stubGlobal("fetch", vi.fn());
+            const djDebugRoot = document.createElement("div");
+            djDebugRoot.id = "djDebugRoot";
+            const djDebug = document.createElement("div");
+            djDebug.id = "djDebug";
             const win = document.createElement("div");
             win.id = "djDebugWindow";
-            document.body.appendChild(win);
+            djDebug.appendChild(win);
+            djDebugRoot.appendChild(djDebug);
+            document.body.appendChild(djDebugRoot);
         });
 
         afterEach(() => {
             vi.unstubAllGlobals();
-            const win = document.getElementById("djDebugWindow");
-            if (win) document.body.removeChild(win);
+            const djDebugRoot = document.getElementById("djDebugRoot");
+            if (djDebugRoot) document.body.removeChild(djDebugRoot);
         });
 
         it("returns json data on success", async () => {
@@ -246,17 +252,21 @@ describe("utils.js", () => {
 
     describe("replaceToolbarState", () => {
         it("replaces toolbar state and panels", () => {
+            const djDebugRoot = document.createElement("div");
+            djDebugRoot.id = "djDebugRoot";
             const djDebug = document.createElement("div");
             djDebug.id = "djDebug";
-            document.body.appendChild(djDebug);
 
             const panel = document.createElement("div");
             panel.id = "panel1";
-            document.body.appendChild(panel);
+            djDebug.appendChild(panel);
 
             const buttonContainer = document.createElement("div");
             buttonContainer.id = "djdt-panel1";
-            document.body.appendChild(buttonContainer);
+            djDebug.appendChild(buttonContainer);
+
+            djDebugRoot.appendChild(djDebug);
+            document.body.appendChild(djDebugRoot);
 
             const data = {
                 panel1: {
@@ -275,9 +285,7 @@ describe("utils.js", () => {
                 "New Button"
             );
 
-            document.body.removeChild(djDebug);
-            document.body.removeChild(document.getElementById("panel1"));
-            document.body.removeChild(document.getElementById("djdt-panel1"));
+            document.body.removeChild(djDebugRoot);
         });
     });
 
