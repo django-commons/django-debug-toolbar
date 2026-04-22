@@ -8,6 +8,8 @@ Pending
   fetch requests.
 * Added a note to the prerequisites section of the installation docs
   about requiring an up-to-date browser.
+* Upgraded the JavaScript code to use modern ECMAScript features using
+  ``esupgrade``.
 
 6.3.0 (2026-04-01)
 ------------------
