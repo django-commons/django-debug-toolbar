@@ -501,3 +501,10 @@ could add a **debug_toolbar/base.html** template override to your project:
 The list of CSS variables are defined at
 `debug_toolbar/static/debug_toolbar/css/toolbar.css
 <https://github.com/django-commons/django-debug-toolbar/blob/main/debug_toolbar/static/debug_toolbar/css/toolbar.css>`_
+
+.. note::
+
+    The selector used to declare the toolbar's CSS variables changed from
+    ``:root`` to ``#djDebug`` when the toolbar moved to rendering inside a
+    shadow DOM. If you were previously overriding these variables on
+    ``:root``, update your styles to target ``#djDebug`` instead.
