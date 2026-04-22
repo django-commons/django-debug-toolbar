@@ -70,8 +70,10 @@ Second, ensure that your ``TEMPLATES`` setting contains a
         }
     ]
 
-Third, the Debug Toolbar requires an up to date browser and targets [Baseline Newly Available](https://web.dev/series/baseline-newly-available) to delivery modern debug tools. Should you need to test in an
-older browser, simply disable the toolbar for those sessions.
+Third, the Debug Toolbar requires an up to date browser and targets [Baseline
+Newly Available](https://web.dev/series/baseline-newly-available) to delivery
+modern debug tools. Should you need to test in an older browser, simply disable
+the toolbar for those sessions.
 
 3. Install the App
 ^^^^^^^^^^^^^^^^^^
