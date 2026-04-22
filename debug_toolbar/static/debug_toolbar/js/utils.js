@@ -70,12 +70,14 @@ const $$ = {
     },
 };
 
+/**
+ * Fetch the debug element from the DOM.
+ *
+ * This is used to avoid writing the element's id everywhere the element
+ * is being selected. A fixed reference to the element should be avoided
+ * because the entire DOM could be reloaded such as via HTMX boosting.
+ */
 function getDebugElement() {
-    // Fetch the debug element from the DOM.
-    // This is used to avoid writing the element's id
-    // everywhere the element is being selected. A fixed reference
-    // to the element should be avoided because the entire DOM could
-    // be reloaded such as via HTMX boosting.
     let root = document.getElementById("djDebugRoot");
     if (root.shadowRoot) {
         root = root.shadowRoot;
