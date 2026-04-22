@@ -27,6 +27,7 @@ flatpages
 frontend
 htmx
 inlining
+instantiation
 instrumentation
 isort
 jQuery
