@@ -6,6 +6,8 @@ Pending
 * Prevent check from failing when ``ROOT_URLCONF`` is not defined.
 * Prevent debounce race conditions in the history panel for rapid
   fetch requests.
+* Added a note to the prerequisites section of the installation docs
+  about requiring an up-to-date browser.
 
 6.3.0 (2026-04-01)
 ------------------
