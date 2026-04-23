@@ -8,6 +8,7 @@ Pending
   fetch requests.
 * Added a note to the prerequisites section of the installation docs
   about requiring an up-to-date browser.
+* Dropped support for Django 4.2 and Django 5.1 .
 * Updated to render the toolbar in a shadow DOM for better isolation
   from the rest of the page. This can be disabled with the setting
   ``USE_SHADOW_DOM``.
