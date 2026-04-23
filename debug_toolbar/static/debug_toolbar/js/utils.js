@@ -136,7 +136,7 @@ export function debounce(func, timeout) {
     let timer;
     return (...args) => {
         clearTimeout(timer);
-        timer = setTimeout(() => Promise.try(func, ...args), timeout);
+        timer = setTimeout(() => func(...args), timeout);
     };
 }
 
