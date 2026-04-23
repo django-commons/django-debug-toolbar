@@ -8,7 +8,7 @@ Pending
   fetch requests.
 * Added a note to the prerequisites section of the installation docs
   about requiring an up-to-date browser.
-* Dropped support for Django 4.2.
+* Dropped support for Django 4.2 and Django 5.1 .
 
 6.3.0 (2026-04-01)
 ------------------
