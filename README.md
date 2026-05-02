@@ -35,7 +35,7 @@
 | debug\_toolbar/panels/sql/forms.py                  |       87 |       16 |       16 |        4 |     77% |25-30, 33-38, 41-46, 56, 61-\>67, 63, 68 |
 | debug\_toolbar/panels/sql/panel.py                  |      176 |       10 |       50 |        4 |     93% |53, 81, 232-237, 279-280, 321-\>exit |
 | debug\_toolbar/panels/sql/tracking.py               |      117 |        4 |       30 |        1 |     97% |125-\>129, 201-202, 240, 246 |
-| debug\_toolbar/panels/sql/utils.py                  |       85 |        0 |       32 |        1 |     99% | 31-\>exit |
+| debug\_toolbar/panels/sql/utils.py                  |       91 |        0 |       32 |        1 |     99% | 32-\>exit |
 | debug\_toolbar/panels/sql/views.py                  |       68 |        3 |       14 |        3 |     93% |44, 70, 106 |
 | debug\_toolbar/panels/staticfiles.py                |       82 |        2 |       22 |        1 |     97% |122-124, 145-\>144 |
 | debug\_toolbar/panels/templates/\_\_init\_\_.py     |        2 |        0 |        0 |        0 |    100% |           |
@@ -52,7 +52,7 @@
 | debug\_toolbar/urls.py                              |        4 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/utils.py                             |      214 |        7 |       68 |        8 |     95% |30, 61, 121, 125-\>128, 144-\>143, 195-196, 200, 215 |
 | debug\_toolbar/views.py                             |       20 |        0 |        2 |        0 |    100% |           |
-| **TOTAL**                                           | **2545** |  **109** |  **628** |   **67** | **94%** |           |
+| **TOTAL**                                           | **2551** |  **109** |  **628** |   **67** | **94%** |           |
 
 
 ## Setup coverage badge
