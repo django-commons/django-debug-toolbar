@@ -1,10 +1,12 @@
 from functools import cache, lru_cache
 from html import escape
+from itertools import cycle
 
 import sqlparse
 from django.dispatch import receiver
 from django.test.signals import setting_changed
 from sqlparse import tokens as T
+from sqlparse.exceptions import SQLParseError
 
 from debug_toolbar import settings as dt_settings
 
@@ -96,6 +98,7 @@ def reformat_sql(sql, *, with_toggle=False):
     if not with_toggle:
         return formatted
     simplified = parse_sql(sql, simplify=True)
+
     uncollapsed = f'<span class="djDebugUncollapsed">{simplified}</span>'
     collapsed = f'<span class="djDebugCollapsed djdt-hidden">{formatted}</span>'
     return collapsed + uncollapsed
@@ -104,7 +107,15 @@ def reformat_sql(sql, *, with_toggle=False):
 @lru_cache(maxsize=128)
 def parse_sql(sql, *, simplify=False):
     stack = get_filter_stack(simplify=simplify)
-    return "".join(stack.run(sql))
+    try:
+        return "".join(stack.run(sql))
+    except SQLParseError:
+        # The query either exceeds the number of tokens or depth of tokens.
+        # Recreate the FilterStack and explicitly disable the grouping to avoid
+        # those errors.
+        stack = get_filter_stack(simplify=simplify)
+        stack._grouping = False
+        return "".join(stack.run(sql))
 
 
 @cache
@@ -131,32 +142,15 @@ def clear_caches(*, setting, **kwargs):
 
 
 def contrasting_color_generator():
-    """
-    Generate contrasting colors by varying most significant bit of RGB first,
-    and then vary subsequent bits systematically.
-    """
-
-    def rgb_to_hex(rgb):
-        return "#{:02x}{:02x}{:02x}".format(*tuple(rgb))
-
-    triples = [
-        (1, 0, 0),
-        (0, 1, 0),
-        (0, 0, 1),
-        (1, 1, 0),
-        (0, 1, 1),
-        (1, 0, 1),
-        (1, 1, 1),
-    ]
-    n = 1 << 7
-    so_far = [[0, 0, 0]]
-    while True:
-        if n == 0:  # This happens after 2**24 colours; presumably, never
-            yield "#000000"  # black
-        copy_so_far = list(so_far)
-        for triple in triples:
-            for previous in copy_so_far:
-                rgb = [n * triple[i] + previous[i] for i in range(3)]
-                so_far.append(rgb)
-                yield rgb_to_hex(rgb)
-        n >>= 1
+    return cycle(
+        [
+            "#0C375A",
+            "#21A0A0",
+            "#FFC300",
+            "#FF5733",
+            "#C70039",
+            "#900C3F",
+            "#581845",
+            "#F1C40F",
+        ]
+    )

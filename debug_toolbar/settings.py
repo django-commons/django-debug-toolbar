@@ -18,6 +18,8 @@ def _is_running_tests():
 
 CONFIG_DEFAULTS = {
     # Toolbar options
+    "CACHE_BACKEND": "default",
+    "CACHE_KEY_PREFIX": "djdt:",
     "DISABLE_PANELS": {
         "debug_toolbar.panels.profiling.ProfilingPanel",
         "debug_toolbar.panels.redirects.RedirectsPanel",
@@ -31,6 +33,7 @@ CONFIG_DEFAULTS = {
     "ROOT_TAG_EXTRA_ATTRS": "",
     "SHOW_COLLAPSED": False,
     "SHOW_TOOLBAR_CALLBACK": "debug_toolbar.middleware.show_toolbar",
+    "USE_SHADOW_DOM": True,
     "TOOLBAR_LANGUAGE": None,
     "TOOLBAR_STORE_CLASS": "debug_toolbar.store.MemoryStore",
     "UPDATE_ON_FETCH": False,

@@ -209,7 +209,9 @@ msgstr "CPU: %(cum)0.2f 毫秒 (总耗时: %(total)0.2f 毫秒)"
 msgid "Total: %0.2fms"
 msgstr "总共：%0.2f 毫秒"
 
-#: panels/timer.py:38 templates/debug_toolbar/panels/history.html:9
+#: panels/timer.py:38 templates/debug_toolbar/panels/cache.html:43
+#: templates/debug_toolbar/panels/history.html:9
+#: templates/debug_toolbar/panels/sql.html:36
 #: templates/debug_toolbar/panels/sql_explain.html:11
 #: templates/debug_toolbar/panels/sql_profile.html:12
 #: templates/debug_toolbar/panels/sql_select.html:11
@@ -222,7 +224,7 @@ msgstr "用户 CPU 时间"
 
 #: panels/timer.py:46
 #, python-format
-msgid "%(utime)0.3f msec"
+msgid "%(utime)0.3f ms"
 msgstr "%(utime)0.3f 毫秒"
 
 #: panels/timer.py:47
@@ -231,7 +233,7 @@ msgstr "系统 CPU 时间"
 
 #: panels/timer.py:47
 #, python-format
-msgid "%(stime)0.3f msec"
+msgid "%(stime)0.3f ms"
 msgstr "%(stime)0.3f 毫秒"
 
 #: panels/timer.py:48
@@ -240,7 +242,7 @@ msgstr "总的 CPU 时间"
 
 #: panels/timer.py:48
 #, python-format
-msgid "%(total)0.3f msec"
+msgid "%(total)0.3f ms"
 msgstr "%(total)0.3f 毫秒"
 
 #: panels/timer.py:49
@@ -249,7 +251,7 @@ msgstr "耗时"
 
 #: panels/timer.py:49
 #, python-format
-msgid "%(total_time)0.3f msec"
+msgid "%(total_time)0.3f ms"
 msgstr "%(total_time)0.3f 毫秒"
 
 #: panels/timer.py:51
@@ -324,12 +326,6 @@ msgstr "命令"
 #: templates/debug_toolbar/panels/cache.html:39
 msgid "Calls"
 msgstr "调用"
-
-#: templates/debug_toolbar/panels/cache.html:43
-#: templates/debug_toolbar/panels/sql.html:36
-msgid "Time (ms)"
-msgstr "时间(毫秒)"
-
 #: templates/debug_toolbar/panels/cache.html:44
 msgid "Type"
 msgstr "类型"
@@ -657,8 +653,8 @@ msgid "Timing attribute"
 msgstr "计时属性"
 
 #: templates/debug_toolbar/panels/timer.html:37
-msgid "Milliseconds since navigation start (+length)"
-msgstr "导航开始后的毫秒 (+长度)"
+msgid "Time since navigation start (+duration)"
+msgstr "导航开始后的时间 (+持续时间)"
 
 #: templates/debug_toolbar/panels/versions.html:10
 msgid "Package"

@@ -45,9 +45,13 @@ def _monkey_patch_method(cache, name, alias):
 
 
 def _monkey_patch_cache(cache, alias, panel):
-    if not getattr(cache, "_djdt_panel", None):
+    if not hasattr(cache, "_djdt_panel"):
+        # The panel has never been monkey patched before
         for name in WRAPPED_CACHE_METHODS:
             _monkey_patch_method(cache, name, alias)
+    if not getattr(cache, "_djdt_panel", None):
+        # This is used for both initially monkey patching and re-enabling the
+        # instrumentation.
         cache._djdt_panel = panel
 
 

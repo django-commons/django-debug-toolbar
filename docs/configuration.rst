@@ -53,6 +53,43 @@ toolbar itself, others are specific to some panels.
 Toolbar options
 ~~~~~~~~~~~~~~~
 
+* ``CACHE_BACKEND``
+
+  Default: ``"default"``
+
+  The alias of the Django cache backend to use when
+  :ref:`TOOLBAR_STORE_CLASS <TOOLBAR_STORE_CLASS>` is set to
+  ``debug_toolbar.store.CacheStore``. This should match one of the keys in
+  your :setting:`CACHES` setting.
+
+  Using a dedicated cache backend for the toolbar is recommended in
+  production-like environments to avoid evicting application cache entries:
+
+  .. code-block:: python
+
+      CACHES = {
+          "default": {
+              "BACKEND": "django.core.cache.backends.redis.RedisCache",
+              "LOCATION": "redis://127.0.0.1:6379",
+          },
+          "debug-toolbar": {
+              "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+          },
+      }
+
+      DEBUG_TOOLBAR_CONFIG = {
+          "TOOLBAR_STORE_CLASS": "debug_toolbar.store.CacheStore",
+          "CACHE_BACKEND": "debug-toolbar",
+      }
+
+* ``CACHE_KEY_PREFIX``
+
+  Default: ``"djdt:"``
+
+  A prefix applied to all cache keys used by the ``CacheStore``. This
+  prevents collisions with other cache entries when sharing a cache
+  backend with the rest of your application.
+
 * ``DISABLE_PANELS``
 
   Default:
@@ -214,22 +251,30 @@ Toolbar options
 
   Available store classes:
 
-  * ``debug_toolbar.store.MemoryStore`` - Stores data in memory
-  * ``debug_toolbar.store.DatabaseStore`` - Stores data in the database
+  * ``debug_toolbar.store.MemoryStore`` - Stores data in memory. This is the
+    default and requires no additional configuration. Data is lost when the
+    server restarts.
+  * ``debug_toolbar.store.DatabaseStore`` - Stores data in the database.
+    Requires running migrations (see below).
+  * ``debug_toolbar.store.CacheStore`` - Stores data using Django's cache
+    framework. Works with any cache backend (Memcached, Redis, database,
+    file-based, etc.). See ``CACHE_BACKEND`` and ``CACHE_KEY_PREFIX`` below
+    for configuration options.
 
-  The DatabaseStore provides persistence and automatically cleans up old
-  entries based on the ``RESULTS_CACHE_SIZE`` setting.
+  The ``DatabaseStore`` and ``CacheStore`` both provide persistence across
+  server restarts and automatically clean up old entries based on the
+  ``RESULTS_CACHE_SIZE`` setting.
 
-  Note: When using ``DatabaseStore`` migrations are required for
+  Note: When using ``DatabaseStore``, migrations are required for
   the ``debug_toolbar`` app:
 
   .. code-block:: bash
 
       python manage.py migrate debug_toolbar
 
-  For the ``DatabaseStore`` to work properly, you need to run migrations for the
-  ``debug_toolbar`` app. The migrations create the necessary database table to store
-  toolbar data.
+  The toolbar's own cache and SQL operations are automatically hidden from
+  the cache and SQL panels when using ``CacheStore``, so you won't see the
+  toolbar's internal bookkeeping in the collected metrics.
 
 .. _TOOLBAR_LANGUAGE:
 
@@ -442,12 +487,20 @@ Here's what a slightly customized toolbar configuration might look like::
         'SQL_WARNING_THRESHOLD': 100,   # milliseconds
     }
 
-Here's an example of using a persistent store to keep debug data between server
+Here's an example of using the database store to keep debug data between server
 restarts::
 
     DEBUG_TOOLBAR_CONFIG = {
-        'TOOLBAR_STORE_CLASS': 'debug_toolbar.store.DatabaseStore',
-        'RESULTS_CACHE_SIZE': 100,  # Store up to 100 requests
+        "TOOLBAR_STORE_CLASS": "debug_toolbar.store.DatabaseStore",
+        "RESULTS_CACHE_SIZE": 100,  # Store up to 100 requests
+    }
+
+Here's an example of using the cache store, which provides persistence without
+requiring migrations::
+
+    DEBUG_TOOLBAR_CONFIG = {
+        "TOOLBAR_STORE_CLASS": "debug_toolbar.store.CacheStore",
+        "CACHE_BACKEND": "default",  # Or a dedicated cache alias
     }
 
 Theming support
@@ -463,7 +516,7 @@ could add a **debug_toolbar/base.html** template override to your project:
 
     {% block css %}{{ block.super }}
     <style>
-        :root {
+        #djDebug {
             --djdt-font-family-primary: 'Roboto', sans-serif;
         }
     </style>
@@ -472,3 +525,10 @@ could add a **debug_toolbar/base.html** template override to your project:
 The list of CSS variables are defined at
 `debug_toolbar/static/debug_toolbar/css/toolbar.css
 <https://github.com/django-commons/django-debug-toolbar/blob/main/debug_toolbar/static/debug_toolbar/css/toolbar.css>`_
+
+.. note::
+
+    The selector used to declare the toolbar's CSS variables changed from
+    ``:root`` to ``#djDebug`` when the toolbar moved to rendering inside a
+    shadow DOM. If you were previously overriding these variables on
+    ``:root``, update your styles to target ``#djDebug`` instead.

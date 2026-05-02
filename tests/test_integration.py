@@ -901,10 +901,12 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         time.sleep(0.1)
         # Need to wait until the ajax request is over and json_view is displayed on the toolbar
         self.wait.until(
-            lambda selenium: self.selenium.find_element(
-                By.CSS_SELECTOR, "#djdt-HistoryPanel a.HistoryPanel small"
-            ).text
-            == "/json_view/"
+            lambda selenium: (
+                self.selenium.find_element(
+                    By.CSS_SELECTOR, "#djdt-HistoryPanel a.HistoryPanel small"
+                ).text
+                == "/json_view/"
+            )
         )
         history_panel = self.selenium.find_element(By.ID, "djdt-HistoryPanel")
         self.assertNotIn("/ajax/", history_panel.text)
