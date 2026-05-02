@@ -70,6 +70,21 @@ export const $$ = {
     },
 };
 
+/**
+ * Fetch the debug element from the DOM.
+ *
+ * This is used to avoid writing the element's id everywhere the element
+ * is being selected. A fixed reference to the element should be avoided
+ * because the entire DOM could be reloaded such as via HTMX boosting.
+ */
+function getDebugElement() {
+    let root = document.getElementById("djDebugRoot");
+    if (root.shadowRoot) {
+        root = root.shadowRoot;
+    }
+    return root.querySelector("#djDebug");
+}
+
 export async function ajax(url, init) {
     try {
         const response = await fetch(url, {
@@ -92,21 +107,6 @@ export async function ajax(url, init) {
         $$.show(win);
         throw error;
     }
-}
-
-/**
- * Fetch the debug element from the DOM.
- *
- * This is used to avoid writing the element's id everywhere the element
- * is being selected. A fixed reference to the element should be avoided
- * because the entire DOM could be reloaded such as via HTMX boosting.
- */
-function getDebugElement() {
-    let root = document.getElementById("djDebugRoot");
-    if (root.shadowRoot) {
-        root = root.shadowRoot;
-    }
-    return root.querySelector("#djDebug");
 }
 
 export function ajaxForm(element) {
