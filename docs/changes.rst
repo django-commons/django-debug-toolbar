@@ -21,6 +21,8 @@ Pending
   limits. When ``SQLParseError`` is raised, the SQL panel now automatically
   disables grouping and retries formatting, preventing crashes with large
   queries.
+* Added open in editor functionality to templates panel using ``EDITOR``
+  setting.
 
 6.3.0 (2026-04-01)
 ------------------

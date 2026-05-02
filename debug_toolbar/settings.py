@@ -24,6 +24,7 @@ CONFIG_DEFAULTS = {
         "debug_toolbar.panels.profiling.ProfilingPanel",
         "debug_toolbar.panels.redirects.RedirectsPanel",
     },
+    "EDITOR": "vscode",
     "INSERT_BEFORE": "</body>",
     "IS_RUNNING_TESTS": _is_running_tests(),
     "OBSERVE_REQUEST_CALLBACK": "debug_toolbar.toolbar.observe_request",
