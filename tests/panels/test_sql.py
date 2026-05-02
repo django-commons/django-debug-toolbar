@@ -14,13 +14,13 @@ from django.db.models import Count
 from django.db.utils import DatabaseError
 from django.shortcuts import render
 from django.test.utils import override_settings
+from sqlparse.exceptions import SQLParseError
 
 import debug_toolbar.panels.sql.tracking as sql_tracking
 from debug_toolbar import settings as dt_settings
 from debug_toolbar.models import HistoryEntry
 from debug_toolbar.panels.sql import SQLPanel, tracking
 from debug_toolbar.panels.sql.utils import parse_sql
-from sqlparse.exceptions import SQLParseError
 
 try:
     import psycopg
