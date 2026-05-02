@@ -18,7 +18,7 @@ repos:
     rev: 1.30.0
     hooks:
     -   id: django-upgrade
-        args: [--target-version, "4.2"]
+        args: [--target-version, "5.2"]
 -   repo: https://github.com/codingjoe/esupgrade
     rev: 2025.15.0
     hooks:
@@ -27,19 +27,19 @@ repos:
     rev: "1.9.0"
     hooks:
     -   id: djade
-        args: [--target-version, "4.2"]
+        args: [--target-version, "5.2"]
 -   repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
     hooks:
     -   id: rst-backticks
     -   id: rst-directive-colons
 -   repo: https://github.com/biomejs/pre-commit
-    rev: v2.4.12
+    rev: v2.4.13
     hooks:
       - id: biome-check
         verbose: true
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.15.11'
+    rev: 'v0.15.12'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]

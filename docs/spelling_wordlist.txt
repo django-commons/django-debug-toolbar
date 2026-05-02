@@ -34,6 +34,7 @@ jQuery
 jinja
 jrestclient
 js
+lookups
 margins
 memcache
 memcached
