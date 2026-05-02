@@ -3,6 +3,7 @@ Change log
 
 Pending
 -------
+
 * Prevent check from failing when ``ROOT_URLCONF`` is not defined.
 * Prevent debounce race conditions in the history panel for rapid
   fetch requests.
@@ -16,6 +17,10 @@ Pending
   those overrides to ``#djDebug``, and custom panels that rely on external
   styles or DOM lookups reaching into the toolbar will need updates to
   work with the shadow DOM.
+* Added graceful degradation for SQL queries that exceed sqlparse's token
+  limits. When ``SQLParseError`` is raised, the SQL panel now automatically
+  disables grouping and retries formatting, preventing crashes with large
+  queries.
 
 6.3.0 (2026-04-01)
 ------------------
@@ -44,10 +49,6 @@ Pending
 6.2.0 (2026-01-20)
 ------------------
 
-* Added graceful degradation for SQL queries that exceed sqlparse's token
-  limits. When ``SQLParseError`` is raised, the SQL panel now automatically
-  disables grouping and retries formatting, preventing crashes with large
-  queries.
 * Deprecated ``RedirectsPanel`` in favor of ``HistoryPanel`` for viewing
   toolbar data from redirected requests.
 * Fixed support for generating code coverage comments in PRs.
