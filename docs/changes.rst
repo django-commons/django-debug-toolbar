@@ -23,6 +23,8 @@ Pending
   queries.
 * Upgraded the JavaScript code to use modern ECMAScript features using
   ``esupgrade``.
+* Updated tox configuration to treat ``DeprecationWarning``,
+  ``ResourceWarning``, and ``PendingDeprecationWarning`` as errors.
 
 6.3.0 (2026-04-01)
 ------------------
