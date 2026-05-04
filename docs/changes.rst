@@ -21,6 +21,8 @@ Pending
   limits. When ``SQLParseError`` is raised, the SQL panel now automatically
   disables grouping and retries formatting, preventing crashes with large
   queries.
+* Upgraded the JavaScript code to use modern ECMAScript features using
+  ``esupgrade``.
 * Updated tox configuration to treat ``DeprecationWarning``,
   ``ResourceWarning``, and ``PendingDeprecationWarning`` as errors.
 
