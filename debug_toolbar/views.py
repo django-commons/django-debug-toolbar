@@ -31,24 +31,3 @@ def render_panel(request: HttpRequest) -> JsonResponse:
         content = panel.content
         scripts = panel.scripts
     return JsonResponse({"content": content, "scripts": scripts})
-
-
-@require_GET
-@login_not_required
-def download_prof_file(request):
-    root = dt_settings.get_config()["PROFILER_PROFILE_ROOT"]
-    # If root is None, FileSystemStorage defaults to MEDIA_ROOT
-    storage = FileSystemStorage(location=root)
-
-    if not (filename := request.GET.get("path")):
-        raise Http404()
-
-    try:
-        return FileResponse(
-            storage.open(filename),
-            as_attachment=True,
-            filename=filename,
-            content_type="application/octet-stream",
-        )
-    except FileNotFoundError:
-        raise Http404() from None

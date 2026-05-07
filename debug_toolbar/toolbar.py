@@ -166,11 +166,6 @@ class DebugToolbar:
             # Global URLs
             urlpatterns = [
                 path("render_panel/", views.render_panel, name="render_panel"),
-                path(
-                    "download_prof_file/",
-                    views.download_prof_file,
-                    name="debug_toolbar_download_prof_file",
-                ),
             ]
             # Per-panel URLs
             for panel_class in cls.get_panel_classes():

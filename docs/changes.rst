@@ -3,10 +3,6 @@ Change log
 
 Pending
 -------
-* Added the ability to download the profiling data as a file. This feature is
-  disabled by default and requires the ``PROFILER_PROFILE_ROOT`` setting to be
-  configured.
-
 
 * Prevent check from failing when ``ROOT_URLCONF`` is not defined.
 * Prevent debounce race conditions in the history panel for rapid
@@ -29,6 +25,8 @@ Pending
   ``esupgrade``.
 * Updated tox configuration to treat ``DeprecationWarning``,
   ``ResourceWarning``, and ``PendingDeprecationWarning`` as errors.
+* Added the ability to download the profiling data as a file.
+
 
 6.3.0 (2026-04-01)
 ------------------

@@ -5,14 +5,21 @@ import tempfile
 from colorsys import hsv_to_rgb
 from pstats import Stats
 
+from django import forms
 from django.conf import settings
+from django.contrib.auth.decorators import login_not_required
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
+from django.http import Http404, FileResponse, HttpResponseBadRequest
+from django.urls import path
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_GET
 
 from debug_toolbar import settings as dt_settings
+from debug_toolbar.decorators import render_with_toolbar_language, require_show_toolbar
 from debug_toolbar.panels import Panel
+from debug_toolbar.toolbar import DebugToolbar
 
 logger = logging.getLogger(__name__)
 
@@ -189,26 +196,6 @@ class ProfilingPanel(Panel):
         self.stats = Stats(self.profiler)
         self.stats.calc_callees()
 
-        profile_root = dt_settings.get_config()["PROFILER_PROFILE_ROOT"]
-        storage = FileSystemStorage(location=profile_root)
-        filename = f"djdt_profile_{self.toolbar.request_id}.prof"
-        try:
-            with tempfile.NamedTemporaryFile() as tmp:
-                self.profiler.dump_stats(tmp.name)
-                if storage.exists(filename):
-                    storage.delete(filename)
-                # ContentFile reads the stream, so we point back to start
-                tmp.seek(0)
-                saved_name = storage.save(filename, ContentFile(tmp.read()))
-            self.prof_file_path = saved_name
-        except Exception:
-            logger.exception(
-                "Failed to dump profiling stats to %s",
-                filename,
-            )
-            # If writing to the file fails, we don't want to break the
-            # whole page.
-
         root_func = cProfile.label(super().process_request.__code__)
         if root_func in self.stats.stats:
             root = FunctionCall(self.stats, root_func, depth=0)
@@ -222,9 +209,43 @@ class ProfilingPanel(Panel):
                 dt_settings.get_config()["PROFILER_MAX_DEPTH"],
                 cum_time_threshold,
             )
-            self.record_stats(
-                {
-                    "func_list": [func.serialize() for func in func_list],
-                    "prof_file_path": getattr(self, "prof_file_path", None),
-                }
-            )
+            self.record_stats({"func_list": [func.serialize() for func in func_list]})
+
+    @classmethod
+    def get_urls(cls):
+        return [path("profiling_download/", profiling_download, name="profiling_download")]
+
+
+class ProfilingDownloadForm(forms.Form):
+    """
+    Validate params
+
+        request_id: The key for the store instance to be fetched.
+    """
+    request_id = forms.CharField(widget=forms.HiddenInput())
+
+
+@require_GET
+@login_not_required
+@require_show_toolbar
+@render_with_toolbar_language
+def profiling_download(request):
+    form = ProfilingDownloadForm(request.GET)
+
+    if form.is_valid():
+        request_id: str = form.cleaned_data["request_id"]
+        toolbar: DebugToolbar | None = DebugToolbar.fetch(request_id)
+        if toolbar is None:
+            # When the request_id has been popped already due to
+            # RESULTS_CACHE_SIZE
+            return HttpResponseBadRequest("Request is no longer available.")
+        panel = toolbar.get_panel_by_id(ProfilingPanel.panel_id)
+        panel.get_stats()
+
+        return FileResponse(
+            storage.open(filename),
+            as_attachment=True,
+            filename=f"request-{request_id}.prof",
+            content_type="application/octet-stream",
+        )
+    return HttpResponseBadRequest(f"Form errors: {form.errors}")
