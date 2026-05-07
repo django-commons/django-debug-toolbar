@@ -111,10 +111,76 @@ class ProfilingPanelIntegrationTestCase(IntegrationTestCase):
         self.assertEqual(User.objects.count(), 1)
 
 
+@override_settings(DEBUG=True)
 class ProfilingDownloadViewTestCase(TestCase):
-
-    def test_download_valid(self):
+    def test_missing_request_id(self):
         url = reverse("djdt:profiling_download")
         response = self.client.get(url)
+        self.assertEqual(response.status_code, 400)
+
+    def test_toolbar_not_found(self):
+        url = reverse("djdt:profiling_download")
+        response = self.client.get(url, {"request_id": "nonexistent-id"})
+        self.assertEqual(response.status_code, 400)
+
+    @mock.patch("debug_toolbar.panels.profiling.DebugToolbar.fetch")
+    def test_valid_download(self, mock_fetch):
+        mock_panel = mock.MagicMock()
+        mock_panel.get_stats.return_value = {
+            "func_list": [
+                {
+                    "count": 1,
+                    "primitive_count": 1,
+                    "tottime": 0.001,
+                    "tottime_per_call": 0.001,
+                    "cumtime": 0.005,
+                    "cumtime_per_call": 0.005,
+                    "func_key": "/path/to/file.py:42(view)",
+                },
+                {
+                    "count": 5,
+                    "primitive_count": 3,
+                    "tottime": 0.002,
+                    "tottime_per_call": 0.0004,
+                    "cumtime": 0.003,
+                    "cumtime_per_call": 0.001,
+                    "func_key": "/path/to/other.py:10(helper)",
+                },
+            ]
+        }
+        mock_toolbar = mock.MagicMock()
+        mock_toolbar.get_panel_by_id.return_value = mock_panel
+        mock_fetch.return_value = mock_toolbar
+
+        url = reverse("djdt:profiling_download")
+        response = self.client.get(url, {"request_id": "test-id"})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(list(response.streaming_content), [b"data"])
+        self.assertEqual(response["Content-Type"], "text/plain")
+        self.assertIn(
+            'attachment; filename="request-test-id.prof"',
+            response["Content-Disposition"],
+        )
+        content = response.content.decode()
+        self.assertIn(
+            "   ncalls  tottime  percall  cumtime  percall filename:lineno(function)",
+            content,
+        )
+        self.assertIn("/path/to/file.py:42(view)", content)
+        self.assertIn("5/3", content)
+
+    @mock.patch("debug_toolbar.panels.profiling.DebugToolbar.fetch")
+    def test_empty_func_list(self, mock_fetch):
+        mock_panel = mock.MagicMock()
+        mock_panel.get_stats.return_value = {}
+        mock_toolbar = mock.MagicMock()
+        mock_toolbar.get_panel_by_id.return_value = mock_panel
+        mock_fetch.return_value = mock_toolbar
+
+        url = reverse("djdt:profiling_download")
+        response = self.client.get(url, {"request_id": "test-id"})
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertIn(
+            "   ncalls  tottime  percall  cumtime  percall filename:lineno(function)",
+            content,
+        )

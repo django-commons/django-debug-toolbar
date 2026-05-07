@@ -1,16 +1,13 @@
 import cProfile
 import logging
 import os
-import tempfile
 from colorsys import hsv_to_rgb
 from pstats import Stats
 
 from django import forms
 from django.conf import settings
 from django.contrib.auth.decorators import login_not_required
-from django.core.files.base import ContentFile
-from django.core.files.storage import FileSystemStorage
-from django.http import Http404, FileResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.urls import path
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
@@ -144,6 +141,20 @@ class FunctionCall:
     def indent(self):
         return 16 * self.depth
 
+    def primitive_count(self):
+        return self.stats[0]
+
+    def _func_key(self):
+        # Mirrors pstats.func_std_string to produce the plain-text identifier
+        # used in downloaded .prof files.
+        # https://docs.python.org/3/library/profile.html#pstats.Stats
+        if self.func[:2] == ("~", 0):
+            name = self.func[2]
+            if name.startswith("<") and name.endswith(">"):
+                return f"{{{name[1:-1]}}}"
+            return name
+        return "%s:%d(%s)" % self.func
+
     def serialize(self):
         return {
             "has_subfuncs": self.has_subfuncs,
@@ -151,12 +162,14 @@ class FunctionCall:
             "parent_ids": self.parent_ids,
             "is_project_func": self.is_project_func(),
             "indent": self.indent(),
+            "func_key": self._func_key(),
             "func_std_string": self.func_std_string(),
             "cumtime": self.cumtime(),
             "cumtime_per_call": self.cumtime_per_call(),
             "tottime": self.tottime(),
             "tottime_per_call": self.tottime_per_call(),
             "count": self.count(),
+            "primitive_count": self.primitive_count(),
         }
 
 
@@ -236,16 +249,37 @@ def profiling_download(request):
         request_id: str = form.cleaned_data["request_id"]
         toolbar: DebugToolbar | None = DebugToolbar.fetch(request_id)
         if toolbar is None:
-            # When the request_id has been popped already due to
-            # RESULTS_CACHE_SIZE
             return HttpResponseBadRequest("Request is no longer available.")
         panel = toolbar.get_panel_by_id(ProfilingPanel.panel_id)
-        panel.get_stats()
+        func_list = panel.get_stats().get("func_list", [])
 
-        return FileResponse(
-            storage.open(filename),
-            as_attachment=True,
-            filename=f"request-{request_id}.prof",
-            content_type="application/octet-stream",
+        # Column layout matches pstats output: ncalls right-justified in 9
+        # chars, each time value formatted as f8 ("%8.3f"). The 3-space indent
+        # on the header and ordering lines is part of the pstats format.
+        # https://docs.python.org/3/library/profile.html#pstats.Stats.print_stats
+        lines = ["   Ordered by: cumulative time", ""]
+        lines.append(
+            "   ncalls  tottime  percall  cumtime  percall filename:lineno(function)"
         )
+        for func in func_list:
+            nc = func["count"]
+            cc = func["primitive_count"]
+            # pstats shows nc/cc when they differ (recursive calls inflate nc)
+            ncalls_str = f"{nc}/{cc}" if nc != cc else str(nc)
+            # pstats prints 8 spaces instead of a percall value when the
+            # divisor is zero, preserving column alignment
+            tt_per = f"{func['tottime_per_call']:8.3f}" if nc else " " * 8
+            ct_per = f"{func['cumtime_per_call']:8.3f}" if cc else " " * 8
+            lines.append(
+                f"{ncalls_str:>9} {func['tottime']:8.3f} {tt_per}"
+                f" {func['cumtime']:8.3f} {ct_per} {func['func_key']}"
+            )
+        # pstats ends output with two blank lines
+        lines.extend(["", ""])
+
+        response = HttpResponse("\n".join(lines), content_type="text/plain")
+        response["Content-Disposition"] = (
+            f'attachment; filename="request-{request_id}.prof"'
+        )
+        return response
     return HttpResponseBadRequest(f"Form errors: {form.errors}")
