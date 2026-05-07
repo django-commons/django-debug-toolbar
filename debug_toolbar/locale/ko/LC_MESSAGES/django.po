@@ -209,7 +209,9 @@ msgstr ""
 msgid "Total: %0.2fms"
 msgstr ""
 
-#: panels/timer.py:38 templates/debug_toolbar/panels/history.html:9
+#: panels/timer.py:38 templates/debug_toolbar/panels/cache.html:43
+#: templates/debug_toolbar/panels/history.html:9
+#: templates/debug_toolbar/panels/sql.html:36
 #: templates/debug_toolbar/panels/sql_explain.html:11
 #: templates/debug_toolbar/panels/sql_profile.html:12
 #: templates/debug_toolbar/panels/sql_select.html:11
@@ -222,7 +224,7 @@ msgstr ""
 
 #: panels/timer.py:46
 #, python-format
-msgid "%(utime)0.3f msec"
+msgid "%(utime)0.3f ms"
 msgstr ""
 
 #: panels/timer.py:47
@@ -231,7 +233,7 @@ msgstr ""
 
 #: panels/timer.py:47
 #, python-format
-msgid "%(stime)0.3f msec"
+msgid "%(stime)0.3f ms"
 msgstr ""
 
 #: panels/timer.py:48
@@ -240,7 +242,7 @@ msgstr ""
 
 #: panels/timer.py:48
 #, python-format
-msgid "%(total)0.3f msec"
+msgid "%(total)0.3f ms"
 msgstr ""
 
 #: panels/timer.py:49
@@ -249,7 +251,7 @@ msgstr "경과 시간"
 
 #: panels/timer.py:49
 #, python-format
-msgid "%(total_time)0.3f msec"
+msgid "%(total_time)0.3f ms"
 msgstr ""
 
 #: panels/timer.py:51
@@ -324,12 +326,6 @@ msgstr "명령"
 #: templates/debug_toolbar/panels/cache.html:39
 msgid "Calls"
 msgstr "호출"
-
-#: templates/debug_toolbar/panels/cache.html:43
-#: templates/debug_toolbar/panels/sql.html:36
-msgid "Time (ms)"
-msgstr "시간 (ms)"
-
 #: templates/debug_toolbar/panels/cache.html:44
 msgid "Type"
 msgstr "타입"
@@ -657,8 +653,8 @@ msgid "Timing attribute"
 msgstr "타이밍 속성"
 
 #: templates/debug_toolbar/panels/timer.html:37
-msgid "Milliseconds since navigation start (+length)"
-msgstr "탐색 시작후 밀리초 소요 (+길이)"
+msgid "Time since navigation start (+duration)"
+msgstr "탐색 시작 이후 시간 (+기간)"
 
 #: templates/debug_toolbar/panels/versions.html:10
 msgid "Package"

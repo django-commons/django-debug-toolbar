@@ -29,7 +29,7 @@ you'll have to deactivate it for this repository::
 Once you've obtained a checkout, you should create a virtualenv_ and install
 the libraries required for working on the Debug Toolbar::
 
-    $ python -m pip install -r requirements_dev.txt
+    $ python -m pip install --group dev --group docs
 
 .. _virtualenv: https://virtualenv.pypa.io/
 
@@ -107,6 +107,15 @@ For MySQL/MariaDB in a ``mysql`` shell::
     mysql> CREATE USER 'debug_toolbar'@'localhost' IDENTIFIED BY 'debug_toolbar';
     mysql> GRANT ALL PRIVILEGES ON debug_toolbar.* TO 'debug_toolbar'@'localhost';
     mysql> GRANT ALL PRIVILEGES ON test_debug_toolbar.* TO 'debug_toolbar'@'localhost';
+
+The toolbar also ships a JavaScript test suite that runs in a real browser
+with `Vitest <https://vitest.dev/>`_ and
+`WebdriverIO <https://webdriver.io/>`_. It requires Node.js (see ``engines``
+in ``package.json`` for the supported version) and a local install of Chrome
+and Firefox. Install the JavaScript dependencies and run the tests with::
+
+    $ npm install
+    $ npm test
 
 
 Style
@@ -267,7 +276,7 @@ activated and all dependencies are installed:
 
 .. code-block:: bash
 
-    pip install -r requirements_dev.txt
+    pip install --group dev --group docs
 
 Alternatively, you can build the documentation using Tox, which automatically
 handles dependencies and environment setup:

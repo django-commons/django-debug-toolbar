@@ -68,9 +68,13 @@ the store ID. This is so that the toolbar can load the collected metrics
 for that particular request.
 
 The history panel allows a user to view the metrics for any request since
-the application was started. The toolbar maintains its state entirely in
-memory for the process running ``runserver``. If the application is
-restarted the toolbar will lose its state.
+the application was started. By default, the toolbar maintains its state
+entirely in memory (``MemoryStore``) for the process running ``runserver``.
+If the application is restarted the toolbar will lose its state. To persist
+data across restarts, configure ``TOOLBAR_STORE_CLASS`` to use
+``DatabaseStore`` or ``CacheStore``. See the
+:ref:`TOOLBAR_STORE_CLASS <TOOLBAR_STORE_CLASS>` configuration option for
+details.
 
 Problematic Parts
 -----------------

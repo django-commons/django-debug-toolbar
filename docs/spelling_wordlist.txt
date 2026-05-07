@@ -17,6 +17,7 @@ biome
 checkbox
 contrib
 csp
+debounce
 deduplicated
 dicts
 django
@@ -26,12 +27,14 @@ flatpages
 frontend
 htmx
 inlining
+instantiation
 instrumentation
 isort
 jQuery
 jinja
 jrestclient
 js
+lookups
 margins
 memcache
 memcached

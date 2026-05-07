@@ -18,17 +18,6 @@ class RedirectsPanel(Panel):
 
     nav_title = _("Intercept redirects")
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        warnings.warn(
-            "The RedirectsPanel is deprecated and will be removed in a future version. "
-            "The HistoryPanel now provides the ability to view toolbar data for redirected requests. "
-            "If you still have a use case for this panel, please comment on "
-            "https://github.com/django-commons/django-debug-toolbar/issues/2216",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
     def _process_response(self, response):
         """
         Common response processing logic.
@@ -71,4 +60,13 @@ class RedirectsPanel(Panel):
         response = SimpleTemplateResponse("debug_toolbar/redirect.html", context)
         response.cookies = cookies
         response.original_response = original_response
+
+        warnings.warn(
+            "The RedirectsPanel is deprecated and will be removed in a future version. "
+            "The HistoryPanel now provides the ability to view toolbar data for redirected requests. "
+            "If you still have a use case for this panel, please comment on "
+            "https://github.com/django-commons/django-debug-toolbar/issues/2216",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return response

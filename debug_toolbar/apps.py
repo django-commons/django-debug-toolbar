@@ -249,12 +249,17 @@ def debug_toolbar_installed_when_running_tests_check(app_configs, **kwargs):
         dt_settings.get_config()["SHOW_TOOLBAR_CALLBACK"]
         != CONFIG_DEFAULTS["SHOW_TOOLBAR_CALLBACK"]
     )
-    try:
-        # Check if the toolbar's urls are installed
-        reverse(f"{APP_NAME}:render_panel")
-        toolbar_urls_installed = True
-    except NoReverseMatch:
+
+    if not hasattr(settings, "ROOT_URLCONF"):
+        # reverse will raise AttributeError if ROOT_URLCONF is not defined
         toolbar_urls_installed = False
+    else:
+        try:
+            # Check if the toolbar's urls are installed
+            reverse(f"{APP_NAME}:render_panel")
+            toolbar_urls_installed = True
+        except NoReverseMatch:
+            toolbar_urls_installed = False
 
     # If the user is using the default SHOW_TOOLBAR_CALLBACK,
     # then the middleware will respect the change to settings.DEBUG.
