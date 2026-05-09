@@ -1,10 +1,7 @@
-from django.core.files.storage import FileSystemStorage
-from django.http import FileResponse, Http404, HttpRequest, JsonResponse
+from django.http import HttpRequest, JsonResponse
 from django.utils.html import escape
 from django.utils.translation import gettext as _
-from django.views.decorators.http import require_GET
 
-from debug_toolbar import settings as dt_settings
 from debug_toolbar._compat import login_not_required
 from debug_toolbar.decorators import render_with_toolbar_language, require_show_toolbar
 from debug_toolbar.panels import Panel
