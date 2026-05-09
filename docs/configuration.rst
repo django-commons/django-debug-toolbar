@@ -179,6 +179,10 @@ Toolbar options
   provide your own function ``callback(request)`` which returns ``True`` or
   ``False``.
 
+  If implementing a custom function and using the
+  ``debug_toolbar.toolbar.debug_toolbar_urls`` to inject the toolbar's paths,
+  this callback must return ``False`` when ``django.conf.settings.DEBUG``.
+
   For versions < 1.8, the callback should also return ``False`` for AJAX
   requests. Since version 1.8, AJAX requests are checked in the middleware, not
   the callback. This allows reusing the callback to verify access to panel

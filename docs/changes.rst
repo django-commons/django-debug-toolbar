@@ -25,6 +25,9 @@ Pending
   ``esupgrade``.
 * Updated tox configuration to treat ``DeprecationWarning``,
   ``ResourceWarning``, and ``PendingDeprecationWarning`` as errors.
+* Clarified configuration documentation about ``SHOW_TOOLBAR_CALLBACK``
+  needing to respect ``django.conf.settings.DEBUG`` to match
+  ``debug_toolbar_urls``.
 
 6.3.0 (2026-04-01)
 ------------------
