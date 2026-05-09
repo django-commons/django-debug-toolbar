@@ -7,8 +7,9 @@ from pstats import Stats
 from django import forms
 from django.conf import settings
 from django.contrib.auth.decorators import login_not_required
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.urls import path
+from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_GET
@@ -17,6 +18,7 @@ from debug_toolbar import settings as dt_settings
 from debug_toolbar.decorators import render_with_toolbar_language, require_show_toolbar
 from debug_toolbar.panels import Panel
 from debug_toolbar.toolbar import DebugToolbar
+from debug_toolbar.utils import get_view_path_metadata
 
 logger = logging.getLogger(__name__)
 
@@ -173,6 +175,37 @@ class FunctionCall:
         }
 
 
+def _print_stats_from_function_calls(func_list: list[FunctionCall]) -> str:
+    """
+    Create a string that is matches what pstats.Stats.print_stats would
+    print out.
+    """
+    # Column layout matches pstats output: ncalls right-justified in 9
+    # chars, each time value formatted as f8 ("%8.3f"). The 3-space indent
+    # on the header and ordering lines is part of the pstats format.
+    # https://docs.python.org/3/library/profile.html#pstats.Stats.print_stats
+    lines = ["   Ordered by: cumulative time", ""]
+    lines.append(
+        "   ncalls  tottime  percall  cumtime  percall filename:lineno(function)"
+    )
+    for func in func_list:
+        nc = func["count"]
+        cc = func["primitive_count"]
+        # pstats shows nc/cc when they differ (recursive calls inflate nc)
+        ncalls_str = f"{nc}/{cc}" if nc != cc else str(nc)
+        # pstats prints 8 spaces instead of a percall value when the
+        # divisor is zero, preserving column alignment
+        tt_per = f"{func['tottime_per_call']:8.3f}" if nc else " " * 8
+        ct_per = f"{func['cumtime_per_call']:8.3f}" if cc else " " * 8
+        lines.append(
+            f"{ncalls_str:>9} {func['tottime']:8.3f} {tt_per}"
+            f" {func['cumtime']:8.3f} {ct_per} {func['func_key']}"
+        )
+    # pstats ends output with two blank lines
+    lines.extend(["", ""])
+    return "\n".join(lines)
+
+
 class ProfilingPanel(Panel):
     """
     Panel that displays profiling information.
@@ -222,11 +255,34 @@ class ProfilingPanel(Panel):
                 dt_settings.get_config()["PROFILER_MAX_DEPTH"],
                 cum_time_threshold,
             )
-            self.record_stats({"func_list": [func.serialize() for func in func_list]})
+            try:
+                url_name = get_view_path_metadata(request).url_name
+            except Http404:
+                url_name = _("<unavailable>")
+            self.record_stats(
+                {
+                    "func_list": [func.serialize() for func in func_list],
+                    "profile_name": f"{url_name}-{timezone.now().isoformat()}",
+                }
+            )
+
+    def get_stats(self):
+        """
+        Access data stored by the panel. Returns a :class:`dict`.
+        """
+        stats = super().get_stats()
+        # This isn't a stat, but is used in the context in the
+        # ProfilingPanel.content property when rendering the template.
+        stats["profiling_download_form"] = ProfilingDownloadForm(
+            initial={"request_id": self.toolbar.request_id}
+        )
+        return stats
 
     @classmethod
     def get_urls(cls):
-        return [path("profiling_download/", profiling_download, name="profiling_download")]
+        return [
+            path("profiling_download/", profiling_download, name="profiling_download")
+        ]
 
 
 class ProfilingDownloadForm(forms.Form):
@@ -235,6 +291,7 @@ class ProfilingDownloadForm(forms.Form):
 
         request_id: The key for the store instance to be fetched.
     """
+
     request_id = forms.CharField(widget=forms.HiddenInput())
 
 
@@ -251,35 +308,12 @@ def profiling_download(request):
         if toolbar is None:
             return HttpResponseBadRequest("Request is no longer available.")
         panel = toolbar.get_panel_by_id(ProfilingPanel.panel_id)
-        func_list = panel.get_stats().get("func_list", [])
-
-        # Column layout matches pstats output: ncalls right-justified in 9
-        # chars, each time value formatted as f8 ("%8.3f"). The 3-space indent
-        # on the header and ordering lines is part of the pstats format.
-        # https://docs.python.org/3/library/profile.html#pstats.Stats.print_stats
-        lines = ["   Ordered by: cumulative time", ""]
-        lines.append(
-            "   ncalls  tottime  percall  cumtime  percall filename:lineno(function)"
-        )
-        for func in func_list:
-            nc = func["count"]
-            cc = func["primitive_count"]
-            # pstats shows nc/cc when they differ (recursive calls inflate nc)
-            ncalls_str = f"{nc}/{cc}" if nc != cc else str(nc)
-            # pstats prints 8 spaces instead of a percall value when the
-            # divisor is zero, preserving column alignment
-            tt_per = f"{func['tottime_per_call']:8.3f}" if nc else " " * 8
-            ct_per = f"{func['cumtime_per_call']:8.3f}" if cc else " " * 8
-            lines.append(
-                f"{ncalls_str:>9} {func['tottime']:8.3f} {tt_per}"
-                f" {func['cumtime']:8.3f} {ct_per} {func['func_key']}"
-            )
-        # pstats ends output with two blank lines
-        lines.extend(["", ""])
-
-        response = HttpResponse("\n".join(lines), content_type="text/plain")
-        response["Content-Disposition"] = (
-            f'attachment; filename="request-{request_id}.prof"'
-        )
+        panel_stats = panel.get_stats()
+        if "func_list" not in panel_stats:
+            return HttpResponseBadRequest("No profiling data exists for this request.")
+        content = _print_stats_from_function_calls(panel_stats["func_list"])
+        response = HttpResponse(content, content_type="text/plain")
+        profile_name = panel_stats.get("profile_name") or f"request-{request_id}"
+        response["Content-Disposition"] = f'attachment; filename="{profile_name}.prof"'
         return response
     return HttpResponseBadRequest(f"Form errors: {form.errors}")

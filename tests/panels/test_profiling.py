@@ -1,7 +1,4 @@
-import os
-import shutil
 import sys
-import tempfile
 import unittest
 from unittest import mock
 
@@ -94,6 +91,11 @@ class ProfilingPanelTestCase(BaseTestCase):
         self.panel.generate_stats(self.request, response)
         self.assertNotIn("func_list", self.panel.get_stats())
 
+    def test_content_includes_download_form(self):
+        content = self.panel.content
+        self.assertIn('name="request_id"', content)
+        self.assertIn(self.toolbar.request_id, content)
+
 
 @override_settings(
     DEBUG=True, DEBUG_TOOLBAR_PANELS=["debug_toolbar.panels.profiling.ProfilingPanel"]
@@ -171,7 +173,7 @@ class ProfilingDownloadViewTestCase(TestCase):
     @mock.patch("debug_toolbar.panels.profiling.DebugToolbar.fetch")
     def test_empty_func_list(self, mock_fetch):
         mock_panel = mock.MagicMock()
-        mock_panel.get_stats.return_value = {}
+        mock_panel.get_stats.return_value = {"func_list": []}
         mock_toolbar = mock.MagicMock()
         mock_toolbar.get_panel_by_id.return_value = mock_panel
         mock_fetch.return_value = mock_toolbar

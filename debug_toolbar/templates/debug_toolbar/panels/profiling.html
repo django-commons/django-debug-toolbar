@@ -1,12 +1,9 @@
 {% load i18n %}
 
-{% if prof_file_path %}
-<div class="djdt-profiling-control">
-  <a href="{% url 'djdt:profiling_download' %}" class="djDebugButton" target="_blank">
-    Download .prof file
-  </a>
-</div>
-{% endif %}
+<form method="get" action="{% url 'djdt:profiling_download' %}" target="_blank">
+    {{ profiling_download_form.as_div }}
+    <button>Download</button>
+</form>
 
 <table>
   <thead>
