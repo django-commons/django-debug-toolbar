@@ -77,7 +77,7 @@ export const $$ = {
  * is being selected. A fixed reference to the element should be avoided
  * because the entire DOM could be reloaded such as via HTMX boosting.
  */
-function getDebugElement() {
+export function getDebugElement() {
     let root = document.getElementById("djDebugRoot");
     if (root.shadowRoot) {
         root = root.shadowRoot;

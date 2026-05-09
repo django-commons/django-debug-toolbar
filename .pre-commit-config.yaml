@@ -34,7 +34,7 @@ repos:
     -   id: rst-backticks
     -   id: rst-directive-colons
 -   repo: https://github.com/biomejs/pre-commit
-    rev: v2.4.13
+    rev: v2.4.14
     hooks:
       - id: biome-check
         verbose: true
