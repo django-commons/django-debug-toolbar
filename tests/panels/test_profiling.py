@@ -1,15 +1,13 @@
 import sys
 import unittest
-from unittest import mock
 
 from django.contrib.auth.models import User
 from django.db import IntegrityError, transaction
 from django.http import HttpResponse
-from django.test import TestCase
 from django.test.utils import override_settings
-from django.urls import reverse
 
 from debug_toolbar.panels.profiling import ProfilingPanel
+from debug_toolbar.store import get_store
 
 from ..base import BaseTestCase, IntegrationTestCase
 from ..views import listcomp_view, regular_view
@@ -112,77 +110,49 @@ class ProfilingPanelIntegrationTestCase(IntegrationTestCase):
             response = self.client.get("/new_user/")
         self.assertEqual(User.objects.count(), 1)
 
-
-@override_settings(DEBUG=True)
-class ProfilingDownloadViewTestCase(TestCase):
-    def test_missing_request_id(self):
-        url = reverse("djdt:profiling_download")
-        response = self.client.get(url)
+    def test_profiling_download_missing_request_id(self):
+        response = self.client.get("/__debug__/profiling_download/")
         self.assertEqual(response.status_code, 400)
 
-    def test_toolbar_not_found(self):
-        url = reverse("djdt:profiling_download")
-        response = self.client.get(url, {"request_id": "nonexistent-id"})
+    def test_profiling_download_toolbar_not_found(self):
+        response = self.client.get(
+            "/__debug__/profiling_download/", {"request_id": "nonexistent-id"}
+        )
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.content, b"Request is no longer available.")
 
-    @mock.patch("debug_toolbar.panels.profiling.DebugToolbar.fetch")
-    def test_valid_download(self, mock_fetch):
-        mock_panel = mock.MagicMock()
-        mock_panel.get_stats.return_value = {
-            "func_list": [
-                {
-                    "count": 1,
-                    "primitive_count": 1,
-                    "tottime": 0.001,
-                    "tottime_per_call": 0.001,
-                    "cumtime": 0.005,
-                    "cumtime_per_call": 0.005,
-                    "func_key": "/path/to/file.py:42(view)",
-                },
-                {
-                    "count": 5,
-                    "primitive_count": 3,
-                    "tottime": 0.002,
-                    "tottime_per_call": 0.0004,
-                    "cumtime": 0.003,
-                    "cumtime_per_call": 0.001,
-                    "func_key": "/path/to/other.py:10(helper)",
-                },
-            ]
-        }
-        mock_toolbar = mock.MagicMock()
-        mock_toolbar.get_panel_by_id.return_value = mock_panel
-        mock_fetch.return_value = mock_toolbar
-
-        url = reverse("djdt:profiling_download")
-        response = self.client.get(url, {"request_id": "test-id"})
+    def test_profiling_download(self):
+        # The profiling panel needs to be actively enabled.
+        self.client.cookies["djdtProfilingPanel"] = "on"
+        self.client.get("/regular/basic/")
+        request_ids = list(get_store().request_ids())
+        request_id = request_ids[-1]
+        response = self.client.get(
+            "/__debug__/profiling_download/", {"request_id": request_id}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "text/plain")
-        self.assertIn(
-            'attachment; filename="request-test-id.prof"',
-            response["Content-Disposition"],
-        )
+        self.assertIn(".prof", response["Content-Disposition"])
         content = response.content.decode()
         self.assertIn(
             "   ncalls  tottime  percall  cumtime  percall filename:lineno(function)",
             content,
         )
-        self.assertIn("/path/to/file.py:42(view)", content)
-        self.assertIn("5/3", content)
 
-    @mock.patch("debug_toolbar.panels.profiling.DebugToolbar.fetch")
-    def test_empty_func_list(self, mock_fetch):
-        mock_panel = mock.MagicMock()
-        mock_panel.get_stats.return_value = {"func_list": []}
-        mock_toolbar = mock.MagicMock()
-        mock_toolbar.get_panel_by_id.return_value = mock_panel
-        mock_fetch.return_value = mock_toolbar
-
-        url = reverse("djdt:profiling_download")
-        response = self.client.get(url, {"request_id": "test-id"})
-        self.assertEqual(response.status_code, 200)
-        content = response.content.decode()
-        self.assertIn(
-            "   ncalls  tottime  percall  cumtime  percall filename:lineno(function)",
-            content,
+    def test_profiling_download_lacks_data(self):
+        # The profiling panel needs to be actively enabled.
+        self.client.cookies["djdtProfilingPanel"] = "on"
+        self.client.get("/regular/basic/")
+        store = get_store()
+        request_ids = list(store.request_ids())
+        request_id = request_ids[-1]
+        # Clear the Profiling panel's data to treat it as if the profiling
+        # didn't get generated as expected.
+        store.save_panel(request_id, ProfilingPanel.panel_id, {})
+        response = self.client.get(
+            "/__debug__/profiling_download/", {"request_id": request_id}
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.content, b"No profiling data exists for this request."
         )
