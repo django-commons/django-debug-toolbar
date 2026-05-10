@@ -18,7 +18,7 @@ from debug_toolbar import settings as dt_settings
 from debug_toolbar.decorators import render_with_toolbar_language, require_show_toolbar
 from debug_toolbar.panels import Panel
 from debug_toolbar.toolbar import DebugToolbar
-from debug_toolbar.utils import get_view_path_metadata
+from debug_toolbar.utils import ViewPathMetadata
 
 logger = logging.getLogger(__name__)
 
@@ -256,7 +256,7 @@ class ProfilingPanel(Panel):
                 cum_time_threshold,
             )
             try:
-                url_name = get_view_path_metadata(request).url_name
+                url_name = ViewPathMetadata.from_request(request).url_name
             except Http404:
                 url_name = _("<unavailable>")
             self.record_stats(

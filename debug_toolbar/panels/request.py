@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 from debug_toolbar.panels import Panel
 from debug_toolbar.utils import (
-    get_view_path_metadata,
+    ViewPathMetadata,
     sanitize_and_sort_request_vars,
 )
 
@@ -35,7 +35,7 @@ class RequestPanel(Panel):
         )
 
         try:
-            view_metadata = get_view_path_metadata(request)
+            view_metadata = ViewPathMetadata.from_request(request)
         except Http404:
             view_info = {
                 "view_func": _("<no view>"),

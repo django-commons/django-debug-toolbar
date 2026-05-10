@@ -4,9 +4,9 @@ import inspect
 import linecache
 import os.path
 import sys
+import typing
 import warnings
 from collections.abc import Sequence
-from dataclasses import dataclass
 from pprint import PrettyPrinter, pformat
 from typing import Any
 
@@ -420,32 +420,35 @@ def get_csp_nonce(request) -> str | None:
     return compat.get_nonce(request)
 
 
-@dataclass
-class ViewPathMetadata:
+class ViewPathMetadata(typing.NamedTuple):
+    """
+    Helpers class containing the routing metadata for a request being
+    routed through a particular path to the view.
+    """
+
     view_func: str
     view_args: tuple[Any]
     view_kwargs: dict[str, Any]
     url_name: str
 
+    @classmethod
+    def from_request(cls, request: HttpRequest) -> ViewPathMetadata:
+        """
+        Create an instance of the ViewPathMetadata from a request.
+        """
+        match = resolve(request.path_info)
+        func, args, kwargs = match
 
-def get_view_path_metadata(request: HttpRequest) -> ViewPathMetadata:
-    """
-    Retrieve the routing metadata for a request being routed through
-    a particular path to the view.
-    """
-    match = resolve(request.path_info)
-    func, args, kwargs = match
+        if getattr(match, "url_name", False):
+            url_name = match.url_name
+            if match.namespaces:
+                url_name = ":".join([*match.namespaces, url_name])
+        else:
+            url_name = _("<unavailable>")
 
-    if getattr(match, "url_name", False):
-        url_name = match.url_name
-        if match.namespaces:
-            url_name = ":".join([*match.namespaces, url_name])
-    else:
-        url_name = _("<unavailable>")
-
-    return ViewPathMetadata(
-        view_func=get_name_from_obj(func),
-        view_args=args,
-        view_kwargs=kwargs,
-        url_name=url_name,
-    )
+        return ViewPathMetadata(
+            view_func=get_name_from_obj(func),
+            view_args=args,
+            view_kwargs=kwargs,
+            url_name=url_name,
+        )
