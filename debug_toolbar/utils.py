@@ -4,16 +4,19 @@ import inspect
 import linecache
 import os.path
 import sys
+import typing
 import warnings
 from collections.abc import Sequence
 from pprint import PrettyPrinter, pformat
 from typing import Any
 
 from asgiref.local import Local
-from django.http import QueryDict
+from django.http import HttpRequest, QueryDict
 from django.template import Node
+from django.urls import resolve
 from django.utils.html import format_html
 from django.utils.safestring import SafeString, mark_safe
+from django.utils.translation import gettext_lazy as _
 from django.views.debug import get_default_exception_reporter_filter
 
 from debug_toolbar import _compat as compat, _stubs as stubs, settings as dt_settings
@@ -415,3 +418,37 @@ def get_csp_nonce(request) -> str | None:
         return csp_nonce
     # Django's built-in CSP support uses get_nonce(request)
     return compat.get_nonce(request)
+
+
+class ViewPathMetadata(typing.NamedTuple):
+    """
+    Helpers class containing the routing metadata for a request being
+    routed through a particular path to the view.
+    """
+
+    view_func: str
+    view_args: tuple[Any]
+    view_kwargs: dict[str, Any]
+    url_name: str
+
+    @classmethod
+    def from_request(cls, request: HttpRequest) -> ViewPathMetadata:
+        """
+        Create an instance of the ViewPathMetadata from a request.
+        """
+        match = resolve(request.path_info)
+        func, args, kwargs = match
+
+        if getattr(match, "url_name", False):
+            url_name = match.url_name
+            if match.namespaces:
+                url_name = ":".join([*match.namespaces, url_name])
+        else:
+            url_name = _("<unavailable>")
+
+        return ViewPathMetadata(
+            view_func=get_name_from_obj(func),
+            view_args=args,
+            view_kwargs=kwargs,
+            url_name=url_name,
+        )

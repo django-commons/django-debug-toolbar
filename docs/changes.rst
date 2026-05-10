@@ -25,6 +25,8 @@ Pending
   ``esupgrade``.
 * Updated tox configuration to treat ``DeprecationWarning``,
   ``ResourceWarning``, and ``PendingDeprecationWarning`` as errors.
+* Added the ability to download the profiling data as a file.
+
 
 6.3.0 (2026-04-01)
 ------------------

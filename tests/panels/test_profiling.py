@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.test.utils import override_settings
 
 from debug_toolbar.panels.profiling import ProfilingPanel
+from debug_toolbar.store import get_store
 
 from ..base import BaseTestCase, IntegrationTestCase
 from ..views import listcomp_view, regular_view
@@ -88,6 +89,11 @@ class ProfilingPanelTestCase(BaseTestCase):
         self.panel.generate_stats(self.request, response)
         self.assertNotIn("func_list", self.panel.get_stats())
 
+    def test_content_includes_download_form(self):
+        content = self.panel.content
+        self.assertIn('name="request_id"', content)
+        self.assertIn(self.toolbar.request_id, content)
+
 
 @override_settings(
     DEBUG=True, DEBUG_TOOLBAR_PANELS=["debug_toolbar.panels.profiling.ProfilingPanel"]
@@ -103,3 +109,53 @@ class ProfilingPanelIntegrationTestCase(IntegrationTestCase):
         with self.assertRaises(IntegrityError), transaction.atomic():
             response = self.client.get("/new_user/")
         self.assertEqual(User.objects.count(), 1)
+
+    def test_profiling_download_missing_request_id(self):
+        response = self.client.get("/__debug__/profiling_download/")
+        self.assertEqual(response.status_code, 400)
+
+    def test_profiling_download_toolbar_not_found(self):
+        response = self.client.get(
+            "/__debug__/profiling_download/", {"request_id": "nonexistent-id"}
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.content, b"Request is no longer available.")
+
+    def test_profiling_download(self):
+        # The profiling panel needs to be actively enabled.
+        self.client.cookies["djdtProfilingPanel"] = "on"
+        self.client.get("/regular/basic/")
+        request_ids = list(get_store().request_ids())
+        request_id = request_ids[-1]
+        response = self.client.get(
+            "/__debug__/profiling_download/", {"request_id": request_id}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/plain")
+        self.assertRegex(
+            response.filename,
+            r"<unavailable>-.*\.prof",
+        )
+        content = b"".join(response.streaming_content)
+        self.assertIn(
+            b"   ncalls  tottime  percall  cumtime  percall filename:lineno(function)",
+            content,
+        )
+
+    def test_profiling_download_lacks_data(self):
+        # The profiling panel needs to be actively enabled.
+        self.client.cookies["djdtProfilingPanel"] = "on"
+        self.client.get("/regular/basic/")
+        store = get_store()
+        request_ids = list(store.request_ids())
+        request_id = request_ids[-1]
+        # Clear the Profiling panel's data to treat it as if the profiling
+        # didn't get generated as expected.
+        store.save_panel(request_id, ProfilingPanel.panel_id, {})
+        response = self.client.get(
+            "/__debug__/profiling_download/", {"request_id": request_id}
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.content, b"No profiling data exists for this request."
+        )

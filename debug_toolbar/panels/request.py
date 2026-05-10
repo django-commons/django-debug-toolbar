@@ -1,9 +1,11 @@
 from django.http import Http404
-from django.urls import resolve
 from django.utils.translation import gettext_lazy as _
 
 from debug_toolbar.panels import Panel
-from debug_toolbar.utils import get_name_from_obj, sanitize_and_sort_request_vars
+from debug_toolbar.utils import (
+    ViewPathMetadata,
+    sanitize_and_sort_request_vars,
+)
 
 
 class RequestPanel(Panel):
@@ -32,30 +34,22 @@ class RequestPanel(Panel):
             }
         )
 
-        view_info = {
-            "view_func": _("<no view>"),
-            "view_args": "None",
-            "view_kwargs": "None",
-            "view_urlname": "None",
-        }
         try:
-            match = resolve(request.path_info)
-            func, args, kwargs = match
-            view_info["view_func"] = get_name_from_obj(func)
-            view_info["view_args"] = args
-            view_info["view_kwargs"] = kwargs
-
-            if getattr(match, "url_name", False):
-                url_name = match.url_name
-                if match.namespaces:
-                    url_name = ":".join([*match.namespaces, url_name])
-            else:
-                url_name = _("<unavailable>")
-
-            view_info["view_urlname"] = url_name
-
+            view_metadata = ViewPathMetadata.from_request(request)
         except Http404:
-            pass
+            view_info = {
+                "view_func": _("<no view>"),
+                "view_args": "None",
+                "view_kwargs": "None",
+                "view_urlname": "None",
+            }
+        else:
+            view_info = {
+                "view_func": view_metadata.view_func,
+                "view_args": view_metadata.view_args,
+                "view_kwargs": view_metadata.view_kwargs,
+                "view_urlname": view_metadata.url_name,
+            }
         self.record_stats(view_info)
 
         if hasattr(request, "session"):
