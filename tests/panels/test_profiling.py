@@ -132,10 +132,13 @@ class ProfilingPanelIntegrationTestCase(IntegrationTestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "text/plain")
-        self.assertIn(".prof", response["Content-Disposition"])
-        content = response.content.decode()
+        self.assertRegex(
+            response.filename,
+            r"<unavailable>-.*\.prof",
+        )
+        content = b"".join(response.streaming_content)
         self.assertIn(
-            "   ncalls  tottime  percall  cumtime  percall filename:lineno(function)",
+            b"   ncalls  tottime  percall  cumtime  percall filename:lineno(function)",
             content,
         )
 

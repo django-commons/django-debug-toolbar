@@ -7,7 +7,7 @@ from pstats import Stats
 from django import forms
 from django.conf import settings
 from django.contrib.auth.decorators import login_not_required
-from django.http import Http404, HttpResponse, HttpResponseBadRequest
+from django.http import FileResponse, Http404, HttpResponseBadRequest
 from django.urls import path
 from django.utils import timezone
 from django.utils.html import format_html
@@ -312,8 +312,10 @@ def profiling_download(request):
         if "func_list" not in panel_stats:
             return HttpResponseBadRequest("No profiling data exists for this request.")
         content = _print_stats_from_function_calls(panel_stats["func_list"])
-        response = HttpResponse(content, content_type="text/plain")
-        profile_name = panel_stats.get("profile_name") or f"request-{request_id}"
-        response["Content-Disposition"] = f'attachment; filename="{profile_name}.prof"'
-        return response
+        return FileResponse(
+            content,
+            as_attachment=True,
+            filename=f"{panel_stats['profile_name']}.prof",
+            content_type="text/plain",
+        )
     return HttpResponseBadRequest(f"Form errors: {form.errors}")
