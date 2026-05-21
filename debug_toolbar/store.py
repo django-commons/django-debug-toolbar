@@ -27,7 +27,7 @@ def serialize(data: Any) -> str:
     # If this starts throwing an exceptions, consider
     # Subclassing DjangoJSONEncoder and using force_str to
     # make it JSON serializable.
-    return json.dumps(data, cls=DebugToolbarJSONEncoder)
+    return json.dumps(data, cls=DebugToolbarJSONEncoder, skipkeys=True)
 
 
 def deserialize(data: str) -> Any:

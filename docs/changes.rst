@@ -5,6 +5,8 @@ Pending
 -------
 
 * Prevent check from failing when ``ROOT_URLCONF`` is not defined.
+* Prevent toolbar storage from failing when serialized panel data contains
+  mapping keys that are not JSON-compatible.
 * Prevent debounce race conditions in the history panel for rapid
   fetch requests.
 * Added a note to the prerequisites section of the installation docs

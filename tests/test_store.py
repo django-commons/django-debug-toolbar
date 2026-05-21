@@ -24,6 +24,12 @@ class SerializationTestCase(TestCase):
             '{"hello": {"foo": "bar"}}',
         )
 
+    def test_serialize_unexpected(self):
+        self.assertEqual(
+            store.serialize({"hello": {str: "this-is-a-string", "foo": "bar"}}),
+            '{"hello": {"foo": "bar"}}',
+        )
+
     def test_deserialize(self):
         self.assertEqual(
             store.deserialize('{"hello": {"foo": "bar"}}'),
