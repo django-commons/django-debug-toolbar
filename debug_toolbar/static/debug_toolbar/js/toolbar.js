@@ -364,7 +364,7 @@ const djdt = {
             if (typeof options.expires === "number") {
                 const days = options.expires;
                 const expires = new Date();
-                expires.setDate(expires.setDate() + days);
+                expires.setDate(expires.getDate() + days);
                 options.expires = expires;
             }
 
