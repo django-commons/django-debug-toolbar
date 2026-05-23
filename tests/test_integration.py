@@ -2,12 +2,14 @@ import os
 import re
 import time
 import unittest
+import warnings
 from unittest.mock import patch
 
 import html5lib
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core import signing
 from django.core.cache import cache
+from django.core.cache.backends.base import CacheKeyWarning
 from django.db import connection
 from django.http import HttpResponse
 from django.template.loader import get_template
@@ -208,6 +210,23 @@ class DebugToolbarTestCase(BaseTestCase):
         self.assertEqual(
             len(response.toolbar.get_panel_by_id(CachePanel.panel_id).calls), 1
         )
+
+    def test_cache_panel_store_skips_non_json_keys(self):
+        cache.clear()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", CacheKeyWarning)
+            response = self.client.get("/cache_with_non_json_key/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            len(response.toolbar.get_panel_by_id(CachePanel.panel_id).calls), 1
+        )
+
+        request_id = list(get_store().request_ids())[-1]
+        toolbar = DebugToolbar.fetch(request_id, CachePanel.panel_id)
+        stats = toolbar.get_panel_by_id(CachePanel.panel_id).get_stats()
+        self.assertEqual(stats["calls"][0]["name"], "set_many")
+        self.assertEqual(stats["calls"][0]["args"], [{"foo": "bar"}])
 
     def test_cache_disable_instrumentation(self):
         """

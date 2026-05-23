@@ -25,6 +25,7 @@ urlpatterns = [
     path("async_execute_sql_concurrently/", views.async_execute_sql_concurrently),
     path("cached_view/", views.cached_view),
     path("cached_low_level_view/", views.cached_low_level_view),
+    path("cache_with_non_json_key/", views.cache_with_non_json_key_view),
     path("json_view/", views.json_view),
     path("redirect/", views.redirect_view),
     path("ajax/", views.ajax_view),

@@ -106,6 +106,11 @@ def cached_low_level_view(request):
     return render(request, "base.html")
 
 
+def cache_with_non_json_key_view(request):
+    cache.set_many({str: "this-is-a-string", "foo": "bar"})
+    return render(request, "base.html")
+
+
 def json_view(request):
     return JsonResponse({"foo": "bar"})
 
