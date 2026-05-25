@@ -137,6 +137,3 @@ class TimerPanel(Panel):
 
     def enable_instrumentation(self):
         self._toolbar_start_time = perf_counter()
-
-    async def aenable_instrumentation(self):
-        self._toolbar_start_time = perf_counter()
