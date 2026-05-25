@@ -48,7 +48,7 @@ class TimerPanel(Panel):
             (_("Total CPU time"), _("%(total)0.3f ms") % stats),
             (_("Elapsed time"), _("%(total_time)0.3f ms") % stats),
             (
-                _("Toolbar time"),
+                _("DebugToolbar time"),
                 _("%(toolbar_time)0.3f ms") % stats,
             ),
             (
@@ -128,7 +128,7 @@ class TimerPanel(Panel):
             "total_time", "Elapsed time", stats.get("total_time", 0)
         )
         self.record_server_timing(
-            "toolbar_time", "Toolbar time", stats.get("toolbar_time", 0)
+            "toolbar_time", "DebugToolbar time", stats.get("toolbar_time", 0)
         )
 
     @staticmethod

@@ -624,7 +624,7 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
             r'TimerPanel_stime;dur=(\d)*(\.(\d)*)?;desc="System CPU time", ',
             r'TimerPanel_total;dur=(\d)*(\.(\d)*)?;desc="Total CPU time", ',
             r'TimerPanel_total_time;dur=(\d)*(\.(\d)*)?;desc="Elapsed time", ',
-            r'TimerPanel_toolbar_time;dur=(\d)*(\.(\d)*)?;desc="Toolbar time", ',
+            r'TimerPanel_toolbar_time;dur=(\d)*(\.(\d)*)?;desc="DebugToolbar time", ',
             r'SQLPanel_sql_time;dur=(\d)*(\.(\d)*)?;desc="SQL 1 queries", ',
             r'CachePanel_total_time;dur=0;desc="Cache 0 Calls"',
         ]
