@@ -108,6 +108,15 @@ For MySQL/MariaDB in a ``mysql`` shell::
     mysql> GRANT ALL PRIVILEGES ON debug_toolbar.* TO 'debug_toolbar'@'localhost';
     mysql> GRANT ALL PRIVILEGES ON test_debug_toolbar.* TO 'debug_toolbar'@'localhost';
 
+The toolbar also ships a JavaScript test suite that runs in a real browser
+with `Vitest <https://vitest.dev/>`_ and
+`WebdriverIO <https://webdriver.io/>`_. It requires Node.js (see ``engines``
+in ``package.json`` for the supported version) and a local install of Chrome
+and Firefox. Install the JavaScript dependencies and run the tests with::
+
+    $ npm install
+    $ npm test
+
 
 Style
 -----

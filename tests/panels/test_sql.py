@@ -14,11 +14,13 @@ from django.db.models import Count
 from django.db.utils import DatabaseError
 from django.shortcuts import render
 from django.test.utils import override_settings
+from sqlparse.exceptions import SQLParseError
 
 import debug_toolbar.panels.sql.tracking as sql_tracking
 from debug_toolbar import settings as dt_settings
 from debug_toolbar.models import HistoryEntry
 from debug_toolbar.panels.sql import SQLPanel, tracking
+from debug_toolbar.panels.sql.utils import parse_sql
 
 try:
     import psycopg
@@ -868,6 +870,33 @@ class SQLPanelTestCase(BaseTestCase):
         self.panel.generate_stats(self.request, response)
         query = self.panel._queries[0]
         self.assertTrue(query["is_select"])
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"PRETTIFY_SQL": True})
+    def test_sql_parse_error_graceful_degradation(self):
+        """
+        Test that SQLParseError is handled gracefully by disabling grouping.
+        """
+        parse_sql.cache_clear()
+
+        def run_side_effect(sql):
+            if mock_stack.run.call_count == 1:
+                raise SQLParseError("Token limit exceeded")
+            return [sql]
+
+        with patch("debug_toolbar.panels.sql.utils.get_filter_stack") as mock_get_stack:
+            mock_stack = mock_get_stack.return_value
+            mock_stack.run.side_effect = run_side_effect
+            mock_stack._grouping = True
+
+            result = parse_sql("SELECT * FROM test")
+
+            # Should have been called twice (once for error, once for retry)
+            self.assertEqual(mock_stack.run.call_count, 2)
+            # On retry, _grouping should be set to False
+            self.assertFalse(mock_stack._grouping)
+            self.assertIn("SELECT", result)
+
+        parse_sql.cache_clear()
 
 
 class SQLPanelMultiDBTestCase(BaseMultiDBTestCase):

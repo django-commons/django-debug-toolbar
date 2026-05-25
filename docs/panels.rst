@@ -444,14 +444,14 @@ Events
 
 .. code-block:: javascript
 
-    import { $$ } from "./utils.js";
+    import { $$, getDebugElement } from "./utils.js";
     function addCustomMetrics() {
         // Logic to process/add custom metrics here.
 
         // Be sure to cover the case of this function being called twice
         // due to file being loaded asynchronously.
     }
-    const djDebug = document.getElementById("djDebug");
+    const djDebug = getDebugElement();
     $$.onPanelRender(djDebug, "CustomPanel", addCustomMetrics);
     // Since a panel's scripts are loaded asynchronously, it's possible that
     // the above statement would occur after the djdt.panel.render event has

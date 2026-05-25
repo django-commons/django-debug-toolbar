@@ -158,3 +158,21 @@ class CachePanelTestCase(BaseTestCase):
     def test_backend_alias_is_recorded(self):
         cache.cache.get("foo")
         self.assertEqual(self.panel.calls[0]["backend"], "default (LocMemCache)")
+
+    def test_patching_only_applied_once(self):
+        """
+        Confirm that reapplying and disabling the cache patching only wraps
+        the cache methods once
+        """
+        for _ in range(2):
+            self.panel.enable_instrumentation()
+            self.panel.disable_instrumentation()
+        nested_wraps = 0
+        wrapped = cache.cache.get.__wrapped__
+        while wrapped is not None:
+            try:
+                wrapped = wrapped.__wrapped__
+                nested_wraps += 1
+            except AttributeError:
+                break
+        self.assertEqual(nested_wraps, 0)

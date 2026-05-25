@@ -1,6 +1,3 @@
-import unittest
-
-import django
 from django.test import SimpleTestCase, override_settings
 from django.urls import reverse
 
@@ -9,10 +6,6 @@ from debug_toolbar.store import get_store
 from tests.test_integration import toolbar_request_id
 
 
-@unittest.skipIf(
-    django.VERSION < (5, 1),
-    "Valid on Django 5.1 and above, requires LoginRequiredMiddleware",
-)
 @override_settings(
     DEBUG=True,
     MIDDLEWARE=[

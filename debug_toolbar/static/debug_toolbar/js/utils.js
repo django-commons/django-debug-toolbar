@@ -1,4 +1,4 @@
-const $$ = {
+export const $$ = {
     on(root, eventName, selector, fn) {
         root.removeEventListener(eventName, fn);
         root.addEventListener(eventName, (event) => {
@@ -8,15 +8,15 @@ const $$ = {
             }
         });
     },
+    /**
+     * This is a helper function to attach a handler for a `djdt.panel.render`
+     * event of a specific panel.
+     *
+     * root: The container element that the listener should be attached to.
+     * panelId: The Id of the panel.
+     * fn: A function to execute when the event is triggered.
+     */
     onPanelRender(root, panelId, fn) {
-        /*
-        This is a helper function to attach a handler for a `djdt.panel.render`
-        event of a specific panel.
-
-        root: The container element that the listener should be attached to.
-        panelId: The Id of the panel.
-        fn: A function to execute when the event is triggered.
-         */
         root.addEventListener("djdt.panel.render", (event) => {
             if (event.detail.panelId === panelId) {
                 fn.call(event);
@@ -48,12 +48,12 @@ const $$ = {
             document.head.appendChild(el);
         }
     },
+    /**
+     * Given a container element, apply styles set via data-djdt-styles attribute.
+     * The format is data-djdt-styles="styleName1:value;styleName2:value2"
+     * The style names should use the CSSStyleDeclaration camel cased names.
+     */
     applyStyles(container) {
-        /*
-         * Given a container element, apply styles set via data-djdt-styles attribute.
-         * The format is data-djdt-styles="styleName1:value;styleName2:value2"
-         * The style names should use the CSSStyleDeclaration camel cased names.
-         */
         for (const element of container.querySelectorAll(
             "[data-djdt-styles]"
         )) {
@@ -70,33 +70,46 @@ const $$ = {
     },
 };
 
-function ajax(url, init) {
-    return fetch(url, Object.assign({ credentials: "same-origin" }, init))
-        .then((response) => {
-            if (response.ok) {
-                return response
-                    .json()
-                    .catch((error) =>
-                        Promise.reject(
-                            new Error(
-                                `The response  is a invalid Json object : ${error}`
-                            )
-                        )
-                    );
-            }
-            return Promise.reject(
-                new Error(`${response.status}: ${response.statusText}`)
-            );
-        })
-        .catch((error) => {
-            const win = document.getElementById("djDebugWindow");
-            win.innerHTML = `<div class="djDebugPanelTitle"><h3>${error.message}</h3><button type="button" class="djDebugClose">»</button></div>`;
-            $$.show(win);
-            throw error;
-        });
+/**
+ * Fetch the debug element from the DOM.
+ *
+ * This is used to avoid writing the element's id everywhere the element
+ * is being selected. A fixed reference to the element should be avoided
+ * because the entire DOM could be reloaded such as via HTMX boosting.
+ */
+export function getDebugElement() {
+    let root = document.getElementById("djDebugRoot");
+    if (root.shadowRoot) {
+        root = root.shadowRoot;
+    }
+    return root.querySelector("#djDebug");
 }
 
-function ajaxForm(element) {
+export async function ajax(url, init) {
+    try {
+        const response = await fetch(url, {
+            credentials: "same-origin",
+            ...init,
+        });
+        if (response.ok) {
+            try {
+                return response.json();
+            } catch (error) {
+                throw new Error(
+                    `The response is a invalid Json object : ${error}`
+                );
+            }
+        }
+        throw new Error(`${response.status}: ${response.statusText}`);
+    } catch (error) {
+        const win = document.getElementById("djDebugWindow");
+        win.innerHTML = `<div class="djDebugPanelTitle"><h3>${error.message}</h3><button type="button" class="djDebugClose">»</button></div>`;
+        $$.show(win);
+        throw error;
+    }
+}
+
+export function ajaxForm(element) {
     const form = element.closest("form");
     const url = new URL(form.action);
     const formData = new FormData(form);
@@ -109,36 +122,33 @@ function ajaxForm(element) {
     return ajax(url, ajaxData);
 }
 
-function replaceToolbarState(newRequestId, data) {
-    const djDebug = document.getElementById("djDebug");
+export function replaceToolbarState(newRequestId, data) {
+    const djDebug = getDebugElement();
     djDebug.setAttribute("data-request-id", newRequestId);
     // Check if response is empty, it could be due to an expired requestId.
     for (const panelId of Object.keys(data)) {
-        const panel = document.getElementById(panelId);
+        const panel = djDebug.querySelector(`#${panelId}`);
         if (panel) {
             panel.outerHTML = data[panelId].content;
-            document.getElementById(`djdt-${panelId}`).outerHTML =
+            djDebug.querySelector(`#djdt-${panelId}`).outerHTML =
                 data[panelId].button;
         }
     }
 }
 
-function debounce(func, delay) {
-    let timer = null;
-    let resolves = [];
-
+/**
+ * Return function that delays invoking `func` until after `timeout` elapsed.
+ *
+ * Previous calls will be dismissed if the timeout hasn't elapsed.
+ *
+ * @param {Function} func - Function to be executed.
+ * @param {number} timeout - Time to wait before executing function in milliseconds.
+ * @returns {Function} - Debounced function.
+ */
+export function debounce(func, timeout) {
+    let timer;
     return (...args) => {
         clearTimeout(timer);
-        timer = setTimeout(() => {
-            const result = func(...args);
-            for (const r of resolves) {
-                r(result);
-            }
-            resolves = [];
-        }, delay);
-
-        return new Promise((r) => resolves.push(r));
+        timer = setTimeout(() => func(...args), timeout);
     };
 }
-
-export { $$, ajax, ajaxForm, debounce, replaceToolbarState };
