@@ -28,7 +28,7 @@ Pending
 * Clarified configuration documentation about ``SHOW_TOOLBAR_CALLBACK``
   needing to respect ``django.conf.settings.DEBUG`` to match
   ``debug_toolbar_urls``.
-* Fixed cookie ``expires`` calculation in ``djdt.cookie.set``. 
+* Fixed cookie ``expires`` calculation in ``djdt.cookie.set``.
 
 6.3.0 (2026-04-01)
 ------------------
