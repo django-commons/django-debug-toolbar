@@ -73,13 +73,17 @@ class DebugToolbar:
         """
         Get a list of panels enabled for the current request.
         """
-        panels = [panel for panel in self._panels.values() if panel.enabled]
         # Ensure TimerPanel is first in order to measure the full time of the toolbar's processing.
-        timer_panel = next(
-            (panel for panel in panels if panel.panel_id == "TimerPanel"), None
-        )
-        if timer_panel:
-            panels.remove(timer_panel)
+        panels = []
+        timer_panel = None
+        for panel in self._panels.values():
+            if not panel.enabled:
+                continue
+            if panel.panel_id == "TimerPanel":
+                timer_panel = panel
+            else:
+                panels.append(panel)
+        if timer_panel is not None:
             panels.insert(0, timer_panel)
         return panels
 
