@@ -69,10 +69,10 @@ docs = [
 ]
 
 [tool.hatch]
+version.path = "debug_toolbar/__init__.py"
 build.targets.wheel.packages = [
   "debug_toolbar",
 ]
-version.path = "debug_toolbar/__init__.py"
 
 [tool.ruff]
 target-version = "py310"
