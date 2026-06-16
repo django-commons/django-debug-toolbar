@@ -409,21 +409,21 @@ class SQLPanelTestCase(BaseTestCase):
             # comparisons in MySQL.
             # Django 6.2 started passing true/false for all-non
             # postgres databases.
-            expected_bools = '["Foo", true, false]'
+            expected_bools = ["Foo", True, False]
         else:
-            expected_bools = '["Foo"]'
+            expected_bools = ["Foo"]
 
         if connection.vendor == "postgresql":
             # PostgreSQL always includes timezone
-            expected_datetime = '["2017-12-22 16:07:01+00:00"]'
+            expected_datetime = ["2017-12-22 16:07:01+00:00"]
         else:
-            expected_datetime = '["2017-12-22 16:07:01"]'
+            expected_datetime = ["2017-12-22 16:07:01"]
 
         self.assertEqual(
             tuple(query["params"] for query in self.panel._queries),
             (
                 expected_bools,
-                "[10, 1]",
+                [10, 1],
                 expected_datetime,
             ),
         )
@@ -443,7 +443,7 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertEqual(len(self.panel._queries), 1)
         self.assertEqual(
             self.panel._queries[0]["params"],
-            '["{\\"foo\\": \\"bar\\"}"]',
+            ['{"foo": "bar"}'],
         )
 
     @unittest.skipUnless(
@@ -468,7 +468,7 @@ class SQLPanelTestCase(BaseTestCase):
 
         # ensure query was logged
         self.assertEqual(len(self.panel._queries), 1)
-        self.assertEqual(self.panel._queries[0]["params"], '[["a", "b\'"]]')
+        self.assertEqual(self.panel._queries[0]["params"], [["a", "b'"]])
 
     def test_binary_param_force_text(self):
         self.assertEqual(len(self.panel._queries), 0)
@@ -539,15 +539,13 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertEqual(
             tuple(query["params"] for query in self.panel._queries),
             (
-                '["Foo", true, false, "2017-12-22 16:07:01"]',
-                " ".join(
-                    [
-                        '{"first_name": "Foo",',
-                        '"is_staff": true,',
-                        '"is_superuser": false,',
-                        '"date_joined": "2017-12-22 16:07:01"}',
-                    ]
-                ),
+                ["Foo", True, False, "2017-12-22 16:07:01"],
+                {
+                    "first_name": "Foo",
+                    "is_staff": True,
+                    "is_superuser": False,
+                    "date_joined": "2017-12-22 16:07:01",
+                },
             ),
         )
 

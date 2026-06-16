@@ -19,6 +19,7 @@ urlpatterns = [
     path("execute_sql/", views.execute_sql),
     path("execute_json_sql/", views.execute_json_sql),
     path("execute_union_sql/", views.execute_union_sql),
+    path("execute_binary_sql/", views.execute_binary_sql),
     path("async_execute_sql/", views.async_execute_sql),
     path("async_execute_json_sql/", views.async_execute_json_sql),
     path("async_execute_union_sql/", views.async_execute_union_sql),

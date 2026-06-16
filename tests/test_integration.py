@@ -548,6 +548,29 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
             )
             self.assertEqual(response.status_code, 404)
 
+    def test_sql_explain_binary_param(self):
+        """
+        Confirm explain works for queries with binary parameters (e.g. GeoDjango EWKB).
+        """
+        self.client.get("/execute_binary_sql/")
+        request_ids = list(get_store().request_ids())
+        request_id = request_ids[-1]
+        toolbar = DebugToolbar.fetch(request_id, SQLPanel.panel_id)
+        panel = toolbar.get_panel_by_id(SQLPanel.panel_id)
+        djdt_query_id = panel.get_stats()["queries"][-1]["djdt_query_id"]
+
+        url = "/__debug__/sql_explain/"
+        data = {
+            "signed": SignedDataForm.sign(
+                {
+                    "request_id": request_id,
+                    "djdt_query_id": djdt_query_id,
+                }
+            )
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+
     def test_sql_profile_checks_show_toolbar(self):
         self.client.get("/execute_sql/")
         request_ids = list(get_store().request_ids())

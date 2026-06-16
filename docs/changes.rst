@@ -35,6 +35,10 @@ Pending
 * Support Django 6.2's handling of booleans for non-PostgreSQL databases.
 * Changed the SQL panel to show the "Select" and "Explain" action buttons for
   all queries, not just ``SELECT`` statements.
+* Fixed SQL explain functionality for GeoDjango queries with binary parameters.
+  Binary data (such as EWKB geometry) is now properly handled through base64
+  encoding, preventing "parse error - invalid geometry" errors when using
+  explain on spatial queries.
 
 6.3.0 (2026-04-01)
 ------------------

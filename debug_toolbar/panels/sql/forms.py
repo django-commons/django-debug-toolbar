@@ -1,5 +1,3 @@
-import json
-
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db import connections
@@ -20,14 +18,6 @@ class SQLSelectForm(forms.Form):
 
     request_id = forms.CharField()
     djdt_query_id = forms.CharField()
-
-    def clean_params(self):
-        value = self.cleaned_data["params"]
-
-        try:
-            return json.loads(value)
-        except ValueError as exc:
-            raise ValidationError("Is not valid JSON") from exc
 
     def clean_alias(self):
         value = self.cleaned_data["alias"]
@@ -64,7 +54,7 @@ class SQLSelectForm(forms.Form):
     def select(self):
         query = self.cleaned_data["query"]
         sql = query["raw_sql"]
-        params = json.loads(query["params"])
+        params = query["params"]
         with self.cursor as cursor:
             cursor.execute(sql, params)
             headers = [d[0] for d in cursor.description]
@@ -74,7 +64,7 @@ class SQLSelectForm(forms.Form):
     def explain(self):
         query = self.cleaned_data["query"]
         sql = query["raw_sql"]
-        params = json.loads(query["params"])
+        params = query["params"]
         vendor = query["vendor"]
         with self.cursor as cursor:
             if vendor == "sqlite":
@@ -93,7 +83,7 @@ class SQLSelectForm(forms.Form):
     def profile(self):
         query = self.cleaned_data["query"]
         sql = query["raw_sql"]
-        params = json.loads(query["params"])
+        params = query["params"]
         with self.cursor as cursor:
             cursor.execute("SET PROFILING=1")  # Enable profiling
             cursor.execute(sql, params)  # Execute SELECT
