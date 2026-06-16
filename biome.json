@@ -1,5 +1,5 @@
 {
-    "$schema": "https://biomejs.dev/schemas/2.4.13/schema.json",
+    "$schema": "https://biomejs.dev/schemas/2.5.0/schema.json",
     "formatter": {
         "enabled": true,
         "useEditorconfig": true
@@ -14,7 +14,7 @@
     "linter": {
         "enabled": true,
         "rules": {
-            "recommended": true,
+            "preset": "recommended",
             "complexity": {
                 "noImportantStyles": "off"
             },
