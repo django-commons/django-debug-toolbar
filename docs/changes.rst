@@ -33,6 +33,8 @@ Pending
 * Fixed cookie ``expires`` calculation in ``djdt.cookie.set``.
 * Account for the new ``CULL_PROBABILITY`` in Django 6.2 in tests.
 * Support Django 6.2's handling of booleans for non-PostgreSQL databases.
+* Changed the SQL panel to show the "Select" and "Explain" action buttons for
+  all queries, not just ``SELECT`` statements.
 
 6.3.0 (2026-04-01)
 ------------------

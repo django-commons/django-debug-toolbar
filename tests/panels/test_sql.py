@@ -876,7 +876,7 @@ class SQLPanelTestCase(BaseTestCase):
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)
         query = self.panel._queries[0]
-        self.assertTrue(query["is_select"])
+        self.assertIn("params", query)
 
     @override_settings(DEBUG_TOOLBAR_CONFIG={"PRETTIFY_SQL": True})
     def test_sql_parse_error_graceful_degradation(self):

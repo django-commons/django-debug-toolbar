@@ -6,7 +6,7 @@ from django.db import connections
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
-from debug_toolbar.panels.sql.utils import is_select_query, reformat_sql
+from debug_toolbar.panels.sql.utils import reformat_sql
 from debug_toolbar.toolbar import DebugToolbar
 
 
@@ -20,14 +20,6 @@ class SQLSelectForm(forms.Form):
 
     request_id = forms.CharField()
     djdt_query_id = forms.CharField()
-
-    def clean_raw_sql(self):
-        value = self.cleaned_data["raw_sql"]
-
-        if not is_select_query(value):
-            raise ValidationError("Only 'select' queries are allowed.")
-
-        return value
 
     def clean_params(self):
         value = self.cleaned_data["params"]

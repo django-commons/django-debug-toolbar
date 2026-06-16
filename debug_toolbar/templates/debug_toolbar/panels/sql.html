@@ -75,16 +75,14 @@
           </td>
           <td class="djdt-actions">
             {% if query.params %}
-              {% if query.is_select %}
-                <form method="post">
-                  {{ query.form.as_div }}
-                  <button formaction="{% url 'djdt:sql_select' %}" class="remoteCall">Sel</button>
-                  <button formaction="{% url 'djdt:sql_explain' %}" class="remoteCall">Expl</button>
-                  {% if query.vendor == 'mysql' %}
-                    <button formaction="{% url 'djdt:sql_profile' %}" class="remoteCall">Prof</button>
-                  {% endif %}
-                </form>
-              {% endif %}
+              <form method="post">
+                {{ query.form.as_div }}
+                <button formaction="{% url 'djdt:sql_select' %}" class="remoteCall">Sel</button>
+                <button formaction="{% url 'djdt:sql_explain' %}" class="remoteCall">Expl</button>
+                {% if query.vendor == 'mysql' %}
+                  <button formaction="{% url 'djdt:sql_profile' %}" class="remoteCall">Prof</button>
+                {% endif %}
+              </form>
             {% endif %}
           </td>
         </tr>
