@@ -7,6 +7,7 @@ from collections.abc import Iterable
 from typing import Any
 
 from django.core.cache import caches
+from django.core.exceptions import ImproperlyConfigured
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction
 from django.utils.module_loading import import_string
@@ -16,6 +17,7 @@ from debug_toolbar.models import HistoryEntry
 from debug_toolbar.sanitize import force_str
 
 BINARY_SENTINEL = "__djdt_binary__"
+POSTGIS_SENTINEL = "__djdt_postgis__"
 
 
 class DebugToolbarJSONEncoder(DjangoJSONEncoder):
@@ -30,15 +32,20 @@ class DebugToolbarJSONEncoder(DjangoJSONEncoder):
 
 
 def _binary_object_hook(obj):
-    """
-    Object hook for JSON decoder that reconstructs binary data.
-
-    This hook is called for every JSON object decoded and checks if it contains
-    the special __djdt_binary__ key, which indicates base64-encoded binary data
-    that needs to be reconstructed.
-    """
     if BINARY_SENTINEL in obj:
         return base64.b64decode(obj[BINARY_SENTINEL])
+    if POSTGIS_SENTINEL in obj:
+        ewkb = base64.b64decode(obj[POSTGIS_SENTINEL])
+        try:
+            from django.contrib.gis.db.backends.postgis.adapter import PostGISAdapter
+
+            adapter = PostGISAdapter.__new__(PostGISAdapter)
+            adapter.is_geometry = obj.get("is_geometry", True)
+            adapter.ewkb = ewkb
+            adapter.geography = obj.get("geography", False)
+            return adapter
+        except (ImportError, ImproperlyConfigured):
+            return ewkb
     return obj
 
 

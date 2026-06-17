@@ -1,4 +1,7 @@
+import base64
+import sys
 import uuid
+from unittest.mock import patch
 
 from django.core.management import call_command
 from django.db import connection
@@ -40,6 +43,36 @@ class SerializationTestCase(TestCase):
             "metadata": {"shape": b"\x05\x06"},
         }
         self.assertEqual(store.deserialize(store.serialize(data)), data)
+
+    def test_postgis_sentinel_falls_back_to_bytes_without_geodjango(self):
+        """PostGIS sentinel returns raw bytes when GeoDjango is not installed."""
+        ewkb = b"\x01\x01\x00\x00\x20\xe6\x10\x00\x00"
+        b64 = base64.b64encode(ewkb).decode("ascii")
+        with patch.dict(
+            sys.modules,
+            {"django.contrib.gis.db.backends.postgis.adapter": None},
+        ):
+            result = store._binary_object_hook(
+                {"__djdt_postgis__": b64, "is_geometry": True, "geography": False}
+            )
+        self.assertEqual(result, ewkb)
+
+    def test_postgis_sentinel_roundtrip_without_geodjango(self):
+        """PostGIS sentinel survives serialize/deserialize falling back to bytes."""
+        ewkb = b"\x01\x01\x00\x00\x20\xe6\x10\x00\x00"
+        b64 = base64.b64encode(ewkb).decode("ascii")
+        data = {
+            "params": [
+                {"__djdt_postgis__": b64, "is_geometry": True, "geography": False}
+            ]
+        }
+        serialized = store.serialize(data)
+        with patch.dict(
+            sys.modules,
+            {"django.contrib.gis.db.backends.postgis.adapter": None},
+        ):
+            deserialized = store.deserialize(serialized)
+        self.assertEqual(deserialized["params"], [ewkb])
 
     def test_serialize_unexpected(self):
         self.assertEqual(

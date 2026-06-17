@@ -1,3 +1,4 @@
+import base64
 import contextlib
 import contextvars
 import datetime
@@ -5,6 +6,7 @@ from time import perf_counter
 
 import django.test.testcases
 from django.apps import apps
+from django.core.exceptions import ImproperlyConfigured
 
 from debug_toolbar import settings as dt_settings
 from debug_toolbar.sanitize import force_str
@@ -30,6 +32,14 @@ try:
     from psycopg2.extensions import Binary as Psycopg2Binary
 except ImportError:
     Psycopg2Binary = None
+
+_PostGISAdapter = None
+try:
+    from django.contrib.gis.db.backends.postgis.adapter import (
+        PostGISAdapter as _PostGISAdapter,
+    )
+except (ImportError, ImproperlyConfigured):
+    pass
 
 # Prevents SQL queries from being sent to the DB. It's used
 # by the TemplatePanel to prevent the toolbar from issuing
@@ -139,6 +149,15 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
         # If a dictionary type, decode each value separately
         if isinstance(param, dict):
             return {key: self._decode(value) for key, value in param.items()}
+
+        # GeoDjango PostGIS geometry parameters: extract EWKB bytes and metadata
+        # so the adapter can be reconstructed on the way back out for SELECT/EXPLAIN.
+        if _PostGISAdapter is not None and isinstance(param, _PostGISAdapter):
+            return {
+                "__djdt_postgis__": base64.b64encode(param.ewkb).decode("ascii"),
+                "is_geometry": param.is_geometry,
+                "geography": param.geography,
+            }
 
         # Binary data is handled by DebugToolbarJSONEncoder in store.py.
         # Django's BinaryField calls connection.Database.Binary() which wraps
