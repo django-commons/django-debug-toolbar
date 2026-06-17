@@ -37,7 +37,7 @@ Pending
   all queries, not just ``SELECT`` statements.
 * Fixed SQL panel handling of binary parameters (e.g. from ``BinaryField``)
   and GeoDjango PostGIS geometry parameters. EWKB geometry adapters are now
-  serialised and reconstructed so that Select and Explain work correctly on
+  serialized and reconstructed so that Select and Explain work correctly on
   spatial queries.
 
 6.3.0 (2026-04-01)
