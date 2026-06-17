@@ -51,6 +51,11 @@ class SQLSelectForm(forms.Form):
         cleaned_data["query"] = query
         return cleaned_data
 
+    def _render_row(self, row):
+        return tuple(
+            bytes(v).hex() if isinstance(v, (memoryview, bytes)) else v for v in row
+        )
+
     def select(self):
         query = self.cleaned_data["query"]
         sql = query["raw_sql"]
@@ -58,7 +63,7 @@ class SQLSelectForm(forms.Form):
         with self.cursor as cursor:
             cursor.execute(sql, params)
             headers = [d[0] for d in cursor.description]
-            result = cursor.fetchall()
+            result = [self._render_row(row) for row in cursor.fetchall()]
             return result, headers
 
     def explain(self):
@@ -103,7 +108,7 @@ class SQLSelectForm(forms.Form):
                 """
             )
             headers = [d[0] for d in cursor.description]
-            result = cursor.fetchall()
+            result = [self._render_row(row) for row in cursor.fetchall()]
             return result, headers
 
     def reformat_sql(self):
