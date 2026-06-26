@@ -6,7 +6,7 @@ from unittest.mock import patch
 from django.core.management import call_command
 from django.db import connection
 from django.http import HttpResponse
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, TransactionTestCase
 from django.test.utils import CaptureQueriesContext, override_settings
 from django.utils.safestring import SafeData, mark_safe
 
@@ -536,5 +536,133 @@ class CacheStoreWithDatabaseBackendTestCase(CommonStoreTestsMixin, TestCase):
                 if "test_cache_store_table" in q.get("sql", "").lower()
             ]
             self.assertEqual(len(cache_queries), 4)
+        finally:
+            sql_panel.disable_instrumentation()
+
+    @staticmethod
+    def _transaction_control_queries(queries):
+        """
+        Return the queries that are pure transaction-control commands
+        (BEGIN/COMMIT, or SAVEPOINT/RELEASE SAVEPOINT when already inside a
+        transaction, as happens under TestCase). These carry no table name,
+        so SKIP_TOOLBAR_QUERIES can never filter them by itself (issue #2338).
+        """
+        return [
+            q
+            for q in queries
+            if q.get("raw_sql", "")
+            .strip()
+            .upper()
+            .startswith(
+                ("BEGIN", "COMMIT", "SAVEPOINT", "RELEASE SAVEPOINT", "ROLLBACK")
+            )
+        ]
+
+    def test_database_backend_transaction_control_not_tracked_by_sql_panel(self):
+        """
+        Regression test for #2338: the transaction.atomic() control commands
+        issued while CacheStore persists data to a DatabaseCache table must
+        not leak into the SQL panel.
+        """
+        request = RequestFactory().get("/")
+        toolbar = DebugToolbar(request, lambda req: HttpResponse())
+        sql_panel = toolbar.get_panel_by_id("SQLPanel")
+        sql_panel.enable_instrumentation()
+
+        try:
+            self.store.set("test_req")
+
+            leaked = self._transaction_control_queries(sql_panel._queries)
+            self.assertEqual(leaked, [])
+        finally:
+            sql_panel.disable_instrumentation()
+
+    @override_settings(
+        DEBUG_TOOLBAR_CONFIG={
+            "TOOLBAR_STORE_CLASS": "debug_toolbar.store.CacheStore",
+            "CACHE_BACKEND": "ddt_db_cache",
+            "SKIP_TOOLBAR_QUERIES": False,
+        },
+    )
+    def test_database_backend_transaction_control_hidden_even_with_skip_toolbar_queries_false(
+        self,
+    ):
+        """
+        SKIP_TOOLBAR_QUERIES=False is meant to reveal queries that touch the
+        toolbar's own tables. It must not resurrect the table-less
+        BEGIN/COMMIT (or SAVEPOINT) control commands, while the actual
+        cache table queries should still be visible.
+        """
+        request = RequestFactory().get("/")
+        toolbar = DebugToolbar(request, lambda req: HttpResponse())
+        sql_panel = toolbar.get_panel_by_id("SQLPanel")
+        sql_panel.enable_instrumentation()
+
+        try:
+            self.store.set("test_req")
+
+            leaked = self._transaction_control_queries(sql_panel._queries)
+            self.assertEqual(leaked, [])
+
+            table_queries = [
+                q
+                for q in sql_panel._queries
+                if "test_cache_store_table" in q.get("sql", "").lower()
+            ]
+            self.assertGreater(len(table_queries), 0)
+        finally:
+            sql_panel.disable_instrumentation()
+
+
+@override_settings(
+    DEBUG_TOOLBAR_CONFIG={
+        "TOOLBAR_STORE_CLASS": "debug_toolbar.store.CacheStore",
+        "CACHE_BACKEND": "ddt_db_cache_autocommit",
+    },
+    CACHES={
+        "ddt_db_cache_autocommit": {
+            "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+            "LOCATION": "autocommit_cache_store_table",
+        }
+    },
+)
+class CacheStoreWithDatabaseBackendAutocommitTestCase(TransactionTestCase):
+    """
+    Regression test for #2338, reproducing the exact scenario reported in
+    the issue: in autocommit mode -- i.e. outside any wrapping transaction,
+    as happens during a real request, unlike under TestCase which already
+    wraps each test in a transaction -- transaction.atomic() emits a literal
+    BEGIN (and COMMIT), not a SAVEPOINT. Those commands carry no table name
+    and must not leak into the SQL panel.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        call_command("createcachetable", "autocommit_cache_store_table", verbosity=0)
+
+    @classmethod
+    def tearDownClass(cls):
+        with connection.cursor() as cursor:
+            cursor.execute("DROP TABLE IF EXISTS autocommit_cache_store_table")
+        super().tearDownClass()
+
+    def tearDown(self):
+        store.CacheStore.clear()
+
+    def test_begin_and_commit_not_tracked_by_sql_panel(self):
+        request = RequestFactory().get("/")
+        toolbar = DebugToolbar(request, lambda req: HttpResponse())
+        sql_panel = toolbar.get_panel_by_id("SQLPanel")
+        sql_panel.enable_instrumentation()
+
+        try:
+            store.CacheStore.set("test_req")
+
+            raw_sqls = [
+                q.get("raw_sql", "").strip().upper() for q in sql_panel._queries
+            ]
+            self.assertNotIn("BEGIN", raw_sqls)
+            self.assertNotIn("COMMIT", raw_sqls)
         finally:
             sql_panel.disable_instrumentation()
