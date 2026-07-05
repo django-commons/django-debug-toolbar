@@ -4,6 +4,9 @@ Change log
 Pending
 -------
 
+* Fixed the Django version check in the SQL panel test suite for Django's
+  boolean parameter handling.
+
 7.0.0 (2026-06-17)
 ------------------
 
