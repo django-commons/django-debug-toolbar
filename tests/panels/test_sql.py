@@ -486,11 +486,11 @@ class SQLPanelTestCase(BaseTestCase):
             connection.vendor == "mysql"
             and django.VERSION >= (4, 1)
             or connection.vendor != "postgresql"
-            and django.VERSION >= (6, 2)
+            and django.VERSION >= (6, 1)
         ):
             # Django 4.1 started passing true/false back for boolean
             # comparisons in MySQL.
-            # Django 6.2 started passing true/false for all-non
+            # Django 6.1 started passing true/false for all-non
             # postgres databases.
             expected_bools = ["Foo", True, False]
         else:
