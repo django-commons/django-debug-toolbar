@@ -1,0 +1,40 @@
+{% load i18n %}
+{% if not tasks_available %}
+  <p>
+    {% blocktranslate %}
+      The Tasks panel requires Django 6.0 or later. Upgrade Django to see
+      information about tasks queued during this request.
+    {% endblocktranslate %}
+  </p>
+{% elif tasks %}
+  <table>
+    <thead>
+      <tr>
+        <th>{% translate "Name" %}</th>
+        <th>{% translate "Queue" %}</th>
+        <th>{% translate "Backend" %}</th>
+        <th>{% translate "Priority" %}</th>
+        <th>{% translate "Run after" %}</th>
+        <th>{% translate "Status" %}</th>
+        <th>{% translate "Arguments" %}</th>
+        <th>{% translate "Keyword arguments" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasks %}
+        <tr>
+          <td>{{ task.name|escape }}</td>
+          <td>{{ task.queue_name|escape }}</td>
+          <td>{{ task.backend|escape }}</td>
+          <td>{{ task.priority }}</td>
+          <td>{{ task.run_after|default:"—" }}</td>
+          <td>{{ task.status }}</td>
+          <td>{{ task.args|escape }}</td>
+          <td>{{ task.kwargs|escape }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>{% translate "No tasks were queued during this request." %}</p>
+{% endif %}

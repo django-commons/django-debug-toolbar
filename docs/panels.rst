@@ -108,6 +108,19 @@ Signals
 
 List of signals and receivers.
 
+Tasks
+~~~~~
+
+.. class:: debug_toolbar.panels.tasks.TasksPanel
+
+Shows the tasks queued during the request using Django's built-in tasks
+framework (``django.tasks``).
+
+.. note::
+   This panel requires Django 6.0 or later, since ``django.tasks`` was
+   added in that release. On earlier versions of Django, the panel
+   explains that upgrading is required instead of showing task data.
+
 Community
 ~~~~~~~~~
 
