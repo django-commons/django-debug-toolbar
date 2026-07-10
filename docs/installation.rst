@@ -71,7 +71,7 @@ Second, ensure that your ``TEMPLATES`` setting contains a
     ]
 
 Third, the Debug Toolbar requires an up to date browser and targets `Baseline
-Widely Available <https://web.dev/series/baseline-widely-available>`_ to deliver
+Widely Available <https://web.dev/baseline/>`_ to deliver
 modern debug tools. Should you need to test in an older browser, simply disable
 the toolbar for those sessions.
 
