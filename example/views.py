@@ -1,18 +1,16 @@
 import asyncio
 
+import django
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.http import JsonResponse
 from django.shortcuts import render
 
-try:
+TASKS_AVAILABLE = django.VERSION >= (6, 0)
+
+if TASKS_AVAILABLE:
     from django.tasks import task
-except ImportError:
-    task = None
-
-
-if task is not None:
 
     @task
     def example_task(x=1, y=2):
@@ -20,11 +18,10 @@ if task is not None:
 
 
 def tasks_view(request):
-    tasks_available = task is not None
-    if tasks_available:
+    if TASKS_AVAILABLE:
         example_task.enqueue(1, y=2)
         example_task.enqueue(3, y=4)
-    return render(request, "tasks.html", {"tasks_available": tasks_available})
+    return render(request, "tasks.html", {"tasks_available": TASKS_AVAILABLE})
 
 
 def increment(request):

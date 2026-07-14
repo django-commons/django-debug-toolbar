@@ -29,8 +29,16 @@
           <td>{{ task.priority }}</td>
           <td>{{ task.run_after|default:"—" }}</td>
           <td>{{ task.status }}</td>
-          <td>{{ task.args|escape }}</td>
-          <td>{{ task.kwargs|escape }}</td>
+          <td><code>{{ task.args.raw|pprint }}</code></td>
+          <td>
+            <code>
+              {% if task.kwargs.list %}
+                {% for key, value in task.kwargs.list %}{{ key }}={{ value|pprint }}{% if not forloop.last %}, {% endif %}{% endfor %}
+              {% else %}
+                {{ task.kwargs.raw|pprint }}
+              {% endif %}
+            </code>
+          </td>
         </tr>
       {% endfor %}
     </tbody>
