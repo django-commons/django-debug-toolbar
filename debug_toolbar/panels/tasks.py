@@ -1,12 +1,11 @@
+from django import VERSION
 from django.utils.translation import gettext_lazy as _, ngettext
 
 from debug_toolbar.panels import Panel
-from debug_toolbar.utils import sanitize_and_sort_request_vars
 
-try:
-    # django.tasks was added in Django 6.0.
+if VERSION >= (6, 0):
     from django.tasks.signals import task_enqueued
-except ImportError:
+else:
     task_enqueued = None
 
 
@@ -30,35 +29,21 @@ class TasksPanel(Panel):
 
     # Implement the Panel API
 
-    nav_title = _("Tasks")
+    nav_title = _("tasks")
 
     @property
     def nav_subtitle(self):
-        if task_enqueued is None:
+        if VERSION < (6, 0):
             return _("Requires Django 6.0+")
         tasks = self.get_stats()["tasks"]
         return ngettext("%(count)d task", "%(count)d tasks", len(tasks)) % {
             "count": len(tasks)
         }
 
-    title = _("Tasks")
+    title = _("tasks")
 
     def _record_task(self, sender, task_result, **kwargs):
-        task = task_result.task
-        self.tasks.append(
-            {
-                "id": task_result.id,
-                "name": task.module_path,
-                "queue_name": task.queue_name,
-                "priority": task.priority,
-                "backend": task_result.backend,
-                "run_after": task.run_after,
-                "takes_context": task.takes_context,
-                "args": sanitize_and_sort_request_vars(task_result.args),
-                "kwargs": sanitize_and_sort_request_vars(task_result.kwargs),
-                "status": task_result.status,
-            }
-        )
+        self.tasks.append(task_result)
 
     def enable_instrumentation(self):
         if task_enqueued is not None:
@@ -71,7 +56,7 @@ class TasksPanel(Panel):
     def generate_stats(self, request, response):
         self.record_stats(
             {
-                "tasks_available": task_enqueued is not None,
+                "tasks_available": VERSION >= (6, 0),
                 "tasks": self.tasks,
             }
         )
