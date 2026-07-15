@@ -22,6 +22,10 @@ Pending
   before the panel script has loaded, which navigated away from the page.
 * Added support for Django 6.1.
 
+* Fixed incorrect cache hit/miss reporting in the Cache panel for
+  ``cache.get()`` when a default value is supplied or the cached value is
+  ``None``.
+
 7.0.0 (2026-06-17)
 ------------------
 
