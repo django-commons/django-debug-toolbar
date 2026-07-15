@@ -7,6 +7,10 @@ Pending
 * Fixed the Django version check in the SQL panel test suite for Django's
   boolean parameter handling.
 
+* Fixed incorrect cache hit/miss reporting in the Cache panel for
+  ``cache.get()`` when a default value is supplied or the cached value is
+  ``None``.
+
 7.0.0 (2026-06-17)
 ------------------
 
