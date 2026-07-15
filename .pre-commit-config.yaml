@@ -20,7 +20,7 @@ repos:
     -   id: django-upgrade
         args: [--target-version, "5.2"]
 -   repo: https://github.com/codingjoe/esupgrade
-    rev: 2025.22.0
+    rev: 2025.22.1
     hooks:
     -   id: esupgrade
 -   repo: https://github.com/adamchainz/djade-pre-commit
@@ -34,18 +34,18 @@ repos:
     -   id: rst-backticks
     -   id: rst-directive-colons
 -   repo: https://github.com/biomejs/pre-commit
-    rev: v2.5.2
+    rev: v2.5.3
     hooks:
       - id: biome-check
         verbose: true
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.15.20'
+    rev: 'v0.15.21'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
 -   repo: https://github.com/tox-dev/pyproject-fmt
-    rev: v2.25.1
+    rev: v2.25.3
     hooks:
       - id: pyproject-fmt
 -   repo: https://github.com/abravalheri/validate-pyproject
