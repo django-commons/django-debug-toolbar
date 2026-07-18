@@ -51,7 +51,7 @@ class TasksPanelTestCase(BaseTestCase):
                 "tasks": [
                     {
                         "id": recorded["id"],
-                        "name": f"{__name__}.sample_task",
+                        "module_path": f"{__name__}.sample_task",
                         "queue_name": "default",
                         "priority": recorded["priority"],
                         "backend": "default",
