@@ -32,7 +32,7 @@ Each panel can hook into three different points in its lifecycle:
   every panel listed in ``DEBUG_TOOLBAR_PANELS``, when the
   ``debug_toolbar`` app is loaded (i.e. at process/interpreter start,
   regardless of ``DEBUG``, ``SHOW_TOOLBAR_CALLBACK``, or ``DISABLE_PANELS``).
-* Module improt side effects. A few panels install patches directly at the
+* Module import side effects. A few panels install patches directly at the
   top of their module, outside of any method. Because
   ``DebugToolbar.get_panel_classes()``
   imports every panel listed in ``DEBUG_TOOLBAR_PANELS`` while
@@ -42,7 +42,7 @@ Each panel can hook into three different points in its lifecycle:
   :meth:`~debug_toolbar.panels.Panel.disable_instrumentation`, called by
   ``debug_toolbar.middleware.DebugToolbarMiddleware`` at the start and
   end of a request, but **only** when ``SHOW_TOOLBAR_CALLBACK`` returns
-  ``True`` for that request *and* the panel iself is enabled (i.e. not
+  ``True`` for that request *and* the panel itself is enabled (i.e. not
   listed in ``DISABLE_PANELS`` and not turned off via the panel's cookie).
 
 ``DISABLE_PANELS`` stops a panel from being included in
@@ -71,7 +71,7 @@ whether it monkey-patches anything.
    * - :class:`~debug_toolbar.panels.cache.CachePanel`
      - ``ready()`` permanently wraps
        ``CacheHandler.create_connection`` at startup so that any cache
-       connection opende while a request is being instrumented gets
+       connection opened while a request is being instrumented gets
        wrapped too. ``enable_instrumentation()`` then wraps the methods
        (``get``, ``set``, ``delete``, etc.) of every already-open cache
        connection, per request.
@@ -107,7 +107,7 @@ whether it monkey-patches anything.
        ``staticfiles_storage.__class__.__bases__`` at startup.
        ``enable_instrumentation()`` connects a signal receiver and sets a
        ``contextvar`` per request.
-     - No. The storage class hierarchy is changed once, at strtup, and
+     - No. The storage class hierarchy is changed once, at startup, and
        is not reverted.
      - Yes. Mutates the ``__bases__`` of the configured staticfiles
        storage class.
@@ -173,7 +173,7 @@ whether it monkey-patches anything.
 Recommendation for production-like environments
 -------------------------------------------------
 
-If you install the toolbar in an environment that aslo serves real traffic,
+If you install the toolbar in an environment that also serves real traffic,
 and you rely on ``SHOW_TOOLBAR_CALLBACK`` to gate it, the panels below are
 safe to leave in ``DEBUG_TOOLBAR_PANELS`` because they only touch
 global state while actively enabled for a request:
@@ -227,6 +227,6 @@ example by building the setting conditionally::
         }
     ]
 
-Keep in mind tht this trims functionality: the Templates, Static files, and
+Keep in mind that this trims functionality: the Templates, Static files, and
 Cache panels will not be available at all, even when the toolbar is shown,
 in environments where they've been excluded this way.
