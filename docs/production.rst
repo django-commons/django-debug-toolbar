@@ -5,10 +5,11 @@ Installing in production
 
 It's common to want to install the Django Debug Toolbar in an environment
 that also serves production (or production-like) traffic, and rely on
-:ref:`SHOW_TOOLBAR_CALLBACK <SHOW_TOOLBAR_CALLBACK>` (or ``DEBUG``) to decide, per request,
-whether the toolbar is actually shown. This page documents what actually
-happens when the toolbar is installed but nt shown, so you can make an
-informed decision about whether that's safe for your deployment.
+:ref:`SHOW_TOOLBAR_CALLBACK <SHOW_TOOLBAR_CALLBACK>` (or ``DEBUG``) to
+decide, per request, whether the toolbar is actually shown. This page
+documents what actually happens when the toolbar is installed but not
+shown, so you can make an informed decision about whether that's safe
+for your deployment.
 
 .. important::
 
