@@ -2,8 +2,11 @@ Change log
 ==========
 
 Pending
--------
 
+
+* Added a Tasks panel that shows tasks queued during the request via
+  Django's built-in tasks framework (``django.tasks``, Django 6.0+). On
+  older versions of Django, the panel explains that upgrading is required.
 * Fixed the Django version check in the SQL panel test suite for Django's
   boolean parameter handling.
 

@@ -1,0 +1,48 @@
+{% load i18n %}
+{% if tasks %}
+  <table>
+    <thead>
+      <tr>
+        <th>{% translate "python path"|title context "noun" %}</th>
+        <th>{% translate "queue"|title context "noun" %}</th>
+        <th>{% translate "backend"|title %}</th>
+        <th>{% translate "priority"|title %}</th>
+        <th>{% translate "run after"|title %}</th>
+        <th>{% translate "status"|title %}</th>
+        <th>{% translate "arguments"|title %}</th>
+        <th>{% translate "keyword arguments"|title %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasks %}
+        <tr>
+          <td>{{ task.module_path|escape }}</td>
+          <td>{{ task.queue_name|escape }}</td>
+          <td>{{ task.backend|escape }}</td>
+          <td>{{ task.priority }}</td>
+          <td>{{ task.run_after|default:"—" }}</td>
+          <td>{{ task.status }}</td>
+          <td><code>{{ task.args.raw|pprint }}</code></td>
+          <td>
+            <code>
+              {% if task.kwargs.list %}
+                {% for key, value in task.kwargs.list %}{{ key }}={{ value|pprint }}{% if not forloop.last %}, {% endif %}{% endfor %}
+              {% else %}
+                {{ task.kwargs.raw|pprint }}
+              {% endif %}
+            </code>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% elif tasks_available %}
+  <p>{% translate "No tasks were queued during this request." %}</p>
+{% else %}
+  <p>
+    {% blocktranslate %}
+      The Tasks panel requires Django 6.0 or later. Upgrade Django to see
+      information about tasks queued during this request.
+    {% endblocktranslate %}
+  </p>
+{% endif %}
