@@ -149,7 +149,7 @@ class CachePanel(Panel):
 
     def _record_call(self, cache, alias, name, original_method, args, kwargs):
         # Some cache backends implement certain cache methods in terms of other cache
-        # methods (e.g. get_or_set() in terms of get() and add()).  In order to only
+        # methods (e.g. get_or_set() in terms of get() and add()). In order to only
         # record the calls made directly by the user code, set the cache's _djdt_panel
         # attribute to None before invoking the original method, which will cause the
         # monkey-patched cache methods to skip recording additional calls made during
@@ -162,12 +162,15 @@ class CachePanel(Panel):
                 user_default = kwargs.get("default", args[1] if len(args) > 1 else None)
                 # Replace the caller's default with an internal sentinel so a cache miss
                 # can be distinguished from a cached value equal to the supplied default.
+                call_args = args
+                call_kwargs = kwargs
                 if "default" in kwargs:
-                    call_args = args
                     call_kwargs = {**kwargs, "default": self._missing_key}
-                else:
+                elif args:
                     call_args = (args[0], self._missing_key, *args[2:])
-                    call_kwargs = kwargs
+                else:
+                    # Key was supplied as a keyword argument.
+                    call_kwargs = {**kwargs, "default": self._missing_key}
                 value = original_method(*call_args, **call_kwargs)
             else:
                 value = original_method(*args, **kwargs)
