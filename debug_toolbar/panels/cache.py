@@ -65,6 +65,7 @@ class CachePanel(Panel):
     is_async = True
 
     _context_locals = Local()
+    _missing_key = object()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -116,7 +117,12 @@ class CachePanel(Panel):
         template_info,
         backend,
     ):
-        if name == "get" or name == "get_or_set":
+        if name == "get":
+            if return_value is self._missing_key:
+                self.misses += 1
+            else:
+                self.hits += 1
+        elif name == "get_or_set":
             if return_value is None:
                 self.misses += 1
             else:
@@ -143,15 +149,31 @@ class CachePanel(Panel):
 
     def _record_call(self, cache, alias, name, original_method, args, kwargs):
         # Some cache backends implement certain cache methods in terms of other cache
-        # methods (e.g. get_or_set() in terms of get() and add()).  In order to only
+        # methods (e.g. get_or_set() in terms of get() and add()). In order to only
         # record the calls made directly by the user code, set the cache's _djdt_panel
         # attribute to None before invoking the original method, which will cause the
         # monkey-patched cache methods to skip recording additional calls made during
         # the course of this call, and then reset it back afterward.
         cache._djdt_panel = None
+        user_default = None
         try:
             start_time = perf_counter()
-            value = original_method(*args, **kwargs)
+            if name == "get":
+                user_default = kwargs.get("default", args[1] if len(args) > 1 else None)
+                # Replace the caller's default with an internal sentinel so a cache miss
+                # can be distinguished from a cached value equal to the supplied default.
+                call_args = args
+                call_kwargs = kwargs
+                if "default" in kwargs:
+                    call_kwargs = {**kwargs, "default": self._missing_key}
+                elif args:
+                    call_args = (args[0], self._missing_key, *args[2:])
+                else:
+                    # Key was supplied as a keyword argument.
+                    call_kwargs = {**kwargs, "default": self._missing_key}
+                value = original_method(*call_args, **call_kwargs)
+            else:
+                value = original_method(*args, **kwargs)
             t = perf_counter() - start_time
         finally:
             cache._djdt_panel = self
@@ -166,6 +188,10 @@ class CachePanel(Panel):
             template_info=get_template_info(),
             backend=f"{alias} ({type(cache).__name__})",
         )
+        # Preserve the original cache.get() behavior by returning the caller's
+        # default instead of the internal sentinel on a cache miss.
+        if name == "get" and value is self._missing_key:
+            return user_default
         return value
 
     # Implement the Panel API
