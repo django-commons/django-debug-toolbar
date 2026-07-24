@@ -1,5 +1,6 @@
 import asyncio
 
+import django
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from django.core.cache import cache
@@ -21,6 +22,13 @@ def jinja2_view(request):
 
 
 async def async_home(request):
+    if django.VERSION >= (6, 0):
+        from .async_.tasks import generate_report, send_welcome_message
+
+        # Queue some tasks
+        send_welcome_message.enqueue(message="hi there")
+        generate_report.enqueue(report_id=456)
+
     return await sync_to_async(render)(request, "index.html")
 
 
