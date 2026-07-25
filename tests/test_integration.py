@@ -89,6 +89,21 @@ class DebugToolbarTestCase(BaseTestCase):
             self.assertTrue(show_toolbar_with_docker(self.request))
         mocked_gethostbyname.assert_called_once_with("host.docker.internal")
 
+    @patch("socket.gethostbyname", return_value="0.250.250.254")
+    @patch("socket.gethostname", return_value="container")
+    @patch(
+        "socket.gethostbyname_ex",
+        return_value=("container", [], ["192.168.215.7"]),
+    )
+    def test_show_toolbar_docker_unrelated_host_address(self, *mocks):
+        """Runtimes such as OrbStack resolve host.docker.internal to an
+        address outside of the container network, so the host address has to
+        be derived from the container's own address instead."""
+        self.request.META["REMOTE_ADDR"] = "192.168.215.1"
+        with self.settings(INTERNAL_IPS=[]):
+            self.assertFalse(show_toolbar(self.request))
+            self.assertTrue(show_toolbar_with_docker(self.request))
+
     def test_not_iterating_over_INTERNAL_IPS(self):
         """Verify that the middleware does not iterate over INTERNAL_IPS in some way.
 

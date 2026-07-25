@@ -6,6 +6,8 @@ Pending
 
 * Fixed the Django version check in the SQL panel test suite for Django's
   boolean parameter handling.
+* Fixed ``show_toolbar_with_docker`` on Docker runtimes such as OrbStack that
+  resolve ``host.docker.internal`` to an address outside the container network.
 
 7.0.0 (2026-06-17)
 ------------------

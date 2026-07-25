@@ -68,8 +68,18 @@ def show_toolbar_with_docker(request: HttpRequest) -> bool:
         # It's fine if the lookup errored since they may not be using docker
         pass
 
-    # No test passed
-    return False
+    # Test: Docker, falling back to the gateway of the container's own network.
+    # Some Docker runtimes (for example OrbStack) resolve host.docker.internal
+    # to an address that is unrelated to the container network, so the check
+    # above cannot derive the host address from it.
+    try:
+        container_ips = socket.gethostbyname_ex(socket.gethostname())[2]
+    except socket.gaierror:
+        # It's fine if the lookup errored since they may not be using docker
+        return False
+
+    gateways = {ip.rsplit(".", 1)[0] + ".1" for ip in container_ips}
+    return request.META.get("REMOTE_ADDR") in gateways
 
 
 @cache
