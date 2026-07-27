@@ -214,7 +214,6 @@ def from_store_get_response(request: HttpRequest | None) -> None:
     logger.warning(
         "get_response was called for debug toolbar after being loaded from the store. No request exists in this scenario as the request is not stored, only the panel's data."
     )
-    return None
 
 
 class StoredDebugToolbar(DebugToolbar):
