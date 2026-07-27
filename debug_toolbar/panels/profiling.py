@@ -177,7 +177,7 @@ class ProfilingPanel(Panel):
 
     def generate_stats(self, request, response):
         if not hasattr(self, "profiler"):
-            return None
+            return
         # Could be delayed until the panel content is requested (perf. optim.)
         self.profiler.create_stats()
         self.stats = Stats(self.profiler)
