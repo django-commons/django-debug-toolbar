@@ -6,6 +6,9 @@ Pending
 
 * Fixed the Django version check in the SQL panel test suite for Django's
   boolean parameter handling.
+* ``show_toolbar_with_docker`` now also guesses the Docker host from the
+  container's own addresses, so it works on runtimes such as OrbStack where
+  ``host.docker.internal`` does not resolve to the gateway.
 
 7.0.0 (2026-06-17)
 ------------------

@@ -89,6 +89,23 @@ class DebugToolbarTestCase(BaseTestCase):
             self.assertTrue(show_toolbar_with_docker(self.request))
         mocked_gethostbyname.assert_called_once_with("host.docker.internal")
 
+    @patch(
+        "socket.gethostbyname_ex",
+        return_value=("container", [], ["127.0.0.42"]),
+    )
+    @patch("socket.gethostbyname", return_value="0.250.250.254")
+    def test_show_toolbar_docker_gateway_fallback(
+        self, mocked_gethostbyname, mocked_gethostbyname_ex
+    ):
+        """host.docker.internal may not resolve to the host, e.g. on OrbStack.
+
+        Fall back to guessing the gateway from the container's own addresses.
+        """
+        with self.settings(INTERNAL_IPS=[]):
+            self.assertFalse(show_toolbar(self.request))
+            self.assertTrue(show_toolbar_with_docker(self.request))
+        mocked_gethostbyname.assert_called_once_with("host.docker.internal")
+
     def test_not_iterating_over_INTERNAL_IPS(self):
         """Verify that the middleware does not iterate over INTERNAL_IPS in some way.
 
