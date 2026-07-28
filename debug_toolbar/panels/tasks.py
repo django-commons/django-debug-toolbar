@@ -2,7 +2,6 @@ from django import VERSION
 from django.utils.translation import gettext_lazy as _, ngettext
 
 from debug_toolbar.panels import Panel
-from debug_toolbar.utils import sanitize_and_sort_request_vars
 
 if VERSION >= (6, 0):
     from django.tasks.signals import task_enqueued
