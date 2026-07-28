@@ -34,11 +34,7 @@ def show_toolbar(request: HttpRequest) -> bool:
         return False
 
     # Test: settings
-    if request.META.get("REMOTE_ADDR") in settings.INTERNAL_IPS:
-        return True
-
-    # No test passed
-    return False
+    return request.META.get("REMOTE_ADDR") in settings.INTERNAL_IPS
 
 
 def show_toolbar_with_docker(request: HttpRequest) -> bool:
