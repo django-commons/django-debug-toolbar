@@ -56,26 +56,9 @@ class TasksPanel(Panel):
             task_enqueued.disconnect(self._record_task)
 
     def generate_stats(self, request, response):
-        tasks = []
-        for task_result in self.tasks:
-            task = task_result.task
-            tasks.append(
-                {
-                    "id": task_result.id,
-                    "module_path": task.module_path,
-                    "queue_name": task.queue_name,
-                    "priority": task.priority,
-                    "backend": task_result.backend,
-                    "run_after": task.run_after,
-                    "takes_context": task.takes_context,
-                    "args": sanitize_and_sort_request_vars(task_result.args),
-                    "kwargs": sanitize_and_sort_request_vars(task_result.kwargs),
-                    "status": task_result.status,
-                }
-            )
         self.record_stats(
             {
                 "tasks_available": VERSION >= (6, 0),
-                "tasks": tasks,
+                "tasks": self.tasks,
             }
         )

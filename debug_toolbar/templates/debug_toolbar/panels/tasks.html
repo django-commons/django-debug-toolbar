@@ -16,19 +16,19 @@
     <tbody>
       {% for task in tasks %}
         <tr>
-          <td>{{ task.module_path|escape }}</td>
-          <td>{{ task.queue_name|escape }}</td>
+          <td>{{ task.task.module_path|escape }}</td>
+          <td>{{ task.task.queue_name|escape }}</td>
           <td>{{ task.backend|escape }}</td>
-          <td>{{ task.priority }}</td>
-          <td>{{ task.run_after|default:"—" }}</td>
+          <td>{{ task.task.priority }}</td>
+          <td>{{ task.task.run_after|default:"—" }}</td>
           <td>{{ task.status }}</td>
-          <td><code>{{ task.args.raw|pprint }}</code></td>
+          <td><code>{{ task.args|pprint }}</code></td>
           <td>
             <code>
-              {% if task.kwargs.list %}
-                {% for key, value in task.kwargs.list %}{{ key }}={{ value|pprint }}{% if not forloop.last %}, {% endif %}{% endfor %}
+              {% if task.kwargs %}
+                {{ task.kwargs|pprint }}
               {% else %}
-                {{ task.kwargs.raw|pprint }}
+                —
               {% endif %}
             </code>
           </td>
