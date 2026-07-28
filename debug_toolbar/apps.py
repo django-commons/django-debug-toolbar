@@ -177,8 +177,7 @@ def check_panel_configs(app_configs, **kwargs):
 
     errors = []
     for panel_class in DebugToolbar.get_panel_classes():
-        for check_message in panel_class.run_checks():
-            errors.append(check_message)
+        errors.extend(panel_class.run_checks())
     return errors
 
 
