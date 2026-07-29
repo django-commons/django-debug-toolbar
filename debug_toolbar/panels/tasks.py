@@ -41,7 +41,6 @@ class TasksPanel(Panel):
     title = _("Tasks")
 
     def _record_task(self, sender, task_result, **kwargs):
-        # Store the TaskResult object directly
         self.tasks.append(task_result)
 
     def enable_instrumentation(self):
