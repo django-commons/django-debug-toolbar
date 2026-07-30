@@ -1,5 +1,7 @@
 import unittest
 
+from django.tasks.base import DEFAULT_TASK_PRIORITY, TaskResultStatus
+
 from debug_toolbar._compat import django_has_tasks_support, task
 from debug_toolbar.panels.tasks import TasksPanel
 
@@ -38,32 +40,48 @@ class TasksPanelTestCase(BaseTestCase):
 
         self.panel.generate_stats(self.request, None)
         stats = self.panel.get_stats()
-        self.assertEqual(len(stats["tasks"]), 1)
 
-        # id, priority, run_after, and status are runtime-dependent, so
-        # pull them from the actual result and assert the rest of the
-        # dict matches exactly around them.
-        recorded = stats["tasks"][0]
-        self.assertEqual(
-            stats,
-            {
-                "tasks_available": True,
-                "tasks": [
-                    {
-                        "id": recorded["id"],
-                        "module_path": f"{__name__}.sample_task",
-                        "queue_name": "default",
-                        "priority": recorded["priority"],
-                        "backend": "default",
-                        "run_after": recorded["run_after"],
-                        "takes_context": False,
-                        "args": {"raw": [2]},
-                        "kwargs": {"list": [("y", 3)]},
-                        "status": recorded["status"],
-                    }
-                ],
-            },
-        )
+        self.assertEqual(stats.keys(), {"tasks_available", "tasks"})
+        self.assertEqual(stats["tasks_available"], True)
+        self.assertEqual(len(stats["tasks"]), 1)
+        task_result = stats["tasks"][0]
+        self.assertEqual(task_result.task.module_path, f"{__name__}.sample_task")
+        self.assertEqual(task_result.task.queue_name, "default")
+        self.assertEqual(task_result.task.priority, DEFAULT_TASK_PRIORITY)
+        self.assertEqual(task_result.backend, "default")
+        self.assertEqual(task_result.task.run_after, None)
+        self.assertEqual(task_result.task.takes_context, False)
+        self.assertEqual(task_result.args, [2])
+        self.assertEqual(task_result.kwargs, {"y": 3})
+        self.assertEqual(task_result.status, TaskResultStatus.SUCCESSFUL)
+
+    @unittest.skipUnless(django_has_tasks_support, "Requires Django 6.0+")
+    def test_records_queued_task_rendered_in_template(self):
+        """Test the Tasks panel's rendered html.
+
+        Since the template for the panel contains the logic for which properties
+        are accessed to render the content, we should validate the properties
+        explicitly rather than solely relying on test_records_queued_task
+        confirming the shape.
+        """
+        sample_task.enqueue(2, y=3)
+
+        self.panel.generate_stats(self.request, None)
+        content = self.panel.content
+
+        # task.task.module_path
+        self.assertIn(f"{__name__}.sample_task", content)
+        # task.task.queue_name / task.backend
+        self.assertIn("default", content)
+        # task.task.priority
+        self.assertIn(str(DEFAULT_TASK_PRIORITY), content)
+        # task.status
+        self.assertIn(TaskResultStatus.SUCCESSFUL, content)
+        # task.args
+        self.assertIn("[2]", content)
+        # task.kwargs
+        self.assertIn("{&#x27;y&#x27;: 3}", content)
+        self.assertValidHTML(content)
 
     @unittest.skipUnless(django_has_tasks_support, "Requires Django 6.0+")
     def test_nav_subtitle_counts_multiple_tasks(self):
