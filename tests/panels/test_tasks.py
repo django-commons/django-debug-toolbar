@@ -1,7 +1,5 @@
 import unittest
 
-from django.tasks.base import DEFAULT_TASK_PRIORITY, TaskResultStatus
-
 from debug_toolbar._compat import django_has_tasks_support, task
 from debug_toolbar.panels.tasks import TasksPanel
 
@@ -47,13 +45,13 @@ class TasksPanelTestCase(BaseTestCase):
         task_result = stats["tasks"][0]
         self.assertEqual(task_result.task.module_path, f"{__name__}.sample_task")
         self.assertEqual(task_result.task.queue_name, "default")
-        self.assertEqual(task_result.task.priority, DEFAULT_TASK_PRIORITY)
+        self.assertEqual(task_result.task.priority, 0)
         self.assertEqual(task_result.backend, "default")
         self.assertEqual(task_result.task.run_after, None)
         self.assertEqual(task_result.task.takes_context, False)
         self.assertEqual(task_result.args, [2])
         self.assertEqual(task_result.kwargs, {"y": 3})
-        self.assertEqual(task_result.status, TaskResultStatus.SUCCESSFUL)
+        self.assertEqual(task_result.status, "SUCCESSFUL")
 
     @unittest.skipUnless(django_has_tasks_support, "Requires Django 6.0+")
     def test_records_queued_task_rendered_in_template(self):
@@ -74,9 +72,9 @@ class TasksPanelTestCase(BaseTestCase):
         # task.task.queue_name / task.backend
         self.assertIn("default", content)
         # task.task.priority
-        self.assertIn(str(DEFAULT_TASK_PRIORITY), content)
+        self.assertIn("0", content)
         # task.status
-        self.assertIn(TaskResultStatus.SUCCESSFUL, content)
+        self.assertIn("SUCCESSFUL", content)
         # task.args
         self.assertIn("[2]", content)
         # task.kwargs
