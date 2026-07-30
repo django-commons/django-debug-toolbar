@@ -62,6 +62,8 @@ Pending
 * Improved cache hit/miss reporting in the Cache panel for ``cache.get()``
   calls with a supplied default value, while documenting the remaining
   ambiguity when a cached value equals the supplied default.
+* Documented project priorities, GitHub Discussions, contributor meetings,
+  and how to suggest community resources.
 
 7.0.0 (2026-06-17)
 ------------------
