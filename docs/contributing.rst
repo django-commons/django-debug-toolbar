@@ -12,6 +12,66 @@ You can report bugs and request features in the `bug tracker
 
 Please search the existing database for duplicates before filing an issue.
 
+Project priorities
+------------------
+
+Maintainers use the `Top Priority label
+<https://github.com/django-commons/django-debug-toolbar/issues?q=state%3Aopen%20label%3A%22Top%20Priority%22>`_
+to identify issues that are currently most important to the project. The set of
+top-priority issues may change as the needs of the project change. Maintainers
+add or remove the label as part of triaging issues.
+
+If you want to make a high-impact contribution, this list is a good place to
+start. Before beginning work, leave a comment on the issue so that maintainers
+and other contributors can coordinate with you.
+
+Discussions
+-----------
+
+Use `GitHub Discussions
+<https://github.com/django-commons/django-debug-toolbar/discussions>`_ for
+open-ended conversations that do not yet require a concrete change to the
+project. Choose the category that best fits the conversation:
+
+* **Contributing** for conversations about contributing to the project and for
+  contributor meeting announcements and notes.
+* **Ideas** for exploring possible changes before opening a feature request.
+* **Q&A** for questions about using the Debug Toolbar.
+* **Show and tell** for sharing talks, tutorials, tools, or other resources
+  about using or contributing to the Debug Toolbar.
+
+Use the issue tracker for confirmed bugs and concrete feature requests. Please
+follow the project's `security policy
+<https://github.com/django-commons/django-debug-toolbar/security/policy>`_
+instead of starting a public discussion about a possible security
+vulnerability.
+
+Contributor discussion meetings
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The project holds contributor discussion meetings when there are topics that
+would benefit from real-time conversation. Meetings are announced in the
+`Contributing category
+<https://github.com/django-commons/django-debug-toolbar/discussions/categories/contributing>`_,
+and everyone is welcome to attend. Scheduling details and instructions for
+joining are included in the announcement. Notes and action items are shared in
+the discussion afterward. Attendees can suggest topics for the agenda in the
+meeting discussion or its linked agenda document.
+
+.. _sharing-resources:
+
+Sharing resources
+^^^^^^^^^^^^^^^^^
+
+To suggest a resource for the :doc:`resources page <resources>`, start a post
+in the `Show and tell category
+<https://github.com/django-commons/django-debug-toolbar/discussions/categories/show-and-tell>`_.
+Include a link, a short description, the author or speaker, the publication
+date, and any other useful details such as the Django and Debug Toolbar
+versions covered, the duration, language, or available captions. This gives
+the community a place to discuss the resource before it is added to the
+documentation.
+
 .. _code:
 
 Code
@@ -167,12 +227,6 @@ Translation efforts are coordinated on `Transifex
 <https://explore.transifex.com/django-debug-toolbar/django-debug-toolbar/>`_.
 
 Help translate the Debug Toolbar in your language!
-
-Mailing list
-------------
-
-This project doesn't have a mailing list at this time. If you wish to discuss
-a topic, please open an issue on GitHub.
 
 Making a release
 ----------------

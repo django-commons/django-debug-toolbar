@@ -6,6 +6,8 @@ Pending
 
 * Fixed the Django version check in the SQL panel test suite for Django's
   boolean parameter handling.
+* Documented project priorities, GitHub Discussions, contributor meetings,
+  and how to suggest community resources.
 
 7.0.0 (2026-06-17)
 ------------------
