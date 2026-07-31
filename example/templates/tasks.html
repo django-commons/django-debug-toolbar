@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Tasks</title>
+  </head>
+  <body>
+    <h1>Tasks Test</h1>
+    {% if tasks_available %}
+      <p>Two tasks were just enqueued. Check the Tasks panel to see them.</p>
+    {% else %}
+      <p>
+        django.tasks requires Django 6.0+. Check the Tasks panel to see the
+        upgrade message.
+      </p>
+    {% endif %}
+  </body>
+</html>

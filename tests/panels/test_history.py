@@ -81,6 +81,7 @@ class HistoryViewsTestCase(IntegrationTestCase):
         "AlertsPanel",
         "CachePanel",
         "SignalsPanel",
+        "TasksPanel",
         "CommunityPanel",
         "ProfilingPanel",
     }
