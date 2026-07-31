@@ -5,7 +5,7 @@
 | Name                                                |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |---------------------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
 | debug\_toolbar/\_\_init\_\_.py                      |        4 |        0 |        0 |        0 |    100% |           |
-| debug\_toolbar/\_compat.py                          |       11 |        4 |        2 |        0 |     69% |      5-12 |
+| debug\_toolbar/\_compat.py                          |       18 |        5 |        6 |        1 |     75% |  5-12, 36 |
 | debug\_toolbar/\_stubs.py                           |       18 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/apps.py                              |      112 |        5 |       42 |        3 |     95% |150, 181, 188-189, 255 |
 | debug\_toolbar/decorators.py                        |       28 |        0 |        6 |        0 |    100% |           |
@@ -38,6 +38,7 @@
 | debug\_toolbar/panels/sql/utils.py                  |       89 |        0 |       32 |        1 |     99% | 32-\>exit |
 | debug\_toolbar/panels/sql/views.py                  |       68 |        3 |       14 |        3 |     93% |44, 70, 106 |
 | debug\_toolbar/panels/staticfiles.py                |       82 |        2 |       22 |        1 |     97% |122-124, 145-\>144 |
+| debug\_toolbar/panels/tasks.py                      |       30 |        0 |        8 |        0 |    100% |           |
 | debug\_toolbar/panels/templates/\_\_init\_\_.py     |        2 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/panels/templates/jinja2.py           |       14 |        0 |        2 |        1 |     94% | 21-\>exit |
 | debug\_toolbar/panels/templates/panel.py            |      134 |        9 |       42 |        8 |     90% |20-\>31, 31-\>39, 42, 158, 162, 175-178, 199-200, 207-\>213, 208-\>212 |
@@ -45,14 +46,14 @@
 | debug\_toolbar/panels/timer.py                      |       61 |        5 |       10 |        4 |     85% |11-12, 31-34, 65-\>67, 82-\>84, 84-\>112 |
 | debug\_toolbar/panels/versions.py                   |       42 |        1 |       14 |        1 |     96% |        64 |
 | debug\_toolbar/sanitize.py                          |        6 |        0 |        0 |        0 |    100% |           |
-| debug\_toolbar/settings.py                          |       36 |        2 |        6 |        1 |     93% |   102-103 |
+| debug\_toolbar/settings.py                          |       36 |        2 |        6 |        1 |     93% |   103-104 |
 | debug\_toolbar/store.py                             |      266 |       10 |       42 |        7 |     94% |42-46, 57-\>59, 173-174, 190-\>exit, 214-\>exit, 244, 275, 318, 322-\>exit |
 | debug\_toolbar/templatetags/\_\_init\_\_.py         |        0 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/toolbar.py                           |      141 |        6 |       30 |        1 |     95% |107-115, 162-\>174, 214-217 |
 | debug\_toolbar/urls.py                              |        4 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/utils.py                             |      214 |        7 |       68 |        8 |     95% |30, 61, 121, 125-\>128, 144-\>143, 195-196, 200, 215 |
 | debug\_toolbar/views.py                             |       20 |        0 |        2 |        0 |    100% |           |
-| **TOTAL**                                           | **2584** |  **105** |  **642** |   **68** | **94%** |           |
+| **TOTAL**                                           | **2621** |  **106** |  **654** |   **69** | **94%** |           |
 
 
 ## Setup coverage badge
