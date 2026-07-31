@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_d2adda62691f23ee_timer_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.15.2">coverage.py v7.15.2</a>,
-            created at 2026-07-31 10:45 +0000
+            created at 2026-07-31 11:14 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -106,7 +106,7 @@
     <p class="run"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t">        <span class="key">return</span> <span class="nam">HttpResponseBadRequest</span><span class="op">(</span><span class="str">'"template_origin" key is required'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t">    <span class="key">try</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t">        <span class="nam">template_origin_name</span> <span class="op">=</span> <span class="nam">signing</span><span class="op">.</span><span class="nam">loads</span><span class="op">(</span><span class="nam">template_origin_name</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t">    <span class="key">except</span> <span class="nam">Exception</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t">    <span class="key">except</span> <span class="nam">signing</span><span class="op">.</span><span class="nam">BadSignature</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t26" href="#t26">26</a></span><span class="t">        <span class="key">return</span> <span class="nam">HttpResponseBadRequest</span><span class="op">(</span><span class="str">'"template_origin" is invalid'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t">    <span class="nam">template_name</span> <span class="op">=</span> <span class="nam">request</span><span class="op">.</span><span class="nam">GET</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="str">"template"</span><span class="op">,</span> <span class="nam">template_origin_name</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t28" href="#t28">28</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -160,7 +160,7 @@
             <a class="nav" href="z_d2adda62691f23ee_timer_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.15.2">coverage.py v7.15.2</a>,
-            created at 2026-07-31 10:45 +0000
+            created at 2026-07-31 11:14 +0000
         </p>
     </div>
 </footer>
