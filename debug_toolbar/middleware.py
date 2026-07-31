@@ -77,7 +77,7 @@ def show_toolbar_with_docker(request: HttpRequest) -> bool:
     except socket.gaierror:
         # It's fine if the lookup errored since they may not be using docker
         pass
-    
+
     return False
 
 
