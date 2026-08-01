@@ -11,6 +11,15 @@
 {% endif %}
 
 <h4>{% blocktranslate count template_count=templates|length %}Template{% plural %}Templates{% endblocktranslate %}</h4>
+{% if not editor_configured %}
+  <p>
+  {% blocktranslate %}
+    To open template files in your editor, set the
+    <a target="_blank" href="https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html#debug-toolbar-config:~:text=EDITOR">DEBUG_TOOLBAR_CONFIG["EDITOR"]</a>
+    setting.
+  {% endblocktranslate %}
+  </p>
+{% endif %}
 {% if templates %}
   <dl>
     {% for template in templates %}

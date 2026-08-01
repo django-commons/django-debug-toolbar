@@ -13,6 +13,7 @@ from django.test.utils import instrumented_test_render
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
+from debug_toolbar import settings as dt_settings
 from debug_toolbar.panels import Panel
 from debug_toolbar.panels.sql.tracking import SQLQueryTriggered, allow_sql
 from debug_toolbar.panels.templates import views
@@ -247,4 +248,5 @@ class TemplatesPanel(Panel):
             origin_name = template["template"]["origin_name"]
             if origin_name and origin_name != UNKNOWN_SOURCE:
                 template["template"]["editor_url"] = get_editor_url(origin_name)
+        stats["editor_configured"] = bool(dt_settings.get_config()["EDITOR"])
         return stats
