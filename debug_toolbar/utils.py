@@ -437,6 +437,5 @@ def get_editor_url(file: str, line: int = 1) -> str | None:
         "windsurf": "windsurf://file/{file}:{line}",
     }
     template = formats.get(dt_settings.get_config()["EDITOR"])
-    if template is None:
-        return None
-    return template.format(file=file, line=line)
+    if template:
+        return template.format(file=file, line=line)
