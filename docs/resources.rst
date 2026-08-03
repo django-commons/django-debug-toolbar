@@ -63,7 +63,10 @@ Want to Add Your Content Here?
 
 Have a great tutorial or talk about Django Debug Toolbar? We'd love to
 showcase it! If your content helps developers improve their debugging skills,
-follow our :doc:`contributing guidelines <contributing>` to submit it.
+share it in the `Show and tell discussion category
+<https://github.com/django-commons/django-debug-toolbar/discussions/categories/show-and-tell>`_.
+See the :ref:`contributing guidelines <sharing-resources>` for the details to
+include with your suggestion.
 
 To ensure relevant and accessible content, please check the following
 before submitting:
