@@ -167,6 +167,13 @@ class CachePanelTestCase(BaseTestCase):
             },
         )
 
+    def test_get_or_set_none_counts_as_miss(self):
+        cache.cache.clear()
+
+        self.assertIsNone(cache.cache.get_or_set("foo", None))
+        self.assertEqual(self.panel.hits, 0)
+        self.assertEqual(self.panel.misses, 1)
+
     def test_insert_content(self):
         """
         Test that the panel only inserts content after generate_stats and
