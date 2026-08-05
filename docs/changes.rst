@@ -9,6 +9,10 @@ Pending
   older versions of Django, the panel explains that upgrading is required.
 * Fixed the Django version check in the SQL panel test suite for Django's
   boolean parameter handling.
+* Deferred the toolbar handle's position calculation to an animation frame,
+  so it no longer forces a synchronous layout during initialization. On
+  pages with a large amount of CSS this could briefly show the page before
+  its styles were applied.
 
 7.0.0 (2026-06-17)
 ------------------
