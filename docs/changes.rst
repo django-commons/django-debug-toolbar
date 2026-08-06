@@ -11,6 +11,8 @@ Pending
   boolean parameter handling.
 * Restored the select and explain buttons for queries that run without
   parameters.
+* Fixed the error shown when panel content fails to load, which could not
+  find the toolbar window inside the shadow root.
 
 7.0.0 (2026-06-17)
 ------------------
