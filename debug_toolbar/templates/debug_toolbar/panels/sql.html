@@ -74,7 +74,7 @@
             {{ query.duration|floatformat:"2" }}ms
           </td>
           <td class="djdt-actions">
-            {% if query.params %}
+            {% if query.params is not None %}
               <form method="post">
                 {{ query.form.as_div }}
                 <button formaction="{% url 'djdt:sql_select' %}" class="remoteCall">Sel</button>
