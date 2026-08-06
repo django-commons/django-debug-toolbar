@@ -1,9 +1,10 @@
 import asyncio
+import time
 
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.views.decorators.cache import cache_page
@@ -135,3 +136,14 @@ def redirect_view(request):
 
 def ajax_view(request):
     return render(request, "ajax/ajax.html")
+
+
+def flash_of_unstyled_content_view(request):
+    return render(request, "flash_of_unstyled_content.html")
+
+
+def delayed_stylesheet_view(request):
+    # Holds the sheet pending long enough for the toolbar's async script to run first.
+    time.sleep(0.1)
+    css = "html { --delayed-stylesheet: applied; }"
+    return HttpResponse(css, content_type="text/css")

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <script>
+        window.djdtStyledOnFirstFrame = null;
+        requestAnimationFrame(() => {
+            const styles = getComputedStyle(document.documentElement);
+            window.djdtStyledOnFirstFrame = Boolean(
+                styles.getPropertyValue("--delayed-stylesheet")
+            );
+        });
+    </script>
+    <link rel="stylesheet" href="{% url 'delayed-stylesheet' %}">
+{% endblock head %}
