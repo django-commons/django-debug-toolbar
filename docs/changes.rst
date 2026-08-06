@@ -9,6 +9,8 @@ Pending
   older versions of Django, the panel explains that upgrading is required.
 * Fixed the Django version check in the SQL panel test suite for Django's
   boolean parameter handling.
+* Restored the select and explain buttons for queries that run without
+  parameters.
 
 7.0.0 (2026-06-17)
 ------------------
