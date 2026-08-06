@@ -759,8 +759,8 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         table = self.wait.until(
             lambda selenium: version_panel.find_element(By.TAG_NAME, "table")
         )
-        self.assertIn("Name", table.text)
-        self.assertIn("Version", table.text)
+        self.assertIn("Name", table.get_attribute("textContent"))
+        self.assertIn("Version", table.get_attribute("textContent"))
 
     @override_settings(
         DEBUG_TOOLBAR_CONFIG={
@@ -906,8 +906,8 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         table = self.wait.until(
             lambda selenium: sql_panel.find_element(By.TAG_NAME, "table")
         )
-        self.assertIn("Query", table.text)
-        self.assertIn("Action", table.text)
+        self.assertIn("Query", table.get_attribute("textContent"))
+        self.assertIn("Action", table.get_attribute("textContent"))
 
     @override_settings(DEBUG_TOOLBAR_CONFIG={"TOOLBAR_LANGUAGE": "pt-br"})
     def test_toolbar_language_will_render_to_locale_when_set(self):
@@ -924,8 +924,8 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         table = self.wait.until(
             lambda selenium: sql_panel.find_element(By.TAG_NAME, "table")
         )
-        self.assertIn("Query", table.text)
-        self.assertIn("Linha", table.text)
+        self.assertIn("Query", table.get_attribute("textContent"))
+        self.assertIn("Linha", table.get_attribute("textContent"))
 
     @override_settings(DEBUG_TOOLBAR_CONFIG={"TOOLBAR_LANGUAGE": "en-us"})
     @override_settings(LANGUAGE_CODE="de")
@@ -943,8 +943,8 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         table = self.wait.until(
             lambda selenium: sql_panel.find_element(By.TAG_NAME, "table")
         )
-        self.assertIn("Query", table.text)
-        self.assertIn("Action", table.text)
+        self.assertIn("Query", table.get_attribute("textContent"))
+        self.assertIn("Action", table.get_attribute("textContent"))
 
     def test_ajax_dont_refresh(self):
         self.get("/ajax/")
