@@ -15,6 +15,7 @@ Pending
   find the toolbar window inside the shadow root.
 * Stopped the history panel buttons from submitting their form when clicked
   before the panel script has loaded, which navigated away from the page.
+* Added support for Django 6.1.
 
 7.0.0 (2026-06-17)
 ------------------
