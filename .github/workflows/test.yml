@@ -133,13 +133,13 @@ jobs:
             - python-version: '3.13'
               database: psycopg3
               env:
-                DJANGO_SELENIUM_TESTS=true
+                DJANGO_SELENIUM_TESTS: "true"
             - python-version: '3.14'
               database: postgis3
             - python-version: '3.14'
               database: psycopg3
               env:
-                DJANGO_SELENIUM_TESTS=true
+                DJANGO_SELENIUM_TESTS: "true"
 
     services:
       postgres:
