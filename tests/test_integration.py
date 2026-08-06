@@ -711,6 +711,27 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         options.set_preference("ui.prefersReducedMotion", 0)
         cls.selenium = webdriver.Firefox(options=options)
 
+        # The toolbar renders into an open shadow root, which find_element
+        # cannot see into, so fall back to searching within it.
+        find_element = cls.selenium.find_element
+        selectors = {
+            By.ID: "#{}",
+            By.CLASS_NAME: ".{}",
+            By.TAG_NAME: "{}",
+            By.CSS_SELECTOR: "{}",
+        }
+
+        def find_including_toolbar(by, value):
+            try:
+                return find_element(by, value)
+            except NoSuchElementException:
+                shadow_root = find_element(By.ID, "djDebugRoot").shadow_root
+                return shadow_root.find_element(
+                    By.CSS_SELECTOR, selectors[by].format(value)
+                )
+
+        cls.selenium.find_element = find_including_toolbar
+
     @classmethod
     def tearDownClass(cls):
         cls.selenium.quit()
