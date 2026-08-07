@@ -788,16 +788,30 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         self.get("/regular_jinja/basic")
         # Make a new request so the history panel has more than one option.
         self.get("/execute_sql/")
-        template_panel = self.selenium.find_element(By.ID, HistoryPanel.panel_id)
         # Record the current side panel of buttons for later comparison.
+        previous_request_id = self.selenium.find_element(
+            By.ID, "djDebug"
+        ).get_attribute("data-request-id")
         previous_button_panel = self.selenium.find_element(
             By.ID, "djDebugPanelList"
         ).text
 
         # Click to show the history panel
         self.selenium.find_element(By.CLASS_NAME, HistoryPanel.panel_id).click()
+
         # Click to switch back to the jinja page view snapshot
-        list(template_panel.find_elements(By.CSS_SELECTOR, "button"))[-1].click()
+        def switch_to_oldest_snapshot(selenium):
+            buttons = selenium.find_element(By.ID, HistoryPanel.panel_id).find_elements(
+                By.CSS_SELECTOR, ".switchHistory"
+            )
+            if buttons:
+                buttons[-1].click()
+            return (
+                selenium.find_element(By.ID, "djDebug").get_attribute("data-request-id")
+                != previous_request_id
+            )
+
+        self.wait.until(switch_to_oldest_snapshot)
 
         current_button_panel = self.selenium.find_element(
             By.ID, "djDebugPanelList"
