@@ -13,7 +13,7 @@
 | debug\_toolbar/management/\_\_init\_\_.py           |        0 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/management/commands/\_\_init\_\_.py  |        0 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/management/commands/debugsqlshell.py |       19 |        0 |        2 |        0 |    100% |           |
-| debug\_toolbar/middleware.py                        |      111 |        6 |       48 |        5 |     93% |45, 49, 63-68, 84, 205-\>210 |
+| debug\_toolbar/middleware.py                        |      111 |        6 |       48 |        4 |     94% |45, 49, 63-68, 84 |
 | debug\_toolbar/migrations/0001\_initial.py          |        4 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/migrations/\_\_init\_\_.py           |        0 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/models.py                            |       12 |        0 |        0 |        0 |    100% |           |
@@ -21,10 +21,10 @@
 | debug\_toolbar/panels/alerts.py                     |       69 |        0 |       28 |        1 |     99% | 133-\>131 |
 | debug\_toolbar/panels/cache.py                      |      103 |        1 |       28 |        2 |     98% |90-\>exit, 102 |
 | debug\_toolbar/panels/community.py                  |        6 |        0 |        0 |        0 |    100% |           |
-| debug\_toolbar/panels/headers.py                    |       22 |        0 |        2 |        1 |     96% |   42-\>44 |
+| debug\_toolbar/panels/headers.py                    |       22 |        0 |        2 |        0 |    100% |           |
 | debug\_toolbar/panels/history/\_\_init\_\_.py       |        2 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/panels/history/forms.py              |        4 |        0 |        0 |        0 |    100% |           |
-| debug\_toolbar/panels/history/panel.py              |       59 |        5 |        8 |        0 |     93% |72-74, 119-121 |
+| debug\_toolbar/panels/history/panel.py              |       59 |        2 |        8 |        0 |     97% |     72-74 |
 | debug\_toolbar/panels/history/views.py              |       38 |        0 |       12 |        0 |    100% |           |
 | debug\_toolbar/panels/profiling.py                  |      108 |        9 |       24 |        2 |     92% |31, 34-35, 55, 65, 120-121, 128-129 |
 | debug\_toolbar/panels/redirects.py                  |       32 |        0 |        4 |        0 |    100% |           |
@@ -53,7 +53,7 @@
 | debug\_toolbar/urls.py                              |        4 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/utils.py                             |      214 |        7 |       68 |        8 |     95% |30, 61, 121, 125-\>128, 144-\>143, 195-196, 200, 216 |
 | debug\_toolbar/views.py                             |       20 |        0 |        2 |        0 |    100% |           |
-| **TOTAL**                                           | **2619** |  **106** |  **644** |   **66** | **94%** |           |
+| **TOTAL**                                           | **2619** |  **103** |  **644** |   **64** | **95%** |           |
 
 
 ## Setup coverage badge
