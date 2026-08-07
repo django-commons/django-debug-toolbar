@@ -3,6 +3,8 @@ Change log
 
 Pending
 
+7.1.0 (2026-08-10)
+------------------
 
 * Added a Tasks panel that shows tasks queued during the request via
   Django's built-in tasks framework (``django.tasks``, Django 6.0+). On
