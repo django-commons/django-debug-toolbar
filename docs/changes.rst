@@ -13,6 +13,13 @@ Pending
   so it no longer forces a synchronous layout during initialization. On
   pages with a large amount of CSS this could briefly show the page before
   its styles were applied.
+* Restored the select and explain buttons for queries that run without
+  parameters.
+* Fixed the error shown when panel content fails to load, which could not
+  find the toolbar window inside the shadow root.
+* Stopped the history panel buttons from submitting their form when clicked
+  before the panel script has loaded, which navigated away from the page.
+
 
 7.0.0 (2026-06-17)
 ------------------
