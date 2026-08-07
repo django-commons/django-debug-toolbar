@@ -247,14 +247,16 @@ const djdt = {
         }
     },
     ensureHandleVisibility() {
-        const djDebug = getDebugElement();
-        const handle = djDebug.querySelector("#djDebugToolbarHandle");
-        // set handle position
-        const handleTop = Math.min(
-            localStorage.getItem("djdt.top") || 265,
-            globalThis.innerHeight - handle.offsetWidth
-        );
-        handle.style.top = `${handleTop}px`;
+        requestAnimationFrame(() => {
+            const djDebug = getDebugElement();
+            const handle = djDebug.querySelector("#djDebugToolbarHandle");
+            // set handle position
+            const handleTop = Math.min(
+                localStorage.getItem("djdt.top") || 265,
+                globalThis.innerHeight - handle.offsetWidth
+            );
+            handle.style.top = `${handleTop}px`;
+        });
     },
     hideToolbar() {
         const djDebug = getDebugElement();

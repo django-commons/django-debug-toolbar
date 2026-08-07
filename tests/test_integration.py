@@ -1026,6 +1026,29 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         self.assertEqual(toolbar.get_attribute("data-user-theme"), "auto")
         self.assertEqual(toolbar.get_attribute("data-theme"), "light")
 
+    def reset_stored_toolbar_state(self):
+        self.get("/regular/basic/")
+        self.selenium.execute_script("localStorage.clear()")
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"SHOW_COLLAPSED": True})
+    def test_collapsed_toolbar_does_not_flash_unstyled_content(self):
+        """Firefox withholds animation frames until pending stylesheets load, so
+        a first frame that sees unstyled content means the toolbar forced layout
+        early and let an unstyled paint through."""
+        self.reset_stored_toolbar_state()
+        self.addCleanup(self.reset_stored_toolbar_state)
+
+        self.get("/flash_of_unstyled_content/")
+        self.wait.until(
+            lambda selenium: selenium.execute_script(
+                "return window.djdtStyledOnFirstFrame !== null"
+            )
+        )
+
+        self.assertTrue(
+            self.selenium.execute_script("return window.djdtStyledOnFirstFrame")
+        )
+
     def test_async_sql_action(self):
         self.get("/async_execute_sql/")
         self.selenium.find_element(By.ID, "SQLPanel")
