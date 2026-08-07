@@ -13,6 +13,8 @@ Pending
   parameters.
 * Fixed the error shown when panel content fails to load, which could not
   find the toolbar window inside the shadow root.
+* Stopped the history panel buttons from submitting their form when clicked
+  before the panel script has loaded, which navigated away from the page.
 
 7.0.0 (2026-06-17)
 ------------------

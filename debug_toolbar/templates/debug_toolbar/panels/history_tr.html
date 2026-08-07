@@ -44,7 +44,7 @@
     <td class="djdt-actions">
         <form method="get" action="{% url 'djdt:history_sidebar' %}">
             {{ history_context.form.as_div }}
-            <button data-request-id="{{ request_id }}" class="switchHistory">Switch</button>
+            <button type="button" data-request-id="{{ request_id }}" class="switchHistory">Switch</button>
         </form>
     </td>
 </tr>
