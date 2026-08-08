@@ -9,6 +9,9 @@ Pending
   older versions of Django, the panel explains that upgrading is required.
 * Fixed the Django version check in the SQL panel test suite for Django's
   boolean parameter handling.
+* Fixed ``show_toolbar_with_docker`` on Docker runtimes such as OrbStack that
+  can resolve ``host.docker.internal`` to an address outside the container
+  network.
 * Restored the select and explain buttons for queries that run without
   parameters.
 * Fixed the error shown when panel content fails to load, which could not
