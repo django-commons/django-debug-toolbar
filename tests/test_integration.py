@@ -64,7 +64,7 @@ class BuggyPanel(Panel):
 
     @property
     def content(self):
-        raise Exception
+        raise Exception  # noqa: TRY002
 
 
 @override_settings(DEBUG=True)
@@ -726,6 +726,27 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         options.set_preference("ui.prefersReducedMotion", 0)
         cls.selenium = webdriver.Firefox(options=options)
 
+        # The toolbar renders into an open shadow root, which find_element
+        # cannot see into, so fall back to searching within it.
+        find_element = cls.selenium.find_element
+        selectors = {
+            By.ID: "#{}",
+            By.CLASS_NAME: ".{}",
+            By.TAG_NAME: "{}",
+            By.CSS_SELECTOR: "{}",
+        }
+
+        def find_including_toolbar(by, value):
+            try:
+                return find_element(by, value)
+            except NoSuchElementException:
+                shadow_root = find_element(By.ID, "djDebugRoot").shadow_root
+                return shadow_root.find_element(
+                    By.CSS_SELECTOR, selectors[by].format(value)
+                )
+
+        cls.selenium.find_element = find_including_toolbar
+
     @classmethod
     def tearDownClass(cls):
         cls.selenium.quit()
@@ -753,8 +774,8 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         table = self.wait.until(
             lambda selenium: version_panel.find_element(By.TAG_NAME, "table")
         )
-        self.assertIn("Name", table.text)
-        self.assertIn("Version", table.text)
+        self.assertIn("Name", table.get_attribute("textContent"))
+        self.assertIn("Version", table.get_attribute("textContent"))
 
     @override_settings(
         DEBUG_TOOLBAR_CONFIG={
@@ -782,16 +803,30 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         self.get("/regular_jinja/basic")
         # Make a new request so the history panel has more than one option.
         self.get("/execute_sql/")
-        template_panel = self.selenium.find_element(By.ID, HistoryPanel.panel_id)
         # Record the current side panel of buttons for later comparison.
+        previous_request_id = self.selenium.find_element(
+            By.ID, "djDebug"
+        ).get_attribute("data-request-id")
         previous_button_panel = self.selenium.find_element(
             By.ID, "djDebugPanelList"
         ).text
 
         # Click to show the history panel
         self.selenium.find_element(By.CLASS_NAME, HistoryPanel.panel_id).click()
+
         # Click to switch back to the jinja page view snapshot
-        list(template_panel.find_elements(By.CSS_SELECTOR, "button"))[-1].click()
+        def switch_to_oldest_snapshot(selenium):
+            buttons = selenium.find_element(By.ID, HistoryPanel.panel_id).find_elements(
+                By.CSS_SELECTOR, ".switchHistory"
+            )
+            if buttons:
+                buttons[-1].click()
+            return (
+                selenium.find_element(By.ID, "djDebug").get_attribute("data-request-id")
+                != previous_request_id
+            )
+
+        self.wait.until(switch_to_oldest_snapshot)
 
         current_button_panel = self.selenium.find_element(
             By.ID, "djDebugPanelList"
@@ -900,8 +935,8 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         table = self.wait.until(
             lambda selenium: sql_panel.find_element(By.TAG_NAME, "table")
         )
-        self.assertIn("Query", table.text)
-        self.assertIn("Action", table.text)
+        self.assertIn("Query", table.get_attribute("textContent"))
+        self.assertIn("Action", table.get_attribute("textContent"))
 
     @override_settings(DEBUG_TOOLBAR_CONFIG={"TOOLBAR_LANGUAGE": "pt-br"})
     def test_toolbar_language_will_render_to_locale_when_set(self):
@@ -918,8 +953,8 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         table = self.wait.until(
             lambda selenium: sql_panel.find_element(By.TAG_NAME, "table")
         )
-        self.assertIn("Query", table.text)
-        self.assertIn("Linha", table.text)
+        self.assertIn("Query", table.get_attribute("textContent"))
+        self.assertIn("Linha", table.get_attribute("textContent"))
 
     @override_settings(DEBUG_TOOLBAR_CONFIG={"TOOLBAR_LANGUAGE": "en-us"})
     @override_settings(LANGUAGE_CODE="de")
@@ -937,8 +972,8 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         table = self.wait.until(
             lambda selenium: sql_panel.find_element(By.TAG_NAME, "table")
         )
-        self.assertIn("Query", table.text)
-        self.assertIn("Action", table.text)
+        self.assertIn("Query", table.get_attribute("textContent"))
+        self.assertIn("Action", table.get_attribute("textContent"))
 
     def test_ajax_dont_refresh(self):
         self.get("/ajax/")

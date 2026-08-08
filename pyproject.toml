@@ -19,6 +19,7 @@ classifiers = [
   "Framework :: Django",
   "Framework :: Django :: 5.2",
   "Framework :: Django :: 6.0",
+  "Framework :: Django :: 6.1",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: BSD License",
   "Operating System :: OS Independent",
@@ -97,9 +98,10 @@ lint.extend-select = [
   "W",      # pycodestyle warnings
 ]
 lint.extend-ignore = [
-  "B905",  # Allow zip() without strict=
-  "E501",  # Ignore line length violations
-  "UP031", # It's not always wrong to use percent-formatting
+  "B905",   # Allow zip() without strict=
+  "E501",   # Ignore line length violations
+  "RUF012", # Allow mutable class attributes
+  "UP031",  # It's not always wrong to use percent-formatting
 ]
 lint.per-file-ignores."*/migrat*/*" = [
   "N806", # Allow using PascalCase model names in migrations

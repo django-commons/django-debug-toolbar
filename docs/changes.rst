@@ -2,12 +2,23 @@ Change log
 ==========
 
 Pending
--------
 
+
+* Added a Tasks panel that shows tasks queued during the request via
+  Django's built-in tasks framework (``django.tasks``, Django 6.0+). On
+  older versions of Django, the panel explains that upgrading is required.
 * Fixed the Django version check in the SQL panel test suite for Django's
   boolean parameter handling.
 * Fixed ``show_toolbar_with_docker`` on Docker runtimes such as OrbStack that
-  resolve ``host.docker.internal`` to an address outside the container network.
+  can resolve ``host.docker.internal`` to an address outside the container
+  network.
+* Restored the select and explain buttons for queries that run without
+  parameters.
+* Fixed the error shown when panel content fails to load, which could not
+  find the toolbar window inside the shadow root.
+* Stopped the history panel buttons from submitting their form when clicked
+  before the panel script has loaded, which navigated away from the page.
+* Added support for Django 6.1.
 
 7.0.0 (2026-06-17)
 ------------------
