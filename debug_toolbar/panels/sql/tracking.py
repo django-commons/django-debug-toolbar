@@ -187,7 +187,7 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
         finally:
             self.db._djdt_logger = self.logger
 
-    def _record(self, method, sql, params):
+    def _record(self, method, sql, params, *, many=False):
         alias = self.db.alias
         vendor = self.db.vendor
 
@@ -219,13 +219,27 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
             else:
                 sql = str(sql)
 
+            if many:
+                # params is a sequence of param sequences, but
+                # last_executed_query() expects a flat sequence of scalars, so
+                # it cannot interpolate this. Report the statement and how many
+                # times it ran, matching Django's own CursorDebugWrapper.
+                try:
+                    times = len(params)
+                except TypeError:
+                    times = "?"
+                display_sql = f"{times} times: {sql}"
+            else:
+                display_sql = self._last_executed_query(sql, params)
+
             kwargs = {
                 "vendor": vendor,
                 "alias": alias,
-                "sql": self._last_executed_query(sql, params),
+                "sql": display_sql,
                 "duration": duration,
                 "raw_sql": sql,
                 "params": _params,
+                "many": many,
                 "stacktrace": get_stack_trace(skip=2),
                 "template_info": template_info,
             }
@@ -281,4 +295,4 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
         return self._record(super().execute, sql, params)
 
     def executemany(self, sql, param_list):
-        return self._record(super().executemany, sql, param_list)
+        return self._record(super().executemany, sql, param_list, many=True)

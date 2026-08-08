@@ -48,6 +48,9 @@ Pending
 * Stopped the history panel buttons from submitting their form when clicked
   before the panel script has loaded, which navigated away from the page.
 * Added support for Django 6.1.
+* Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
+  recorded. The statement is now shown as ``N times: <sql>``, matching
+  Django's own debug cursor.
 
 7.0.0 (2026-06-17)
 ------------------

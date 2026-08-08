@@ -104,6 +104,51 @@ class SQLPanelTestCase(BaseTestCase):
         # ensure the stacktrace is populated
         self.assertTrue(len(query["stacktrace"]) > 0)
 
+    def test_executemany(self):
+        """
+        executemany() must be recorded without raising.
+
+        The backend's last_executed_query() expects a flat sequence of scalar
+        params, so handing it a list of param sequences fails. It happens in a
+        finally: block after the write has already landed, so the exception
+        escapes into the caller.
+        """
+        self.assertEqual(len(self.panel._queries), 0)
+
+        with connection.cursor() as cursor:
+            cursor.executemany(
+                "INSERT INTO tests_binary (field) VALUES (%s)",
+                [(b"one",), (b"two",)],
+            )
+
+        self.assertEqual(len(self.panel._queries), 1)
+        query = self.panel._queries[0]
+        self.assertEqual(
+            query["sql"], "2 times: INSERT INTO tests_binary (field) VALUES (%s)"
+        )
+        self.assertTrue(query["many"])
+        self.assertEqual(Binary.objects.count(), 2)
+
+    def test_executemany_with_empty_param_list(self):
+        """An empty param list runs no statement but must still not raise."""
+        self.assertEqual(len(self.panel._queries), 0)
+
+        with connection.cursor() as cursor:
+            cursor.executemany("INSERT INTO tests_binary (field) VALUES (%s)", [])
+
+        self.assertEqual(len(self.panel._queries), 1)
+        self.assertEqual(
+            self.panel._queries[0]["sql"],
+            "0 times: INSERT INTO tests_binary (field) VALUES (%s)",
+        )
+        self.assertEqual(Binary.objects.count(), 0)
+
+    def test_execute_is_not_marked_as_many(self):
+        sql_call()
+
+        self.assertEqual(len(self.panel._queries), 1)
+        self.assertFalse(self.panel._queries[0]["many"])
+
     def test_assert_num_queries_works(self):
         """
         Confirm Django's assertNumQueries and CaptureQueriesContext works
