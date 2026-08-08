@@ -66,6 +66,10 @@ def show_toolbar_with_docker(request: HttpRequest) -> bool:
     # to an address that is unrelated to the container network, so the check
     # above cannot derive the host address from it.
     try:
+        # Make a reasonable guess at the gateway from the container's own
+        # interface. This assumes the process is running inside a container.
+        # If this were used outside a container this would grant access to
+        # anything that appears to come from the network's gateway (router).
         container_ips = socket.gethostbyname_ex(socket.gethostname())[2]
         gateways = {ip.rsplit(".", 1)[0] + ".1" for ip in container_ips}
         if request.META.get("REMOTE_ADDR") in gateways:
