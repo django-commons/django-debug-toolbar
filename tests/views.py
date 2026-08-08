@@ -9,11 +9,16 @@ from django.template.response import TemplateResponse
 from django.views.decorators.cache import cache_page
 
 from debug_toolbar.utils import get_csp_nonce
-from tests.models import PostgresJSON
+from tests.models import Binary, PostgresJSON
 
 
 def execute_sql(request):
     list(User.objects.all())
+    return render(request, "base.html")
+
+
+def execute_binary_sql(request):
+    list(Binary.objects.filter(field=b"\x01\x02\x03"))
     return render(request, "base.html")
 
 
@@ -103,6 +108,11 @@ def cached_low_level_view(request):
     if not value:
         value = "eggs"
         cache.set(key, value, 60)
+    return render(request, "base.html")
+
+
+def cache_with_non_json_key_view(request):
+    cache.set_many({str: "this-is-a-string", "foo": "bar"})
     return render(request, "base.html")
 
 

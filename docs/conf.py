@@ -22,7 +22,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 project = "Django Debug Toolbar"
 copyright = "{}, Django Debug Toolbar developers and contributors"
-copyright = copyright.format(datetime.date.today().year)
+copyright = copyright.format(datetime.datetime.now(datetime.timezone.utc).year)
 
 # The full version, including alpha/beta/rc tags
 release = "6.2.0"

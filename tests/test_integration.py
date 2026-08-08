@@ -2,12 +2,14 @@ import os
 import re
 import time
 import unittest
+import warnings
 from unittest.mock import patch
 
 import html5lib
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core import signing
 from django.core.cache import cache
+from django.core.cache.backends.base import CacheKeyWarning
 from django.db import connection
 from django.http import HttpResponse
 from django.template.loader import get_template
@@ -62,7 +64,7 @@ class BuggyPanel(Panel):
 
     @property
     def content(self):
-        raise Exception
+        raise Exception  # noqa: TRY002
 
 
 @override_settings(DEBUG=True)
@@ -86,6 +88,21 @@ class DebugToolbarTestCase(BaseTestCase):
             self.assertFalse(show_toolbar(self.request))
             self.assertTrue(show_toolbar_with_docker(self.request))
         mocked_gethostbyname.assert_called_once_with("host.docker.internal")
+
+    @patch("socket.gethostbyname", return_value="0.250.250.254")
+    @patch("socket.gethostname", return_value="container")
+    @patch(
+        "socket.gethostbyname_ex",
+        return_value=("container", [], ["192.168.215.7"]),
+    )
+    def test_show_toolbar_docker_unrelated_host_address(self, *mocks):
+        """Runtimes such as OrbStack resolve host.docker.internal to an
+        address outside of the container network, so the host address has to
+        be derived from the container's own address instead."""
+        self.request.META["REMOTE_ADDR"] = "192.168.215.1"
+        with self.settings(INTERNAL_IPS=[]):
+            self.assertFalse(show_toolbar(self.request))
+            self.assertTrue(show_toolbar_with_docker(self.request))
 
     def test_not_iterating_over_INTERNAL_IPS(self):
         """Verify that the middleware does not iterate over INTERNAL_IPS in some way.
@@ -208,6 +225,23 @@ class DebugToolbarTestCase(BaseTestCase):
         self.assertEqual(
             len(response.toolbar.get_panel_by_id(CachePanel.panel_id).calls), 1
         )
+
+    def test_cache_panel_store_skips_non_json_keys(self):
+        cache.clear()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", CacheKeyWarning)
+            response = self.client.get("/cache_with_non_json_key/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            len(response.toolbar.get_panel_by_id(CachePanel.panel_id).calls), 1
+        )
+
+        request_id = list(get_store().request_ids())[-1]
+        toolbar = DebugToolbar.fetch(request_id, CachePanel.panel_id)
+        stats = toolbar.get_panel_by_id(CachePanel.panel_id).get_stats()
+        self.assertEqual(stats["calls"][0]["name"], "set_many")
+        self.assertEqual(stats["calls"][0]["args"], [{"foo": "bar"}])
 
     def test_cache_disable_instrumentation(self):
         """
@@ -529,6 +563,29 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
             )
             self.assertEqual(response.status_code, 404)
 
+    def test_sql_explain_binary_param(self):
+        """
+        Confirm explain works for queries with binary parameters (e.g. GeoDjango EWKB).
+        """
+        self.client.get("/execute_binary_sql/")
+        request_ids = list(get_store().request_ids())
+        request_id = request_ids[-1]
+        toolbar = DebugToolbar.fetch(request_id, SQLPanel.panel_id)
+        panel = toolbar.get_panel_by_id(SQLPanel.panel_id)
+        djdt_query_id = panel.get_stats()["queries"][-1]["djdt_query_id"]
+
+        url = "/__debug__/sql_explain/"
+        data = {
+            "signed": SignedDataForm.sign(
+                {
+                    "request_id": request_id,
+                    "djdt_query_id": djdt_query_id,
+                }
+            )
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+
     def test_sql_profile_checks_show_toolbar(self):
         self.client.get("/execute_sql/")
         request_ids = list(get_store().request_ids())
@@ -669,6 +726,27 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         options.set_preference("ui.prefersReducedMotion", 0)
         cls.selenium = webdriver.Firefox(options=options)
 
+        # The toolbar renders into an open shadow root, which find_element
+        # cannot see into, so fall back to searching within it.
+        find_element = cls.selenium.find_element
+        selectors = {
+            By.ID: "#{}",
+            By.CLASS_NAME: ".{}",
+            By.TAG_NAME: "{}",
+            By.CSS_SELECTOR: "{}",
+        }
+
+        def find_including_toolbar(by, value):
+            try:
+                return find_element(by, value)
+            except NoSuchElementException:
+                shadow_root = find_element(By.ID, "djDebugRoot").shadow_root
+                return shadow_root.find_element(
+                    By.CSS_SELECTOR, selectors[by].format(value)
+                )
+
+        cls.selenium.find_element = find_including_toolbar
+
     @classmethod
     def tearDownClass(cls):
         cls.selenium.quit()
@@ -696,8 +774,8 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         table = self.wait.until(
             lambda selenium: version_panel.find_element(By.TAG_NAME, "table")
         )
-        self.assertIn("Name", table.text)
-        self.assertIn("Version", table.text)
+        self.assertIn("Name", table.get_attribute("textContent"))
+        self.assertIn("Version", table.get_attribute("textContent"))
 
     @override_settings(
         DEBUG_TOOLBAR_CONFIG={
@@ -725,16 +803,30 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         self.get("/regular_jinja/basic")
         # Make a new request so the history panel has more than one option.
         self.get("/execute_sql/")
-        template_panel = self.selenium.find_element(By.ID, HistoryPanel.panel_id)
         # Record the current side panel of buttons for later comparison.
+        previous_request_id = self.selenium.find_element(
+            By.ID, "djDebug"
+        ).get_attribute("data-request-id")
         previous_button_panel = self.selenium.find_element(
             By.ID, "djDebugPanelList"
         ).text
 
         # Click to show the history panel
         self.selenium.find_element(By.CLASS_NAME, HistoryPanel.panel_id).click()
+
         # Click to switch back to the jinja page view snapshot
-        list(template_panel.find_elements(By.CSS_SELECTOR, "button"))[-1].click()
+        def switch_to_oldest_snapshot(selenium):
+            buttons = selenium.find_element(By.ID, HistoryPanel.panel_id).find_elements(
+                By.CSS_SELECTOR, ".switchHistory"
+            )
+            if buttons:
+                buttons[-1].click()
+            return (
+                selenium.find_element(By.ID, "djDebug").get_attribute("data-request-id")
+                != previous_request_id
+            )
+
+        self.wait.until(switch_to_oldest_snapshot)
 
         current_button_panel = self.selenium.find_element(
             By.ID, "djDebugPanelList"
@@ -843,8 +935,8 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         table = self.wait.until(
             lambda selenium: sql_panel.find_element(By.TAG_NAME, "table")
         )
-        self.assertIn("Query", table.text)
-        self.assertIn("Action", table.text)
+        self.assertIn("Query", table.get_attribute("textContent"))
+        self.assertIn("Action", table.get_attribute("textContent"))
 
     @override_settings(DEBUG_TOOLBAR_CONFIG={"TOOLBAR_LANGUAGE": "pt-br"})
     def test_toolbar_language_will_render_to_locale_when_set(self):
@@ -861,8 +953,8 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         table = self.wait.until(
             lambda selenium: sql_panel.find_element(By.TAG_NAME, "table")
         )
-        self.assertIn("Query", table.text)
-        self.assertIn("Linha", table.text)
+        self.assertIn("Query", table.get_attribute("textContent"))
+        self.assertIn("Linha", table.get_attribute("textContent"))
 
     @override_settings(DEBUG_TOOLBAR_CONFIG={"TOOLBAR_LANGUAGE": "en-us"})
     @override_settings(LANGUAGE_CODE="de")
@@ -880,8 +972,8 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         table = self.wait.until(
             lambda selenium: sql_panel.find_element(By.TAG_NAME, "table")
         )
-        self.assertIn("Query", table.text)
-        self.assertIn("Action", table.text)
+        self.assertIn("Query", table.get_attribute("textContent"))
+        self.assertIn("Action", table.get_attribute("textContent"))
 
     def test_ajax_dont_refresh(self):
         self.get("/ajax/")

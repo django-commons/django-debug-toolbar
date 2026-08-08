@@ -2,9 +2,32 @@ Change log
 ==========
 
 Pending
--------
+
+
+* Added a Tasks panel that shows tasks queued during the request via
+  Django's built-in tasks framework (``django.tasks``, Django 6.0+). On
+  older versions of Django, the panel explains that upgrading is required.
+* Fixed the Django version check in the SQL panel test suite for Django's
+  boolean parameter handling.
+* Fixed ``show_toolbar_with_docker`` on Docker runtimes such as OrbStack that
+  can resolve ``host.docker.internal`` to an address outside the container
+  network.
+* Restored the select and explain buttons for queries that run without
+  parameters.
+* Fixed the error shown when panel content fails to load, which could not
+  find the toolbar window inside the shadow root.
+* Stopped the history panel buttons from submitting their form when clicked
+  before the panel script has loaded, which navigated away from the page.
+* Added support for Django 6.1.
+* Added open in editor functionality to templates panel using ``EDITOR``
+  setting.
+
+7.0.0 (2026-06-17)
+------------------
 
 * Prevent check from failing when ``ROOT_URLCONF`` is not defined.
+* Prevent toolbar storage from failing when serialized panel data contains
+  mapping keys that are not JSON-compatible.
 * Prevent debounce race conditions in the history panel for rapid
   fetch requests.
 * Added a note to the prerequisites section of the installation docs
@@ -21,8 +44,22 @@ Pending
   limits. When ``SQLParseError`` is raised, the SQL panel now automatically
   disables grouping and retries formatting, preventing crashes with large
   queries.
-* Added open in editor functionality to templates panel using ``EDITOR``
-  setting.
+* Upgraded the JavaScript code to use modern ECMAScript features using
+  ``esupgrade``.
+* Updated tox configuration to treat ``DeprecationWarning``,
+  ``ResourceWarning``, and ``PendingDeprecationWarning`` as errors.
+* Clarified configuration documentation about ``SHOW_TOOLBAR_CALLBACK``
+  needing to respect ``django.conf.settings.DEBUG`` to match
+  ``debug_toolbar_urls``.
+* Fixed cookie ``expires`` calculation in ``djdt.cookie.set``.
+* Account for the new ``CULL_PROBABILITY`` in Django 6.2 in tests.
+* Support Django 6.2's handling of booleans for non-PostgreSQL databases.
+* Changed the SQL panel to show the "Select" and "Explain" action buttons for
+  all queries, not just ``SELECT`` statements.
+* Fixed SQL panel handling of binary parameters (e.g. from ``BinaryField``)
+  and GeoDjango PostGIS geometry parameters. EWKB geometry adapters are now
+  serialized and reconstructed so that Select and Explain work correctly on
+  spatial queries.
 
 6.3.0 (2026-04-01)
 ------------------

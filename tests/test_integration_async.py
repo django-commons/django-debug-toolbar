@@ -45,7 +45,7 @@ class BuggyPanel(Panel):
 
     @property
     def content(self):
-        raise Exception
+        raise Exception  # noqa: TRY002
 
 
 @override_settings(DEBUG=True)

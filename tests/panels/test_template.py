@@ -44,8 +44,10 @@ class TemplatesPanelTestCase(BaseTestCase):
             self.panel.templates[0]["context_list"],
             [
                 "{'False': False, 'None': None, 'True': True}",
-                "{'deep_queryset': '<<triggers database query>>',\n"
-                " 'queryset': '<<queryset of auth.User>>'}",
+                (
+                    "{'deep_queryset': '<<triggers database query>>',\n"
+                    " 'queryset': '<<queryset of auth.User>>'}"
+                ),
             ],
         )
 

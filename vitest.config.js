@@ -1,4 +1,4 @@
-import { webdriverio } from "@vitest/browser-webdriverio";
+import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
@@ -6,9 +6,9 @@ export default defineConfig({
         browser: {
             enabled: true,
             headless: true,
-            provider: webdriverio(),
-            // https://vitest.dev/config/browser/webdriverio
-            instances: [{ browser: "chrome" }, { browser: "firefox" }],
+            provider: playwright(),
+            // https://vitest.dev/guide/browser/playwright
+            instances: [{ browser: "chromium" }, { browser: "firefox" }],
         },
         coverage: {
             enabled: true,

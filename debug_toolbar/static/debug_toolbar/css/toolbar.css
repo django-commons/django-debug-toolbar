@@ -232,11 +232,6 @@
     color: #999;
 }
 
-#djDebug #djDebugToolbar li a:hover {
-    color: #111;
-    background-color: #ffc;
-}
-
 #djDebug #djDebugToolbar li.djdt-active {
     background: #333;
 }
@@ -250,11 +245,6 @@
     transform: translateY(-50%);
     color: #eee;
     font-size: 150%;
-}
-
-#djDebug #djDebugToolbar li.djdt-active a:hover {
-    color: #b36a60;
-    background-color: transparent;
 }
 
 #djDebug #djDebugToolbar li small {
@@ -1232,4 +1222,14 @@ To regenerate:
 
 #djDebug .djdt-community-panel a:hover {
     text-decoration: underline;
+}
+
+#djDebug #djDebugToolbar li a:hover {
+    color: #111;
+    background-color: #ffc;
+}
+
+#djDebug #djDebugToolbar li.djdt-active a:hover {
+    color: #b36a60;
+    background-color: transparent;
 }

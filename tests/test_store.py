@@ -1,4 +1,7 @@
+import base64
+import sys
 import uuid
+from unittest.mock import patch
 
 from django.core.management import call_command
 from django.db import connection
@@ -18,9 +21,62 @@ class SerializationTestCase(TestCase):
             '{"hello": {"foo": "bar"}}',
         )
 
-    def test_serialize_logs_on_failure(self):
+    def test_serialize_binary_data(self):
         self.assertEqual(
             store.serialize({"hello": {"foo": b"bar"}}),
+            '{"hello": {"foo": {"__djdt_binary__": "YmFy"}}}',
+        )
+
+    def test_deserialize_binary_data(self):
+        self.assertEqual(
+            store.deserialize('{"hello": {"foo": {"__djdt_binary__": "YmFy"}}}'),
+            {"hello": {"foo": b"bar"}},
+        )
+
+    def test_binary_roundtrip(self):
+        data = {"geometry": b"\x01\x01\x00\x00\x20\xe6\x10\x00\x00", "name": "test"}
+        self.assertEqual(store.deserialize(store.serialize(data)), data)
+
+    def test_nested_binary_roundtrip(self):
+        data = {
+            "geometries": [b"\x01\x02", b"\x03\x04"],
+            "metadata": {"shape": b"\x05\x06"},
+        }
+        self.assertEqual(store.deserialize(store.serialize(data)), data)
+
+    def test_postgis_sentinel_falls_back_to_bytes_without_geodjango(self):
+        """PostGIS sentinel returns raw bytes when GeoDjango is not installed."""
+        ewkb = b"\x01\x01\x00\x00\x20\xe6\x10\x00\x00"
+        b64 = base64.b64encode(ewkb).decode("ascii")
+        with patch.dict(
+            sys.modules,
+            {"django.contrib.gis.db.backends.postgis.adapter": None},
+        ):
+            result = store._binary_object_hook(
+                {"__djdt_postgis__": b64, "is_geometry": True, "geography": False}
+            )
+        self.assertEqual(result, ewkb)
+
+    def test_postgis_sentinel_roundtrip_without_geodjango(self):
+        """PostGIS sentinel survives serialize/deserialize falling back to bytes."""
+        ewkb = b"\x01\x01\x00\x00\x20\xe6\x10\x00\x00"
+        b64 = base64.b64encode(ewkb).decode("ascii")
+        data = {
+            "params": [
+                {"__djdt_postgis__": b64, "is_geometry": True, "geography": False}
+            ]
+        }
+        serialized = store.serialize(data)
+        with patch.dict(
+            sys.modules,
+            {"django.contrib.gis.db.backends.postgis.adapter": None},
+        ):
+            deserialized = store.deserialize(serialized)
+        self.assertEqual(deserialized["params"], [ewkb])
+
+    def test_serialize_unexpected(self):
+        self.assertEqual(
+            store.serialize({"hello": {str: "this-is-a-string", "foo": "bar"}}),
             '{"hello": {"foo": "bar"}}',
         )
 
@@ -352,6 +408,8 @@ class CacheStoreWithMemoryBackendTestCase(CommonStoreTestsMixin, TestCase):
         "ddt_db_cache": {
             "BACKEND": "django.core.cache.backends.db.DatabaseCache",
             "LOCATION": "test_cache_store_table",
+            # Force the culling to occur on all writes in Django
+            "OPTIONS": {"CULL_PROBABILITY": 1},
         }
     },
 )
@@ -477,12 +535,6 @@ class CacheStoreWithDatabaseBackendTestCase(CommonStoreTestsMixin, TestCase):
                 for q in sql_panel._queries[initial_query_count:]
                 if "test_cache_store_table" in q.get("sql", "").lower()
             ]
-
-            self.assertEqual(
-                len(cache_queries),
-                4,
-                f"CacheStore DatabaseCache operations be tracked by SQLPanel, "
-                f"but found {len(cache_queries)} queries to 'test_cache_store_table' table",
-            )
+            self.assertEqual(len(cache_queries), 4)
         finally:
             sql_panel.disable_instrumentation()

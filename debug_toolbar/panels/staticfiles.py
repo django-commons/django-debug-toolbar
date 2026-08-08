@@ -57,9 +57,9 @@ class StaticFilesPanel(panels.Panel):
 
     @classmethod
     def ready(cls):
-        cls = storage.staticfiles_storage.__class__
-        if URLMixin not in cls.mro():
-            cls.__bases__ = (URLMixin, *cls.__bases__)
+        klass = storage.staticfiles_storage.__class__
+        if URLMixin not in klass.mro():
+            klass.__bases__ = (URLMixin, *klass.__bases__)
 
     def _store_static_files_signal_handler(self, sender, staticfile, **kwargs):
         # Only record the static file if the request_id matches the one
@@ -114,7 +114,7 @@ class StaticFilesPanel(panels.Panel):
                     else:
                         prefixed_path = path
                     finder_cls = finder.__class__
-                    finder_path = ".".join([finder_cls.__module__, finder_cls.__name__])
+                    finder_path = f"{finder_cls.__module__}.{finder_cls.__name__}"
                     real_path = finder_storage.path(path)
                     payload = (prefixed_path, real_path)
                     finders_mapping.setdefault(finder_path, []).append(payload)

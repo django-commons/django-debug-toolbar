@@ -87,7 +87,7 @@ class FunctionCall:
             )
 
     def subfuncs(self):
-        h, s, v = self.hsv
+        h, s, _v = self.hsv
         count = len(self.statobj.all_callees[self.func])
         for i, (func, stats) in enumerate(self.statobj.all_callees[self.func].items()):
             h1 = h + ((i + 1) / count) / (self.depth + 1)
@@ -109,24 +109,24 @@ class FunctionCall:
         return self.stats[2]
 
     def cumtime(self):
-        cc, nc, tt, ct = self.stats
-        return self.stats[3]
+        _cc, _nc, _tt, ct = self.stats
+        return ct
 
     def tottime_per_call(self):
-        cc, nc, tt, ct = self.stats
+        _cc, nc, tt, _ct = self.stats
 
-        if nc == 0:
+        try:
+            return tt / nc
+        except ZeroDivisionError:
             return 0
-
-        return tt / nc
 
     def cumtime_per_call(self):
-        cc, nc, tt, ct = self.stats
+        cc, _nc, _tt, ct = self.stats
 
-        if cc == 0:
+        try:
+            return ct / cc
+        except ZeroDivisionError:
             return 0
-
-        return ct / cc
 
     def indent(self):
         return 16 * self.depth
@@ -177,7 +177,7 @@ class ProfilingPanel(Panel):
 
     def generate_stats(self, request, response):
         if not hasattr(self, "profiler"):
-            return None
+            return
         # Could be delayed until the panel content is requested (perf. optim.)
         self.profiler.create_stats()
         self.stats = Stats(self.profiler)
