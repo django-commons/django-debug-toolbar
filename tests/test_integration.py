@@ -1,6 +1,5 @@
 import os
 import re
-import time
 import unittest
 import warnings
 from unittest.mock import patch
@@ -37,7 +36,10 @@ from .views import regular_view
 
 try:
     from selenium import webdriver
-    from selenium.common.exceptions import NoSuchElementException
+    from selenium.common.exceptions import (
+        NoSuchElementException,
+        StaleElementReferenceException,
+    )
     from selenium.webdriver.common.by import By
     from selenium.webdriver.firefox.options import Options
     from selenium.webdriver.support import expected_conditions as EC
@@ -759,6 +761,37 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
     def wait(self):
         return WebDriverWait(self.selenium, timeout=3)
 
+    def get_request_id(self):
+        """
+        Read the request id the toolbar is currently displaying.
+
+        The panels within the toolbar are replaced as requests complete, but
+        the element holding the request id is only updated in place, so it's
+        safe to read from directly.
+        """
+        return self.selenium.find_element(By.ID, "djDebug").get_attribute(
+            "data-request-id"
+        )
+
+    def click_last(self, selector):
+        """
+        Click the last element matching ``selector``, if there is one.
+
+        The panels are replaced as requests complete, so an element can be
+        removed between finding it and clicking it. Report that as a failed
+        click so the caller waits for the panel to settle and tries again.
+        """
+        elements = self.selenium.find_element(By.ID, "djDebug").find_elements(
+            By.CSS_SELECTOR, selector
+        )
+        if not elements:
+            return False
+        try:
+            elements[-1].click()
+        except StaleElementReferenceException:
+            return False
+        return True
+
     def test_basic(self):
         self.get("/regular/basic/")
         version_panel = self.selenium.find_element(By.ID, VersionsPanel.panel_id)
@@ -804,9 +837,7 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         # Make a new request so the history panel has more than one option.
         self.get("/execute_sql/")
         # Record the current side panel of buttons for later comparison.
-        previous_request_id = self.selenium.find_element(
-            By.ID, "djDebug"
-        ).get_attribute("data-request-id")
+        previous_request_id = self.get_request_id()
         previous_button_panel = self.selenium.find_element(
             By.ID, "djDebugPanelList"
         ).text
@@ -814,19 +845,13 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         # Click to show the history panel
         self.selenium.find_element(By.CLASS_NAME, HistoryPanel.panel_id).click()
 
-        # Click to switch back to the jinja page view snapshot
-        def switch_to_oldest_snapshot(selenium):
-            buttons = selenium.find_element(By.ID, HistoryPanel.panel_id).find_elements(
-                By.CSS_SELECTOR, ".switchHistory"
-            )
-            if buttons:
-                buttons[-1].click()
-            return (
-                selenium.find_element(By.ID, "djDebug").get_attribute("data-request-id")
-                != previous_request_id
-            )
-
-        self.wait.until(switch_to_oldest_snapshot)
+        # Click to switch back to the jinja page view snapshot. The rows are
+        # re-populated once the panel has rendered, so wait until one is there
+        # to click.
+        self.wait.until(lambda selenium: self.click_last(".switchHistory"))
+        # Switching replaces every panel, so a changed request id means the
+        # button panel has finished being replaced.
+        self.wait.until(lambda selenium: self.get_request_id() != previous_request_id)
 
         current_button_panel = self.selenium.find_element(
             By.ID, "djDebugPanelList"
@@ -986,20 +1011,13 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
     @override_settings(DEBUG_TOOLBAR_CONFIG={"UPDATE_ON_FETCH": True})
     def test_ajax_refresh(self):
         self.get("/ajax/")
+        request_id = self.get_request_id()
         make_ajax = self.selenium.find_element(By.ID, "click_for_ajax")
         make_ajax.click()
-        # Sleep a tad to avoid a selenium.common.exceptions.StaleElementReferenceException
-        # when looking for the small text of the history panel
-        time.sleep(0.1)
-        # Need to wait until the ajax request is over and json_view is displayed on the toolbar
-        self.wait.until(
-            lambda selenium: (
-                self.selenium.find_element(
-                    By.CSS_SELECTOR, "#djdt-HistoryPanel a.HistoryPanel small"
-                ).text
-                == "/json_view/"
-            )
-        )
+        # The toolbar debounces the ajax response before fetching the new state,
+        # then swaps in every panel synchronously, so a changed request id means
+        # the history panel has finished being replaced.
+        self.wait.until(lambda selenium: self.get_request_id() != request_id)
         history_panel = self.selenium.find_element(By.ID, "djdt-HistoryPanel")
         self.assertNotIn("/ajax/", history_panel.text)
         self.assertIn("/json_view/", history_panel.text)
