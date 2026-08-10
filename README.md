@@ -13,7 +13,7 @@
 | debug\_toolbar/management/\_\_init\_\_.py           |        0 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/management/commands/\_\_init\_\_.py  |        0 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/management/commands/debugsqlshell.py |       19 |        0 |        2 |        0 |    100% |           |
-| debug\_toolbar/middleware.py                        |      111 |        6 |       48 |        4 |     94% |45, 49, 63-68, 84 |
+| debug\_toolbar/middleware.py                        |      118 |        8 |       50 |        4 |     93% |45, 48, 61-63, 77-81, 97 |
 | debug\_toolbar/migrations/0001\_initial.py          |        4 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/migrations/\_\_init\_\_.py           |        0 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/models.py                            |       12 |        0 |        0 |        0 |    100% |           |
@@ -53,7 +53,7 @@
 | debug\_toolbar/urls.py                              |        4 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/utils.py                             |      214 |        7 |       68 |        8 |     95% |30, 61, 121, 125-\>128, 144-\>143, 195-196, 200, 216 |
 | debug\_toolbar/views.py                             |       20 |        0 |        2 |        0 |    100% |           |
-| **TOTAL**                                           | **2619** |  **103** |  **644** |   **64** | **95%** |           |
+| **TOTAL**                                           | **2626** |  **105** |  **646** |   **64** | **95%** |           |
 
 
 ## Setup coverage badge
