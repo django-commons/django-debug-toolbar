@@ -21,10 +21,9 @@ Pending
 * Stopped the history panel buttons from submitting their form when clicked
   before the panel script has loaded, which navigated away from the page.
 * Added support for Django 6.1.
-
-* Fixed incorrect cache hit/miss reporting in the Cache panel for
-  ``cache.get()`` when a default value is supplied or the cached value is
-  ``None``.
+* Improved cache hit/miss reporting in the Cache panel for ``cache.get()``
+  calls with a supplied default value, while documenting the remaining
+  ambiguity when a cached value equals the supplied default.
 
 7.0.0 (2026-06-17)
 ------------------
