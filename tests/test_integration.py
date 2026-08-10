@@ -773,25 +773,6 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
             "data-request-id"
         )
 
-    def click_last(self, selector):
-        """
-        Click the last element matching ``selector``, if there is one.
-
-        The panels are replaced as requests complete, so an element can be
-        removed between finding it and clicking it. Report that as a failed
-        click so the caller waits for the panel to settle and tries again.
-        """
-        elements = self.selenium.find_element(By.ID, "djDebug").find_elements(
-            By.CSS_SELECTOR, selector
-        )
-        if not elements:
-            return False
-        try:
-            elements[-1].click()
-        except StaleElementReferenceException:
-            return False
-        return True
-
     def test_basic(self):
         self.get("/regular/basic/")
         version_panel = self.selenium.find_element(By.ID, VersionsPanel.panel_id)
@@ -845,13 +826,22 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         # Click to show the history panel
         self.selenium.find_element(By.CLASS_NAME, HistoryPanel.panel_id).click()
 
-        # Click to switch back to the jinja page view snapshot. The rows are
-        # re-populated once the panel has rendered, so wait until one is there
-        # to click.
-        self.wait.until(lambda selenium: self.click_last(".switchHistory"))
-        # Switching replaces every panel, so a changed request id means the
-        # button panel has finished being replaced.
-        self.wait.until(lambda selenium: self.get_request_id() != previous_request_id)
+        # Click to switch back to the jinja page view snapshot. Keep clicking
+        # until the request id changes, since the click can land before
+        # history.js has registered its handler and be silently dropped, or
+        # the button can go stale as the panel is replaced.
+        def switch_to_oldest_snapshot(selenium):
+            buttons = selenium.find_element(By.ID, HistoryPanel.panel_id).find_elements(
+                By.CSS_SELECTOR, ".switchHistory"
+            )
+            if buttons:
+                try:
+                    buttons[-1].click()
+                except StaleElementReferenceException:
+                    pass
+            return self.get_request_id() != previous_request_id
+
+        self.wait.until(switch_to_oldest_snapshot)
 
         current_button_panel = self.selenium.find_element(
             By.ID, "djDebugPanelList"
