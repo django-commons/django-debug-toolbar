@@ -45,13 +45,21 @@ class CachePanelTestCase(BaseTestCase):
         self.assertEqual(self.panel.hits, 4)
         self.assertEqual(self.panel.misses, 2)
 
-    def test_cached_none_counts_as_hit(self):
+    def test_cached_none_with_default_none_is_ambiguous(self):
         cache.cache.clear()
 
         cache.cache.set("foo", None)
         self.assertIsNone(cache.cache.get("foo"))
-        self.assertEqual(self.panel.hits, 1)
-        self.assertEqual(self.panel.misses, 0)
+        self.assertEqual(self.panel.hits, 0)
+        self.assertEqual(self.panel.misses, 1)
+
+    def test_cached_value_equal_to_default_is_ambiguous(self):
+        cache.cache.clear()
+
+        cache.cache.set("foo", "bar")
+        self.assertEqual(cache.cache.get("foo", "bar"), "bar")
+        self.assertEqual(self.panel.hits, 0)
+        self.assertEqual(self.panel.misses, 1)
 
     def test_missing_key_with_default_counts_as_miss(self):
         cache.cache.clear()
@@ -66,15 +74,6 @@ class CachePanelTestCase(BaseTestCase):
         self.assertEqual(cache.cache.get("foo", "bar"), "bar")
         self.assertEqual(self.panel.hits, 0)
         self.assertEqual(self.panel.misses, 1)
-
-    def test_cached_value_equal_to_default_counts_as_hit(self):
-        cache.cache.clear()
-
-        cache.cache.set("foo", "bar")
-        self.assertEqual(cache.cache.get("foo", "bar"), "bar")
-
-        self.assertEqual(self.panel.hits, 1)
-        self.assertEqual(self.panel.misses, 0)
 
     def test_get_with_keyword_default_is_cache_miss(self):
         cache.cache.clear()
