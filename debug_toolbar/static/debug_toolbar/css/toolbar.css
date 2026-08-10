@@ -348,7 +348,14 @@
     height: 50px;
 }
 
-#djDebug .djDebugPanelTitle code {
+#djDebug .djdt-cache-note {
+    margin: 1em 0;
+    padding: 8px 10px;
+    border: 1px solid var(--djdt-table-border-color);
+    background-color: var(--djdt-panel-content-table-strip-background-color);
+}
+#djDebug .djDebugPanelTitle code,
+#djDebug .djdt-cache-note code {
     display: inline;
     font-size: inherit;
 }
