@@ -18,6 +18,7 @@ Pending
   scroll regions, reduced-motion support, ``aria-expanded`` on panel toggles,
   an ``aria-live`` status for history refreshes, and WCAG 2.1 AA contrast in
   both themes.
+* Added a talk to the resources documentation.
 
 7.1.1 (2026-08-14)
 ------------------
