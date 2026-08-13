@@ -3,6 +3,9 @@ Change log
 
 Pending
 
+* Serialize ``TaskResult`` in the Tasks panel to accommodate the storage
+  mechanism.
+
 7.1.0 (2026-08-10)
 ------------------
 

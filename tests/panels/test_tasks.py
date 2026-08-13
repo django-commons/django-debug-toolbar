@@ -11,6 +11,13 @@ def sample_task(x, y=1):
     return x + y
 
 
+class UnserializableObject:
+    """A value that json.dumps() can't natively handle."""
+
+    def __repr__(self):
+        return "<UnserializableObject>"
+
+
 class TasksPanelTestCase(BaseTestCase):
     panel_id = TasksPanel.panel_id
 
@@ -43,15 +50,14 @@ class TasksPanelTestCase(BaseTestCase):
         self.assertEqual(stats["tasks_available"], True)
         self.assertEqual(len(stats["tasks"]), 1)
         task_result = stats["tasks"][0]
-        self.assertEqual(task_result.task.module_path, f"{__name__}.sample_task")
-        self.assertEqual(task_result.task.queue_name, "default")
-        self.assertEqual(task_result.task.priority, 0)
-        self.assertEqual(task_result.backend, "default")
-        self.assertEqual(task_result.task.run_after, None)
-        self.assertEqual(task_result.task.takes_context, False)
-        self.assertEqual(task_result.args, [2])
-        self.assertEqual(task_result.kwargs, {"y": 3})
-        self.assertEqual(task_result.status, "SUCCESSFUL")
+        self.assertEqual(task_result["task"]["module_path"], f"{__name__}.sample_task")
+        self.assertEqual(task_result["task"]["queue_name"], "default")
+        self.assertEqual(task_result["task"]["priority"], 0)
+        self.assertEqual(task_result["backend"], "default")
+        self.assertEqual(task_result["task"]["run_after"], None)
+        self.assertEqual(task_result["args"], [2])
+        self.assertEqual(task_result["kwargs"], {"y": 3})
+        self.assertEqual(task_result["status"], "SUCCESSFUL")
 
     @unittest.skipUnless(django_has_tasks_support, "Requires Django 6.0+")
     def test_records_queued_task_rendered_in_template(self):
@@ -61,10 +67,16 @@ class TasksPanelTestCase(BaseTestCase):
         are accessed to render the content, we should validate the properties
         explicitly rather than solely relying on test_records_queued_task
         confirming the shape.
+
+        This round-trips through the store (as happens for real via the
+        render_panel view) rather than reading the panel's in-memory stats,
+        since that's the step that previously stringified the whole
+        TaskResult and broke rendering (issue #2443).
         """
         sample_task.enqueue(2, y=3)
 
         self.panel.generate_stats(self.request, None)
+        self.reload_stats()
         content = self.panel.content
 
         # task.task.module_path
