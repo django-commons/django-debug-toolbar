@@ -21,12 +21,15 @@
         data-update-on-fetch="{{ toolbar.config.UPDATE_ON_FETCH }}">
       <div class="djdt-hidden" id="djDebugToolbarHandle">
         <div title="{% translate 'Show toolbar' %}" id="djShowToolBarButton">
-          <span id="djShowToolBarD">D</span><span id="djShowToolBarJ">J</span>DT
+          <img src="{% static 'debug_toolbar/img/Green.svg' %}" alt="Django Debug Toolbar" width="10" height="10">
         </div>
       </div>
       <div class="djdt-hidden" id="djDebugToolbar">
         <ul id="djDebugPanelList">
-          <li><a id="djHideToolBarButton" href="#" title="{% translate 'Hide toolbar' %}">{% translate "Hide" %} »</a></li>
+          <li class="djdt-hide-row">
+            <a id="djHideToolBarButton" href="#" title="{% translate 'Hide toolbar' %}">{% translate "Hide" %} »</a>
+            <a id="djDocsLink" href="https://django-debug-toolbar.readthedocs.io/en/latest/" target="_blank" rel="noopener" title="{% translate 'Django Debug Toolbar Documentation' %}">{% translate "Docs" %}<svg class="djdt-docs-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path d="M8 3.33333H4C3.26362 3.33333 2.66667 3.93029 2.66667 4.66667V12C2.66667 12.7364 3.26362 13.3333 4 13.3333H11.3333C12.0697 13.3333 12.6667 12.7364 12.6667 12V8M10 2.66667H13.3333M13.3333 2.66667V6M13.3333 2.66667L6.66667 9.33333" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </li>
           <li>
             <a id="djToggleThemeButton" href="#" title="{% translate 'Toggle Theme' %}">
               {% translate "Toggle Theme" %} {% include "debug_toolbar/includes/theme_selector.html" %}
@@ -35,12 +38,16 @@
           {% for panel in toolbar.panels %}
             {% include "debug_toolbar/includes/panel_button.html" %}
           {% endfor %}
+          <li class="djdt-logo">
+            <img src="{% static 'debug_toolbar/img/Coloured-Light.svg' %}" alt="Django Debug Toolbar">
+          </li>
         </ul>
       </div>
       {% for panel in toolbar.panels %}
         {% include "debug_toolbar/includes/panel_content.html" %}
       {% endfor %}
       <div id="djDebugWindow" class="djdt-panelContent djdt-hidden"></div>
+      <div id="djdtStatus" role="status" aria-live="polite" class="djdt-sr-only"></div>
     </div>
   {% if use_shadow_dom %}</template>{% endif %}
 </div>

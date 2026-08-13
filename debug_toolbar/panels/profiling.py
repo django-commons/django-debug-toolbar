@@ -154,6 +154,7 @@ class ProfilingPanel(Panel):
 
     is_async = False
     title = _("Profiling")
+    nav_icon = "debug_toolbar/img/profiling.svg"
 
     template = "debug_toolbar/panels/profiling.html"
     capture_project_code = dt_settings.get_config()["PROFILER_CAPTURE_PROJECT_CODE"]

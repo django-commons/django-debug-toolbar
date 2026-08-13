@@ -36,6 +36,7 @@ class TimerPanel(Panel):
     has_content = resource is not None
 
     title = _("Time")
+    nav_icon = "debug_toolbar/img/timer.svg"
 
     template = "debug_toolbar/panels/timer.html"
 

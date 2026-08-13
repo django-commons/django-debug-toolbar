@@ -3,6 +3,22 @@ Change log
 
 Pending
 
+* Refreshed the toolbar's visual design with self-hosted Alef (panel titles)
+  and Geist (body text) fonts, an updated color palette, and per-panel
+  navigation icons.
+* Added a new project logo and brand identity, designed by Robin of
+  `RBNX Studio <https://www.rbnx.studio>`_.
+* Added a "Docs" link to the toolbar that opens the documentation.
+* Changed the highlight color for the current request and other
+  "relevant to you" rows from yellow to a green tint, with a left border
+  accent for legibility in dark mode.
+* Added a design guidelines page to the documentation describing the project's
+  logo, color palette and typography.
+* Improved toolbar accessibility: visible keyboard focus, keyboard-operable
+  scroll regions, reduced-motion support, ``aria-expanded`` on panel toggles,
+  an ``aria-live`` status for history refreshes, and WCAG 2.1 AA contrast in
+  both themes.
+
 7.1.1 (2026-08-14)
 ------------------
 

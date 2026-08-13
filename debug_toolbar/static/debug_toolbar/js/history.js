@@ -55,6 +55,15 @@ function refreshHistory() {
             };
         })
         .then((refreshInfo) => {
+            const newCount = refreshInfo.newIds.size;
+            const status = djDebug.querySelector("#djdtStatus");
+            if (status) {
+                status.textContent = newCount
+                    ? `${newCount} new request${
+                          newCount === 1 ? "" : "s"
+                      } added to history`
+                    : "History up to date";
+            }
             for (const newId of refreshInfo.newIds) {
                 const row = container.querySelector(
                     `tr[data-request-id="${newId}"]`

@@ -30,14 +30,14 @@ class SettingsIntegrationTestCase(IntegrationTestCase):
         # in tests.
         self.assertContains(
             response,
-            """
-            <li id="djdt-SettingsPanel" class="djDebugPanelButton">
-            <input type="checkbox" checked title="Disable for next and successive requests" data-cookie="djdtSettingsPanel">
-            <a class="SettingsPanel" href="#" title="Settings from None">Settings</a>
-            </li>
-            """,
-            html=True,
+            '<a href="#" title="Settings from None" class="SettingsPanel"'
+            ' aria-controls="SettingsPanel" aria-expanded="false">',
         )
+        self.assertContains(
+            response,
+            '<svg class="djdt-nav-icon" aria-hidden="true" focusable="false"',
+        )
+        self.assertNotContains(response, 'src="/static/debug_toolbar/img/settings.svg"')
         self.assertContains(
             response,
             """
@@ -48,7 +48,7 @@ class SettingsIntegrationTestCase(IntegrationTestCase):
             </div>
             <div class="djDebugPanelContent">
             <div class="djdt-loader"></div>
-            <div class="djdt-scroll"></div>
+            <div class="djdt-scroll" tabindex="0"></div>
             </div>
             </div>
             """,

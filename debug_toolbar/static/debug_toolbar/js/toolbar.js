@@ -19,6 +19,9 @@ const djdt = {
         const djDebug = getDebugElement();
         djdt.needUpdateOnFetch = djDebug.dataset.updateOnFetch === "True";
         $$.on(djDebug, "click", "#djDebugPanelList li a", function (event) {
+            if (this.getAttribute("href") !== "#") {
+                return;
+            }
             event.preventDefault();
             if (!this.className) {
                 return;
@@ -32,6 +35,7 @@ const djdt = {
 
                 $$.show(current);
                 this.parentElement.classList.add("djdt-active");
+                this.setAttribute("aria-expanded", "true");
 
                 const inner = current.querySelector(
                     ".djDebugPanelContent .djdt-scroll"
@@ -244,6 +248,11 @@ const djdt = {
         }
         for (const el of djDebug.querySelectorAll("#djDebugToolbar li")) {
             el.classList.remove("djdt-active");
+        }
+        for (const link of djDebug.querySelectorAll(
+            "#djDebugPanelList a[aria-controls]"
+        )) {
+            link.setAttribute("aria-expanded", "false");
         }
     },
     ensureHandleVisibility() {

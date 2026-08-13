@@ -1,0 +1,5 @@
+{% load i18n %}
+<form method="get" action="{% url 'djdt:history_refresh' %}" class="djdtHistoryRefreshForm">
+    {{ refresh_form.as_div }}
+    <button class="refreshHistory">{% translate "Refresh" %}</button>
+</form>

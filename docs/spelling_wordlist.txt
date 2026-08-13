@@ -1,10 +1,20 @@
+Alef
+Canva
+Cyan
+Geist
 Hatchling
 Hotwire
 Jazzband
+Kiara
 Makefile
 Pympler
+RBNX
 Roboto
+Runtime
+Signal
+Teal
 Transifex
+Velda
 Werkzeug
 aenable
 ajax
@@ -23,6 +33,8 @@ deduplicated
 dicts
 django
 fallbacks
+favicon
+favicons
 flamegraph
 flatpages
 frontend
@@ -35,6 +47,8 @@ jQuery
 jinja
 jrestclient
 js
+lockup
+lockups
 lookups
 margins
 memcache
@@ -42,6 +56,7 @@ memcached
 middleware
 middlewares
 mixin
+monospace
 mousedown
 mouseup
 multi
@@ -77,3 +92,5 @@ uWSGI
 unhandled
 unhashable
 validator
+wordmark
+wordmarks

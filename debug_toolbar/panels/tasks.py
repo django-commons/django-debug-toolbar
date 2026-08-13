@@ -27,6 +27,8 @@ class TasksPanel(Panel):
         super().__init__(*args, **kwargs)
         self.tasks: list = []  # populated with TaskResult instances
 
+    nav_icon = "debug_toolbar/img/tasks.svg"
+
     nav_title = _("Tasks")
 
     @property
