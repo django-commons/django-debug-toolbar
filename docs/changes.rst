@@ -5,6 +5,7 @@ Pending
 
 * Serialize ``TaskResult`` in the Tasks panel to accommodate the storage
   mechanism.
+* Removed whitespace on Task panel's ``kwargs`` column.
 
 7.1.0 (2026-08-10)
 ------------------
