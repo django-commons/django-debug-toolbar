@@ -52,10 +52,26 @@ class TasksPanel(Panel):
             task_enqueued.disconnect(self._record_task)
 
     def generate_stats(self, request, response):
-        # Pass TaskResult objects directly to the template
+        # TaskResult and Task aren't JSON-serializable which the toolbar's
+        # storage mechanism requires
+        tasks = [
+            {
+                "task": {
+                    "module_path": task_result.task.module_path,
+                    "queue_name": task_result.task.queue_name,
+                    "priority": task_result.task.priority,
+                    "run_after": task_result.task.run_after,
+                },
+                "backend": task_result.backend,
+                "status": task_result.status,
+                "args": task_result.args,
+                "kwargs": task_result.kwargs,
+            }
+            for task_result in self.tasks
+        ]
         self.record_stats(
             {
                 "tasks_available": VERSION >= (6, 0),
-                "tasks": self.tasks,
+                "tasks": tasks,
             }
         )

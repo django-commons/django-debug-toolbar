@@ -43,15 +43,14 @@ class TasksPanelTestCase(BaseTestCase):
         self.assertEqual(stats["tasks_available"], True)
         self.assertEqual(len(stats["tasks"]), 1)
         task_result = stats["tasks"][0]
-        self.assertEqual(task_result.task.module_path, f"{__name__}.sample_task")
-        self.assertEqual(task_result.task.queue_name, "default")
-        self.assertEqual(task_result.task.priority, 0)
-        self.assertEqual(task_result.backend, "default")
-        self.assertEqual(task_result.task.run_after, None)
-        self.assertEqual(task_result.task.takes_context, False)
-        self.assertEqual(task_result.args, [2])
-        self.assertEqual(task_result.kwargs, {"y": 3})
-        self.assertEqual(task_result.status, "SUCCESSFUL")
+        self.assertEqual(task_result["task"]["module_path"], f"{__name__}.sample_task")
+        self.assertEqual(task_result["task"]["queue_name"], "default")
+        self.assertEqual(task_result["task"]["priority"], 0)
+        self.assertEqual(task_result["backend"], "default")
+        self.assertEqual(task_result["task"]["run_after"], None)
+        self.assertEqual(task_result["args"], [2])
+        self.assertEqual(task_result["kwargs"], {"y": 3})
+        self.assertEqual(task_result["status"], "SUCCESSFUL")
 
     @unittest.skipUnless(django_has_tasks_support, "Requires Django 6.0+")
     def test_records_queued_task_rendered_in_template(self):
@@ -65,6 +64,9 @@ class TasksPanelTestCase(BaseTestCase):
         sample_task.enqueue(2, y=3)
 
         self.panel.generate_stats(self.request, None)
+        # This round-trips through the store rather than reading the
+        # panel's in-memory stats.
+        self.reload_stats()
         content = self.panel.content
 
         # task.task.module_path
