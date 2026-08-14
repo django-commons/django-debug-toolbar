@@ -3,6 +3,9 @@ Change log
 
 Pending
 
+7.1.1 (2026-08-14)
+------------------
+
 * Serialize ``TaskResult`` in the Tasks panel to accommodate the storage
   mechanism.
 * Removed whitespace on Task panel's ``kwargs`` column.
