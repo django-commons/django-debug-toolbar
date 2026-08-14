@@ -166,7 +166,10 @@ class SQLPanelTestCase(BaseTestCase):
         # ensure query was logged
         self.assertEqual(len(self.panel._queries), 1)
         query = self.panel._queries[0]
-        self.assertTrue(HistoryEntry._meta.db_table in query["sql"])
+        table = HistoryEntry._meta.db_table
+        self.assertTrue(
+            table in query["sql"] or connection.ops.quote_name(table) in query["sql"]
+        )
 
     @override_settings(
         DEBUG_TOOLBAR_CONFIG={
@@ -187,7 +190,10 @@ class SQLPanelTestCase(BaseTestCase):
         # ensure query was logged
         self.assertEqual(len(self.panel._queries), 1)
         query = self.panel._queries[0]
-        self.assertTrue(HistoryEntry._meta.db_table in query["sql"])
+        table = HistoryEntry._meta.db_table
+        self.assertTrue(
+            table in query["sql"] or connection.ops.quote_name(table) in query["sql"]
+        )
 
     @override_settings(
         DEBUG_TOOLBAR_CONFIG={
@@ -224,6 +230,65 @@ class SQLPanelTestCase(BaseTestCase):
         await async_sql_call_toolbar_model()
 
         self.assertEqual(len(self.panel._queries), 0)
+
+    @override_settings(
+        DEBUG_TOOLBAR_CONFIG={
+            "SKIP_TOOLBAR_QUERIES": True,
+            "TOOLBAR_STORE_CLASS": "debug_toolbar.store.DatabaseStore",
+        }
+    )
+    def test_toolbar_model_query_quoted_is_not_tracked(self):
+        """
+        Test that a query containing the quoted toolbar model table name is
+        properly skipped from tracking when SKIP_TOOLBAR_QUERIES is True.
+        """
+        self.assertEqual(len(self.panel._queries), 0)
+
+        table = HistoryEntry._meta.db_table
+        quoted_table = connection.ops.quote_name(table)
+        sql = f"SELECT * FROM {quoted_table}"
+
+        with connection.cursor() as cursor:
+            # We wrap the cursor execution to test our tracking middleware
+            try:
+                cursor.execute(sql)
+            except DatabaseError:
+                # Table might not exist yet or raise syntax depending on backend/mock,
+                # but the query tracking logic runs during execute before DB raises.
+                pass
+
+        # The query must NOT be tracked
+        self.assertEqual(len(self.panel._queries), 0)
+
+    @override_settings(
+        DEBUG_TOOLBAR_CONFIG={
+            "SKIP_TOOLBAR_QUERIES": False,
+            "TOOLBAR_STORE_CLASS": "debug_toolbar.store.DatabaseStore",
+        }
+    )
+    def test_toolbar_model_query_quoted_is_tracked(self):
+        """
+        Test that a query containing the quoted toolbar model table name is
+        recorded when SKIP_TOOLBAR_QUERIES is False.
+        """
+        self.assertEqual(len(self.panel._queries), 0)
+
+        table = HistoryEntry._meta.db_table
+        quoted_table = connection.ops.quote_name(table)
+        sql = f"SELECT * FROM {quoted_table}"
+
+        patch_tracking_ddt_models()
+
+        with connection.cursor() as cursor:
+            try:
+                cursor.execute(sql)
+            except DatabaseError:
+                pass
+
+        # The query MUST be tracked
+        self.assertEqual(len(self.panel._queries), 1)
+        query = self.panel._queries[0]
+        self.assertIn(quoted_table, query["sql"])
 
     @unittest.skipUnless(
         connection.vendor == "postgresql", "Test valid only on PostgreSQL"
@@ -407,9 +472,16 @@ class SQLPanelTestCase(BaseTestCase):
         ):
             # Django 4.1 started passing true/false back for boolean
             # comparisons in MySQL.
-            # Django 6.1 started passing true/false for all-non
-            # postgres databases.
+            # Django 6.1 started passing true/false for all
+            # non-postgres databases natively supporting it.
             expected_bools = ["Foo", True, False]
+        elif connection.vendor == "oracle":
+            # Oracle 23c+ supports native SQL booleans (True/False).
+            # Oracle 19c coerces booleans to integers (1/0) under the hood.
+            if connection.features.supports_boolean_expr_in_select_clause:
+                expected_bools = ["Foo", True, False]
+            else:
+                expected_bools = ["Foo", 1, 0]
         else:
             expected_bools = ["Foo"]
 
@@ -470,6 +542,10 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertEqual(len(self.panel._queries), 1)
         self.assertEqual(self.panel._queries[0]["params"], [["a", "b'"]])
 
+    @unittest.skipIf(
+        connection.vendor == "oracle",
+        "Oracle does not support comparing BLOB fields using =",
+    )
     def test_binary_param_force_text(self):
         self.assertEqual(len(self.panel._queries), 0)
 

@@ -1,0 +1,58 @@
+# setup databases to running
+# tests in local development
+name: "dtb"
+services:
+  postgresql:
+    image: postgis/postgis:17-3.5
+    container_name: postgresql_test
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=debug_toolbar
+      - POSTGRES_USER=debug_toolbar
+      - POSTGRES_PASSWORD=debug_toolbar
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U debug_toolbar"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  mysql:
+    image: mariadb:11.8
+    container_name: mysql_test
+    ports:
+      - "3306:3306"
+    environment:
+      - MARIADB_ROOT_PASSWORD=debug_toolbar
+      - MARIADB_DATABASE=debug_toolbar
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -pdebug_toolbar"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  oracle-db:
+    image: gvenzl/oracle-free:23.26.2-slim-faststart
+    container_name: oracle_db_free
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_PASSWORD=oracle_secret_pass
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 5s
+      start_interval: 5s
+
+volumes:
+  pg_data:
+  mysql_data:
+  oracle_data:

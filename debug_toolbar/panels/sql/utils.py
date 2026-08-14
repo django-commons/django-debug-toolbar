@@ -23,7 +23,7 @@ class ElideSelectListsFilter:
                 keyword = value.upper()
                 if allow_elision and keyword == "SELECT":
                     yield from self.elide_until_from(stream)
-                allow_elision = keyword in ["EXCEPT", "INTERSECT", "UNION"]
+                allow_elision = keyword in ["EXCEPT", "INTERSECT", "UNION", "MINUS"]
 
     @staticmethod
     def elide_until_from(stream):

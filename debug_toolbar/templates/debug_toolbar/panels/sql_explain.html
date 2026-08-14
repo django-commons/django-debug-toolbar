@@ -13,6 +13,13 @@
       <dt>{% translate "Database" %}</dt>
       <dd>{{ alias }}</dd>
     </dl>
+    {% if vendor == 'oracle' %}
+      <dt>ORACLE {% for h in headers %}{{ h|upper }}{% endfor %}:</dt>
+      <dd>
+      <pre class="djdt-oracle-preds-content">{% for row in result %}{{ row.0|escape }}
+{% endfor %}</pre>
+      </dd>
+    {% else %}
     <table>
       <thead>
         <tr>
@@ -31,5 +38,7 @@
         {% endfor %}
       </tbody>
     </table>
+    {% endif %}
+    <div class="djdt-scroll-spacer"></div>
   </div>
 </div>

@@ -1,10 +1,12 @@
 import os
 import re
 import unittest
+import uuid
 import warnings
 from unittest.mock import patch
 
 import html5lib
+from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core import signing
 from django.core.cache import cache
@@ -587,6 +589,58 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
         }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 200)
+
+    @unittest.skipUnless(connection.vendor == "oracle", "Test valid only on Oracle")
+    def test_sql_explain_oracle_success(self):
+        """
+        End-to-end integration test of Oracle explain plan rendering.
+        Induces CBO index scan by searching User by username unique field.
+        """
+        User = get_user_model()
+        User.objects.get_or_create(username="explain_test_user")
+
+        self.client.get("/execute_sql/")
+        request_ids = list(get_store().request_ids())
+        request_id = request_ids[-1]
+        toolbar = DebugToolbar.fetch(request_id, SQLPanel.panel_id)
+        panel = toolbar.get_panel_by_id(SQLPanel.panel_id)
+
+        # Inject a query with index lookup into SQLPanel store and save back to store
+        sql = "SELECT id FROM auth_user WHERE username = 'explain_test_user'"
+        stats = panel.get_stats()
+        queries = stats.setdefault("queries", [])
+
+        djdt_query_id = uuid.uuid4().hex
+        queries.append(
+            {
+                "djdt_query_id": djdt_query_id,
+                "sql": sql,
+                "raw_sql": sql,
+                "params": [],
+                "duration": 1.0,
+                "alias": "default",
+                "vendor": "oracle",
+            }
+        )
+        panel.record_stats(stats)
+
+        url = "/__debug__/sql_explain/"
+        data = {
+            "signed": SignedDataForm.sign(
+                {
+                    "request_id": request_id,
+                    "djdt_query_id": djdt_query_id,
+                }
+            )
+        }
+
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        content = response.json()["content"]
+        self.assertIn("PLAN_TABLE_OUTPUT", content)
+        self.assertIn("Schema Health &amp; Statistics Audit", content)
+        self.assertIn("Table Statistics:", content)
+        self.assertIn("Index Statistics &amp; Status:", content)
 
     def test_sql_profile_checks_show_toolbar(self):
         self.client.get("/execute_sql/")

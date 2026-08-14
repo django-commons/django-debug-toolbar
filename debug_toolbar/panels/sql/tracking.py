@@ -269,7 +269,8 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
             # Skip tracking for toolbar models by default.
             # This can be overridden by setting SKIP_TOOLBAR_QUERIES = False
             if not dt_settings.get_config()["SKIP_TOOLBAR_QUERIES"] or not any(
-                table in sql for table in DDT_MODELS
+                table in sql or self.db.ops.quote_name(table) in sql
+                for table in DDT_MODELS
             ):
                 # We keep `sql` to maintain backwards compatibility
                 self.logger.record(**kwargs)

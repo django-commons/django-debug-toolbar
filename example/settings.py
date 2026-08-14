@@ -103,6 +103,17 @@ if os.environ.get("DB_BACKEND", "").lower() == "mysql":
             "PASSWORD": "debug_toolbar",
         }
     }
+if os.environ.get("DB_BACKEND", "").lower() == "oracle":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.oracle",
+            "NAME": "localhost:1521/FREEPDB1",
+            "USER": "system",
+            "PASSWORD": "oracle_secret_pass",
+            "HOST": "",
+            "PORT": "",
+        }
+    }
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "example", "static")]
 

@@ -1367,3 +1367,19 @@ To regenerate:
     background-color: #fff;
     color: #131313;
 }
+
+#djDebug .djdt-scroll-spacer {
+    height: 25vh;
+}
+
+#djDebug .djdt-oracle-preds-content {
+    background-color: var(--djdt-background-color);
+    border: 1px solid var(--djdt-pre-border-color);
+    padding: 10px;
+    color: var(--djdt-pre-text-color);
+    font-family: var(--djdt-font-family-monospace);
+    font-size: 11px;
+    line-height: 1.5;
+    overflow-x: auto;
+    margin-top: 0.8em;
+}

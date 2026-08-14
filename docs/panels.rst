@@ -69,6 +69,68 @@ SQL
 
 SQL queries including time to execute and links to EXPLAIN each query.
 
+On Oracle databases, the Explain feature executes the static ``EXPLAIN PLAN``
+and formats the detailed execution path using `DBMS_XPLAN.DISPLAY`_. Because
+this is a static estimation plan, the actual query is **not** executed,
+making the explain operation safe, instant, and risk-free even on large
+production tables.
+
+It also automatically performs a **Schema Health and Statistics Audit**
+on all tables and indexes involved in the query, providing developers
+with actionable diagnostics on where and what to optimize:
+
+* **Identifying Bottlenecks (Plan Table):** Look for ``TABLE ACCESS FULL``
+  inside the ``Operation`` column for large tables, which indicates missing
+  indexes. In the ``Predicate Information`` section at the bottom, columns
+  under ``access`` indicate efficient index lookups (index seeks), while
+  columns under ``filter`` indicate inefficient row-by-row filtering after
+  retrieval, highlighting the need for composite or better-structured
+  indexes.
+* **Index Health (Index Status):** The index statistics audit table
+  displays the current status of each index. If an index's ``Status`` is
+  ``UNUSABLE`` (common after bulk data loads or partition operations), the
+  Oracle optimizer will silently ignore it and fall back to slow table scans.
+
+  .. caution::
+     **Avoid offline rebuilds in production:** Running ``ALTER INDEX name
+     REBUILD;`` without the ``ONLINE`` keyword will lock the target table
+     exclusively, blocking all incoming application writes. Always reconstruct
+     live indexes in the background. For details, see the official
+     `Oracle ALTER INDEX Reference`_:
+
+     .. code-block:: sql
+
+         ALTER INDEX index_name REBUILD ONLINE;
+
+* **Stale Statistics (Last Analyzed):** The Oracle Cost-Based Optimizer
+  (CBO) relies entirely on up-to-date database statistics to choose the
+  most efficient path. If the ``Last Analyzed`` column in the table or
+  index statistics is empty (``—``) or very old, the optimizer will
+  estimate costs based on outdated data.
+
+  .. caution::
+     **Schedule statistics gathering off-peak:** Running
+     ``DBMS_STATS.GATHER_TABLE_STATS`` on massive tables causes heavy CPU and
+     disk I/O load. Always schedule statistics gathering during low-traffic
+     maintenance windows, and use Oracle's optimal automatic sampling to
+     prevent system performance degradation. For details, see the official
+     `Oracle DBMS_STATS Reference`_:
+
+     .. code-block:: sql
+
+         EXEC DBMS_STATS.GATHER_TABLE_STATS('OWNER', 'TABLE_NAME', estimate_percent => DBMS_STATS.AUTO_SAMPLE_SIZE);
+
+* **Optimizer Path (Query Block Registry):** Displays the logical
+  transformations applied by the optimizer (such as view merging or
+  subquery unnesting). To ensure stability, the complex raw XML format
+  produced in Oracle 19c is suppressed to protect browser and terminal
+  clients from memory overhead, while on Oracle 21c and 23c+ it is
+  rendered in clean, structured hierarchical text.
+
+.. _DBMS_XPLAN.DISPLAY: https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_XPLAN.html
+.. _Oracle ALTER INDEX Reference: https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-INDEX.html
+.. _Oracle DBMS_STATS Reference: https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_STATS.html
+
 Static files
 ~~~~~~~~~~~~
 

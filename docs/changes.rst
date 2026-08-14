@@ -3,6 +3,18 @@ Change log
 
 Pending
 
+* Added support for Oracle Database on the SQL explain panel. It uses
+  Oracle's ``EXPLAIN PLAN`` and ``DBMS_XPLAN.DISPLAY`` to show a
+  detailed execution plan.
+* Added a section "Schema Health and Statistics Audit" on the
+  SQL explain panel for Oracle Database. It reports performance
+  metrics and size metadata of involved tables and indexes that
+  was not covered by ``DBMS_XPLAN.DISPLAY``.
+* Added an Oracle Database test job to the GitHub Actions workflow matrix.
+* Added an Oracle Database test job to the tox workflow matrix.
+* Added a local ``docker-compose.yml`` configuration to easily run all
+  supported test databases locally.
+* Configured ``tox`` to output distinct coverage data.
 * Refreshed the toolbar's visual design with self-hosted Alef (panel titles)
   and Geist (body text) fonts, an updated color palette, and per-panel
   navigation icons.

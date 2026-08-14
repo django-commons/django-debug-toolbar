@@ -65,6 +65,7 @@ def sql_explain(request):
             "duration": query["duration"],
             "headers": headers,
             "alias": query["alias"],
+            "vendor": query["vendor"],
         }
         content = render_to_string("debug_toolbar/panels/sql_explain.html", context)
         return JsonResponse({"content": content})

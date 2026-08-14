@@ -85,12 +85,14 @@ stacktrace
 stacktraces
 startup
 staticfiles
+subquery
 theming
 timeline
 tox
 uWSGI
 unhandled
 unhashable
+unnesting
 validator
 wordmark
 wordmarks

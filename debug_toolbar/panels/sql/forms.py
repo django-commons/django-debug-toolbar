@@ -79,6 +79,13 @@ class SQLSelectForm(forms.Form):
                 cursor.execute(f"EXPLAIN QUERY PLAN {sql}", params)
             elif vendor == "postgresql":
                 cursor.execute(f"EXPLAIN ANALYZE {sql}", params)
+            elif vendor == "oracle":
+                from debug_toolbar.panels.sql.oracle_helper import (
+                    OracleExplainPlanHelper,
+                )
+
+                helper = OracleExplainPlanHelper(cursor)
+                return helper.execute(sql, params)
             else:
                 cursor.execute(f"EXPLAIN {sql}", params)
             headers = [d[0] for d in cursor.description]
