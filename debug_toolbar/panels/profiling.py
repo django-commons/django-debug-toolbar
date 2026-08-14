@@ -96,7 +96,9 @@ class FunctionCall:
                 self.statobj,
                 func,
                 self.depth + 1,
-                stats=stats,
+                # `stats` is only this caller's slice of func's time; use
+                # func's own totals since it may have other callers.
+                stats=self.statobj.stats[func][:4],
                 id=str(self.id) + "_" + str(i),
                 parent_ids=self.parent_ids + [self.id],
                 hsv=(h1, s1, 1),
@@ -182,19 +184,24 @@ class ProfilingPanel(Panel):
             func.cumtime() >= self.capture_non_project_threshold
             or (
                 # If we're capturing project code, include all project sub funcs
-                # if it took any amount of time
-                self.capture_project_code
-                and func.is_project_func()
-                and func.cumtime() > 0
+                self.capture_project_code and func.is_project_func()
             )
         )
 
-    def add_node(self, func_list, func, max_depth):
+    def add_node(self, func_list, func, max_depth, seen=None):
+        if seen is None:
+            seen = set()
+        # pstats aggregates per function, so all_callees can reach the same
+        # function twice (recursion, multiple callers) with its stats
+        # already the full total, so skip repeats.
+        if func.func in seen:
+            return
+        seen.add(func.func)
         func_list.append(func)
         for subfunc in func.subfuncs():
             if self.include_in_func_list(func=subfunc, max_depth=max_depth):
                 func.has_subfuncs = True
-                self.add_node(func_list, subfunc, max_depth)
+                self.add_node(func_list, subfunc, max_depth, seen)
 
     def generate_stats(self, request, response):
         if not hasattr(self, "profiler"):

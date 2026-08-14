@@ -140,4 +140,6 @@ DEBUG_TOOLBAR_CONFIG = {
     "RESULTS_CACHE_SIZE": 3,
     # IS_RUNNING_TESTS must be False even though we're running tests because we're running the toolbar's own tests.
     "IS_RUNNING_TESTS": False,
+    # Turn up the sensitivity to make the profiling panel easier to test
+    "PROFILER_CAPTURE_NON_PROJECT_THRESHOLD": 0.0001,
 }
