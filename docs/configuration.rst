@@ -380,6 +380,22 @@ Panel options
     WHERE "auth_user"."username" = '''test_username'''
     LIMIT 21
 
+* ``PROFILER_CAPTURE_NON_PROJECT_THRESHOLD``
+
+  Default: ``0.0001``
+
+  Panel: profiling
+
+  This setting affects the which calls are included in the profile. A lower
+  value will include more function calls. A higher value will result in a
+  faster render of the profiling panel, but will exclude data.
+
+  This value is the cumulative time threshold to include a function call in the
+  profiling stats results.
+
+  It's possible to do more complex comparisons by subclassing
+  ``ProfilingPanel`` and overriding ``ProfilingPanel.include_in_func_list()``.
+
 * ``PROFILER_CAPTURE_PROJECT_CODE``
 
   Default: ``True``
@@ -392,6 +408,9 @@ Panel options
   ``settings.BASE_DIR`` in a directory other than ``sites-packages`` or
   ``dist-packages`` you may need to disable this setting.
 
+  It's possible to do more complex comparisons by subclassing
+  ``ProfilingPanel`` and overriding ``ProfilingPanel.include_in_func_list()``.
+
 * ``PROFILER_MAX_DEPTH``
 
   Default: ``10``
@@ -401,19 +420,8 @@ Panel options
   This setting affects the depth of function calls in the profiler's
   analysis.
 
-* ``PROFILER_THRESHOLD_RATIO``
-
-  Default: ``8``
-
-  Panel: profiling
-
-  This setting affects the which calls are included in the profile. A higher
-  value will include more function calls. A lower value will result in a faster
-  render of the profiling panel, but will exclude data.
-
-  This value is used to determine the threshold of cumulative time to include
-  the nested functions. The threshold is calculated by the root calls'
-  cumulative time divided by this ratio.
+  It's possible to do more complex depth checks by subclassing
+  ``ProfilingPanel`` and overriding ``ProfilingPanel.include_in_func_list()``.
 
 * ``SHOW_TEMPLATE_CONTEXT``
 

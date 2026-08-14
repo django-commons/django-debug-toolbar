@@ -19,6 +19,11 @@ Pending
   an ``aria-live`` status for history refreshes, and WCAG 2.1 AA contrast in
   both themes.
 * Added a talk to the resources documentation.
+* Replaced ``PROFILER_THRESHOLD_RATIO`` with
+  ``PROFILER_CAPTURE_NON_PROJECT_THRESHOLD`` to allow more accurate profiling
+  results.
+* Adds a ``ProfilingPanel.include_in_func_list()`` to allow developers to
+  customize the logic on what functions are included in the stats results.
 
 7.1.1 (2026-08-14)
 ------------------
