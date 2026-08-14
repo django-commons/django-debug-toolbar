@@ -19,6 +19,9 @@ Pending
   an ``aria-live`` status for history refreshes, and WCAG 2.1 AA contrast in
   both themes.
 * Added a talk to the resources documentation.
+* Updated the example screenshot.
+* Updated the screenshot capture logic to find the toolbar elements in the
+  shadow DOM.
 
 7.1.1 (2026-08-14)
 ------------------
