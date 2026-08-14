@@ -3,6 +3,12 @@ Change log
 
 Pending
 
+* Replaced ``PROFILER_THRESHOLD_RATIO`` with
+  ``PROFILER_CAPTURE_NON_PROJECT_THRESHOLD`` to allow more accurate profiling
+  results.
+* Adds a ``ProfilingPanel.include_in_func_list()`` to allow developers to
+  customize the logic on what functions are included in the stats results.
+
 8.0.0 (2026-09-02)
 ------------------
 

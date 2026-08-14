@@ -44,10 +44,41 @@ class ProfilingPanelTestCase(BaseTestCase):
         # ensure traces aren't escaped
         self.assertIn('<span class="djdt-path">', content)
 
-    @override_settings(DEBUG_TOOLBAR_CONFIG={"PROFILER_THRESHOLD_RATIO": 1})
-    def test_cum_time_threshold(self):
+    def test_capture_non_project_threshold(self):
         """
-        Test that cumulative time threshold excludes calls
+        Test that non project capture threshold excludes calls
+        """
+        self.panel.capture_non_project_threshold = 1
+        self._get_response = lambda request: regular_view(request, "profiling")
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+        # ensure the panel renders but doesn't include our function.
+        content = self.panel.content
+        self.assertIn("regular_view", content)
+        self.assertNotIn("render", content)
+        self.assertValidHTML(content)
+
+    def test_capture_project_code_disabled(self):
+        """
+        Test that the project code auto-capture can be disabled
+        """
+        self.panel.capture_project_code = False
+        # Set this high to exclude all other function calls and with the
+        # project auto-capture turned off, no results should be included.
+        self.panel.capture_non_project_threshold = 1
+        self._get_response = lambda request: regular_view(request, "profiling")
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+        # ensure the panel renders but doesn't include our function.
+        content = self.panel.content
+        self.assertNotIn("regular_view", content)
+        self.assertNotIn("render", content)
+        self.assertValidHTML(content)
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"PROFILER_MAX_DEPTH": 4})
+    def test_max_depth_is_enforced(self):
+        """
+        Test that the profiler depth can be controlled by the configuration.
         """
         self._get_response = lambda request: regular_view(request, "profiling")
         response = self.panel.process_request(self.request)
