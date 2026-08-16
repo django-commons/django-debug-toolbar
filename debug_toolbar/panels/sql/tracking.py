@@ -7,6 +7,7 @@ from time import perf_counter
 import django.test.testcases
 from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.translation import gettext as _, ngettext
 
 from debug_toolbar import settings as dt_settings
 from debug_toolbar.sanitize import force_str
@@ -227,8 +228,13 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
                 try:
                     times = len(params)
                 except TypeError:
-                    times = "?"
-                display_sql = f"{times} times: {sql}"
+                    display_sql = _("? times: %(sql)s") % {"sql": sql}
+                else:
+                    display_sql = ngettext(
+                        "%(count)d time: %(sql)s",
+                        "%(count)d times: %(sql)s",
+                        times,
+                    ) % {"count": times, "sql": sql}
             else:
                 display_sql = self._last_executed_query(sql, params)
 

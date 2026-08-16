@@ -129,6 +129,22 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertTrue(query["many"])
         self.assertEqual(Binary.objects.count(), 2)
 
+    def test_executemany_singular(self):
+        """A single param set uses the singular form."""
+        self.assertEqual(len(self.panel._queries), 0)
+
+        with connection.cursor() as cursor:
+            cursor.executemany(
+                "INSERT INTO tests_binary (field) VALUES (%s)", [(b"one",)]
+            )
+
+        self.assertEqual(len(self.panel._queries), 1)
+        self.assertEqual(
+            self.panel._queries[0]["sql"],
+            "1 time: INSERT INTO tests_binary (field) VALUES (%s)",
+        )
+        self.assertEqual(Binary.objects.count(), 1)
+
     def test_executemany_with_empty_param_list(self):
         """An empty param list runs no statement but must still not raise."""
         self.assertEqual(len(self.panel._queries), 0)
