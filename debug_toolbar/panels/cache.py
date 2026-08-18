@@ -30,6 +30,13 @@ WRAPPED_CACHE_METHODS = [
 ]
 
 
+# Sentinel to distinguish a cache miss from a stored ``None`` value.
+# Django's own docs recommend this pattern; we use it inside the panel
+# so that ``cache.get(key, sentinel)`` returns the sentinel on miss,
+# letting the panel count hits/misses correctly.  (#2417)
+_CACHE_MISS_SENTINEL = object()
+
+
 def _monkey_patch_method(cache, name, alias):
     original_method = getattr(cache, name)
 
@@ -39,7 +46,24 @@ def _monkey_patch_method(cache, name, alias):
         if panel is None:
             return original_method(*args, **kwargs)
         else:
-            return panel._record_call(cache, alias, name, original_method, args, kwargs)
+            # For get / get_or_set, substitute the caller's default with
+            # our sentinel so the panel can tell miss from stored-None.
+            if name in ("get", "get_or_set"):
+                if "default" in kwargs:
+                    original_default = kwargs["default"]
+                    kwargs["default"] = _CACHE_MISS_SENTINEL
+                else:
+                    original_default = _CACHE_MISS_SENTINEL
+            else:
+                original_default = None
+            result = panel._record_call(
+                cache, alias, name, original_method, args, kwargs
+            )
+            # Restore the real default so the caller sees the expected value.
+            if name in ("get", "get_or_set"):
+                if result is _CACHE_MISS_SENTINEL:
+                    result = original_default
+            return result
 
     setattr(cache, name, wrapper)
 
@@ -117,7 +141,7 @@ class CachePanel(Panel):
         backend,
     ):
         if name == "get" or name == "get_or_set":
-            if return_value is None:
+            if return_value is _CACHE_MISS_SENTINEL:
                 self.misses += 1
             else:
                 self.hits += 1
