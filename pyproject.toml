@@ -111,12 +111,12 @@ lint.isort.combine-as-imports = true
 lint.mccabe.max-complexity = 16
 
 [tool.coverage]
-run.branch = true
-run.parallel = true
-run.relative_files = true
 run.source = [
   "debug_toolbar",
 ]
+run.branch = true
+run.parallel = true
+run.relative_files = true
 paths.source = [
   "src",
   ".tox/*/site-packages",
