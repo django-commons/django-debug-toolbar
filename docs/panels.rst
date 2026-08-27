@@ -174,6 +174,10 @@ If a function is in a file within that directory and does not include
 ``"/site-packages/"`` or ``"/dist-packages/"`` in the path, it will be
 included.
 
+If you'd like more control over which function calls are included in the
+profiling stats results, you can subclass ``ProfilingPanel`` and override
+``ProfilingPanel.include_in_func_list()``.
+
 Third-party panels
 ------------------
 

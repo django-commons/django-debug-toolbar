@@ -22,6 +22,11 @@ Pending
 * Updated the example screenshot.
 * Updated the screenshot capture logic to find the toolbar elements in the
   shadow DOM.
+* Replaced ``PROFILER_THRESHOLD_RATIO`` with
+  ``PROFILER_CAPTURE_NON_PROJECT_THRESHOLD`` to allow more accurate profiling
+  results.
+* Adds a ``ProfilingPanel.include_in_func_list()`` to allow developers to
+  customize the logic on what functions are included in the stats results.
 
 7.1.1 (2026-08-14)
 ------------------
