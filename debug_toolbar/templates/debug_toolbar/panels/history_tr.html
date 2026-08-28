@@ -1,4 +1,4 @@
-{% load i18n debug_toolbar %}
+{% load debug_toolbar i18n %}
 <tr class="{% if request_id == current_request_id %}djdt-highlighted{% endif %}" id="historyMain_{{ request_id }}" data-request-id="{{ request_id }}">
     <td>
         {{ history_context.history_stats.time|escape }}
