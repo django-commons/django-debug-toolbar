@@ -4,6 +4,8 @@ Change log
 Pending
 -------
 
+* Track and display processing time of application, including the toolbar's
+  time, in the timer panel.
 * Prevent check from failing when ``ROOT_URLCONF`` is not defined.
 * Prevent debounce race conditions in the history panel for rapid
   fetch requests.
