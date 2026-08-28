@@ -3,6 +3,10 @@ Change log
 
 Pending
 
+* Fixed the History panel crashing when an ``application/json`` request body
+  contains a key named ``items``. Django resolves ``data.items`` with a
+  dictionary lookup before attribute lookup, so the key shadowed the mapping's
+  ``items()`` method and the template iterated its value instead.
 * Refreshed the toolbar's visual design with self-hosted Alef (panel titles)
   and Geist (body text) fonts, an updated color palette, and per-panel
   navigation icons.

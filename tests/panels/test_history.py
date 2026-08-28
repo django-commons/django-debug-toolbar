@@ -1,5 +1,6 @@
 import copy
 import html
+import json
 
 from django.test import RequestFactory, override_settings
 from django.urls import resolve, reverse
@@ -101,6 +102,33 @@ class HistoryViewsTestCase(IntegrationTestCase):
         content = toolbar.get_panel_by_id(HistoryPanel.panel_id).content
         self.assertIn("bar", content)
         self.assertIn('name="exclude_history" value="True"', content)
+
+    def test_history_panel_content_with_items_key(self):
+        """A JSON body with an ``items`` key must not break the panel.
+
+        Django resolves ``data.items`` with a dictionary lookup before it tries
+        attribute lookup, so a key named ``items`` used to shadow the method and
+        the template then iterated that key's value. See #2453.
+        """
+        for body in (
+            {"items": "a string"},
+            {"items": [1, 2, 3]},
+            {"items": {"nested": "mapping"}},
+            {"items": "shadowed", "other": "kept"},
+        ):
+            with self.subTest(body=body):
+                get_store().clear()
+                self.client.post(
+                    "/json_view/",
+                    data=json.dumps(body),
+                    content_type="application/json",
+                )
+                request_ids = list(get_store().request_ids())
+                self.assertEqual(len(request_ids), 1)
+                toolbar = DebugToolbar.fetch(request_ids[0])
+                content = toolbar.get_panel_by_id(HistoryPanel.panel_id).content
+                # The key itself is rendered, not iterated as its own mapping.
+                self.assertIn("items", content)
 
     def test_history_sidebar_invalid(self):
         response = self.client.get(reverse("djdt:history_sidebar"))

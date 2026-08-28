@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n debug_toolbar %}
 <tr class="{% if request_id == current_request_id %}djdt-highlighted{% endif %}" id="historyMain_{{ request_id }}" data-request-id="{{ request_id }}">
     <td>
         {{ history_context.history_stats.time|escape }}
@@ -24,7 +24,7 @@
               </tr>
             </thead>
             <tbody>
-              {% for key, value in history_context.history_stats.data.items %}
+              {% for key, value in history_context.history_stats.data|dict_items %}
                 <tr>
                   <td><code>{{ key|pprint }}</code></td>
                   <td><code>{{ value|pprint }}</code></td>
