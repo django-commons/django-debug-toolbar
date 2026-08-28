@@ -1,9 +1,28 @@
+/* Self-hosted fonts Alef and Geist is the primary font for the rest of the toolbar text. */
+@font-face {
+    font-family: "Alef";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src:
+        url("../fonts/Alef-Bold.woff2") format("woff2"),
+        url("../fonts/Alef-Bold.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Geist";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("../fonts/Geist.woff2") format("woff2");
+}
+
 /* Variable definitions */
 #djDebug {
     /* Font families are the same as in Django admin/css/base.css */
     --djdt-font-family-primary:
-        "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif,
-        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Geist", "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial,
+        sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
         "Noto Color Emoji";
     --djdt-font-family-monospace:
         ui-monospace, Menlo, Monaco, "Cascadia Mono",
@@ -15,13 +34,17 @@
 
 #djDebug,
 #djDebug[data-theme="light"] {
+    --djdt-accent-color: #30c16e;
+    --djdt-nav-hover-background-color: rgba(255, 255, 255, 0.08);
     --djdt-font-color: black;
     --djdt-background-color: white;
-    --djdt-panel-content-background-color: #eee;
+    --djdt-panel-content-background-color: #f5f6f7;
     --djdt-panel-content-table-background-color: var(--djdt-background-color);
-    --djdt-panel-title-background-color: #ffc;
+    --djdt-panel-title-background-color: #e0f8ff;
+    --djdt-panel-title-color: #666;
     --djdt-panel-content-table-strip-background-color: #f9f9f9;
-    --djdt-highlighted-background-color: #ffc;
+
+    --djdt-highlighted-background-color: rgba(92, 184, 92, 0.14);
     --djdt-toggle-template-background-color: #bbb;
 
     --djdt-sql-font-color: #333;
@@ -32,7 +55,9 @@
 
     --djdt-table-header-color: #666;
     --djdt-table-header-background-color: #f8f8f8;
-    --djdt-table-border-color: #ddd;
+    --djdt-table-border-color: #3d8b3d;
+    --djdt-focus-color: #3d8b3d;
+    --djdt-timeline-bar-color: rgba(92, 184, 92, 0.7);
     --djdt-button-border-color: #ccc;
     --djdt-button-hover-border-color: #aaa;
     --djdt-pre-border-color: var(--djdt-table-border-color);
@@ -42,11 +67,12 @@
 #djDebug[data-theme="dark"] {
     --djdt-font-color: #f8f8f2;
     --djdt-background-color: #121212;
-    --djdt-panel-content-background-color: #121212;
+    --djdt-panel-content-background-color: #014a5f;
     --djdt-panel-content-table-background-color: var(--djdt-background-color);
-    --djdt-panel-title-background-color: #417690;
+    --djdt-panel-title-background-color: #014a5f;
+    --djdt-panel-title-color: #f8f8f2;
     --djdt-panel-content-table-strip-background-color: #171717;
-    --djdt-highlighted-background-color: #00363a;
+    --djdt-highlighted-background-color: rgba(92, 184, 92, 0.18);
     --djdt-toggle-template-background-color: #353535;
 
     --djdt-sql-font-color: var(--djdt-font-color);
@@ -57,7 +83,9 @@
 
     --djdt-table-header-color: #f8f8f8;
     --djdt-table-header-background-color: #212121;
-    --djdt-table-border-color: #353535;
+    --djdt-table-border-color: var(--djdt-accent-color);
+    --djdt-focus-color: var(--djdt-accent-color);
+    --djdt-timeline-bar-color: #6ec86e;
     --djdt-button-border-color: #666;
     --djdt-pre-border-color: var(--djdt-table-border-color);
     --djdt-raw-border-color: var(--djdt-table-border-color);
@@ -67,6 +95,7 @@
 #djDebug {
     color: var(--djdt-font-color);
     background: var(--djdt-background-color);
+    font-weight: 500;
 }
 #djDebug,
 #djDebug div,
@@ -178,9 +207,28 @@
     cursor: pointer;
 }
 
+/* Focus outline */
+#djDebug :focus-visible {
+    outline: 2px solid var(--djdt-focus-color);
+    outline-offset: 2px;
+}
+
+/* Visually hidden, shown to assistive tech. */
+#djDebug .djdt-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
 #djDebug #djDebugToolbar {
     background-color: #111;
-    width: 220px;
+    width: 240px;
     z-index: 100000000;
     position: fixed;
     top: 0;
@@ -212,9 +260,26 @@
     width: auto;
 }
 
+#djDebug #djDebugToolbar li.djdt-logo {
+    border-bottom: none;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 15px 10px;
+    width: 100%;
+}
+
+#djDebug #djDebugToolbar li.djdt-logo img {
+    width: 300px;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
 #djDebug #djDebugToolbar input[type="checkbox"] {
     float: right;
-    margin: 10px;
+    margin-block: 10px;
+    margin-inline: 10px 15px;
 }
 
 #djDebug #djDebugToolbar li > a,
@@ -227,14 +292,38 @@
     padding: 7px 10px 8px 25px;
     color: #fff;
 }
+
+#djDebug #djDebugToolbar li.djdt-hide-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+#djDebug #djDebugToolbar li .djdt-docs-icon {
+    width: 1.2em;
+    height: 1.2em;
+    margin-inline-start: 5px;
+    vertical-align: text-bottom;
+}
+
+#djDebug #djDebugToolbar li .djdt-nav-icon {
+    width: 1.4em;
+    height: 1.4em;
+    margin-inline-end: 3px;
+    vertical-align: text-bottom;
+}
+
+#djDebug #djDebugToolbar li#djdt-VersionsPanel .djdt-nav-icon {
+    width: auto;
+    height: 1.4em;
+}
+
 #djDebug #djDebugToolbar li > div.djdt-disabled {
     font-style: italic;
     color: #999;
 }
 
 #djDebug #djDebugToolbar li a:hover {
-    color: #111;
-    background-color: #ffc;
+    background-color: var(--djdt-nav-hover-background-color);
 }
 
 #djDebug #djDebugToolbar li.djdt-active {
@@ -253,7 +342,7 @@
 }
 
 #djDebug #djDebugToolbar li.djdt-active a:hover {
-    color: #b36a60;
+    color: var(--djdt-accent-color);
     background-color: transparent;
 }
 
@@ -268,41 +357,32 @@
     position: fixed;
     transform: translateY(-100%) rotate(-90deg);
     transform-origin: right bottom;
-    background-color: #fff;
-    border: 1px solid #111;
-    border-bottom: 0;
     top: 0;
     right: 0;
     z-index: 100000000;
-    opacity: 0.75;
 }
 
 #djDebug #djShowToolBarButton {
-    padding: 0 5px;
-    border: 4px solid #fff;
-    border-bottom-width: 0;
-    color: #fff;
-    font-size: 22px;
-    font-weight: bold;
-    background: #000;
-    opacity: 0.6;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: move;
+    opacity: 0.85;
+    background-color: var(--djdt-accent-color);
+    border-radius: 4px;
 }
 
 #djDebug #djShowToolBarButton:hover {
-    background-color: #111;
-    border-color: #ffe761;
+    opacity: 4;
     cursor: move;
-    opacity: 1;
 }
 
-#djDebug #djShowToolBarD {
-    color: #cf9;
-    font-size: 22px;
-}
-
-#djDebug #djShowToolBarJ {
-    color: #cf9;
-    font-size: 16px;
+#djDebug #djShowToolBarButton img {
+    display: block;
+    transform: rotate(90deg);
+    width: 50px;
+    height: 50px;
 }
 
 #djDebug pre,
@@ -335,7 +415,7 @@
     position: fixed;
     margin: 0;
     top: 0;
-    right: 220px;
+    right: 240px;
     bottom: 0;
     left: 0px;
     background-color: var(--djdt-panel-content-background-color);
@@ -350,12 +430,20 @@
 #djDebug .djDebugPanelTitle {
     position: absolute;
     background-color: var(--djdt-panel-title-background-color);
-    color: #666;
+    color: var(--djdt-panel-title-color);
     padding-left: 20px;
     top: 0;
     right: 0;
     left: 0;
     height: 50px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#djDebug .djDebugPanelTitle h3 {
+    font-family: "Alef", var(--djdt-font-family-primary);
+    font-weight: 700;
 }
 
 #djDebug .djDebugPanelTitle code {
@@ -425,6 +513,7 @@
 }
 #djDebug .djdt-panelContent tbody th {
     border-top: 1px solid var(--djdt-table-border-color);
+    font-weight: 600;
 }
 #djDebug .djdt-panelContent tbody td,
 #djDebug .djdt-panelContent tbody th {
@@ -444,7 +533,7 @@
     background-color: var(--djdt-table-header-background-color);
     text-align: left;
     text-transform: uppercase;
-    font-weight: bold;
+    font-weight: 600;
     font-size: 11px;
     white-space: nowrap;
 }
@@ -464,10 +553,10 @@
     top: 4px;
     right: 15px;
     line-height: 16px;
-    border: 3px solid #aaa;
+    border: 3px solid #4d4d4d;
     border-radius: 50%;
     background: #fff;
-    color: #aaa;
+    color: #4d4d4d;
     font-weight: 400;
     font-size: 24px;
     height: 36px;
@@ -480,7 +569,9 @@
 }
 
 #djDebug .djdt-panelContent .djDebugClose:hover {
-    background: #c0695d;
+    background: var(--djdt-accent-color);
+    border-color: #131313;
+    color: #131313;
 }
 
 #djDebug .djdt-panelContent dt,
@@ -1086,10 +1177,15 @@ To regenerate:
 }
 
 #djDebug svg.djDebugLineChartInTransaction rect {
-    fill: #d3ff82;
+    fill: rgba(92, 184, 92, 0.25);
 }
+
+#djDebug #TimerPanel svg.djDebugLineChart rect {
+    fill: var(--djdt-timeline-bar-color);
+}
+
 #djDebug svg.djDebugLineChart line {
-    stroke: #94b24d;
+    stroke: #3d8b3d;
 }
 
 #djDebug .djDebugRowWarning .djdt-time {
@@ -1165,6 +1261,10 @@ To regenerate:
 #djDebug .djdt-highlighted {
     background-color: var(--djdt-highlighted-background-color);
 }
+
+#djDebug tr.djdt-highlighted {
+    border-inline-start: 3px solid var(--djdt-focus-color);
+}
 @keyframes djdt-flash-new {
     from {
         background-color: green;
@@ -1175,6 +1275,17 @@ To regenerate:
 }
 #djDebug .flash-new {
     animation: djdt-flash-new 1s;
+}
+
+/* Reduced motion (WCAG 2.3.3)*/
+@media (prefers-reduced-motion: reduce) {
+    #djDebug *,
+    #djDebug *::before,
+    #djDebug *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 
 .djdt-hidden {
@@ -1230,6 +1341,29 @@ To regenerate:
     font-size: 1em;
 }
 
+/* biome-ignore lint/style/noDescendingSpecificity: targets community-panel links, a different element than the higher-specificity */
 #djDebug .djdt-community-panel a:hover {
     text-decoration: underline;
+}
+
+/* History panel: refresh control in the panel title bar. */
+#djDebug .djDebugPanelTitle .djdtHistoryRefreshForm {
+    display: inline-flex;
+    align-items: center;
+    margin-block: 0;
+    margin-inline: auto 90px;
+}
+
+#djDebug .djDebugPanelTitle .refreshHistory {
+    background-color: #131313;
+    color: #fff;
+    border: none;
+    box-shadow: none;
+    padding: 8px 18px;
+    font-size: 14px;
+}
+
+#djDebug[data-theme="dark"] .djDebugPanelTitle .refreshHistory {
+    background-color: #fff;
+    color: #131313;
 }

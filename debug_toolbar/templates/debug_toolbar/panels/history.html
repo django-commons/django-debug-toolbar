@@ -1,8 +1,10 @@
 {% load i18n static %}
+
 <form method="get" action="{% url 'djdt:history_refresh' %}">
     {{ refresh_form.as_div }}
-    <button class="refreshHistory">Refresh</button>
+    <button type="button" class="refreshHistory">Refresh</button>
 </form>
+
 <table class="djdt-max-height-100">
     <thead>
         <tr>

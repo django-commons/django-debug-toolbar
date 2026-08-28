@@ -171,6 +171,7 @@ class CachePanel(Panel):
     # Implement the Panel API
 
     nav_title = _("Cache")
+    nav_icon = "debug_toolbar/img/cache.svg"
 
     @property
     def nav_subtitle(self):

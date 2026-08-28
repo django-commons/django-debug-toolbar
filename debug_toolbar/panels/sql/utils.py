@@ -88,11 +88,6 @@ class EscapedStringSerializer:
         return "".join(escaped_value(token) for token in stmt.flatten())
 
 
-def is_select_query(sql):
-    # UNION queries can start with "(".
-    return sql.lower().lstrip(" (").startswith("select")
-
-
 def reformat_sql(sql, *, with_toggle=False):
     formatted = parse_sql(sql)
     if not with_toggle:

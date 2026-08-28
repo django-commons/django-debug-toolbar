@@ -16,6 +16,10 @@ requests and return responses. Putting the debug toolbar middleware *after* the
 ``FlatpageFallbackMiddleware`` middleware, for example, means the toolbar will
 not show up on flatpages.
 
+The response must also not be compressed;
+:func:`~django.views.decorators.gzip.gzip_page` and ``GZipMiddleware`` listed
+after the toolbar in ``MIDDLEWARE`` are common causes.
+
 Check your browser's caching
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

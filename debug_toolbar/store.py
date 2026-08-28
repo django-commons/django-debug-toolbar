@@ -1,3 +1,4 @@
+import base64
 import contextlib
 import functools
 import json
@@ -6,6 +7,7 @@ from collections.abc import Iterable
 from typing import Any
 
 from django.core.cache import caches
+from django.core.exceptions import ImproperlyConfigured
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction
 from django.utils.module_loading import import_string
@@ -14,24 +16,58 @@ from debug_toolbar import settings as dt_settings
 from debug_toolbar.models import HistoryEntry
 from debug_toolbar.sanitize import force_str
 
+BINARY_SENTINEL = "__djdt_binary__"
+POSTGIS_SENTINEL = "__djdt_postgis__"
+
 
 class DebugToolbarJSONEncoder(DjangoJSONEncoder):
     def default(self, o):
+        # Handle binary data (e.g., GeoDjango EWKB geometry data)
+        if isinstance(o, (bytes, bytearray)):
+            return {BINARY_SENTINEL: base64.b64encode(o).decode("ascii")}
         try:
             return super().default(o)
         except (TypeError, ValueError):
             return force_str(o)
 
 
+def _binary_object_hook(obj):
+    if BINARY_SENTINEL in obj:
+        return base64.b64decode(obj[BINARY_SENTINEL])
+    if POSTGIS_SENTINEL in obj:
+        ewkb = base64.b64decode(obj[POSTGIS_SENTINEL])
+        try:
+            from django.contrib.gis.db.backends.postgis.adapter import PostGISAdapter
+
+            adapter = PostGISAdapter.__new__(PostGISAdapter)
+            adapter.is_geometry = obj.get("is_geometry", True)
+            adapter.ewkb = ewkb
+            adapter.geography = obj.get("geography", False)
+            return adapter
+        except (ImportError, ImproperlyConfigured):
+            return ewkb
+    return obj
+
+
+class DebugToolbarJSONDecoder(json.JSONDecoder):
+    """Custom JSON decoder that reconstructs binary data during parsing."""
+
+    def __init__(self, *args, **kwargs):
+        # Set object_hook if not already provided
+        if "object_hook" not in kwargs:
+            kwargs["object_hook"] = _binary_object_hook
+        super().__init__(*args, **kwargs)
+
+
 def serialize(data: Any) -> str:
     # If this starts throwing an exceptions, consider
     # Subclassing DjangoJSONEncoder and using force_str to
     # make it JSON serializable.
-    return json.dumps(data, cls=DebugToolbarJSONEncoder)
+    return json.dumps(data, cls=DebugToolbarJSONEncoder, skipkeys=True)
 
 
 def deserialize(data: str) -> Any:
-    return json.loads(data)
+    return json.loads(data, cls=DebugToolbarJSONDecoder)
 
 
 class BaseStore:
