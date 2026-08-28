@@ -22,6 +22,8 @@ Pending
 * Updated the example screenshot.
 * Updated the screenshot capture logic to find the toolbar elements in the
   shadow DOM.
+* Track and display processing time of application, including the toolbar's
+  time, in the timer panel.
 
 7.1.1 (2026-08-14)
 ------------------
@@ -52,8 +54,6 @@ Pending
 7.0.0 (2026-06-17)
 ------------------
 
-* Track and display processing time of application, including the toolbar's
-  time, in the timer panel.
 * Prevent check from failing when ``ROOT_URLCONF`` is not defined.
 * Prevent toolbar storage from failing when serialized panel data contains
   mapping keys that are not JSON-compatible.
