@@ -123,10 +123,8 @@ class SQLPanelTestCase(BaseTestCase):
 
         self.assertEqual(len(self.panel._queries), 1)
         query = self.panel._queries[0]
-        self.assertEqual(
-            query["sql"], "2 times: INSERT INTO tests_binary (field) VALUES (%s)"
-        )
-        self.assertTrue(query["many"])
+        self.assertEqual(query["sql"], "INSERT INTO tests_binary (field) VALUES (%s)")
+        self.assertEqual(query["count"], 2)
         self.assertEqual(Binary.objects.count(), 2)
 
     def test_executemany_singular(self):
@@ -141,8 +139,9 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertEqual(len(self.panel._queries), 1)
         self.assertEqual(
             self.panel._queries[0]["sql"],
-            "1 time: INSERT INTO tests_binary (field) VALUES (%s)",
+            "INSERT INTO tests_binary (field) VALUES (%s)",
         )
+        self.assertEqual(self.panel._queries[0]["count"], 1)
         self.assertEqual(Binary.objects.count(), 1)
 
     def test_executemany_with_empty_param_list(self):
@@ -155,15 +154,16 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertEqual(len(self.panel._queries), 1)
         self.assertEqual(
             self.panel._queries[0]["sql"],
-            "0 times: INSERT INTO tests_binary (field) VALUES (%s)",
+            "INSERT INTO tests_binary (field) VALUES (%s)",
         )
+        self.assertEqual(self.panel._queries[0]["count"], 0)
         self.assertEqual(Binary.objects.count(), 0)
 
-    def test_execute_is_not_marked_as_many(self):
+    def test_execute_has_no_count(self):
         sql_call()
 
         self.assertEqual(len(self.panel._queries), 1)
-        self.assertFalse(self.panel._queries[0]["many"])
+        self.assertIsNone(self.panel._queries[0]["count"])
 
     def test_assert_num_queries_works(self):
         """

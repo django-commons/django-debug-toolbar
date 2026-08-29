@@ -23,8 +23,7 @@ Pending
 * Updated the screenshot capture logic to find the toolbar elements in the
   shadow DOM.
 * Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
-  recorded. The statement is now shown as ``N times: <sql>``, matching
-  Django's own debug cursor.
+  recorded. The statement is shown with the number of times it ran.
 
 7.1.1 (2026-08-14)
 ------------------

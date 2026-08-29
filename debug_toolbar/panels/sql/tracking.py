@@ -7,7 +7,6 @@ from time import perf_counter
 import django.test.testcases
 from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.translation import gettext as _, ngettext
 
 from debug_toolbar import settings as dt_settings
 from debug_toolbar.sanitize import force_str
@@ -223,20 +222,16 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
             if many:
                 # params is a sequence of param sequences, but
                 # last_executed_query() expects a flat sequence of scalars, so
-                # it cannot interpolate this. Report the statement and how many
-                # times it ran, matching Django's own CursorDebugWrapper.
+                # it cannot interpolate this. Record the statement as it was
+                # given, and how many times it ran.
+                display_sql = sql
                 try:
-                    times = len(params)
+                    count = len(params)
                 except TypeError:
-                    display_sql = _("? times: %(sql)s") % {"sql": sql}
-                else:
-                    display_sql = ngettext(
-                        "%(count)d time: %(sql)s",
-                        "%(count)d times: %(sql)s",
-                        times,
-                    ) % {"count": times, "sql": sql}
+                    count = None
             else:
                 display_sql = self._last_executed_query(sql, params)
+                count = None
 
             kwargs = {
                 "vendor": vendor,
@@ -245,7 +240,7 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
                 "duration": duration,
                 "raw_sql": sql,
                 "params": _params,
-                "many": many,
+                "count": count,
                 "stacktrace": get_stack_trace(skip=2),
                 "template_info": template_info,
             }
