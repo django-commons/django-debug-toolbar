@@ -24,6 +24,8 @@ Pending
   shadow DOM.
 * Track and display processing time of application, including the toolbar's
   time, in the timer panel.
+* Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
+  recorded. The statement is shown with the number of times it ran.
 
 7.1.1 (2026-08-14)
 ------------------
