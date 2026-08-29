@@ -22,6 +22,8 @@ Pending
 * Updated the example screenshot.
 * Updated the screenshot capture logic to find the toolbar elements in the
   shadow DOM.
+* Track and display processing time of application, including the toolbar's
+  time, in the timer panel.
 * Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
   recorded. The statement is shown with the number of times it ran.
 
@@ -241,6 +243,7 @@ Pending
 * Fixed a crash which occurred when using non-``str`` static file values.
 * Documented experimental async support.
 * Improved troubleshooting doc for incorrect mime types for .js static files
+* Added toolbar time to the timer panel.
 
 Please see everything under 5.0.0-alpha as well.
 
