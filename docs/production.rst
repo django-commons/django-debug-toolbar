@@ -170,6 +170,18 @@ whether it monkey-patches anything.
      - Yes.
      - No.
 
+Security and Data Privacy Risks
+-------------------------------
+When enabling the toolbar in production or production-like environments, evaluate the following security implications carefully:
+
+Captured Sensitive Payloads
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Panels such as ``RequestPanel`` and ``HistoryPanel`` capture raw POST parameters, GET query params, and HTTP headers in plain text. If users submit sensitive data (e.g., passwords, credit card credentials, authentication tokens, or personally identifiable information), those values will be capt
+
+Shared Toolbar Data State
+~~~~~~~~~~~~~~~~~~~~~~~~~
+The Debug Toolbar's recorded store data is **not** isolated per user session. Any client, staff member, or admin user for whom ``SHOW_TOOLBAR_CALLBACK`` evaluates to ``True`` will have access to inspect toolbar history data recorded from requests made by other users across the application.
+
 Recommendation for production-like environments
 -------------------------------------------------
 
