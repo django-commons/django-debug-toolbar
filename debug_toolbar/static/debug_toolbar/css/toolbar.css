@@ -370,7 +370,7 @@
     cursor: move;
     opacity: 0.85;
     background-color: var(--djdt-accent-color);
-    border-radius: 4px;
+    border-radius: 4px 4px 0 0;
 }
 
 #djDebug #djShowToolBarButton:hover {
