@@ -338,6 +338,17 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "djDebug")
 
+    def test_shadow_dom_enabled_by_default(self):
+        response = self.client.get("/regular/basic/")
+        self.assertContains(response, 'id="djDebugRoot"')
+        self.assertContains(response, '<template shadowrootmode="open">')
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"USE_SHADOW_DOM": False})
+    def test_shadow_dom_can_be_disabled(self):
+        response = self.client.get("/regular/basic/")
+        self.assertContains(response, 'id="djDebugRoot"')
+        self.assertNotContains(response, "shadowrootmode")
+
     @override_settings(DEFAULT_CHARSET="iso-8859-1")
     def test_non_utf8_charset(self):
         response = self.client.get("/regular/ASCII/")
