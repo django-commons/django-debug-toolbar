@@ -28,6 +28,8 @@ Pending
   in its title bar.
 * Fixed the History panel's Refresh button submitting its form when clicked
   before the panel's script had loaded.
+* Documented the ``USE_SHADOW_DOM`` setting, which was added in 7.0.0 but was
+  missing from the configuration documentation, and added test coverage for it.
 
 7.1.1 (2026-08-14)
 ------------------
