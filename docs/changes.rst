@@ -3,6 +3,9 @@ Change log
 
 Pending
 
+8.0.0 (2026-09-02)
+------------------
+
 * Refreshed the toolbar's visual design with self-hosted Alef (panel titles)
   and Geist (body text) fonts, an updated color palette, and per-panel
   navigation icons.
