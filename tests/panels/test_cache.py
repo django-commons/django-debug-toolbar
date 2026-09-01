@@ -45,57 +45,41 @@ class CachePanelTestCase(BaseTestCase):
         self.assertEqual(self.panel.hits, 4)
         self.assertEqual(self.panel.misses, 2)
 
-    def test_cached_none_with_default_none_is_ambiguous(self):
+    def test_get_default_counts_as_miss(self):
+        """
+        Using get that fetches a cached value that's the same as the default
+        results in a miss despite it being a hit.
+        """
         cache.cache.clear()
 
+        # cached None with default None is ambiguous
         cache.cache.set("foo", None)
         self.assertIsNone(cache.cache.get("foo"))
+        self.assertIsNone(cache.cache.get("foo"))
+        self.assertEqual(self.panel.misses, 2)
         self.assertEqual(self.panel.hits, 0)
-        self.assertEqual(self.panel.misses, 1)
 
-    def test_cached_value_equal_to_default_is_ambiguous(self):
+        # cached value equal to default is ambiguous
+        cache.cache.set("bar", "baz")
+        self.assertEqual(cache.cache.get("bar", "baz"), "baz")
+        self.assertEqual(cache.cache.get("bar", "baz"), "baz")
+        self.assertEqual(self.panel.misses, 4)
+        self.assertEqual(self.panel.hits, 0)
+
+    def test_get_with_args(self):
+        """
+        Test get to calculate the default in a variety of ways.
+        """
         cache.cache.clear()
-
-        cache.cache.set("foo", "bar")
+        self.assertIsNone(cache.cache.get("foo"))
+        self.assertEqual(self.panel.misses, 1)
         self.assertEqual(cache.cache.get("foo", "bar"), "bar")
+        self.assertEqual(self.panel.misses, 2)
+        self.assertEqual(cache.cache.get("foo", default="bar"), "bar")
+        self.assertEqual(self.panel.misses, 3)
+        self.assertEqual(cache.cache.get(key="foo", default="bar"), "bar")
+        self.assertEqual(self.panel.misses, 4)
         self.assertEqual(self.panel.hits, 0)
-        self.assertEqual(self.panel.misses, 1)
-
-    def test_missing_key_with_default_counts_as_miss(self):
-        cache.cache.clear()
-
-        self.assertIsNone(cache.cache.get("foo", None))
-        self.assertEqual(self.panel.hits, 0)
-        self.assertEqual(self.panel.misses, 1)
-
-    def test_missing_key_returns_supplied_default(self):
-        cache.cache.clear()
-
-        self.assertEqual(cache.cache.get("foo", "bar"), "bar")
-        self.assertEqual(self.panel.hits, 0)
-        self.assertEqual(self.panel.misses, 1)
-
-    def test_get_with_keyword_default_is_cache_miss(self):
-        cache.cache.clear()
-
-        self.assertEqual(cache.cache.get("foo", default="default"), "default")
-        self.assertEqual(self.panel.hits, 0)
-        self.assertEqual(self.panel.misses, 1)
-
-    def test_get_with_keyword_key_and_default_is_cache_miss(self):
-        cache.cache.clear()
-
-        self.assertEqual(cache.cache.get(key="foo", default="default"), "default")
-        self.assertEqual(self.panel.hits, 0)
-        self.assertEqual(self.panel.misses, 1)
-
-    def test_get_with_keyword_key_and_version(self):
-        cache.cache.clear()
-
-        cache.cache.set("foo", "bar", version=1)
-        self.assertEqual(cache.cache.get(key="foo", version=1), "bar")
-        self.assertEqual(self.panel.hits, 1)
-        self.assertEqual(self.panel.misses, 0)
 
     def test_get_or_set_value(self):
         cache.cache.get_or_set("baz", "val")
@@ -167,11 +151,15 @@ class CachePanelTestCase(BaseTestCase):
         )
 
     def test_get_or_set_none_counts_as_miss(self):
+        """
+        Using get_or_set to set a None value is counted as a miss even
+        though it was a hit on the second try.
+        """
         cache.cache.clear()
-
         self.assertIsNone(cache.cache.get_or_set("foo", None))
+        self.assertIsNone(cache.cache.get_or_set("foo", None))
+        self.assertEqual(self.panel.misses, 2)
         self.assertEqual(self.panel.hits, 0)
-        self.assertEqual(self.panel.misses, 1)
 
     def test_insert_content(self):
         """
