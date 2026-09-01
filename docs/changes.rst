@@ -24,6 +24,10 @@ Pending
   shadow DOM.
 * Track and display processing time of application, including the toolbar's
   time, in the timer panel.
+* Fixed the History panel rendering a duplicate Refresh button below the one
+  in its title bar.
+* Fixed the History panel's Refresh button submitting its form when clicked
+  before the panel's script had loaded.
 
 7.1.1 (2026-08-14)
 ------------------
