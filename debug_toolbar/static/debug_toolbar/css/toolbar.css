@@ -306,15 +306,15 @@
 }
 
 #djDebug #djDebugToolbar li .djdt-nav-icon {
-    width: 1.4em;
-    height: 1.4em;
+    width: 1.1em;
+    height: 1.1em;
     margin-inline-end: 3px;
     vertical-align: text-bottom;
 }
 
 #djDebug #djDebugToolbar li#djdt-VersionsPanel .djdt-nav-icon {
     width: auto;
-    height: 1.4em;
+    height: 1.1em;
 }
 
 #djDebug #djDebugToolbar li > div.djdt-disabled {
