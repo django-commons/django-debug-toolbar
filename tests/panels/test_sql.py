@@ -124,11 +124,15 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertEqual(len(self.panel._queries), 1)
         query = self.panel._queries[0]
         self.assertEqual(query["sql"], "INSERT INTO tests_binary (field) VALUES (%s)")
-        self.assertEqual(query["count"], 2)
+        self.assertEqual(query["execution_count"], 2)
         self.assertEqual(Binary.objects.count(), 2)
 
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+        self.assertIn("Executed 2 times.", self.panel.content)
+
     def test_executemany_singular(self):
-        """A single param set uses the singular form."""
+        """A single param set is not annotated with a count."""
         self.assertEqual(len(self.panel._queries), 0)
 
         with connection.cursor() as cursor:
@@ -141,8 +145,12 @@ class SQLPanelTestCase(BaseTestCase):
             self.panel._queries[0]["sql"],
             "INSERT INTO tests_binary (field) VALUES (%s)",
         )
-        self.assertEqual(self.panel._queries[0]["count"], 1)
+        self.assertEqual(self.panel._queries[0]["execution_count"], 1)
         self.assertEqual(Binary.objects.count(), 1)
+
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+        self.assertNotIn("Executed", self.panel.content)
 
     def test_executemany_with_empty_param_list(self):
         """An empty param list runs no statement but must still not raise."""
@@ -156,14 +164,18 @@ class SQLPanelTestCase(BaseTestCase):
             self.panel._queries[0]["sql"],
             "INSERT INTO tests_binary (field) VALUES (%s)",
         )
-        self.assertEqual(self.panel._queries[0]["count"], 0)
+        self.assertEqual(self.panel._queries[0]["execution_count"], 0)
         self.assertEqual(Binary.objects.count(), 0)
 
-    def test_execute_has_no_count(self):
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+        self.assertNotIn("Executed", self.panel.content)
+
+    def test_execute_has_no_execution_count(self):
         sql_call()
 
         self.assertEqual(len(self.panel._queries), 1)
-        self.assertIsNone(self.panel._queries[0]["count"])
+        self.assertIsNone(self.panel._queries[0]["execution_count"])
 
     def test_assert_num_queries_works(self):
         """

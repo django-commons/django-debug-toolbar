@@ -46,9 +46,9 @@
           </td>
           <td>
             <div class="djDebugSql">{{ query.sql|safe }}</div>
-            {% if query.count is not None %}
+            {% if query.execution_count > 1 %}
               <strong>
-                {% blocktranslate count counter=query.count %}Executed {{ counter }} time.{% plural %}Executed {{ counter }} times.{% endblocktranslate %}
+                {% blocktranslate count counter=query.execution_count %}Executed {{ counter }} time.{% plural %}Executed {{ counter }} times.{% endblocktranslate %}
               </strong>
             {% endif %}
             {% if query.similar_count %}
@@ -80,7 +80,7 @@
           </td>
           <td class="djdt-actions">
             {# executemany params are a sequence of param sequences, which these views cannot re-execute. #}
-            {% if query.params is not None and query.count is None %}
+            {% if query.params is not None and query.execution_count is None %}
               <form method="post">
                 {{ query.form.as_div }}
                 <button formaction="{% url 'djdt:sql_select' %}" class="remoteCall">Sel</button>

@@ -226,12 +226,12 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
                 # given, and how many times it ran.
                 display_sql = sql
                 try:
-                    count = len(params)
+                    execution_count = len(params)
                 except TypeError:
-                    count = None
+                    execution_count = None
             else:
                 display_sql = self._last_executed_query(sql, params)
-                count = None
+                execution_count = None
 
             kwargs = {
                 "vendor": vendor,
@@ -240,7 +240,7 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
                 "duration": duration,
                 "raw_sql": sql,
                 "params": _params,
-                "count": count,
+                "execution_count": execution_count,
                 "stacktrace": get_stack_trace(skip=2),
                 "template_info": template_info,
             }

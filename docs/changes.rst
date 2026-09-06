@@ -4,7 +4,7 @@ Change log
 Pending
 
 * Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
-  recorded. The statement is shown with the number of times it ran.
+  recorded. The panel shows how many times a repeated statement ran.
 
 8.0.0 (2026-09-02)
 ------------------
