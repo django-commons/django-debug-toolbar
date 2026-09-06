@@ -3,6 +3,12 @@ Change log
 
 Pending
 
+* Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
+  recorded. The statement is shown with the number of times it ran.
+
+8.0.0 (2026-09-02)
+------------------
+
 * Refreshed the toolbar's visual design with self-hosted Alef (panel titles)
   and Geist (body text) fonts, an updated color palette, and per-panel
   navigation icons.
@@ -24,8 +30,12 @@ Pending
   shadow DOM.
 * Track and display processing time of application, including the toolbar's
   time, in the timer panel.
-* Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
-  recorded. The statement is shown with the number of times it ran.
+* Fixed the History panel rendering a duplicate Refresh button below the one
+  in its title bar.
+* Fixed the History panel's Refresh button submitting its form when clicked
+  before the panel's script had loaded.
+* Documented the ``USE_SHADOW_DOM`` setting, which was added in 7.0.0 but was
+  missing from the configuration documentation, and added test coverage for it.
 
 7.1.1 (2026-08-14)
 ------------------
@@ -52,6 +62,9 @@ Pending
 * Stopped the history panel buttons from submitting their form when clicked
   before the panel script has loaded, which navigated away from the page.
 * Added support for Django 6.1.
+* Improved cache hit/miss reporting in the Cache panel for ``cache.get()``
+  calls with a supplied default value, while documenting the remaining
+  ambiguity when a cached value equals the supplied default.
 
 7.0.0 (2026-06-17)
 ------------------

@@ -101,6 +101,12 @@ Cache
 
 Cache queries. Is incompatible with Django's per-site caching.
 
+Cache hit/miss statistics for ``cache.get()`` calls may not always be
+accurate. See the `discussion`_ for details and to share feedback about
+improving cache hit/miss tracking.
+
+.. _discussion: https://github.com/django-commons/django-debug-toolbar/discussions/2441
+
 Signals
 ~~~~~~~
 

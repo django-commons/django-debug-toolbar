@@ -92,5 +92,6 @@ uWSGI
 unhandled
 unhashable
 validator
+whitespace
 wordmark
 wordmarks
