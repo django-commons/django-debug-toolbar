@@ -48,6 +48,35 @@ class HistoryPanelTestCase(BaseTestCase):
                 data = self.panel.get_stats()["data"]
                 self.assertDictEqual(data, expected_stats_data)
 
+    def test_post_json_items_key_does_not_crash_history_render(self):
+        """A JSON key named items must not shadow dict.items() in history_tr.html."""
+        self.request = rf.post(
+            "/",
+            data={"items": "should-not-shadow", "foo": "bar"},
+            content_type="application/json",
+            CONTENT_TYPE="application/json",  # Force django test client to add the content-type even if no data
+        )
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+        stats = self.panel.get_stats()
+        self.assertEqual(stats["data"]["items"], "should-not-shadow")
+        self.assertEqual(stats["data"]["foo"], "bar")
+        self.assertEqual(
+            list(stats["data_items"]),
+            [("items", "should-not-shadow"), ("foo", "bar")],
+        )
+
+        # History panel content includes history_tr.html for each stored request.
+        content = self.panel.content
+        for val in ("items", "foo", "should-not-shadow"):
+            self.assertIn(val, content)
+        self.assertIn(
+            f"<td><code>{html.escape("'items'", quote=True)}</code></td>", content
+        )
+        self.assertIn(
+            f"<td><code>{html.escape("'foo'", quote=True)}</code></td>", content
+        )
+
     def test_urls(self):
         self.assertEqual(
             reverse("djdt:history_sidebar"),
@@ -209,3 +238,29 @@ class HistoryViewsTestCase(IntegrationTestCase):
 
         for val in ["spam", "eggs"]:
             self.assertIn(val, data["requests"][1]["content"])
+
+    def test_history_refresh_json_items_key(self):
+        """history_refresh HTML must render JSON bodies that include an items key."""
+        self.client.post(
+            "/json_view/",
+            data={"items": "should-not-shadow", "foo": "bar"},
+            content_type="application/json",
+            CONTENT_TYPE="application/json",
+        )
+
+        request_ids = list(get_store().request_ids())
+        self.assertEqual(len(request_ids), 1)
+        toolbar = DebugToolbar.fetch(request_ids[0])
+        content = toolbar.get_panel_by_id(HistoryPanel.panel_id).content
+        items_row = f"<td><code>{html.escape("'items'", quote=True)}</code></td>"
+        foo_row = f"<td><code>{html.escape("'foo'", quote=True)}</code></td>"
+        self.assertIn(items_row, content)
+        self.assertIn(foo_row, content)
+
+        response = self.client.get(
+            reverse("djdt:history_refresh"), data={"request_id": "foo"}
+        )
+        self.assertEqual(response.status_code, 200)
+        refresh_content = response.json()["requests"][0]["content"]
+        self.assertIn(items_row, refresh_content)
+        self.assertIn(foo_row, refresh_content)
