@@ -71,10 +71,12 @@ class HistoryPanelTestCase(BaseTestCase):
         for val in ("items", "foo", "should-not-shadow"):
             self.assertIn(val, content)
         self.assertIn(
-            f"<td><code>{html.escape("'items'", quote=True)}</code></td>", content
+            "<td><code>{}</code></td>".format(html.escape("'items'", quote=True)),
+            content,
         )
         self.assertIn(
-            f"<td><code>{html.escape("'foo'", quote=True)}</code></td>", content
+            "<td><code>{}</code></td>".format(html.escape("'foo'", quote=True)),
+            content,
         )
 
     def test_urls(self):
@@ -252,8 +254,12 @@ class HistoryViewsTestCase(IntegrationTestCase):
         self.assertEqual(len(request_ids), 1)
         toolbar = DebugToolbar.fetch(request_ids[0])
         content = toolbar.get_panel_by_id(HistoryPanel.panel_id).content
-        items_row = f"<td><code>{html.escape("'items'", quote=True)}</code></td>"
-        foo_row = f"<td><code>{html.escape("'foo'", quote=True)}</code></td>"
+        items_row = "<td><code>{}</code></td>".format(
+            html.escape("'items'", quote=True)
+        )
+        foo_row = "<td><code>{}</code></td>".format(
+            html.escape("'foo'", quote=True)
+        )
         self.assertIn(items_row, content)
         self.assertIn(foo_row, content)
 
