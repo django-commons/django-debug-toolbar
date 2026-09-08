@@ -257,9 +257,7 @@ class HistoryViewsTestCase(IntegrationTestCase):
         items_row = "<td><code>{}</code></td>".format(
             html.escape("'items'", quote=True)
         )
-        foo_row = "<td><code>{}</code></td>".format(
-            html.escape("'foo'", quote=True)
-        )
+        foo_row = "<td><code>{}</code></td>".format(html.escape("'foo'", quote=True))
         self.assertIn(items_row, content)
         self.assertIn(foo_row, content)
 
