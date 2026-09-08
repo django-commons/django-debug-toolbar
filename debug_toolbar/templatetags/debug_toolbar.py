@@ -17,6 +17,29 @@ def _svg_contents(path):
         return handle.read().strip()
 
 
+@register.filter
+def dict_items(value):
+    """
+    Return a mapping's ``(key, value)`` pairs.
+
+    ``{% for k, v in mapping.items %}`` is unsafe when the keys come from user
+    input. Django resolves ``mapping.items`` with a dictionary lookup before it
+    tries attribute lookup, so a key literally named ``items`` shadows the
+    method and the loop iterates that key's value instead of the mapping. If
+    the value is not a sequence of pairs the loop then raises ValueError.
+
+    Anything that is not a mapping yields no pairs, so the caller's
+    ``{% empty %}`` branch renders.
+    """
+    items = getattr(value, "items", None)
+    if not callable(items):
+        return []
+    try:
+        return items()
+    except TypeError:
+        return []
+
+
 @register.simple_tag
 def inline_svg(path, css_class="", label=""):
     """
