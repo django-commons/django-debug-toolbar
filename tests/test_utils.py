@@ -8,6 +8,7 @@ from debug_toolbar.utils import (
     get_name_from_obj,
     get_stack,
     get_stack_trace,
+    is_processable_html_response,
     render_stacktrace,
     sanitize_and_sort_request_vars,
     tidy_stacktrace,
@@ -171,3 +172,33 @@ class SanitizeAndSortRequestVarsTestCase(unittest.TestCase):
         test_input = ["not", "a", "dict"]
         result = sanitize_and_sort_request_vars(test_input)
         self.assertEqual(result["raw"], test_input)
+
+
+class IsProcessableHtmlResponseTestCase(unittest.TestCase):
+    def test_html_response(self):
+        response = {"Content-Type": "text/html; charset=utf-8"}
+        self.assertTrue(is_processable_html_response(response))
+
+    def test_html_with_space_around_delimiter(self):
+        response = {"Content-Type": "text/html ; charset=utf-8"}
+        self.assertTrue(is_processable_html_response(response))
+
+    def test_xhtml_response(self):
+        response = {"Content-Type": "application/xhtml+xml"}
+        self.assertTrue(is_processable_html_response(response))
+
+    def test_json_response(self):
+        response = {"Content-Type": "application/json"}
+        self.assertFalse(is_processable_html_response(response))
+
+    def test_encoded_response(self):
+        response = {"Content-Type": "text/html", "Content-Encoding": "gzip"}
+        self.assertFalse(is_processable_html_response(response))
+
+    def test_streaming_response(self):
+        class StreamingResponse(dict):
+            streaming = True
+
+        response = StreamingResponse({"Content-Type": "text/html"})
+        self.assertFalse(is_processable_html_response(response))
+

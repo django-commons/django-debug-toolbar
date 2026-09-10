@@ -167,7 +167,7 @@ def get_template_source_from_exception_info(
 
 
 def get_name_from_obj(obj: Any) -> str:
-    """Get the best name as `str` from a view or a object."""
+    """Get the best name as `str` from a view or an object."""
     # This is essentially a rewrite of the `django.contrib.admindocs.utils.get_view_name`
     # https://github.com/django/django/blob/9a22d1769b042a88741f0ff3087f10d94f325d86/django/contrib/admindocs/utils.py#L26-L32
     if hasattr(obj, "view_class"):
@@ -395,8 +395,8 @@ _HTML_TYPES = ("text/html", "application/xhtml+xml")
 
 
 def is_processable_html_response(response):
-    content_encoding = response.get("Content-Encoding", "")
-    content_type = response.get("Content-Type", "").split(";")[0]
+    content_encoding = response.get("Content-Encoding", "").strip()
+    content_type = response.get("Content-Type", "").split(";")[0].strip()
     return (
         not getattr(response, "streaming", False)
         and content_encoding == ""
