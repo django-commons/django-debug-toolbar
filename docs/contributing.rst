@@ -9,8 +9,68 @@ Bug reports and feature requests
 
 You can report bugs and request features in the `bug tracker
 <https://github.com/django-commons/django-debug-toolbar/issues>`_.
+Please follow the project's `security policy
+<https://github.com/django-commons/django-debug-toolbar/security/policy>`_
+instead of starting a public discussion about a possible security
+vulnerability.
 
 Please search the existing database for duplicates before filing an issue.
+
+Triaging issues
+----------------
+
+Any team member of ``@django-commons/django-debug-toolbar`` is able to triage
+an issue. For new issues, it's worth verifying if a bug report is an actual
+bug. At times, people need help solving a problem on their machine. While not
+our responsibility, it's generally kind to try to help them as much as your
+time and energy allows. "Unfortunately, I don't have the availability to help
+right now." is a perfectly valid response.
+
+For feature requests, people are encouraged to use their best judgment. The
+toolbar shouldn't try to solve every debugging problem or have a direct
+integration with all tools. However, it should seek to be flexible and useful
+in the Django ecosystem.
+
+If consensus can't be arrived at, the
+``@django-commons/django-debug-toolbar-admins`` will make a final decision with
+the more involved member on the issue taking priority.
+
+Closing old issues
+^^^^^^^^^^^^^^^^^^^
+
+Closing issues is context dependent. Issues that require a user's help
+investigating, but they are unresponsive can be closed sooner rather than
+issues that are reasonable feature ideas.
+
+The guidelines for cleaning up stale issues are:
+
+- Support issues can be closed after six months of inactivity
+- Bugs that are no longer reproducible can be closed after a year of
+  inactivity
+- Feature requests should be reconsidered and closed if no longer valid,
+  otherwise kept open
+
+
+Reviewing Pull Requests
+------------------------
+
+Any community member is allowed to perform a code review. If a
+non-``@django-commons/django-debug-toolbar-committers`` is reviewing the code,
+please share what specifically was involved in the code review when sharing
+general feedback. This helps the rest of the team know what was checked and how
+to value your review properly.
+
+If a member of ``@django-commons/django-debug-toolbar-committers`` and
+``@django-commons/django-debug-toolbar-admins`` approves a PR, the expectation
+is that they have reviewed the code to the extent they feel it should be
+merged.
+
+Any member of ``@django-commons/django-debug-toolbar-committers`` and
+``@django-commons/django-debug-toolbar-admins`` is allowed to merge a PR. If a
+change is aggressive, large, or potentially controversial, it's recommended to
+wait for a second approval. In that case, you should request a review from
+``@django-commons/django-debug-toolbar`` and be explicit about what your
+concerns are.
 
 Project priorities
 ------------------
@@ -22,8 +82,7 @@ top-priority issues may change as the needs of the project change. Maintainers
 add or remove the label as part of triaging issues.
 
 If you want to make a high-impact contribution, this list is a good place to
-start. Before beginning work, leave a comment on the issue so that maintainers
-and other contributors can coordinate with you.
+start.
 
 Discussions
 -----------
@@ -35,16 +94,10 @@ project. Choose the category that best fits the conversation:
 
 * **Contributing** for conversations about contributing to the project and for
   contributor meeting announcements and notes.
-* **Ideas** for exploring possible changes before opening a feature request.
+* **Ideas** for exploring possible changes that don't fit as an issue.
 * **Q&A** for questions about using the Debug Toolbar.
 * **Show and tell** for sharing talks, tutorials, tools, or other resources
   about using or contributing to the Debug Toolbar.
-
-Use the issue tracker for confirmed bugs and concrete feature requests. Please
-follow the project's `security policy
-<https://github.com/django-commons/django-debug-toolbar/security/policy>`_
-instead of starting a public discussion about a possible security
-vulnerability.
 
 Contributor discussion meetings
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -63,14 +116,15 @@ meeting discussion or its linked agenda document.
 Sharing resources
 ^^^^^^^^^^^^^^^^^
 
-To suggest a resource for the :doc:`resources page <resources>`, start a post
-in the `Show and tell category
-<https://github.com/django-commons/django-debug-toolbar/discussions/categories/show-and-tell>`_.
-Include a link, a short description, the author or speaker, the publication
-date, and any other useful details such as the Django and Debug Toolbar
-versions covered, the duration, language, or available captions. This gives
-the community a place to discuss the resource before it is added to the
-documentation.
+To suggest a resource for the :doc:`resources page <resources>`, open a pull
+request adding it directly. Include a link, a short description, the author
+or speaker, the publication date, and any other useful details such as the
+Django and Debug Toolbar versions covered, the duration, language, or
+available captions. If maintainers decide the resource isn't a good fit for
+the docs, they may suggest turning it into a post in the `Show and tell
+category
+<https://github.com/django-commons/django-debug-toolbar/discussions/categories/show-and-tell>`_
+instead, for wider awareness.
 
 .. _code:
 
