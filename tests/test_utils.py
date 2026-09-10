@@ -201,4 +201,3 @@ class IsProcessableHtmlResponseTestCase(unittest.TestCase):
 
         response = StreamingResponse({"Content-Type": "text/html"})
         self.assertFalse(is_processable_html_response(response))
-
