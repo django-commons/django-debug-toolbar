@@ -4,8 +4,11 @@ import django
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.db import connection
 from django.http import JsonResponse
 from django.shortcuts import render
+
+from example.models import Widget
 
 TASKS_AVAILABLE = django.VERSION >= (6, 0)
 
@@ -65,3 +68,14 @@ def cache_view(request):
     cache.get("foo")
     cache.get("baz")
     return render(request, "cache.html")
+
+
+def executemany_view(request):
+    Widget.objects.all().delete()
+    table_name = Widget._meta.db_table
+    with connection.cursor() as cursor:
+        cursor.executemany(
+            f"INSERT INTO {table_name} (value) VALUES (%s)",
+            [(1,), (2,), (3,)],
+        )
+    return render(request, "executemany.html")

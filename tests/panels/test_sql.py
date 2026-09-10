@@ -104,6 +104,75 @@ class SQLPanelTestCase(BaseTestCase):
         # ensure the stacktrace is populated
         self.assertTrue(len(query["stacktrace"]) > 0)
 
+    def test_executemany(self):
+        """
+        executemany() must be recorded without raising.
+
+        The backend's last_executed_query() expects a flat sequence of scalar
+        params, so handing it a list of param sequences fails. It happens in a
+        finally: block after the write has already landed, so the exception
+        escapes into the caller.
+        """
+        self.assertEqual(len(self.panel._queries), 0)
+
+        with connection.cursor() as cursor:
+            cursor.executemany(
+                "INSERT INTO tests_binary (field) VALUES (%s)",
+                [(b"one",), (b"two",)],
+            )
+
+        self.assertEqual(len(self.panel._queries), 1)
+        query = self.panel._queries[0]
+        self.assertTrue(query["many"])
+        self.assertEqual(query["sql"].count("INSERT INTO tests_binary"), 2)
+        self.assertEqual(Binary.objects.count(), 2)
+
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+        self.assertNotIn("Executed", self.panel.content)
+
+    def test_executemany_singular(self):
+        """A single param set is still recorded as executemany."""
+        self.assertEqual(len(self.panel._queries), 0)
+
+        with connection.cursor() as cursor:
+            cursor.executemany(
+                "INSERT INTO tests_binary (field) VALUES (%s)", [(b"one",)]
+            )
+
+        self.assertEqual(len(self.panel._queries), 1)
+        query = self.panel._queries[0]
+        self.assertTrue(query["many"])
+        self.assertEqual(query["sql"].count("INSERT INTO tests_binary"), 1)
+        self.assertEqual(Binary.objects.count(), 1)
+
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+        self.assertNotIn("Executed", self.panel.content)
+
+    def test_executemany_with_empty_param_list(self):
+        """An empty param list runs no statement but must still not raise."""
+        self.assertEqual(len(self.panel._queries), 0)
+
+        with connection.cursor() as cursor:
+            cursor.executemany("INSERT INTO tests_binary (field) VALUES (%s)", [])
+
+        self.assertEqual(len(self.panel._queries), 1)
+        query = self.panel._queries[0]
+        self.assertTrue(query["many"])
+        self.assertEqual(query["sql"], "")
+        self.assertEqual(Binary.objects.count(), 0)
+
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+        self.assertNotIn("Executed", self.panel.content)
+
+    def test_execute_is_not_many(self):
+        sql_call()
+
+        self.assertEqual(len(self.panel._queries), 1)
+        self.assertFalse(self.panel._queries[0]["many"])
+
     def test_assert_num_queries_works(self):
         """
         Confirm Django's assertNumQueries and CaptureQueriesContext works

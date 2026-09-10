@@ -60,10 +60,15 @@ class SQLSelectForm(forms.Form):
         query = self.cleaned_data["query"]
         sql = query["raw_sql"]
         params = query["params"]
+        many = query["many"]
         with self.cursor as cursor:
-            cursor.execute(sql, params)
-            headers = [d[0] for d in cursor.description]
-            result = [self._render_row(row) for row in cursor.fetchall()]
+            if many:
+                cursor.executemany(sql, params)
+                result, headers = [], []
+            else:
+                cursor.execute(sql, params)
+                headers = [d[0] for d in cursor.description]
+                result = [self._render_row(row) for row in cursor.fetchall()]
             return result, headers
 
     def explain(self):
