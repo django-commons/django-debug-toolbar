@@ -89,12 +89,16 @@ class HistoryPanel(Panel):
             # It is not guaranteed that we may read the request data (again).
             pass
 
+        # Build pairs in Python so a key named "items" cannot shadow
+        # dict.items() when the History panel template iterates the data.
+        data_items = list(data.items()) if hasattr(data, "items") else []
         self.record_stats(
             {
                 "request_url": request.get_full_path(),
                 "request_method": request.method,
                 "status_code": response.status_code,
                 "data": data,
+                "data_items": data_items,
                 "time": timezone.now(),
             }
         )
