@@ -224,14 +224,13 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
                 # last_executed_query() expects a flat sequence of scalars, so
                 # it cannot interpolate this. Record the statement as it was
                 # given, and how many times it ran.
-                display_sql = sql
-                try:
-                    execution_count = len(params)
-                except TypeError:
-                    execution_count = None
+                statements = [
+                    self._last_executed_query(sql, execution_params)
+                    for execution_params in params
+                ]
+                display_sql = "; ".join(statements)
             else:
                 display_sql = self._last_executed_query(sql, params)
-                execution_count = None
 
             kwargs = {
                 "vendor": vendor,
@@ -240,7 +239,7 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
                 "duration": duration,
                 "raw_sql": sql,
                 "params": _params,
-                "execution_count": execution_count,
+                "many": many,
                 "stacktrace": get_stack_trace(skip=2),
                 "template_info": template_info,
             }

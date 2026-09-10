@@ -123,16 +123,16 @@ class SQLPanelTestCase(BaseTestCase):
 
         self.assertEqual(len(self.panel._queries), 1)
         query = self.panel._queries[0]
-        self.assertEqual(query["sql"], "INSERT INTO tests_binary (field) VALUES (%s)")
-        self.assertEqual(query["execution_count"], 2)
+        self.assertTrue(query["many"])
+        self.assertEqual(query["sql"].count("INSERT INTO tests_binary"), 2)
         self.assertEqual(Binary.objects.count(), 2)
 
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)
-        self.assertIn("Executed 2 times.", self.panel.content)
+        self.assertNotIn("Executed", self.panel.content)
 
     def test_executemany_singular(self):
-        """A single param set is not annotated with a count."""
+        """A single param set is still recorded as executemany."""
         self.assertEqual(len(self.panel._queries), 0)
 
         with connection.cursor() as cursor:
@@ -141,11 +141,9 @@ class SQLPanelTestCase(BaseTestCase):
             )
 
         self.assertEqual(len(self.panel._queries), 1)
-        self.assertEqual(
-            self.panel._queries[0]["sql"],
-            "INSERT INTO tests_binary (field) VALUES (%s)",
-        )
-        self.assertEqual(self.panel._queries[0]["execution_count"], 1)
+        query = self.panel._queries[0]
+        self.assertTrue(query["many"])
+        self.assertEqual(query["sql"].count("INSERT INTO tests_binary"), 1)
         self.assertEqual(Binary.objects.count(), 1)
 
         response = self.panel.process_request(self.request)
@@ -160,22 +158,20 @@ class SQLPanelTestCase(BaseTestCase):
             cursor.executemany("INSERT INTO tests_binary (field) VALUES (%s)", [])
 
         self.assertEqual(len(self.panel._queries), 1)
-        self.assertEqual(
-            self.panel._queries[0]["sql"],
-            "INSERT INTO tests_binary (field) VALUES (%s)",
-        )
-        self.assertEqual(self.panel._queries[0]["execution_count"], 0)
+        query = self.panel._queries[0]
+        self.assertTrue(query["many"])
+        self.assertEqual(query["sql"], "")
         self.assertEqual(Binary.objects.count(), 0)
 
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)
         self.assertNotIn("Executed", self.panel.content)
 
-    def test_execute_has_no_execution_count(self):
+    def test_execute_is_not_many(self):
         sql_call()
 
         self.assertEqual(len(self.panel._queries), 1)
-        self.assertIsNone(self.panel._queries[0]["execution_count"])
+        self.assertFalse(self.panel._queries[0]["many"])
 
     def test_assert_num_queries_works(self):
         """
