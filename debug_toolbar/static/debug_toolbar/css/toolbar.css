@@ -2,7 +2,7 @@
 #djDebug {
     /* Font families are the same as in Django admin/css/base.css */
     --djdt-font-family-primary:
-        "Geist", "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial,
+        "djdt-Geist", "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial,
         sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
         "Noto Color Emoji";
     --djdt-font-family-monospace:
