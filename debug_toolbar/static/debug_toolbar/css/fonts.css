@@ -1,6 +1,6 @@
-/* @font-face must live in the light DOM. Chrome ignores it inside a shadow tree. */
+/* @font-face must live in the regular DOM. Chrome ignores it inside a shadow DOM. */
 @font-face {
-    font-family: "Alef";
+    font-family: "djdt-Alef";
     font-style: normal;
     font-weight: 700;
     font-display: swap;

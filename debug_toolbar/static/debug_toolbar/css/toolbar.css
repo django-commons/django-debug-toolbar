@@ -423,7 +423,7 @@
 }
 
 #djDebug .djDebugPanelTitle h3 {
-    font-family: "Alef", var(--djdt-font-family-primary);
+    font-family: "djdt-Alef", var(--djdt-font-family-primary);
     font-weight: 700;
 }
 
