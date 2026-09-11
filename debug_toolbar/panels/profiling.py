@@ -96,7 +96,9 @@ class FunctionCall:
                 self.statobj,
                 func,
                 self.depth + 1,
-                stats=stats,
+                # `stats` is only this caller's slice of func's time; use
+                # func's own totals since it may have other callers.
+                stats=self.statobj.stats[func][:4],
                 id=str(self.id) + "_" + str(i),
                 parent_ids=self.parent_ids + [self.id],
                 hsv=(h1, s1, 1),
@@ -158,23 +160,48 @@ class ProfilingPanel(Panel):
 
     template = "debug_toolbar/panels/profiling.html"
     capture_project_code = dt_settings.get_config()["PROFILER_CAPTURE_PROJECT_CODE"]
+    capture_non_project_threshold = dt_settings.get_config()[
+        "PROFILER_CAPTURE_NON_PROJECT_THRESHOLD"
+    ]
 
     def process_request(self, request):
         self.profiler = cProfile.Profile()
         return self.profiler.runcall(super().process_request, request)
 
-    def add_node(self, func_list, func, max_depth, cum_time):
+    def include_in_func_list(self, func: FunctionCall, max_depth: int):
+        """
+        Determine if the function should be included in the profiling stats results.
+
+        This can be overridden to check on other ``FunctionCall`` properties.
+        """
+        # Include depth check here to allow developers to potentially check depth
+        # dynamically. They may want to go deeper if it's all project code.
+        if func.depth >= max_depth:
+            return False
+        return (
+            # Is the sub func a non project (Maybe a Django or Python internal)
+            # and did it take longer than the threshold?
+            func.cumtime() >= self.capture_non_project_threshold
+            or (
+                # If we're capturing project code, include all project sub funcs
+                self.capture_project_code and func.is_project_func()
+            )
+        )
+
+    def add_node(self, func_list, func, max_depth, seen=None):
+        if seen is None:
+            seen = set()
+        # pstats aggregates per function, so all_callees can reach the same
+        # function twice (recursion, multiple callers) with its stats
+        # already the full total, so skip repeats.
+        if func.func in seen:
+            return
+        seen.add(func.func)
         func_list.append(func)
-        if func.depth < max_depth:
-            for subfunc in func.subfuncs():
-                # Always include the user's code
-                if subfunc.stats[3] >= cum_time or (
-                    self.capture_project_code
-                    and subfunc.is_project_func()
-                    and subfunc.stats[3] > 0
-                ):
-                    func.has_subfuncs = True
-                    self.add_node(func_list, subfunc, max_depth, cum_time)
+        for subfunc in func.subfuncs():
+            if self.include_in_func_list(func=subfunc, max_depth=max_depth):
+                func.has_subfuncs = True
+                self.add_node(func_list, subfunc, max_depth, seen)
 
     def generate_stats(self, request, response):
         if not hasattr(self, "profiler"):
@@ -189,13 +216,9 @@ class ProfilingPanel(Panel):
         if root_func in self.stats.stats:
             root = FunctionCall(self.stats, root_func, depth=0)
             func_list = []
-            cum_time_threshold = (
-                root.stats[3] / dt_settings.get_config()["PROFILER_THRESHOLD_RATIO"]
-            )
             self.add_node(
                 func_list,
                 root,
                 dt_settings.get_config()["PROFILER_MAX_DEPTH"],
-                cum_time_threshold,
             )
             self.record_stats({"func_list": [func.serialize() for func in func_list]})
