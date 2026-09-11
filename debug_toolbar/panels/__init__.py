@@ -12,8 +12,7 @@ from debug_toolbar.utils import get_name_from_obj
 @dataclass
 class PanelHeaders:
     """
-    A data-structure to allow panels to update headers or append to existing
-    values.
+    Allow panels to update headers or append to existing values.
     """
 
     append: dict[str, str] = field(default_factory=dict)
