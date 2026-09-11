@@ -405,6 +405,21 @@ There is no public CSS API at this time.
 
 .. autoclass:: debug_toolbar._stubs.GetResponse
 
+.. class:: debug_toolbar.panels.PanelHeaders
+
+    Allow panels to update headers or append to existing values.
+
+    .. attribute:: append
+       :type: dict[str, str]
+
+       Header values to append to any existing value for the same header,
+       separated by a comma.
+
+    .. attribute:: update
+       :type: dict[str, str]
+
+       Header values that replace any existing value for the same header.
+
 .. _javascript-api:
 
 JavaScript API

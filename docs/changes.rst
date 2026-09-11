@@ -3,6 +3,8 @@ Change log
 
 Pending
 
+* Fix ``Server-Timing`` header not being overridden if it already exists.
+
 8.0.0 (2026-09-02)
 ------------------
 
