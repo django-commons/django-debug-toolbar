@@ -126,7 +126,7 @@ def get_template_info() -> dict[str, Any] | None:
                     template_info = get_template_context(node, context)
                     break
             cur_frame = cur_frame.f_back
-    except Exception:
+    except Exception:  # noqa: S110, BLE001
         pass
     del cur_frame
     return template_info
@@ -203,8 +203,9 @@ def getframeinfo(frame: Any, context: int = 1) -> inspect.Traceback:
     if context > 0:
         start = lineno - 1 - context // 2
         try:
-            lines, lnum = inspect.findsource(frame)
-        except Exception:  # findsource raises platform-dependant exceptions
+            lines, _lnum = inspect.findsource(frame)
+        except Exception:  # noqa: BLE001
+            # findsource raises platform-dependant exceptions
             lines = index = None
         else:
             start = max(start, 1)

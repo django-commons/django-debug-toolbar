@@ -1,21 +1,25 @@
+import base64
 import contextlib
 import contextvars
 import datetime
-import json
 from time import perf_counter
 
 import django.test.testcases
 from django.apps import apps
+from django.core.exceptions import ImproperlyConfigured
 
 from debug_toolbar import settings as dt_settings
 from debug_toolbar.sanitize import force_str
 from debug_toolbar.utils import get_stack_trace, get_template_info
+
+Psycopg3Binary = None
 
 try:
     import psycopg
 
     PostgresJson = psycopg.types.json.Jsonb
     STATUS_IN_TRANSACTION = psycopg.pq.TransactionStatus.INTRANS
+    Psycopg3Binary = psycopg.Binary
 except ImportError:
     try:
         from psycopg2._json import Json as PostgresJson
@@ -23,6 +27,19 @@ except ImportError:
     except ImportError:
         PostgresJson = None
         STATUS_IN_TRANSACTION = None
+
+try:
+    from psycopg2.extensions import Binary as Psycopg2Binary
+except ImportError:
+    Psycopg2Binary = None
+
+_PostGISAdapter = None
+try:
+    from django.contrib.gis.db.backends.postgis.adapter import (
+        PostGISAdapter as _PostGISAdapter,
+    )
+except (ImportError, ImproperlyConfigured):
+    pass
 
 # Prevents SQL queries from being sent to the DB. It's used
 # by the TemplatePanel to prevent the toolbar from issuing
@@ -133,6 +150,26 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
         if isinstance(param, dict):
             return {key: self._decode(value) for key, value in param.items()}
 
+        # GeoDjango PostGIS geometry parameters: extract EWKB bytes and metadata
+        # so the adapter can be reconstructed on the way back out for SELECT/EXPLAIN.
+        if _PostGISAdapter is not None and isinstance(param, _PostGISAdapter):
+            return {
+                "__djdt_postgis__": base64.b64encode(param.ewkb).decode("ascii"),
+                "is_geometry": param.is_geometry,
+                "geography": param.geography,
+            }
+
+        # Binary data is handled by DebugToolbarJSONEncoder in store.py.
+        # Django's BinaryField calls connection.Database.Binary() which wraps
+        # bytes in a driver-specific adapter: psycopg2 uses .adapted, psycopg3
+        # uses .obj. memoryview: psycopg2/sqlite3 binary column values.
+        if isinstance(param, (bytes, bytearray, memoryview)):
+            return bytes(param)
+        if Psycopg2Binary is not None and isinstance(param, Psycopg2Binary):
+            return bytes(param.adapted)
+        if Psycopg3Binary is not None and isinstance(param, Psycopg3Binary):
+            return bytes(param.obj)
+
         # make sure datetime, date and time are converted to string by force_str
         CONVERT_TYPES = (datetime.datetime, datetime.date, datetime.time)
         return force_str(param, strings_only=not isinstance(param, CONVERT_TYPES))
@@ -165,10 +202,11 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
         finally:
             stop_time = perf_counter()
             duration = (stop_time - start_time) * 1000
-            _params = ""
+            _params = None
             with contextlib.suppress(TypeError):
-                # object JSON serializable?
-                _params = json.dumps(self._decode(params))
+                # Decode params - binary data will be handled by DebugToolbarJSONEncoder
+                # in store.py when the panel data is serialized
+                _params = self._decode(params)
             template_info = get_template_info()
 
             # Sql might be an object (such as psycopg Composed).

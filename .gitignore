@@ -17,3 +17,7 @@ venv
 .envrc
 .venv
 .vscode
+
+# Node
+node_modules/
+coverage/

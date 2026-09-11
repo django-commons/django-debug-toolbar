@@ -14,11 +14,13 @@ from django.db.models import Count
 from django.db.utils import DatabaseError
 from django.shortcuts import render
 from django.test.utils import override_settings
+from sqlparse.exceptions import SQLParseError
 
 import debug_toolbar.panels.sql.tracking as sql_tracking
 from debug_toolbar import settings as dt_settings
 from debug_toolbar.models import HistoryEntry
 from debug_toolbar.panels.sql import SQLPanel, tracking
+from debug_toolbar.panels.sql.utils import parse_sql
 
 try:
     import psycopg
@@ -397,24 +399,31 @@ class SQLPanelTestCase(BaseTestCase):
         # ensure query was logged
         self.assertEqual(len(self.panel._queries), 3)
 
-        if connection.vendor == "mysql" and django.VERSION >= (4, 1):
+        if (
+            connection.vendor == "mysql"
+            and django.VERSION >= (4, 1)
+            or connection.vendor != "postgresql"
+            and django.VERSION >= (6, 1)
+        ):
             # Django 4.1 started passing true/false back for boolean
             # comparisons in MySQL.
-            expected_bools = '["Foo", true, false]'
+            # Django 6.1 started passing true/false for all-non
+            # postgres databases.
+            expected_bools = ["Foo", True, False]
         else:
-            expected_bools = '["Foo"]'
+            expected_bools = ["Foo"]
 
         if connection.vendor == "postgresql":
             # PostgreSQL always includes timezone
-            expected_datetime = '["2017-12-22 16:07:01+00:00"]'
+            expected_datetime = ["2017-12-22 16:07:01+00:00"]
         else:
-            expected_datetime = '["2017-12-22 16:07:01"]'
+            expected_datetime = ["2017-12-22 16:07:01"]
 
         self.assertEqual(
             tuple(query["params"] for query in self.panel._queries),
             (
                 expected_bools,
-                "[10, 1]",
+                [10, 1],
                 expected_datetime,
             ),
         )
@@ -434,7 +443,7 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertEqual(len(self.panel._queries), 1)
         self.assertEqual(
             self.panel._queries[0]["params"],
-            '["{\\"foo\\": \\"bar\\"}"]',
+            ['{"foo": "bar"}'],
         )
 
     @unittest.skipUnless(
@@ -459,7 +468,7 @@ class SQLPanelTestCase(BaseTestCase):
 
         # ensure query was logged
         self.assertEqual(len(self.panel._queries), 1)
-        self.assertEqual(self.panel._queries[0]["params"], '[["a", "b\'"]]')
+        self.assertEqual(self.panel._queries[0]["params"], [["a", "b'"]])
 
     def test_binary_param_force_text(self):
         self.assertEqual(len(self.panel._queries), 0)
@@ -486,37 +495,24 @@ class SQLPanelTestCase(BaseTestCase):
 
         list(
             User.objects.raw(
-                " ".join(
-                    [
-                        "SELECT *",
-                        "FROM auth_user",
-                        "WHERE first_name = %s",
-                        "AND is_staff = %s",
-                        "AND is_superuser = %s",
-                        "AND date_joined = %s",
-                    ]
-                ),
-                params=["Foo", True, False, datetime.datetime(2017, 12, 22, 16, 7, 1)],
+                "SELECT * FROM auth_user WHERE first_name = %s AND is_staff = %s AND is_superuser = %s AND date_joined = %s",
+                params=[
+                    "Foo",
+                    True,
+                    False,
+                    datetime.datetime(2017, 12, 22, 16, 7, 1),  # noqa: DTZ001
+                ],
             )
         )
 
         list(
             User.objects.raw(
-                " ".join(
-                    [
-                        "SELECT *",
-                        "FROM auth_user",
-                        "WHERE first_name = %(first_name)s",
-                        "AND is_staff = %(is_staff)s",
-                        "AND is_superuser = %(is_superuser)s",
-                        "AND date_joined = %(date_joined)s",
-                    ]
-                ),
+                "SELECT * FROM auth_user WHERE first_name = %(first_name)s AND is_staff = %(is_staff)s AND is_superuser = %(is_superuser)s AND date_joined = %(date_joined)s",
                 params={
                     "first_name": "Foo",
                     "is_staff": True,
                     "is_superuser": False,
-                    "date_joined": datetime.datetime(2017, 12, 22, 16, 7, 1),
+                    "date_joined": datetime.datetime(2017, 12, 22, 16, 7, 1),  # noqa: DTZ001
                 },
             )
         )
@@ -530,15 +526,13 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertEqual(
             tuple(query["params"] for query in self.panel._queries),
             (
-                '["Foo", true, false, "2017-12-22 16:07:01"]',
-                " ".join(
-                    [
-                        '{"first_name": "Foo",',
-                        '"is_staff": true,',
-                        '"is_superuser": false,',
-                        '"date_joined": "2017-12-22 16:07:01"}',
-                    ]
-                ),
+                ["Foo", True, False, "2017-12-22 16:07:01"],
+                {
+                    "first_name": "Foo",
+                    "is_staff": True,
+                    "is_superuser": False,
+                    "date_joined": "2017-12-22 16:07:01",
+                },
             ),
         )
 
@@ -866,8 +860,34 @@ class SQLPanelTestCase(BaseTestCase):
         list(User.objects.filter(id__lt=20).union(User.objects.filter(id__gt=10)))
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)
-        query = self.panel._queries[0]
-        self.assertTrue(query["is_select"])
+        self.assertIn("Expl", self.panel.content)
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"PRETTIFY_SQL": True})
+    def test_sql_parse_error_graceful_degradation(self):
+        """
+        Test that SQLParseError is handled gracefully by disabling grouping.
+        """
+        parse_sql.cache_clear()
+
+        def run_side_effect(sql):
+            if mock_stack.run.call_count == 1:
+                raise SQLParseError("Token limit exceeded")
+            return [sql]
+
+        with patch("debug_toolbar.panels.sql.utils.get_filter_stack") as mock_get_stack:
+            mock_stack = mock_get_stack.return_value
+            mock_stack.run.side_effect = run_side_effect
+            mock_stack._grouping = True
+
+            result = parse_sql("SELECT * FROM test")
+
+            # Should have been called twice (once for error, once for retry)
+            self.assertEqual(mock_stack.run.call_count, 2)
+            # On retry, _grouping should be set to False
+            self.assertFalse(mock_stack._grouping)
+            self.assertIn("SELECT", result)
+
+        parse_sql.cache_clear()
 
 
 class SQLPanelMultiDBTestCase(BaseMultiDBTestCase):

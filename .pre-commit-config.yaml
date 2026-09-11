@@ -1,3 +1,4 @@
+exclude: "package.json|package-lock.json"
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -14,36 +15,40 @@ repos:
     hooks:
     -   id: doc8
 -   repo: https://github.com/adamchainz/django-upgrade
-    rev: 1.29.1
+    rev: 1.32.0
     hooks:
     -   id: django-upgrade
-        args: [--target-version, "4.2"]
+        args: [--target-version, "5.2"]
+-   repo: https://github.com/codingjoe/esupgrade
+    rev: 2025.22.2
+    hooks:
+    -   id: esupgrade
 -   repo: https://github.com/adamchainz/djade-pre-commit
-    rev: "1.7.0"
+    rev: "1.9.0"
     hooks:
     -   id: djade
-        args: [--target-version, "4.2"]
+        args: [--target-version, "5.2"]
 -   repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
     hooks:
     -   id: rst-backticks
     -   id: rst-directive-colons
 -   repo: https://github.com/biomejs/pre-commit
-    rev: v2.3.14
+    rev: v2.5.12
     hooks:
       - id: biome-check
         verbose: true
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.15.0'
+    rev: 'v0.16.6'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
 -   repo: https://github.com/tox-dev/pyproject-fmt
-    rev: v2.15.0
+    rev: v2.29.3
     hooks:
       - id: pyproject-fmt
 -   repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.25
+    rev: '0.26'
     hooks:
       - id: validate-pyproject

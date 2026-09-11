@@ -102,6 +102,7 @@ class TemplatesPanel(Panel):
     # Implement the Panel API
 
     nav_title = _("Templates")
+    nav_icon = "debug_toolbar/img/templates.svg"
 
     @property
     def title(self):
@@ -174,7 +175,7 @@ class TemplatesPanel(Panel):
                             temp_layer[key] = "<<triggers database query>>"
                         except UnicodeEncodeError:
                             temp_layer[key] = "<<Unicode encode error>>"
-                        except Exception:
+                        except Exception:  # noqa: BLE001
                             temp_layer[key] = "<<unhandled exception>>"
                         else:
                             temp_layer[key] = value

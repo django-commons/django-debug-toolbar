@@ -108,6 +108,15 @@ For MySQL/MariaDB in a ``mysql`` shell::
     mysql> GRANT ALL PRIVILEGES ON debug_toolbar.* TO 'debug_toolbar'@'localhost';
     mysql> GRANT ALL PRIVILEGES ON test_debug_toolbar.* TO 'debug_toolbar'@'localhost';
 
+The toolbar also ships a JavaScript test suite that runs in a real browser
+with `Vitest <https://vitest.dev/>`_ and
+`WebdriverIO <https://webdriver.io/>`_. It requires Node.js (see ``engines``
+in ``package.json`` for the supported version) and a local install of Chrome
+and Firefox. Install the JavaScript dependencies and run the tests with::
+
+    $ npm install
+    $ npm test
+
 
 Style
 -----
@@ -129,6 +138,21 @@ To reformat the code manually use::
 
     $ pre-commit run --all-files
 
+
+Brand assets
+------------
+
+The brand logos live in ``docs/_static/brand/``. The SVG files are the source
+of truth. The matching PNGs are generated from them. Whenever you change a logo
+SVG, regenerate the PNGs so they stay in sync::
+
+    $ make -C docs regenerate-brand-pngs
+
+This converts each SVG file into a high-resolution (3x) image using Google
+Chrome running in the background. You need to have Google Chrome installed on
+your computer. If you use Chromium or a different version, set the CHROME
+environment variable (for example: CHROME=chromium). The full set of brand
+assets is shown in the :doc:`design guidelines <design_guidelines>`.
 
 Typing
 ------

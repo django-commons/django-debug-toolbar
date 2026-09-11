@@ -67,6 +67,7 @@ class SignalsPanel(Panel):
         ) % {"num_receivers": num_receivers, "num_signals": num_signals}
 
     title = _("Signals")
+    nav_icon = "debug_toolbar/img/signals.svg"
 
     @property
     def signals(self):

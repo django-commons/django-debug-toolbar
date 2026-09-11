@@ -4,15 +4,16 @@
   <div id="{{ panel.panel_id }}" class="djdt-panelContent djdt-hidden">
     <div class="djDebugPanelTitle">
       <h3>{{ panel.title }}</h3>
+      {{ panel.title_bar }}
       <button type="button" class="djDebugClose">×</button>
     </div>
     <div class="djDebugPanelContent">
       {% if toolbar.should_render_panels %}
         {% for script in panel.scripts %}<script{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} type="module" src="{{ script }}" async></script>{% endfor %}
-        <div class="djdt-scroll">{{ panel.content }}</div>
+        <div class="djdt-scroll" tabindex="0">{{ panel.content }}</div>
       {% else %}
         <div class="djdt-loader"></div>
-        <div class="djdt-scroll"></div>
+        <div class="djdt-scroll" tabindex="0"></div>
       {% endif %}
     </div>
   </div>

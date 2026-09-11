@@ -29,6 +29,7 @@ class HeadersPanel(Panel):
     }
 
     title = _("Headers")
+    nav_icon = "debug_toolbar/img/headers.svg"
 
     is_async = True
 

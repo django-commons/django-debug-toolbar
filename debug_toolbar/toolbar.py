@@ -73,7 +73,19 @@ class DebugToolbar:
         """
         Get a list of panels enabled for the current request.
         """
-        return [panel for panel in self._panels.values() if panel.enabled]
+        # Ensure TimerPanel is first in order to measure the full time of the toolbar's processing.
+        panels = []
+        timer_panel = None
+        for panel in self._panels.values():
+            if not panel.enabled:
+                continue
+            if panel.panel_id == "TimerPanel":
+                timer_panel = panel
+            else:
+                panels.append(panel)
+        if timer_panel is not None:
+            panels.insert(0, timer_panel)
+        return panels
 
     @property
     def csp_nonce(self) -> str | None:
@@ -97,7 +109,10 @@ class DebugToolbar:
         if not self.should_render_panels():
             self.init_store()
         try:
-            context = {"toolbar": self}
+            context = {
+                "toolbar": self,
+                "use_shadow_dom": self.config["USE_SHADOW_DOM"],
+            }
             lang = self.config["TOOLBAR_LANGUAGE"] or get_language()
             with lang_override(lang):
                 return render_to_string("debug_toolbar/base.html", context)
@@ -211,7 +226,6 @@ def from_store_get_response(request: HttpRequest | None) -> None:
     logger.warning(
         "get_response was called for debug toolbar after being loaded from the store. No request exists in this scenario as the request is not stored, only the panel's data."
     )
-    return None
 
 
 class StoredDebugToolbar(DebugToolbar):

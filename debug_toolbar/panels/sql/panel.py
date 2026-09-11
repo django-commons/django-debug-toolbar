@@ -16,7 +16,6 @@ from debug_toolbar.panels.sql.forms import SQLSelectForm
 from debug_toolbar.panels.sql.tracking import wrap_cursor
 from debug_toolbar.panels.sql.utils import (
     contrasting_color_generator,
-    is_select_query,
     reformat_sql,
 )
 from debug_toolbar.utils import render_stacktrace
@@ -163,6 +162,7 @@ class SQLPanel(Panel):
     # Implement the Panel API
 
     nav_title = _("SQL")
+    nav_icon = "debug_toolbar/img/sql.svg"
 
     @property
     def nav_subtitle(self):
@@ -271,7 +271,6 @@ class SQLPanel(Panel):
                         query["vendor"], query["trans_status"]
                     )
                 query["is_slow"] = query["duration"] > sql_warning_threshold
-                query["is_select"] = is_select_query(query["raw_sql"])
 
                 query["rgb_color"] = self._databases[alias]["rgb_color"]
                 try:

@@ -17,26 +17,17 @@ class RedirectsPanel(Panel):
     is_async = True
 
     nav_title = _("Intercept redirects")
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        warnings.warn(
-            "The RedirectsPanel is deprecated and will be removed in a future version. "
-            "The HistoryPanel now provides the ability to view toolbar data for redirected requests. "
-            "If you still have a use case for this panel, please comment on "
-            "https://github.com/django-commons/django-debug-toolbar/issues/2216",
-            DeprecationWarning,
-            stacklevel=2,
-        )
+    nav_icon = "debug_toolbar/img/redirects.svg"
 
     def _process_response(self, response):
         """
         Common response processing logic.
         """
-        if 300 <= response.status_code < 400:
-            if redirect_to := response.get("Location"):
-                response = self.get_interception_response(response, redirect_to)
-                response.render()
+        if 300 <= response.status_code < 400 and (
+            redirect_to := response.get("Location")
+        ):
+            response = self.get_interception_response(response, redirect_to)
+            response.render()
         return response
 
     async def aprocess_request(self, request, response_coroutine):
@@ -71,4 +62,13 @@ class RedirectsPanel(Panel):
         response = SimpleTemplateResponse("debug_toolbar/redirect.html", context)
         response.cookies = cookies
         response.original_response = original_response
+
+        warnings.warn(
+            "The RedirectsPanel is deprecated and will be removed in a future version. "
+            "The HistoryPanel now provides the ability to view toolbar data for redirected requests. "
+            "If you still have a use case for this panel, please comment on "
+            "https://github.com/django-commons/django-debug-toolbar/issues/2216",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return response

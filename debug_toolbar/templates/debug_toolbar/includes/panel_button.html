@@ -1,12 +1,13 @@
-{% load i18n %}
+{% load debug_toolbar i18n %}
 
 <li id="djdt-{{ panel.panel_id }}" class="djDebugPanelButton">
   <input type="checkbox" data-cookie="djdt{{ panel.panel_id }}" {% if panel.enabled %}checked title="{% translate "Disable for next and successive requests" %}"{% else %}title="{% translate "Enable for next and successive requests" %}"{% endif %}>
   {% if panel.has_content and panel.enabled %}
-    <a href="#" title="{{ panel.title }}" class="{{ panel.panel_id }}">
+    <a href="#" title="{{ panel.title }}" class="{{ panel.panel_id }}" aria-controls="{{ panel.panel_id }}" aria-expanded="false">
   {% else %}
     <div class="djdt-contentless{% if not panel.enabled %} djdt-disabled{% endif %}">
   {% endif %}
+  {% if panel.nav_icon %}{% inline_svg panel.nav_icon css_class="djdt-nav-icon" %}{% endif %}
   {{ panel.nav_title }}
   {% if panel.enabled %}
     {% with subtitle=panel.nav_subtitle %}

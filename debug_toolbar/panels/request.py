@@ -14,6 +14,7 @@ class RequestPanel(Panel):
     template = "debug_toolbar/panels/request.html"
 
     title = _("Request")
+    nav_icon = "debug_toolbar/img/request.svg"
 
     @property
     def nav_subtitle(self):

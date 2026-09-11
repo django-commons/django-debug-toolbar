@@ -11,7 +11,7 @@ get_safe_settings = get_default_exception_reporter_filter().get_safe_settings
 def safe_pformat(obj):
     try:
         return pformat(obj)
-    except Exception as e:
+    except ValueError as e:
         return f"<unformattable {type(obj).__name__}: {e!r}>"
 
 
@@ -25,6 +25,7 @@ class SettingsPanel(Panel):
     is_async = True
 
     nav_title = _("Settings")
+    nav_icon = "debug_toolbar/img/settings.svg"
 
     def title(self):
         return _("Settings from %s") % self.get_stats()["settings"].get(

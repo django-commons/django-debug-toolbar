@@ -59,7 +59,7 @@ def check_template_config(config):
     """
     Checks if a template configuration is valid.
 
-    The toolbar requires either the toolbars to be unspecified or
+    The toolbar requires either the loaders to be unspecified or
     ``django.template.loaders.app_directories.Loader`` to be
     included in the loaders.
     If custom loaders are specified, then APP_DIRS must be True.
@@ -172,13 +172,12 @@ def check_middleware(app_configs, **kwargs):
 
 @register
 def check_panel_configs(app_configs, **kwargs):
-    """Allow each panel to check the toolbar's integration for their its own purposes."""
+    """Allow each panel to check the toolbar's integration for its own purposes."""
     from debug_toolbar.toolbar import DebugToolbar
 
     errors = []
     for panel_class in DebugToolbar.get_panel_classes():
-        for check_message in panel_class.run_checks():
-            errors.append(check_message)
+        errors.extend(panel_class.run_checks())
     return errors
 
 
@@ -249,12 +248,17 @@ def debug_toolbar_installed_when_running_tests_check(app_configs, **kwargs):
         dt_settings.get_config()["SHOW_TOOLBAR_CALLBACK"]
         != CONFIG_DEFAULTS["SHOW_TOOLBAR_CALLBACK"]
     )
-    try:
-        # Check if the toolbar's urls are installed
-        reverse(f"{APP_NAME}:render_panel")
-        toolbar_urls_installed = True
-    except NoReverseMatch:
+
+    if not hasattr(settings, "ROOT_URLCONF"):
+        # reverse will raise AttributeError if ROOT_URLCONF is not defined
         toolbar_urls_installed = False
+    else:
+        try:
+            # Check if the toolbar's urls are installed
+            reverse(f"{APP_NAME}:render_panel")
+            toolbar_urls_installed = True
+        except NoReverseMatch:
+            toolbar_urls_installed = False
 
     # If the user is using the default SHOW_TOOLBAR_CALLBACK,
     # then the middleware will respect the change to settings.DEBUG.

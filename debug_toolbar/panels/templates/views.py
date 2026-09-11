@@ -22,7 +22,7 @@ def template_source(request):
         return HttpResponseBadRequest('"template_origin" key is required')
     try:
         template_origin_name = signing.loads(template_origin_name)
-    except Exception:
+    except signing.BadSignature:
         return HttpResponseBadRequest('"template_origin" is invalid')
     template_name = request.GET.get("template", template_origin_name)
 

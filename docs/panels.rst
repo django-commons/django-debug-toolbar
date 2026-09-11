@@ -101,12 +101,29 @@ Cache
 
 Cache queries. Is incompatible with Django's per-site caching.
 
+Cache hit/miss statistics for ``cache.get()`` calls may not always be
+accurate. See the `discussion`_ for details and to share feedback about
+improving cache hit/miss tracking.
+
+.. _discussion: https://github.com/django-commons/django-debug-toolbar/discussions/2441
+
 Signals
 ~~~~~~~
 
 .. class:: debug_toolbar.panels.signals.SignalsPanel
 
 List of signals and receivers.
+
+Tasks
+~~~~~
+
+.. class:: debug_toolbar.panels.tasks.TasksPanel
+
+Shows the tasks queued during the request using Django's built-in tasks
+framework (``django.tasks``).
+
+.. note::
+   Requires Django 6.0+.
 
 Community
 ~~~~~~~~~
@@ -444,14 +461,14 @@ Events
 
 .. code-block:: javascript
 
-    import { $$ } from "./utils.js";
+    import { $$, getDebugElement } from "./utils.js";
     function addCustomMetrics() {
         // Logic to process/add custom metrics here.
 
         // Be sure to cover the case of this function being called twice
         // due to file being loaded asynchronously.
     }
-    const djDebug = document.getElementById("djDebug");
+    const djDebug = getDebugElement();
     $$.onPanelRender(djDebug, "CustomPanel", addCustomMetrics);
     // Since a panel's scripts are loaded asynchronously, it's possible that
     // the above statement would occur after the djdt.panel.render event has

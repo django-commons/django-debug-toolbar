@@ -21,7 +21,7 @@ class CustomPanelTestCase(IntegrationTestCase):
             """
             <li id="djdt-CustomPanel" class="djDebugPanelButton">
             <input type="checkbox" checked title="Disable for next and successive requests" data-cookie="djdtCustomPanel">
-            <a class="CustomPanel" href="#" title="Title with special chars &amp;&quot;&#39;&lt;&gt;">
+            <a class="CustomPanel" href="#" title="Title with special chars &amp;&quot;&#39;&lt;&gt;" aria-controls="CustomPanel" aria-expanded="false">
             Title with special chars &amp;&quot;&#39;&lt;&gt;
             </a>
             </li>
@@ -38,7 +38,7 @@ class CustomPanelTestCase(IntegrationTestCase):
             </div>
             <div class="djDebugPanelContent">
             <div class="djdt-loader"></div>
-            <div class="djdt-scroll"></div>
+            <div class="djdt-scroll" tabindex="0"></div>
             </div>
             </div>
             """,

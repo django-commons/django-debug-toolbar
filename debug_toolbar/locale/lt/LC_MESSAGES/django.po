@@ -161,281 +161,281 @@ msgstr "Atkartojamas skaitymas"
 
 #: panels/sql/panel.py:35 panels/sql/panel.py:49
 msgid "Serializable"
-msgstr ""
+msgstr "Serijinis"
 
 #: panels/sql/panel.py:41
 msgid "Autocommit"
-msgstr ""
+msgstr "Automatinis transakcijų patvirtinimo režimas"
 
 #: panels/sql/panel.py:63 panels/sql/panel.py:73
 msgid "Idle"
-msgstr ""
+msgstr "Neužimtas"
 
 #: panels/sql/panel.py:64 panels/sql/panel.py:74
 msgid "Active"
-msgstr ""
+msgstr "Aktyvus"
 
 #: panels/sql/panel.py:65 panels/sql/panel.py:75
 msgid "In transaction"
-msgstr ""
+msgstr "Vykdo tranzakciją"
 
 #: panels/sql/panel.py:66 panels/sql/panel.py:76
 msgid "In error"
-msgstr ""
+msgstr "Klaidos būsenoje"
 
 #: panels/sql/panel.py:67 panels/sql/panel.py:77
 msgid "Unknown"
-msgstr ""
+msgstr "Nežinoma"
 
 #: panels/sql/panel.py:165
 msgid "SQL"
-msgstr ""
+msgstr "SQL"
 
 #: panels/sql/panel.py:172
 #, python-format
 msgid "%(query_count)d query in %(sql_time).2fms"
 msgid_plural "%(query_count)d queries in %(sql_time).2fms"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "%(query_count)d užklausa per %(sql_time).2f ms"
+msgstr[1] "%(query_count)d užklausos per %(sql_time).2f ms"
+msgstr[2] "%(query_count)d užklausų per %(sql_time).2f ms"
+msgstr[3] "%(query_count)d užklausų per %(sql_time).2f ms"
 
 #: panels/sql/panel.py:184
 #, python-format
 msgid "SQL queries from %(count)d connection"
 msgid_plural "SQL queries from %(count)d connections"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "SQL užklausos iš %(count)d prisijungimo"
+msgstr[1] "SQL užklausos iš %(count)d prisijungimų"
+msgstr[2] "SQL užklausos iš %(count)d prisijungimų"
+msgstr[3] "SQL užklausos iš %(count)d prisijungimų"
 
 #: panels/staticfiles.py:47
 #, python-format
 msgid "Static files (%(num_found)s found, %(num_used)s used)"
-msgstr ""
+msgstr "Statiniai failai (%(num_found)s surasti, %(num_used)s naudojami)"
 
 #: panels/staticfiles.py:81
 msgid "Static files"
-msgstr ""
+msgstr "Statiniai failai"
 
 #: panels/staticfiles.py:87
 #, python-format
 msgid "%(num_used)s file used"
 msgid_plural "%(num_used)s files used"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "Naudojamas %(num_used)s failas"
+msgstr[1] "Naudojami %(num_used)s failai"
+msgstr[2] "Naudojami %(num_used)s failų"
+msgstr[3] "Naudojami %(num_used)s failų"
 
 #: panels/templates/panel.py:104
 msgid "Templates"
-msgstr ""
+msgstr "Šablonai"
 
 #: panels/templates/panel.py:109
 #, python-format
 msgid "Templates (%(num_templates)s rendered)"
-msgstr ""
+msgstr "Šablonai (%(num_templates)s sugeneruoti)"
 
 #: panels/templates/panel.py:199
 msgid "No origin"
-msgstr ""
+msgstr "Šaltinis nenurodytas"
 
 #: panels/timer.py:27
 #, python-format
 msgid "CPU: %(cum)0.2fms (%(total)0.2fms)"
-msgstr ""
+msgstr "Procesorius: %(cum)0.2f ms (%(total)0.2f ms)"
 
 #: panels/timer.py:32
 #, python-format
 msgid "Total: %0.2fms"
-msgstr ""
+msgstr "Iš viso: %0.2f ms"
 
 #: panels/timer.py:38 templates/debug_toolbar/panels/history.html:9
 #: templates/debug_toolbar/panels/sql_explain.html:11
 #: templates/debug_toolbar/panels/sql_profile.html:12
 #: templates/debug_toolbar/panels/sql_select.html:11
 msgid "Time"
-msgstr ""
+msgstr "Laikas"
 
 #: panels/timer.py:46
 msgid "User CPU time"
-msgstr ""
+msgstr "Naudotojo procesoriaus laikas"
 
 #: panels/timer.py:46
 #, python-format
 msgid "%(utime)0.3f msec"
-msgstr ""
+msgstr "%(utime)0.3f ms"
 
 #: panels/timer.py:47
 msgid "System CPU time"
-msgstr ""
+msgstr "Sistemos procesoriaus laikas"
 
 #: panels/timer.py:47
 #, python-format
 msgid "%(stime)0.3f msec"
-msgstr ""
+msgstr "%(stime)0.3f ms"
 
 #: panels/timer.py:48
 msgid "Total CPU time"
-msgstr ""
+msgstr "Visas procesoriaus laikas"
 
 #: panels/timer.py:48
 #, python-format
 msgid "%(total)0.3f msec"
-msgstr ""
+msgstr "%(total)0.3f ms"
 
 #: panels/timer.py:49
 msgid "Elapsed time"
-msgstr ""
+msgstr "Praėjęs laikas"
 
 #: panels/timer.py:49
 #, python-format
 msgid "%(total_time)0.3f msec"
-msgstr ""
+msgstr "%(total_time)0.3f ms"
 
 #: panels/timer.py:51
 msgid "Context switches"
-msgstr ""
+msgstr "Konteksto perjungimai"
 
 #: panels/timer.py:52
 #, python-format
 msgid "%(vcsw)d voluntary, %(ivcsw)d involuntary"
-msgstr ""
+msgstr "%(vcsw)d savanoriški, %(ivcsw)d nesavanoriški"
 
 #: panels/versions.py:21
 msgid "Versions"
-msgstr ""
+msgstr "Versijos"
 
 #: templates/debug_toolbar/base.html:22
 msgid "Hide toolbar"
-msgstr ""
+msgstr "Paslėpti įrankių juostą"
 
 #: templates/debug_toolbar/base.html:22
 msgid "Hide"
-msgstr ""
+msgstr "Slėpti"
 
 #: templates/debug_toolbar/base.html:24 templates/debug_toolbar/base.html:25
 msgid "Toggle Theme"
-msgstr ""
+msgstr "Perjungti temą"
 
 #: templates/debug_toolbar/base.html:34
 msgid "Show toolbar"
-msgstr ""
+msgstr "Rodyti įrankių juostą"
 
 #: templates/debug_toolbar/includes/panel_button.html:4
 msgid "Disable for next and successive requests"
-msgstr ""
+msgstr "Išjungti sekančiai ir kitoms būsimoms užklausoms"
 
 #: templates/debug_toolbar/includes/panel_button.html:4
 msgid "Enable for next and successive requests"
-msgstr ""
+msgstr "Įjungti sekančiai ir kitoms būsimoms užklausoms"
 
 #: templates/debug_toolbar/panels/alerts.html:4
 msgid "Alerts found"
-msgstr ""
+msgstr "Rasti įspėjimai"
 
 #: templates/debug_toolbar/panels/alerts.html:11
 msgid "No alerts found"
-msgstr ""
+msgstr "Įspėjimų nerasta"
 
 #: templates/debug_toolbar/panels/cache.html:2
 msgid "Summary"
-msgstr ""
+msgstr "Santrauka"
 
 #: templates/debug_toolbar/panels/cache.html:6
 msgid "Total calls"
-msgstr ""
+msgstr "Iš viso kreipinių"
 
 #: templates/debug_toolbar/panels/cache.html:7
 msgid "Total time"
-msgstr ""
+msgstr "Visas laikas"
 
 #: templates/debug_toolbar/panels/cache.html:8
 msgid "Cache hits"
-msgstr ""
+msgstr "Radimai podėlyje"
 
 #: templates/debug_toolbar/panels/cache.html:9
 msgid "Cache misses"
-msgstr ""
+msgstr "Neradimai podėlyje"
 
 #: templates/debug_toolbar/panels/cache.html:21
 msgid "Commands"
-msgstr ""
+msgstr "Komandos"
 
 #: templates/debug_toolbar/panels/cache.html:39
 msgid "Calls"
-msgstr ""
+msgstr "Kreipiniai"
 
 #: templates/debug_toolbar/panels/cache.html:43
 #: templates/debug_toolbar/panels/sql.html:36
 msgid "Time (ms)"
-msgstr ""
+msgstr "Laikas (ms)"
 
 #: templates/debug_toolbar/panels/cache.html:44
 msgid "Type"
-msgstr ""
+msgstr "Tipas"
 
 #: templates/debug_toolbar/panels/cache.html:45
 #: templates/debug_toolbar/panels/request.html:8
 msgid "Arguments"
-msgstr ""
+msgstr "Argumentai"
 
 #: templates/debug_toolbar/panels/cache.html:46
 #: templates/debug_toolbar/panels/request.html:9
 msgid "Keyword arguments"
-msgstr ""
+msgstr "Argumentai-raktažodžiai"
 
 #: templates/debug_toolbar/panels/cache.html:47
 msgid "Backend"
-msgstr ""
+msgstr "Variklis"
 
 #: templates/debug_toolbar/panels/community.html:5
 msgid "Community & Contribution"
-msgstr ""
+msgstr "Bendruomenė ir bendradarbiavimas"
 
 #: templates/debug_toolbar/panels/community.html:8
 msgid ""
 "Want to contribute to Django Debug Toolbar? Get involved in our community!"
-msgstr ""
+msgstr "Norite prisidėti prie „Django Debug Toolbar“? Įsitraukite į mūsų bendruomenę!"
 
 #: templates/debug_toolbar/panels/community.html:14
 msgid "Join Discussions"
-msgstr ""
+msgstr "Prisijungti prie diskusijų"
 
 #: templates/debug_toolbar/panels/community.html:19
 msgid "View Issues"
-msgstr ""
+msgstr "Peržiūrėti problemas"
 
 #: templates/debug_toolbar/panels/community.html:24
 msgid "Contribution Guide"
-msgstr ""
+msgstr "Kaip prisidėti"
 
 #: templates/debug_toolbar/panels/community.html:31
 msgid "Django Debug Toolbar Documentation"
-msgstr ""
+msgstr "„Django Debug Toolbar“ dokumentacija"
 
 #: templates/debug_toolbar/panels/community.html:34
 msgid ""
 "Explore the official documentation to learn more about Django Debug Toolbar."
-msgstr ""
+msgstr "Tyrinėkite oficialią dokumentaciją ir sužinokite daugiau apie „Django Debug Toolbar“"
 
 #: templates/debug_toolbar/panels/community.html:39
 msgid "Read Documentation"
-msgstr ""
+msgstr "Skaityti dokumentaciją"
 
 #: templates/debug_toolbar/panels/community.html:44
 msgid "How to Use Django Debug Toolbar"
-msgstr ""
+msgstr "Kaip naudoti „Django Debug Toolbar“"
 
 #: templates/debug_toolbar/panels/headers.html:3
 msgid "Request headers"
-msgstr ""
+msgstr "Užklausos antraštės"
 
 #: templates/debug_toolbar/panels/headers.html:8
 #: templates/debug_toolbar/panels/headers.html:27
 #: templates/debug_toolbar/panels/headers.html:48
 msgid "Key"
-msgstr ""
+msgstr "Raktas"
 
 #: templates/debug_toolbar/panels/headers.html:9
 #: templates/debug_toolbar/panels/headers.html:28
@@ -445,11 +445,11 @@ msgstr ""
 #: templates/debug_toolbar/panels/settings.html:6
 #: templates/debug_toolbar/panels/timer.html:11
 msgid "Value"
-msgstr ""
+msgstr "Reikšmė"
 
 #: templates/debug_toolbar/panels/headers.html:22
 msgid "Response headers"
-msgstr ""
+msgstr "Atsakymo antraštės"
 
 #: templates/debug_toolbar/panels/headers.html:41
 msgid "WSGI environ"

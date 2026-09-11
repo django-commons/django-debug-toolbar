@@ -75,6 +75,7 @@ class AlertsPanel(Panel):
     }
 
     title = _("Alerts")
+    nav_icon = "debug_toolbar/img/alerts.svg"
 
     is_async = True
 

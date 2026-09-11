@@ -2,7 +2,108 @@ Change log
 ==========
 
 Pending
--------
+
+8.0.0 (2026-09-02)
+------------------
+
+* Refreshed the toolbar's visual design with self-hosted Alef (panel titles)
+  and Geist (body text) fonts, an updated color palette, and per-panel
+  navigation icons.
+* Added a new project logo and brand identity, designed by Robin of
+  `RBNX Studio <https://www.rbnx.studio>`_.
+* Added a "Docs" link to the toolbar that opens the documentation.
+* Changed the highlight color for the current request and other
+  "relevant to you" rows from yellow to a green tint, with a left border
+  accent for legibility in dark mode.
+* Added a design guidelines page to the documentation describing the project's
+  logo, color palette and typography.
+* Improved toolbar accessibility: visible keyboard focus, keyboard-operable
+  scroll regions, reduced-motion support, ``aria-expanded`` on panel toggles,
+  an ``aria-live`` status for history refreshes, and WCAG 2.1 AA contrast in
+  both themes.
+* Added a talk to the resources documentation.
+* Updated the example screenshot.
+* Updated the screenshot capture logic to find the toolbar elements in the
+  shadow DOM.
+* Track and display processing time of application, including the toolbar's
+  time, in the timer panel.
+* Fixed the History panel rendering a duplicate Refresh button below the one
+  in its title bar.
+* Fixed the History panel's Refresh button submitting its form when clicked
+  before the panel's script had loaded.
+* Documented the ``USE_SHADOW_DOM`` setting, which was added in 7.0.0 but was
+  missing from the configuration documentation, and added test coverage for it.
+
+7.1.1 (2026-08-14)
+------------------
+
+* Serialize ``TaskResult`` in the Tasks panel to accommodate the storage
+  mechanism.
+* Removed whitespace on Task panel's ``kwargs`` column.
+
+7.1.0 (2026-08-10)
+------------------
+
+* Added a Tasks panel that shows tasks queued during the request via
+  Django's built-in tasks framework (``django.tasks``, Django 6.0+). On
+  older versions of Django, the panel explains that upgrading is required.
+* Fixed the Django version check in the SQL panel test suite for Django's
+  boolean parameter handling.
+* Fixed ``show_toolbar_with_docker`` on Docker runtimes such as OrbStack that
+  can resolve ``host.docker.internal`` to an address outside the container
+  network.
+* Restored the select and explain buttons for queries that run without
+  parameters.
+* Fixed the error shown when panel content fails to load, which could not
+  find the toolbar window inside the shadow root.
+* Stopped the history panel buttons from submitting their form when clicked
+  before the panel script has loaded, which navigated away from the page.
+* Added support for Django 6.1.
+* Improved cache hit/miss reporting in the Cache panel for ``cache.get()``
+  calls with a supplied default value, while documenting the remaining
+  ambiguity when a cached value equals the supplied default.
+
+7.0.0 (2026-06-17)
+------------------
+
+* Prevent check from failing when ``ROOT_URLCONF`` is not defined.
+* Prevent toolbar storage from failing when serialized panel data contains
+  mapping keys that are not JSON-compatible.
+* Prevent debounce race conditions in the history panel for rapid
+  fetch requests.
+* Added a note to the prerequisites section of the installation docs
+  about requiring an up-to-date browser.
+* Dropped support for Django 4.2 and Django 5.1 .
+* Updated to render the toolbar in a shadow DOM for better isolation
+  from the rest of the page. This can be disabled with the setting
+  ``USE_SHADOW_DOM``.
+* Note that custom themes overriding CSS variables on :root must move
+  those overrides to ``#djDebug``, and custom panels that rely on external
+  styles or DOM lookups reaching into the toolbar will need updates to
+  work with the shadow DOM.
+* Added graceful degradation for SQL queries that exceed sqlparse's token
+  limits. When ``SQLParseError`` is raised, the SQL panel now automatically
+  disables grouping and retries formatting, preventing crashes with large
+  queries.
+* Upgraded the JavaScript code to use modern ECMAScript features using
+  ``esupgrade``.
+* Updated tox configuration to treat ``DeprecationWarning``,
+  ``ResourceWarning``, and ``PendingDeprecationWarning`` as errors.
+* Clarified configuration documentation about ``SHOW_TOOLBAR_CALLBACK``
+  needing to respect ``django.conf.settings.DEBUG`` to match
+  ``debug_toolbar_urls``.
+* Fixed cookie ``expires`` calculation in ``djdt.cookie.set``.
+* Account for the new ``CULL_PROBABILITY`` in Django 6.2 in tests.
+* Support Django 6.2's handling of booleans for non-PostgreSQL databases.
+* Changed the SQL panel to show the "Select" and "Explain" action buttons for
+  all queries, not just ``SELECT`` statements.
+* Fixed SQL panel handling of binary parameters (e.g. from ``BinaryField``)
+  and GeoDjango PostGIS geometry parameters. EWKB geometry adapters are now
+  serialized and reconstructed so that Select and Explain work correctly on
+  spatial queries.
+
+6.3.0 (2026-04-01)
+------------------
 
 * Fix Server-Timing header not being overridden if it exists in header already
 * Replaced ``requirements_dev.txt`` file for ``pyproject.toml`` support with
@@ -12,6 +113,19 @@ Pending
 * Standardize use of time/duration units and labels across panels.
 * Added translations for Lithuanian, Turkish and Uzbek.
 * Update the translations.
+* Expose a ``py.typed`` marker file.
+* Updated ``RedirectsPanel`` to emit the deprecation warning when it's used
+  rather than on instantiation.
+* Highlighted the documentation about disabling the browser's caching to
+  ensure the latest static assets are used.
+* Fixed bug with ``CachePanel`` so the cache patching is only applied
+  once.
+* Added ``debug_toolbar.store.CacheStore`` for storing toolbar data using
+  Django's cache framework. This provides persistence without requiring
+  database migrations, and works with any cache backend (Memcached, Redis,
+  database, file-based, etc.).
+* Added ``CACHE_BACKEND`` and ``CACHE_KEY_PREFIX`` settings to configure the
+  ``CacheStore``.
 
 6.2.0 (2026-01-20)
 ------------------
@@ -140,6 +254,7 @@ Pending
 * Fixed a crash which occurred when using non-``str`` static file values.
 * Documented experimental async support.
 * Improved troubleshooting doc for incorrect mime types for .js static files
+* Added toolbar time to the timer panel.
 
 Please see everything under 5.0.0-alpha as well.
 

@@ -1,6 +1,6 @@
-import { $$, ajaxForm, replaceToolbarState } from "./utils.js";
+import { $$, ajaxForm, getDebugElement, replaceToolbarState } from "./utils.js";
 
-const djDebug = document.getElementById("djDebug");
+const djDebug = getDebugElement();
 
 function difference(setA, setB) {
     const _difference = new Set(setA);
@@ -19,7 +19,7 @@ function pluckData(nodes, key) {
 
 function refreshHistory() {
     const formTarget = djDebug.querySelector(".refreshHistory");
-    const container = document.getElementById("djdtHistoryRequests");
+    const container = djDebug.querySelector("#djdtHistoryRequests");
     const oldIds = new Set(
         pluckData(
             container.querySelectorAll("tr[data-request-id]"),
@@ -55,6 +55,15 @@ function refreshHistory() {
             };
         })
         .then((refreshInfo) => {
+            const newCount = refreshInfo.newIds.size;
+            const status = djDebug.querySelector("#djdtStatus");
+            if (status) {
+                status.textContent = newCount
+                    ? `${newCount} new request${
+                          newCount === 1 ? "" : "s"
+                      } added to history`
+                    : "History up to date";
+            }
             for (const newId of refreshInfo.newIds) {
                 const row = container.querySelector(
                     `tr[data-request-id="${newId}"]`
@@ -85,7 +94,7 @@ function switchHistory(newRequestId) {
 
     ajaxForm(formTarget).then((data) => {
         if (Object.keys(data).length === 0) {
-            const container = document.getElementById("djdtHistoryRequests");
+            const container = djDebug.querySelector("#djdtHistoryRequests");
             container.querySelector(
                 `button[data-request-id="${newRequestId}"]`
             ).innerHTML = "Switch [EXPIRED]";
