@@ -3,6 +3,9 @@ Change log
 
 Pending
 
+* Updated documentation for use with hypermedia libraries: htmx v2, v4 and
+  Turbo.
+
 8.0.0 (2026-09-02)
 ------------------
 
