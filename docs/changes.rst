@@ -3,8 +3,10 @@ Change log
 
 Pending
 
-* Fixed Geist and Alef not loading in Chrome by moving ``@font-face`` out of
-  the toolbar's shadow tree.
+* Fixed Geist and Alef not loading in Chrome by moving ``@font-face`` out
+  the toolbar's shadow DOM.
+* Updated documentation for use with hypermedia libraries: htmx v2, v4 and
+  Turbo.
 
 8.0.0 (2026-09-02)
 ------------------
