@@ -3,6 +3,9 @@ Change log
 
 Pending
 
+* Fixed Geist and Alef not loading in Chrome by moving ``@font-face`` out of
+  the toolbar's shadow tree.
+
 8.0.0 (2026-09-02)
 ------------------
 
