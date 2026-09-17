@@ -18,7 +18,6 @@ repos:
     rev: 1.32.0
     hooks:
     -   id: django-upgrade
-        args: [--target-version, "5.2"]
 -   repo: https://github.com/codingjoe/esupgrade
     rev: 2025.22.2
     hooks:
