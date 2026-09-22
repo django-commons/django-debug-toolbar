@@ -181,7 +181,7 @@ Captured Sensitive Payloads
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Panels such as ``RequestPanel`` and ``HistoryPanel`` capture raw POST
-parameters, GET query params, and HTTP headers in plain text. If users
+parameters, GET query parameters, and HTTP headers in plain text. If users
 submit sensitive data (e.g., passwords, credit card credentials,
 authentication tokens, or personally identifiable information), those
 values will be captured in the toolbar payload store.
