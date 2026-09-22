@@ -13,15 +13,16 @@ for your deployment.
 
 .. important::
 
-   ``SHOW_TOOLBAR_CALLBACK`` only controls whether the toolbar is *rendered
-   and populated* for a given request. It does **not** prevent every panel
-   from touching global state at process start time. Some panels install
-   their instrumentation (which sometimes means monkey-patching Django or
-   third-party code) as soon as the ``debug_toolbar`` app is loaded,
-   regardless of ``SHOW_TOOLBAR_CALLBACK``, ``DISABLE_PANELS``, or whether
-   any request ever triggers the toolbar. The only way to avoid that
-   instrumentation entirely is to remove the panel from
-   ``DEBUG_TOOLBAR_PANELS`` so its module is never imported.
+   ``SHOW_TOOLBAR_CALLBACK`` only controls whether the toolbar is
+   *rendered and populated* for a given request. It does **not** prevent
+   every panel from touching global state at process start time. Some
+   panels install their instrumentation (which sometimes means
+   monkey-patching Django or third-party code) as soon as the
+   ``debug_toolbar`` app is loaded, regardless of
+   ``SHOW_TOOLBAR_CALLBACK``, ``DISABLE_PANELS``, or whether any request
+   ever triggers the toolbar. The only way to avoid that instrumentation
+   entirely is to remove the panel from ``DEBUG_TOOLBAR_PANELS`` so its
+   module is never imported.
 
 How instrumentation is set up
 ------------------------------
@@ -31,13 +32,13 @@ Each panel can hook into three different points in its lifecycle:
 * :meth:`~debug_toolbar.panels.Panel.ready`, a classmethod called once for
   every panel listed in ``DEBUG_TOOLBAR_PANELS``, when the
   ``debug_toolbar`` app is loaded (i.e. at process/interpreter start,
-  regardless of ``DEBUG``, ``SHOW_TOOLBAR_CALLBACK``, or ``DISABLE_PANELS``).
+  regardless of ``DEBUG``, ``SHOW_TOOLBAR_CALLBACK``, or
+  ``DISABLE_PANELS``).
 * Module import side effects. A few panels install patches directly at the
   top of their module, outside of any method. Because
-  ``DebugToolbar.get_panel_classes()``
-  imports every panel listed in ``DEBUG_TOOLBAR_PANELS`` while
-  building the panel list, these patches run at the same time as ``ready()``
-  and are just as unconditional.
+  ``DebugToolbar.get_panel_classes()`` imports every panel listed in
+  ``DEBUG_TOOLBAR_PANELS`` while building the panel list, these patches
+  run at the same time as ``ready()`` and are just as unconditional.
 * :meth:`~debug_toolbar.panels.Panel.enable_instrumentation` /
   :meth:`~debug_toolbar.panels.Panel.disable_instrumentation`, called by
   ``debug_toolbar.middleware.DebugToolbarMiddleware`` at the start and
@@ -172,15 +173,27 @@ whether it monkey-patches anything.
 
 Security and Data Privacy Risks
 -------------------------------
-When enabling the toolbar in production or production-like environments, evaluate the following security implications carefully:
+
+When enabling the toolbar in production or production-like environments,
+evaluate the following security implications carefully:
 
 Captured Sensitive Payloads
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Panels such as ``RequestPanel`` and ``HistoryPanel`` capture raw POST parameters, GET query params, and HTTP headers in plain text. If users submit sensitive data (e.g., passwords, credit card credentials, authentication tokens, or personally identifiable information), those values will be capt
+
+Panels such as ``RequestPanel`` and ``HistoryPanel`` capture raw POST
+parameters, GET query params, and HTTP headers in plain text. If users
+submit sensitive data (e.g., passwords, credit card credentials,
+authentication tokens, or personally identifiable information), those
+values will be captured in the toolbar payload store.
 
 Shared Toolbar Data State
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-The Debug Toolbar's recorded store data is **not** isolated per user session. Any client, staff member, or admin user for whom ``SHOW_TOOLBAR_CALLBACK`` evaluates to ``True`` will have access to inspect toolbar history data recorded from requests made by other users across the application.
+
+The Debug Toolbar's recorded store data is **not** isolated per user
+session. Any client, staff member, or admin user for whom
+``SHOW_TOOLBAR_CALLBACK`` evaluates to ``True`` will have access to
+inspect toolbar history data recorded from requests made by other users
+across the application.
 
 Recommendation for production-like environments
 -------------------------------------------------
