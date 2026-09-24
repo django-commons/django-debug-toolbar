@@ -46,6 +46,21 @@ except (ImportError, ImproperlyConfigured):
 # additional queries.
 allow_sql = contextvars.ContextVar("debug-toolbar-allow-sql", default=True)
 
+# Whether SQL queries should be recorded by the toolbar. Set to False
+# while the toolbar persists its own data (e.g. the DatabaseCache store),
+# so internal queries like BEGIN/COMMIT don't leak into the SQL panel.
+sql_recording = contextvars.ContextVar("debug-toolbar-sql-recording", default=True)
+
+
+@contextlib.contextmanager
+def no_sql_recording():
+    """Context manager to temporarily disable SQL recording."""
+    token = sql_recording.set(False)
+    try:
+        yield
+    finally:
+        sql_recording.reset(token)
+
 
 DDT_MODELS = {
     m._meta.db_table for m in apps.get_app_config("debug_toolbar").get_models()
@@ -203,74 +218,88 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
             stop_time = perf_counter()
             duration = (stop_time - start_time) * 1000
             _params = None
-            with contextlib.suppress(TypeError):
-                # Decode params - binary data will be handled by DebugToolbarJSONEncoder
-                # in store.py when the panel data is serialized
-                _params = self._decode(params)
-            template_info = get_template_info()
-
-            # Sql might be an object (such as psycopg Composed).
-            # For logging purposes, make sure it's str.
-            if vendor == "postgresql" and not isinstance(sql, str):
-                if isinstance(sql, bytes):
-                    sql = sql.decode("utf-8")
-                else:
-                    sql = sql.as_string(conn)
-            else:
-                sql = str(sql)
-
-            kwargs = {
-                "vendor": vendor,
-                "alias": alias,
-                "sql": self._last_executed_query(sql, params),
-                "duration": duration,
-                "raw_sql": sql,
-                "params": _params,
-                "stacktrace": get_stack_trace(skip=2),
-                "template_info": template_info,
-            }
-
-            if vendor == "postgresql":
-                # If an erroneous query was ran on the connection, it might
-                # be in a state where checking isolation_level raises an
-                # exception.
-                try:
-                    iso_level = conn.isolation_level
-                except conn.InternalError:
-                    iso_level = "unknown"
-                # PostgreSQL does not expose any sort of transaction ID, so it is
-                # necessary to generate synthetic transaction IDs here.  If the
-                # connection was not in a transaction when the query started, and was
-                # after the query finished, a new transaction definitely started, so get
-                # a new transaction ID from logger.new_transaction_id().  If the query
-                # was in a transaction both before and after executing, make the
-                # assumption that it is the same transaction and get the current
-                # transaction ID from logger.current_transaction_id().  There is an edge
-                # case where Django can start a transaction before the first query
-                # executes, so in that case logger.current_transaction_id() will
-                # generate a new transaction ID since one does not already exist.
-                final_conn_status = conn.info.transaction_status
-                if final_conn_status == STATUS_IN_TRANSACTION:
-                    if initial_conn_status == STATUS_IN_TRANSACTION:
-                        trans_id = self.logger.current_transaction_id(alias)
-                    else:
-                        trans_id = self.logger.new_transaction_id(alias)
-                else:
-                    trans_id = None
-
-                kwargs.update(
-                    {
-                        "trans_id": trans_id,
-                        "trans_status": conn.info.transaction_status,
-                        "iso_level": iso_level,
-                    }
-                )
 
             # Skip tracking for toolbar models by default.
             # This can be overridden by setting SKIP_TOOLBAR_QUERIES = False
-            if not dt_settings.get_config()["SKIP_TOOLBAR_QUERIES"] or not any(
-                table in sql for table in DDT_MODELS
-            ):
+            skip_toolbar_queries = dt_settings.get_config()["SKIP_TOOLBAR_QUERIES"]
+            if sql_recording.get():
+                should_record = not skip_toolbar_queries or not any(
+                    table in sql for table in DDT_MODELS
+                )
+            else:
+                # Inside tracking.no_sql_recording(): only let through queries
+                # that mention a known toolbar table, so SKIP_TOOLBAR_QUERIES
+                # keeps deciding those. Table-less commands (e.g. the BEGIN/
+                # COMMIT issued by the toolbar's own persistence calls) stay
+                # hidden either way (issue #2338).
+                should_record = not skip_toolbar_queries and any(
+                    table in sql for table in DDT_MODELS
+                )
+
+            if should_record:
+                with contextlib.suppress(TypeError):
+                    # Decode params - binary data will be handled by DebugToolbarJSONEncoder
+                    # in store.py when the panel data is serialized
+                    _params = self._decode(params)
+                template_info = get_template_info()
+
+                # Sql might be an object (such as psycopg Composed).
+                # For logging purposes, make sure it's str.
+                if vendor == "postgresql" and not isinstance(sql, str):
+                    if isinstance(sql, bytes):
+                        sql = sql.decode("utf-8")
+                    else:
+                        sql = sql.as_string(conn)
+                else:
+                    sql = str(sql)
+
+                kwargs = {
+                    "vendor": vendor,
+                    "alias": alias,
+                    "sql": self._last_executed_query(sql, params),
+                    "duration": duration,
+                    "raw_sql": sql,
+                    "params": _params,
+                    "stacktrace": get_stack_trace(skip=2),
+                    "template_info": template_info,
+                }
+
+                if vendor == "postgresql":
+                    # If an erroneous query was ran on the connection, it might
+                    # be in a state where checking isolation_level raises an
+                    # exception.
+                    try:
+                        iso_level = conn.isolation_level
+                    except conn.InternalError:
+                        iso_level = "unknown"
+                    # PostgreSQL does not expose any sort of transaction ID, so it is
+                    # necessary to generate synthetic transaction IDs here.  If the
+                    # connection was not in a transaction when the query started, and was
+                    # after the query finished, a new transaction definitely started, so get
+                    # a new transaction ID from logger.new_transaction_id().  If the query
+                    # was in a transaction both before and after executing, make the
+                    # assumption that it is the same transaction and get the current
+                    # transaction ID from logger.current_transaction_id().  There is an edge
+                    # case where Django can start a transaction before the first query
+                    # executes, so in that case logger.current_transaction_id() will
+                    # generate a new transaction ID since one does not already exist.
+                    final_conn_status = conn.info.transaction_status
+                    if final_conn_status == STATUS_IN_TRANSACTION:
+                        if initial_conn_status == STATUS_IN_TRANSACTION:
+                            trans_id = self.logger.current_transaction_id(alias)
+                        else:
+                            trans_id = self.logger.new_transaction_id(alias)
+                    else:
+                        trans_id = None
+
+                    kwargs.update(
+                        {
+                            "trans_id": trans_id,
+                            "trans_status": conn.info.transaction_status,
+                            "iso_level": iso_level,
+                        }
+                    )
+
                 # We keep `sql` to maintain backwards compatibility
                 self.logger.record(**kwargs)
 

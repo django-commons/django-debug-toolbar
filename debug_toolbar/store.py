@@ -206,7 +206,9 @@ class DatabaseStore(BaseStore):
     @classmethod
     def set(cls, request_id: str):
         """Set a request_id in the store and clean up old entries"""
-        with transaction.atomic():
+        from debug_toolbar.panels.sql.tracking import no_sql_recording
+
+        with no_sql_recording(), transaction.atomic():
             # Create the entry if it doesn't exist (ignore otherwise)
             _, created = HistoryEntry.objects.get_or_create(request_id=request_id)
 
@@ -227,7 +229,9 @@ class DatabaseStore(BaseStore):
     @classmethod
     def save_panel(cls, request_id: str, panel_id: str, data: Any = None):
         """Save the panel data for the given request_id"""
-        with transaction.atomic():
+        from debug_toolbar.panels.sql.tracking import no_sql_recording
+
+        with no_sql_recording(), transaction.atomic():
             obj, _ = HistoryEntry.objects.get_or_create(request_id=request_id)
             store_data = obj.data
             store_data[panel_id] = serialize(data)
@@ -276,10 +280,13 @@ class _UntrackedCache:
 
         @functools.wraps(attr)
         def untracked(*args, **kwargs):
+            from debug_toolbar.panels.sql.tracking import no_sql_recording
+
             panel = getattr(self._cache, "_djdt_panel", None)
             self._cache._djdt_panel = None
             try:
-                return attr(*args, **kwargs)
+                with no_sql_recording():
+                    return attr(*args, **kwargs)
             finally:
                 self._cache._djdt_panel = panel
 
