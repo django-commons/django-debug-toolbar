@@ -237,6 +237,16 @@ jobs:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
 
+    # Temporary Python 3.15 debugging
+    - name: Debug Python 3.15 dependencies
+      if: matrix.python-version == '3.15'
+      run: |
+        python --version
+        python -m pip --version
+        python -m pip debug --verbose
+        python -m pip index versions cbor2
+        python -m pip download --only-binary=:all: --pre cbor2
+
     - name: Get pip cache dir
       id: pip-cache
       run: |
