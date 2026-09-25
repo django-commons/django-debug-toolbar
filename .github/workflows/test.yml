@@ -237,40 +237,14 @@ jobs:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
 
-    - name: Debug cbor2 dependency
+    - name: Test sdist installation
       if: matrix.python-version == '3.15'
+      shell: bash
+      env:
+        PYTHONWARNINGS: error::DeprecationWarning
       run: |
-        python --version
-        python -m pip --version
-
-        python -m pip install --dry-run --report=/tmp/pip-report.json \
-          --pre black 'coverage[toml]' daphne django django-csp \
-          django-template-partials html5lib jinja2 pygments selenium sqlparse tox whitenoise
-
-        python - <<'PY'
-        import json
-
-        report = json.load(open("/tmp/pip-report.json"))
-
-        for item in report["install"]:
-            metadata = item["metadata"]
-            if metadata["name"].lower() == "cbor2":
-                print("cbor2 selected:", metadata["name"], metadata["version"])
-                print("URL:", item["download_info"]["url"])
-
-        print("\nPackages requiring cbor2:")
-        for item in report["install"]:
-            metadata = item["metadata"]
-            requires = metadata.get("requires_dist") or []
-
-            for requirement in requires:
-                if requirement.lower().startswith("cbor2"):
-                    print(
-                        metadata["name"],
-                        metadata["version"],
-                        "->",
-                        requirement,
-                    )
+        python -m pip install --upgrade pip
+        python -m pip install --no-cache-dir --no-binary cbor2 cbor2
 
     - name: Get pip cache dir
       id: pip-cache
