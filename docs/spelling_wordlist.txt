@@ -39,6 +39,7 @@ flamegraph
 flatpages
 frontend
 htmx
+hx
 inlining
 instantiation
 instrumentation

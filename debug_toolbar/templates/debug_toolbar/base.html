@@ -1,5 +1,7 @@
 {% load i18n static %}
 <div id="djDebugRoot" {{ toolbar.config.ROOT_TAG_EXTRA_ATTRS|safe }}>
+  {# Chrome ignores @font-face inside a shadow DOM. Keep the faces on the host. #}
+  <link{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} rel="stylesheet" href="{% static 'debug_toolbar/css/fonts.css' %}">
   {% if use_shadow_dom %}<template shadowrootmode="open">{% endif %}
     {% block css %}
     <link{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} rel="stylesheet" href="{% static 'debug_toolbar/css/print.css' %}" media="print">
