@@ -1280,6 +1280,12 @@ To regenerate:
     display: none;
 }
 
+/* base.html marks #djDebug hidden in the shadow DOM, which keeps it out of
+   view until this stylesheet loads. */
+#djDebug[hidden]:not(.djdt-hidden) {
+    display: block;
+}
+
 #djDebug #djDebugToolbar a#djToggleThemeButton {
     display: flex;
     align-items: center;

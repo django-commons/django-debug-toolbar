@@ -10,7 +10,7 @@
     {% block js %}
     <script{% if toolbar.csp_nonce %} nonce="{{ toolbar.csp_nonce }}"{% endif %} type="module" src="{% static 'debug_toolbar/js/toolbar.js' %}" async></script>
     {% endblock js %}
-    <div id="djDebug" class="djdt-hidden" dir="ltr"
+    <div id="djDebug" class="djdt-hidden"{% if use_shadow_dom %} hidden{% endif %} dir="ltr"
         {% if not toolbar.should_render_panels %}
         data-request-id="{{ toolbar.request_id }}"
         data-render-panel-url="{% url 'djdt:render_panel' %}"
