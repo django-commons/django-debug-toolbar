@@ -1,8 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import toolbarCssUrl from "../../debug_toolbar/static/debug_toolbar/css/toolbar.css?url";
-import { $$ } from "../../debug_toolbar/static/debug_toolbar/js/utils.js";
 
-describe("toolbar.css in the shadow DOM", () => {
+describe("djdt.init() in the shadow DOM", () => {
     let host;
     let shadow;
     let djDebug;
@@ -16,38 +15,55 @@ describe("toolbar.css in the shadow DOM", () => {
         djDebug.id = "djDebug";
         djDebug.className = "djdt-hidden";
         djDebug.hidden = true;
+        djDebug.dataset.defaultShow = "true";
+        djDebug.innerHTML = `
+            <div class="djdt-hidden" id="djDebugToolbarHandle"></div>
+            <div class="djdt-hidden" id="djDebugToolbar">
+                <ul id="djDebugPanelList"></ul>
+            </div>
+            <div id="djDebugWindow" class="djdt-panelContent djdt-hidden"></div>
+        `;
         shadow.appendChild(djDebug);
     });
 
     afterEach(() => {
         document.body.removeChild(host);
+        localStorage.removeItem("djdt.show");
+        localStorage.removeItem("djdt.user-theme");
     });
 
-    function loadToolbarCss() {
+    async function init() {
+        if (globalThis.djdt) {
+            globalThis.djdt.init();
+        } else {
+            // The module runs djdt.init() on import.
+            await import(
+                "../../debug_toolbar/static/debug_toolbar/js/toolbar.js"
+            );
+        }
+    }
+
+    it("keeps #djDebug hidden until toolbar.css loads", async () => {
         const link = document.createElement("link");
         link.rel = "stylesheet";
-        link.href = toolbarCssUrl;
+        shadow.prepend(link);
+
+        await init();
+        expect(djDebug.hidden).toBe(true);
+        expect(getComputedStyle(djDebug).display).toBe("none");
+
         const loaded = new Promise((resolve, reject) => {
             link.addEventListener("load", resolve);
             link.addEventListener("error", reject);
         });
-        shadow.prepend(link);
-        return loaded;
-    }
-
-    it("keeps #djDebug hidden before the stylesheet loads", () => {
-        $$.show(djDebug);
-        expect(getComputedStyle(djDebug).display).toBe("none");
+        link.href = toolbarCssUrl;
+        await loaded;
+        expect(djDebug.hidden).toBe(false);
+        expect(getComputedStyle(djDebug).display).toBe("block");
     });
 
-    it("shows and hides #djDebug once the stylesheet loads", async () => {
-        await loadToolbarCss();
-        expect(getComputedStyle(djDebug).display).toBe("none");
-
-        $$.show(djDebug);
-        expect(getComputedStyle(djDebug).display).toBe("block");
-
-        $$.hide(djDebug);
-        expect(getComputedStyle(djDebug).display).toBe("none");
+    it("removes hidden at once when no stylesheet is pending", async () => {
+        await init();
+        expect(djDebug.hidden).toBe(false);
     });
 });

@@ -202,6 +202,20 @@ const djdt = {
         // showToolbar will continue to show it in the future if the
         // entire DOM is reloaded.
         $$.show(djDebug);
+        // The shadow DOM template renders #djDebug with the hidden attribute.
+        // Keep it until toolbar.css has loaded, to avoid unstyled content.
+        if (djDebug.hidden) {
+            const stylesheet = djDebug
+                .getRootNode()
+                .querySelector('link[rel="stylesheet"]:not([media="print"])');
+            if (stylesheet && !stylesheet.sheet) {
+                const reveal = () => djDebug.removeAttribute("hidden");
+                stylesheet.addEventListener("load", reveal, { once: true });
+                stylesheet.addEventListener("error", reveal, { once: true });
+            } else {
+                djDebug.removeAttribute("hidden");
+            }
+        }
         const show =
             localStorage.getItem("djdt.show") || djDebug.dataset.defaultShow;
         if (show === "true") {
