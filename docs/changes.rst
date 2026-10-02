@@ -5,8 +5,8 @@ Pending
 
 * Fixed Geist and Alef not loading in Chrome by moving ``@font-face`` out
   the toolbar's shadow DOM.
-* Fixed the toolbar briefly showing unstyled in Firefox while its stylesheet
-  loads inside the shadow DOM.
+* Fixed the toolbar briefly appearing without its styles in Firefox while
+  ``toolbar.css`` loads inside the shadow DOM.
 * Updated documentation for use with hypermedia libraries: htmx v2, v4 and
   Turbo.
 
