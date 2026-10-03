@@ -184,6 +184,7 @@ class ProfilingPanel(Panel):
         self.stats = Stats(self.profiler)
         self.stats.calc_callees()
 
+        # This tuple replaces cProfile.label(), which was removed in Python 3.15.
         code = super().process_request.__code__
         root_func = (code.co_filename, code.co_firstlineno, code.co_name)
 
