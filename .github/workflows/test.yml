@@ -202,10 +202,10 @@ jobs:
           ${{ matrix.python-version }}-v1-
         lookup-only: true
 
-    - name: Install gdal-bin (for postgis)
+    - name: Install gdal-bin (for postgis) and libpq5 (for psycopg)
       run: |
         sudo apt-get -qq update
-        sudo apt-get -y install gdal-bin
+        sudo apt-get -y install gdal-bin libpq5
 
     - name: Install dependencies
       run: |
