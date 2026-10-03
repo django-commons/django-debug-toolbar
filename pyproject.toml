@@ -56,6 +56,7 @@ dev = [
   "django-template-partials",
   "html5lib",
   "jinja2",
+  "pre-commit",
   "pygments",
   "selenium",
   "sqlparse",
@@ -67,7 +68,6 @@ docs = [
   "sphinx-rtd-theme>1",
   "sphinxcontrib-spelling",
 ]
-lint = [ "pre-commit" ]
 
 [tool.hatch]
 version.path = "debug_toolbar/__init__.py"
