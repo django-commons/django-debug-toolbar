@@ -3,6 +3,7 @@ Change log
 
 Pending
 
+* Added support for Python 3.15.
 * Fixed the Profiling panel on Python 3.15.
 * Fixed Geist and Alef not loading in Chrome by moving ``@font-face`` out
   the toolbar's shadow DOM.
