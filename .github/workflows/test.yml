@@ -45,7 +45,7 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14', '3.15', '3.15t']
 
     services:
       mariadb:
@@ -115,7 +115,7 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14', '3.15', '3.15t']
         database: [postgresql, postgis, psycopg3]
         exclude:
             - python-version: '3.13'
@@ -125,6 +125,14 @@ jobs:
             - python-version: '3.14'
               database: postgis
             - python-version: '3.14'
+              database: postgresql
+            - python-version: '3.15'
+              database: postgis
+            - python-version: '3.15'
+              database: postgresql
+            - python-version: '3.15t'
+              database: postgis
+            - python-version: '3.15t'
               database: postgresql
         # Add postgis3 to our matrix for modern Python versions
         include:
@@ -137,6 +145,18 @@ jobs:
             - python-version: '3.14'
               database: postgis3
             - python-version: '3.14'
+              database: psycopg3
+              env:
+                DJANGO_SELENIUM_TESTS: "true"
+            - python-version: '3.15'
+              database: postgis3
+            - python-version: '3.15'
+              database: psycopg3
+              env:
+                DJANGO_SELENIUM_TESTS: "true"
+            - python-version: '3.15t'
+              database: postgis3
+            - python-version: '3.15t'
               database: psycopg3
               env:
                 DJANGO_SELENIUM_TESTS: "true"
@@ -182,10 +202,10 @@ jobs:
           ${{ matrix.python-version }}-v1-
         lookup-only: true
 
-    - name: Install gdal-bin (for postgis)
+    - name: Install gdal-bin (for postgis) and libpq5 (for psycopg)
       run: |
         sudo apt-get -qq update
-        sudo apt-get -y install gdal-bin
+        sudo apt-get -y install gdal-bin libpq5
 
     - name: Install dependencies
       run: |
@@ -214,7 +234,7 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14', '3.15', '3.15t']
 
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
