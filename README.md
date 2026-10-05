@@ -32,9 +32,9 @@
 | debug\_toolbar/panels/settings.py                   |       19 |        2 |        0 |        0 |     89% |     14-15 |
 | debug\_toolbar/panels/signals.py                    |       46 |        3 |       14 |        3 |     90% |58, 76-77, 86-\>88 |
 | debug\_toolbar/panels/sql/\_\_init\_\_.py           |        2 |        0 |        0 |        0 |    100% |           |
-| debug\_toolbar/panels/sql/forms.py                  |       77 |        7 |       14 |        4 |     86% |23-28, 38, 43-\>49, 45, 50 |
+| debug\_toolbar/panels/sql/forms.py                  |       81 |        9 |       16 |        5 |     84% |23-28, 38, 43-\>49, 45, 50, 66-67 |
 | debug\_toolbar/panels/sql/panel.py                  |      176 |       10 |       50 |        4 |     93% |52, 80, 232-237, 278-279, 320-\>exit |
-| debug\_toolbar/panels/sql/tracking.py               |      137 |        5 |       38 |        2 |     96% |142-\>146, 156, 239-240, 278, 284 |
+| debug\_toolbar/panels/sql/tracking.py               |      141 |        4 |       40 |        2 |     97% |142-\>146, 156, 253-254, 292 |
 | debug\_toolbar/panels/sql/utils.py                  |       89 |        0 |       32 |        1 |     99% | 32-\>exit |
 | debug\_toolbar/panels/sql/views.py                  |       69 |        3 |       14 |        3 |     93% |45, 71, 107 |
 | debug\_toolbar/panels/staticfiles.py                |       83 |        2 |       22 |        1 |     97% |123-125, 146-\>145 |
@@ -54,7 +54,7 @@
 | debug\_toolbar/urls.py                              |        4 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/utils.py                             |      214 |        7 |       68 |        8 |     95% |30, 61, 121, 125-\>128, 144-\>143, 195-196, 200, 216 |
 | debug\_toolbar/views.py                             |       20 |        0 |        2 |        0 |    100% |           |
-| **TOTAL**                                           | **2696** |  **108** |  **668** |   **69** | **95%** |           |
+| **TOTAL**                                           | **2704** |  **109** |  **672** |   **70** | **94%** |           |
 
 
 ## Setup coverage badge
