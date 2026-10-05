@@ -9,6 +9,8 @@ Pending
   the toolbar's shadow DOM.
 * Updated documentation for use with hypermedia libraries: htmx v2, v4 and
   Turbo.
+* Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
+  recorded. The panel shows the SQL for each execution.
 
 8.0.0 (2026-09-02)
 ------------------
