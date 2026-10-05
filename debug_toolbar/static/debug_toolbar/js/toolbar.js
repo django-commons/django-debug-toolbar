@@ -209,7 +209,10 @@ const djdt = {
                 .getRootNode()
                 .querySelector('link[rel="stylesheet"]:not([media="print"])');
             if (stylesheet && !stylesheet.sheet) {
-                const reveal = () => djDebug.removeAttribute("hidden");
+                function reveal() {
+                    return djDebug.removeAttribute("hidden");
+                }
+
                 stylesheet.addEventListener("load", reveal, { once: true });
                 stylesheet.addEventListener("error", reveal, { once: true });
             } else {
