@@ -11,6 +11,9 @@ Pending
   Turbo.
 * Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
   recorded. The panel shows the SQL for each execution.
+* Raised ``ImproperlyConfigured`` naming ``INSTALLED_APPS`` when the toolbar
+  is imported without ``debug_toolbar`` installed, instead of a
+  ``RuntimeError`` about the ``HistoryEntry`` model's ``app_label``.
 
 8.0.0 (2026-09-02)
 ------------------
