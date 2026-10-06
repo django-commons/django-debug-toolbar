@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db import models
+from django.db import connection, models
 from django.db.models import JSONField
 
 
@@ -20,6 +20,24 @@ class PostgresJSON(models.Model):
 
     def __str__(self):
         return ""
+
+
+if connection.vendor == "postgresql":
+    from django.contrib.postgres.fields import (
+        ArrayField,
+        DateTimeRangeField,
+        IntegerRangeField,
+    )
+
+    class PostgresRange(models.Model):
+        ints = ArrayField(models.IntegerField(), default=list)
+        int_range = IntegerRangeField(null=True)
+        datetime_range = DateTimeRangeField(null=True)
+        number = models.IntegerField(default=0)
+        timestamp = models.DateTimeField(null=True)
+
+        def __str__(self):
+            return ""
 
 
 if settings.USE_GIS:

@@ -41,6 +41,9 @@ USE_GIS = os.getenv("DB_BACKEND") == "postgis"
 if USE_GIS:
     INSTALLED_APPS = ["django.contrib.gis"] + INSTALLED_APPS
 
+if os.getenv("DB_BACKEND") in ("postgresql", "postgis"):
+    INSTALLED_APPS = ["django.contrib.postgres"] + INSTALLED_APPS
+
 MEDIA_URL = "/media/"  # Avoids https://code.djangoproject.com/ticket/21451
 
 MIDDLEWARE = [
