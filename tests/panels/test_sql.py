@@ -20,6 +20,7 @@ import debug_toolbar.panels.sql.tracking as sql_tracking
 from debug_toolbar import settings as dt_settings
 from debug_toolbar.models import HistoryEntry
 from debug_toolbar.panels.sql import SQLPanel, tracking
+from debug_toolbar.panels.sql.forms import SQLSelectForm
 from debug_toolbar.panels.sql.utils import parse_sql
 
 try:
@@ -514,6 +515,86 @@ class SQLPanelTestCase(BaseTestCase):
             self.panel._queries[0]["params"],
             ['{"foo": "bar"}'],
         )
+
+    @unittest.skipUnless(
+        connection.vendor == "postgresql", "Test valid only on PostgreSQL"
+    )
+    def test_postgres_array_and_range_params_round_trip(self):
+        """
+        Queries with array and range params can be re-run from the store.
+
+        Ref: https://github.com/django-commons/django-debug-toolbar/issues/747
+        """
+        from django.db.backends.postgresql.psycopg_any import (
+            DateTimeTZRange,
+            NumericRange,
+        )
+
+        from ..models import PostgresRange
+
+        start = datetime.datetime(2020, 1, 1, tzinfo=datetime.timezone.utc)
+        dt_range = DateTimeTZRange(start, start + datetime.timedelta(days=1))
+        # A row matching every query below, so re-running a query with a
+        # mangled param returns nothing instead of passing silently.
+        PostgresRange.objects.create(
+            ints=[1, 2, 3],
+            int_range=NumericRange(1, 5),
+            datetime_range=dt_range,
+            number=5,
+            timestamp=start,
+        )
+        querysets = {
+            "array contains": PostgresRange.objects.filter(ints__contains=[1, 2]),
+            "array overlap": PostgresRange.objects.filter(ints__overlap=[1, 2]),
+            # The ORM expands arrays into ARRAY[%s, ...], so use raw SQL to
+            # pass a list as a single param.
+            "raw array param": PostgresRange.objects.raw(
+                "SELECT * FROM tests_postgresrange WHERE ints @> %s::integer[]",
+                [[1, 2]],
+            ),
+            "range contains range": PostgresRange.objects.filter(
+                int_range__contains=NumericRange(1, 5)
+            ),
+            "range exact": PostgresRange.objects.filter(int_range=NumericRange(1, 5)),
+            "range overlap": PostgresRange.objects.filter(
+                datetime_range__overlap=dt_range
+            ),
+            "range contains value": PostgresRange.objects.filter(
+                datetime_range__contains=start
+            ),
+            "int contained by": PostgresRange.objects.filter(
+                number__contained_by=NumericRange(0, 10)
+            ),
+            "datetime contained by": PostgresRange.objects.filter(
+                timestamp__contained_by=dt_range
+            ),
+        }
+        for queryset in querysets.values():
+            self.assertEqual(len(list(queryset)), 1)
+
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+
+        # Skip the INSERT above.
+        queries = self.panel.get_stats()["queries"][1:]
+        self.assertEqual(len(queries), len(querysets))
+        for name, query in zip(querysets, queries):
+            # A savepoint keeps one failing query from aborting the rest.
+            with self.subTest(name), transaction.atomic():
+                # Each form closes its cursor after one call, so build one
+                # per action, like the sql_select and sql_explain views do.
+                data = {
+                    "request_id": self.toolbar.request_id,
+                    "djdt_query_id": query["djdt_query_id"],
+                }
+                form = SQLSelectForm(data)
+                self.assertTrue(form.is_valid(), form.errors)
+                result, _ = form.select()
+                self.assertEqual(len(result), 1)
+                form = SQLSelectForm(data)
+                self.assertTrue(form.is_valid(), form.errors)
+                result, _ = form.explain()
+                self.assertTrue(result)
 
     @unittest.skipUnless(
         connection.vendor == "postgresql" and psycopg is None,
