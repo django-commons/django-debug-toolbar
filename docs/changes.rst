@@ -11,6 +11,9 @@ Pending
   Turbo.
 * Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
   recorded. The panel shows the SQL for each execution.
+* Improved the Alerts panel's warning for forms missing
+  ``enctype="multipart/form-data"`` to identify forms without an ``id``
+  by their ``class``, ``name`` and ``action`` attributes.
 
 8.0.0 (2026-09-02)
 ------------------
