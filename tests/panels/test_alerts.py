@@ -48,6 +48,41 @@ class AlertsPanelTestCase(BaseTestCase):
         self.assertEqual(result[0]["alert"], expected_error)
         self.assertEqual(len(result), 1)
 
+    def test_file_form_no_id_with_class_and_action_without_enctype(self):
+        """
+        Test that the panel identifies a form without an id by its
+        class and action attributes when there is a file input but
+        encoding not set to multipart/form-data.
+        """
+        test_form = (
+            '<form class="upload-form" action="/upload/">'
+            '<input type="file"></form>'
+        )
+        result = self.panel.check_invalid_file_form_configuration(test_form)
+        expected_error = (
+            'Form with attributes class="upload-form" action="/upload/" '
+            "contains file input, but does not have "
+            'the attribute enctype="multipart/form-data".'
+        )
+        self.assertEqual(result[0]["alert"], expected_error)
+        self.assertEqual(len(result), 1)
+
+    def test_file_form_no_id_with_name_without_enctype(self):
+        """
+        Test that the panel identifies a form without an id by its
+        name attribute when there is a file input but encoding not
+        set to multipart/form-data.
+        """
+        test_form = '<form method="post" name="upload"><input type="file"></form>'
+        result = self.panel.check_invalid_file_form_configuration(test_form)
+        expected_error = (
+            'Form with attributes name="upload" contains file input, '
+            "but does not have "
+            'the attribute enctype="multipart/form-data".'
+        )
+        self.assertEqual(result[0]["alert"], expected_error)
+        self.assertEqual(len(result), 1)
+
     def test_file_form_with_enctype_multipart_form_data(self):
         test_form = """<form id="test-form" enctype="multipart/form-data">
         <input type="file">
