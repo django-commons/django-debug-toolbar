@@ -55,8 +55,7 @@ class AlertsPanelTestCase(BaseTestCase):
         encoding not set to multipart/form-data.
         """
         test_form = (
-            '<form class="upload-form" action="/upload/">'
-            '<input type="file"></form>'
+            '<form class="upload-form" action="/upload/"><input type="file"></form>'
         )
         result = self.panel.check_invalid_file_form_configuration(test_form)
         expected_error = (
