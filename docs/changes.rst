@@ -35,6 +35,9 @@ Pending
   don't support ``EXPLAIN``. It now shows an error instead.
 * Added open in editor functionality to templates panel using ``EDITOR``
   setting.
+* Improved the Alerts panel's warning for forms missing
+  ``enctype="multipart/form-data"`` to identify forms without an ``id``
+  by their ``class``, ``name`` and ``action`` attributes.
 
 8.0.0 (2026-09-02)
 ------------------
