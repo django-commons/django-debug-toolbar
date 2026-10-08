@@ -8,6 +8,7 @@ Django Debug Toolbar
    configuration
    checks
    tips
+   production
    panels
    commands
    resources
