@@ -569,7 +569,7 @@ class SQLPanelTestCase(BaseTestCase):
                     "Foo",
                     True,
                     False,
-                    datetime.datetime(2017, 12, 22, 16, 7, 1),  # noqa: DTZ001
+                    datetime.datetime(2017, 12, 22, 16, 7, 1),
                 ],
             )
         )
@@ -581,7 +581,7 @@ class SQLPanelTestCase(BaseTestCase):
                     "first_name": "Foo",
                     "is_staff": True,
                     "is_superuser": False,
-                    "date_joined": datetime.datetime(2017, 12, 22, 16, 7, 1),  # noqa: DTZ001
+                    "date_joined": datetime.datetime(2017, 12, 22, 16, 7, 1),
                 },
             )
         )
