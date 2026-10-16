@@ -30,40 +30,51 @@ should be an option on the network panel to disable caching, enable that
 at least temporarily to make sure you're using the latest static assets.
 
 Working with htmx and Turbo
-----------------------------
+---------------------------
 
-Libraries such as `htmx <https://htmx.org/>`_ and
-`Turbo <https://turbo.hotwired.dev/>`_ need additional configuration to retain
-the toolbar handle element through page renders. This can be done by
-configuring the :ref:`ROOT_TAG_EXTRA_ATTRS <ROOT_TAG_EXTRA_ATTRS>` to include
-the relevant JavaScript library's attribute.
+Hypermedia libraries such as `htmx <https://htmx.org/>`_ and
+`Turbo <https://turbo.hotwired.dev/>`_ replace parts of the page without a full
+reload. Extra configuration is required so the toolbar handle is retained
+across those updates.
 
-htmx
-~~~~
+Set :ref:`ROOT_TAG_EXTRA_ATTRS <ROOT_TAG_EXTRA_ATTRS>` to the attribute used
+by the library you are running.
 
-The attribute `htmx <https://htmx.org/>`_ uses is
+htmx 2
+~~~~~~
+
+htmx 2 preserves elements with
 `hx-preserve <https://htmx.org/attributes/hx-preserve/>`_.
-
-Update your settings to include:
 
 .. code-block:: python
 
     DEBUG_TOOLBAR_CONFIG = {
-        "ROOT_TAG_EXTRA_ATTRS": "hx-preserve"
+        "ROOT_TAG_EXTRA_ATTRS": "hx-preserve",
+    }
+
+htmx 4
+~~~~~~
+
+When using hx-boost in htmx 4 with morph swaps, skip elements with
+`hx-morph-skip <https://four.htmx.org/reference/attributes/hx-morph-skip>`_.
+``hx-preserve`` is still available for non-morph swaps.
+
+.. code-block:: python
+
+    DEBUG_TOOLBAR_CONFIG = {
+        "ROOT_TAG_EXTRA_ATTRS": "hx-morph-skip",
     }
 
 Hotwire Turbo
 ~~~~~~~~~~~~~
 
-The attribute `Turbo <https://turbo.hotwired.dev/>`_ uses is
-`data-turbo-permanent <https://turbo.hotwired.dev/reference/attributes>`_
-
-Update your settings to include:
+Turbo preserves elements with
+`data-turbo-permanent <https://turbo.hotwired.dev/reference/attributes>`_.
 
 .. code-block:: python
 
     DEBUG_TOOLBAR_CONFIG = {
-        "ROOT_TAG_EXTRA_ATTRS": "data-turbo-permanent"
+        "ROOT_TAG_EXTRA_ATTRS": "data-turbo-permanent",
     }
 
 

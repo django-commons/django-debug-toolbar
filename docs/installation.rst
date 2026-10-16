@@ -163,6 +163,13 @@ option.
     Docker gateway IP and treat it as an allowable internal IP so that the
     toolbar is shown to you.
 
+    When the Docker host lookup fails, the ``show_toolbar_with_docker``
+    callback guesses the host's address from the container's own network. If
+    run outside a container that guess can resolve to another machine on your
+    network, granting it access to the toolbar's data. The
+    ``show_toolbar_with_docker`` callback should only be used inside a
+    container.
+
 7. Disable the toolbar when running tests (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

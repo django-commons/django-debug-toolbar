@@ -20,6 +20,7 @@ class HistoryPanel(Panel):
     is_async = True
     title = _("History")
     nav_title = _("History")
+    nav_icon = "debug_toolbar/img/history.svg"
     template = "debug_toolbar/panels/history.html"
 
     def get_headers(self, request: HttpRequest) -> dict:
@@ -51,6 +52,21 @@ class HistoryPanel(Panel):
     @property
     def nav_subtitle(self) -> str:
         return self.get_stats().get("request_url", "")
+
+    @property
+    def title_bar(self) -> str:
+        """Render the refresh control shown in the panel's title bar."""
+        return render_to_string(
+            "debug_toolbar/panels/history_title_bar.html",
+            {
+                "refresh_form": HistoryStoreForm(
+                    initial={
+                        "request_id": self.toolbar.request_id,
+                        "exclude_history": True,
+                    }
+                ),
+            },
+        )
 
     def generate_stats(self, request: HttpRequest, response: HttpResponse) -> None:
         data: QueryDict | None = None
@@ -105,12 +121,6 @@ class HistoryPanel(Panel):
             {
                 "current_request_id": self.toolbar.request_id,
                 "toolbar_history": toolbar_history,
-                "refresh_form": HistoryStoreForm(
-                    initial={
-                        "request_id": self.toolbar.request_id,
-                        "exclude_history": True,
-                    }
-                ),
             },
         )
 

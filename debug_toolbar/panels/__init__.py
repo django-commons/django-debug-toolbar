@@ -57,6 +57,13 @@ class Panel:
 
     # Titles and content
 
+    nav_icon = None
+    """
+    Optional static path to an icon shown next to :attr:`nav_title` in the
+    side bar, e.g. ``"debug_toolbar/img/history.svg"``. Defaults to ``None``
+    (no icon).
+    """
+
     @property
     def nav_title(self):
         """
@@ -96,6 +103,15 @@ class Panel:
         Mandatory, unless the panel sets :attr:`has_content` to ``False``.
         """
         raise NotImplementedError
+
+    @property
+    def title_bar(self):
+        """
+        Optional extra HTML rendered in the panel's title bar, next to the
+        :attr:`title`. Useful for panel-specific controls such as buttons.
+        Defaults to the empty string (nothing extra).
+        """
+        return ""
 
     @property
     def template(self):

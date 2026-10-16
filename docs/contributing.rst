@@ -139,6 +139,21 @@ To reformat the code manually use::
     $ pre-commit run --all-files
 
 
+Brand assets
+------------
+
+The brand logos live in ``docs/_static/brand/``. The SVG files are the source
+of truth. The matching PNGs are generated from them. Whenever you change a logo
+SVG, regenerate the PNGs so they stay in sync::
+
+    $ make -C docs regenerate-brand-pngs
+
+This converts each SVG file into a high-resolution (3x) image using Google
+Chrome running in the background. You need to have Google Chrome installed on
+your computer. If you use Chromium or a different version, set the CHROME
+environment variable (for example: CHROME=chromium). The full set of brand
+assets is shown in the :doc:`design guidelines <design_guidelines>`.
+
 Typing
 ------
 

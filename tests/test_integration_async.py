@@ -226,7 +226,7 @@ class DebugToolbarTestCase(BaseTestCase):
 # https://forum.djangoproject.com/t/are-concurrent-database-queries-in-asgi-a-thing/24136/2
 # https://github.com/django-commons/django-debug-toolbar/issues/1828
 
-# Work that is done so far for asynchrounous database backend
+# Work that is done so far for asynchronous database backend
 # https://github.com/django/deps/blob/main/accepted/0009-async.rst#the-orm
 
 
@@ -515,6 +515,7 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
             r'TimerPanel_stime;dur=(\d)*(\.(\d)*)?;desc="System CPU time", ',
             r'TimerPanel_total;dur=(\d)*(\.(\d)*)?;desc="Total CPU time", ',
             r'TimerPanel_total_time;dur=(\d)*(\.(\d)*)?;desc="Elapsed time", ',
+            r'TimerPanel_toolbar_time;dur=(\d)*(\.(\d)*)?;desc="Including DebugToolbar time", ',
             r'SQLPanel_sql_time;dur=(\d)*(\.(\d)*)?;desc="SQL 1 queries", ',
             r'CachePanel_total_time;dur=0;desc="Cache 0 Calls"',
         ]

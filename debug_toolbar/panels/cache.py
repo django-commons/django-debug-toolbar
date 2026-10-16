@@ -116,7 +116,13 @@ class CachePanel(Panel):
         template_info,
         backend,
     ):
-        if name == "get" or name == "get_or_set":
+        if name == "get":
+            default = kwargs.get("default", args[1] if len(args) > 1 else None)
+            if return_value == default:
+                self.misses += 1
+            else:
+                self.hits += 1
+        elif name == "get_or_set":
             if return_value is None:
                 self.misses += 1
             else:
@@ -143,7 +149,7 @@ class CachePanel(Panel):
 
     def _record_call(self, cache, alias, name, original_method, args, kwargs):
         # Some cache backends implement certain cache methods in terms of other cache
-        # methods (e.g. get_or_set() in terms of get() and add()).  In order to only
+        # methods (e.g. get_or_set() in terms of get() and add()). In order to only
         # record the calls made directly by the user code, set the cache's _djdt_panel
         # attribute to None before invoking the original method, which will cause the
         # monkey-patched cache methods to skip recording additional calls made during
@@ -171,6 +177,7 @@ class CachePanel(Panel):
     # Implement the Panel API
 
     nav_title = _("Cache")
+    nav_icon = "debug_toolbar/img/cache.svg"
 
     @property
     def nav_subtitle(self):

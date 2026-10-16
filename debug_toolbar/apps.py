@@ -59,7 +59,7 @@ def check_template_config(config):
     """
     Checks if a template configuration is valid.
 
-    The toolbar requires either the toolbars to be unspecified or
+    The toolbar requires either the loaders to be unspecified or
     ``django.template.loaders.app_directories.Loader`` to be
     included in the loaders.
     If custom loaders are specified, then APP_DIRS must be True.
@@ -172,7 +172,7 @@ def check_middleware(app_configs, **kwargs):
 
 @register
 def check_panel_configs(app_configs, **kwargs):
-    """Allow each panel to check the toolbar's integration for their its own purposes."""
+    """Allow each panel to check the toolbar's integration for its own purposes."""
     from debug_toolbar.toolbar import DebugToolbar
 
     errors = []

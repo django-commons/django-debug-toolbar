@@ -162,6 +162,7 @@ class SQLPanel(Panel):
     # Implement the Panel API
 
     nav_title = _("SQL")
+    nav_icon = "debug_toolbar/img/sql.svg"
 
     @property
     def nav_subtitle(self):

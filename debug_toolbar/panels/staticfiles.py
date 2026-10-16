@@ -79,6 +79,7 @@ class StaticFilesPanel(panels.Panel):
         request_id_context_var.reset(self.ctx_token)
 
     nav_title = _("Static files")
+    nav_icon = "debug_toolbar/img/staticfiles.svg"
 
     @property
     def nav_subtitle(self):

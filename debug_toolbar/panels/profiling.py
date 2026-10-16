@@ -154,6 +154,7 @@ class ProfilingPanel(Panel):
 
     is_async = False
     title = _("Profiling")
+    nav_icon = "debug_toolbar/img/profiling.svg"
 
     template = "debug_toolbar/panels/profiling.html"
     capture_project_code = dt_settings.get_config()["PROFILER_CAPTURE_PROJECT_CODE"]
@@ -183,7 +184,9 @@ class ProfilingPanel(Panel):
         self.stats = Stats(self.profiler)
         self.stats.calc_callees()
 
-        root_func = cProfile.label(super().process_request.__code__)
+        # This tuple replaces cProfile.label(), which was removed in Python 3.15.
+        code = super().process_request.__code__
+        root_func = (code.co_filename, code.co_firstlineno, code.co_name)
 
         if root_func in self.stats.stats:
             root = FunctionCall(self.stats, root_func, depth=0)
