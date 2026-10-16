@@ -71,7 +71,9 @@ docs = [
 lint = [ "pre-commit" ]
 
 [tool.hatch]
+version.source = "code"
 version.path = "debug_toolbar/__init__.py"
+version.expression = "VERSION"
 build.targets.wheel.packages = [
   "debug_toolbar",
 ]
