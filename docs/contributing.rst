@@ -72,6 +72,11 @@ wait for a second approval. In that case, you should request a review from
 ``@django-commons/django-debug-toolbar`` and be explicit about what your
 concerns are.
 
+We encourage using squash merging to keep the history clean. This has
+the additional benefit that contributors do not have to clean up the
+commit history when submitting a pull request. This isn't a hard rule: If
+keeping individual commits produces a more understandable result feel
+free to use rebased commits or even merges. Trust your judgement.
 Project priorities
 ------------------
 
