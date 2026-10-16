@@ -9,6 +9,10 @@ Pending
   the toolbar's shadow DOM.
 * Fixed the toolbar briefly appearing without its styles in Firefox while
   ``toolbar.css`` loads inside the shadow DOM.
+* Deferred the toolbar handle's position calculation to an animation frame,
+  so it no longer forces a synchronous layout during initialization. On
+  pages with a large amount of CSS this could briefly show the page before
+  its styles were applied.
 * Updated documentation for use with hypermedia libraries: htmx v2, v4 and
   Turbo.
 * Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
@@ -73,6 +77,7 @@ Pending
 * Improved cache hit/miss reporting in the Cache panel for ``cache.get()``
   calls with a supplied default value, while documenting the remaining
   ambiguity when a cached value equals the supplied default.
+
 
 7.0.0 (2026-06-17)
 ------------------

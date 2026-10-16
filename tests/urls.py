@@ -30,6 +30,15 @@ urlpatterns = [
     path("json_view/", views.json_view),
     path("redirect/", views.redirect_view),
     path("ajax/", views.ajax_view),
+    path(
+        "flash_of_unstyled_content/",
+        views.flash_of_unstyled_content_view,
+    ),
+    path(
+        "delayed_stylesheet.css",
+        views.delayed_stylesheet_view,
+        name="delayed-stylesheet",
+    ),
     path("login_without_redirect/", LoginView.as_view(redirect_field_name=None)),
     path("csp_view/", views.csp_view),
     path("admin/", admin.site.urls),
