@@ -58,9 +58,17 @@ def sql_explain(request):
 
     if form.is_valid():
         query = form.cleaned_data["query"]
-        result, headers = form.explain()
+        result = None
+        headers = None
+        result_error = None
+        try:
+            result, headers = form.explain()
+        except DatabaseError:
+            result_error = "EXPLAIN is not supported by your database."
+
         context = {
             "result": result,
+            "result_error": result_error,
             "sql": reformat_sql(query["sql"], with_toggle=False),
             "duration": query["duration"],
             "headers": headers,

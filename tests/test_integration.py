@@ -9,7 +9,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core import signing
 from django.core.cache import cache
 from django.core.cache.backends.base import CacheKeyWarning
-from django.db import connection
+from django.db import DatabaseError, connection
 from django.http import HttpResponse
 from django.template.loader import get_template
 from django.test import RequestFactory
@@ -26,6 +26,7 @@ from debug_toolbar.panels.cache import CachePanel
 from debug_toolbar.panels.history import HistoryPanel
 from debug_toolbar.panels.request import RequestPanel
 from debug_toolbar.panels.sql import SQLPanel
+from debug_toolbar.panels.sql.forms import SQLSelectForm
 from debug_toolbar.panels.templates import TemplatesPanel
 from debug_toolbar.panels.versions import VersionsPanel
 from debug_toolbar.store import get_store
@@ -620,6 +621,26 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
         }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 200)
+
+    def test_sql_explain_unsupported(self):
+        """
+        A database that can't EXPLAIN shows an error instead of a 500.
+        """
+        self.client.get("/execute_sql/")
+        request_id = list(get_store().request_ids())[-1]
+        toolbar = DebugToolbar.fetch(request_id, SQLPanel.panel_id)
+        panel = toolbar.get_panel_by_id(SQLPanel.panel_id)
+        djdt_query_id = panel.get_stats()["queries"][-1]["djdt_query_id"]
+
+        data = {
+            "signed": SignedDataForm.sign(
+                {"request_id": request_id, "djdt_query_id": djdt_query_id}
+            )
+        }
+        with patch.object(SQLSelectForm, "explain", side_effect=DatabaseError):
+            response = self.client.post("/__debug__/sql_explain/", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("EXPLAIN is not supported", response.json()["content"])
 
     def test_sql_profile_checks_show_toolbar(self):
         self.client.get("/execute_sql/")

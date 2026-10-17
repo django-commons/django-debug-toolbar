@@ -13,6 +13,8 @@ Pending
   Turbo.
 * Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
   recorded. The panel shows the SQL for each execution.
+* Fixed the SQL panel's Explain action returning a 500 on databases that
+  don't support ``EXPLAIN``. It now shows an error instead.
 
 8.0.0 (2026-09-02)
 ------------------
