@@ -191,6 +191,16 @@ Third-party panels
 
 If you'd like to add a panel to this list, please submit a pull request!
 
+Datastar Signals
+~~~~~~~~~~~~~~~~
+
+URL: https://github.com/MarcusL11/django-debug-toolbar-datastar
+
+Path: ``django_datastar_toolbar.panels.DatastarStorePanel``
+
+Shows the current page's Datastar signals as JSON. Search highlights
+matching names and paths. The page must load the full Datastar bundle.
+
 Flame Graphs
 ~~~~~~~~~~~~
 
