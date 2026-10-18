@@ -3,8 +3,9 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-# Importing the middleware imports this module. Without the app installed,
-# Django's own error is about this model's app_label, not about the setting.
+# Check for the scenario where the app isn't in INSTALLED_APPS, but was
+# included in Middleware. By default Django's own error is about this model's
+# app_label, not about the setting.
 if not apps.is_installed("debug_toolbar"):
     raise ImproperlyConfigured(
         "The debug toolbar requires 'debug_toolbar' in INSTALLED_APPS."
