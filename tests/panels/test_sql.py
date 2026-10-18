@@ -7,7 +7,6 @@ from unittest.mock import call, patch
 
 import django
 from asgiref.sync import sync_to_async
-from django.apps import apps
 from django.contrib.auth.models import User
 from django.db import connection, transaction
 from django.db.backends.utils import CursorDebugWrapper, CursorWrapper
@@ -18,10 +17,11 @@ from django.test.utils import override_settings
 from sqlparse.exceptions import SQLParseError
 
 import debug_toolbar.panels.sql.tracking as sql_tracking
-from debug_toolbar import settings as dt_settings
 from debug_toolbar.models import HistoryEntry
-from debug_toolbar.panels.sql import SQLPanel, tracking
+from debug_toolbar.panels.sql import SQLPanel
 from debug_toolbar.panels.sql.utils import parse_sql
+from debug_toolbar.recording import suppress_sql_recording
+from debug_toolbar.store import DatabaseStore
 
 try:
     import psycopg
@@ -40,15 +40,13 @@ def sql_call(*, use_iterator=False):
 
 
 def sql_call_toolbar_model():
-    """Query one of the toolbar's models to test tracking of SQL queries."""
-    qs = HistoryEntry.objects.all()
-    return list(qs)
+    """Query the toolbar's store to test tracking of SQL queries."""
+    return DatabaseStore.request_ids()
 
 
 async def async_sql_call_toolbar_model():
-    """(async) Query one of the toolbar's models to test tracking of SQL queries."""
-    qs = HistoryEntry.objects.all()
-    return await sync_to_async(list)(qs)
+    """(async) Query the toolbar's store to test tracking of SQL queries."""
+    return await sync_to_async(DatabaseStore.request_ids)()
 
 
 async def async_sql_call(*, use_iterator=False):
@@ -63,21 +61,6 @@ async def concurrent_async_sql_call(*, use_iterator=False):
     if use_iterator:
         qs = qs.iterator()
     return await asyncio.gather(sync_to_async(list)(qs), User.objects.acount())
-
-
-def patch_tracking_ddt_models():
-    """
-    Set the tracking.DDT_MODELS constant to the toolbar's models.
-    This only gets configured when the store is set to the DatabaseStore.
-    """
-    if (
-        dt_settings.get_config()["TOOLBAR_STORE_CLASS"]
-        == "debug_toolbar.store.DatabaseStore"
-    ):
-        apps.get_app_config("debug_toolbar").import_models()
-        tracking.DDT_MODELS = {
-            m._meta.db_table for m in apps.get_app_config("debug_toolbar").get_models()
-        }
 
 
 class SQLPanelTestCase(BaseTestCase):
@@ -230,7 +213,6 @@ class SQLPanelTestCase(BaseTestCase):
         """
         self.assertEqual(len(self.panel._queries), 0)
 
-        patch_tracking_ddt_models()
         sql_call_toolbar_model()
 
         # ensure query was logged
@@ -251,7 +233,6 @@ class SQLPanelTestCase(BaseTestCase):
         """
         self.assertEqual(len(self.panel._queries), 0)
 
-        patch_tracking_ddt_models()
         await async_sql_call_toolbar_model()
 
         # ensure query was logged
@@ -272,7 +253,6 @@ class SQLPanelTestCase(BaseTestCase):
         """
         self.assertEqual(len(self.panel._queries), 0)
 
-        patch_tracking_ddt_models()
         sql_call_toolbar_model()
 
         self.assertEqual(len(self.panel._queries), 0)
@@ -290,92 +270,30 @@ class SQLPanelTestCase(BaseTestCase):
         """
         self.assertEqual(len(self.panel._queries), 0)
 
-        patch_tracking_ddt_models()
         await async_sql_call_toolbar_model()
 
         self.assertEqual(len(self.panel._queries), 0)
 
-    def test_no_sql_recording_suppresses_queries_without_known_table(self):
-        """
-        Queries that don't reference any toolbar table (e.g. the BEGIN/COMMIT
-        emitted by transaction.atomic()) carry no table name, so
-        SKIP_TOOLBAR_QUERIES can never filter them on its own. They must be
-        suppressed while inside tracking.no_sql_recording().
-        """
+    def test_suppress_sql_recording(self):
+        with suppress_sql_recording(), connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
         self.assertEqual(len(self.panel._queries), 0)
 
-        with tracking.no_sql_recording():
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT 1")
-
-        self.assertEqual(len(self.panel._queries), 0)
-
-    def test_no_sql_recording_does_not_affect_queries_outside_the_block(self):
-        """
-        sql_recording must be restored once the block exits, even though
-        no exception was raised, so normal application queries keep being
-        tracked afterwards.
-        """
-        with tracking.no_sql_recording():
-            pass
-
+        # Recording resumes after the block, even if it raised.
+        with contextlib.suppress(ValueError), suppress_sql_recording():
+            raise ValueError
         sql_call()
-
         self.assertEqual(len(self.panel._queries), 1)
 
-    def test_no_sql_recording_restores_state_even_on_exception(self):
-        """sql_recording must be restored even if the block raises."""
-        with contextlib.suppress(ValueError):
-            with tracking.no_sql_recording():
-                raise ValueError("boom")
-
-        sql_call()
-
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"SKIP_TOOLBAR_QUERIES": False})
+    def test_suppress_sql_recording_skip_toolbar_queries_false(self):
+        """
+        SKIP_TOOLBAR_QUERIES=False shows every query the toolbar runs,
+        including those without a table such as BEGIN/COMMIT.
+        """
+        with suppress_sql_recording(), connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
         self.assertEqual(len(self.panel._queries), 1)
-
-    @override_settings(
-        DEBUG_TOOLBAR_CONFIG={
-            "SKIP_TOOLBAR_QUERIES": False,
-            "TOOLBAR_STORE_CLASS": "debug_toolbar.store.DatabaseStore",
-        }
-    )
-    def test_no_sql_recording_does_not_override_skip_toolbar_queries_false(self):
-        """
-        SKIP_TOOLBAR_QUERIES=False asks to see queries that touch the
-        toolbar's own tables. That choice must win over sql_recording=False
-        for queries that DO mention a known table, even while inside
-        tracking.no_sql_recording() (e.g. the toolbar persisting its own
-        data while the user is debugging the toolbar itself).
-        """
-        self.assertEqual(len(self.panel._queries), 0)
-
-        patch_tracking_ddt_models()
-        with tracking.no_sql_recording():
-            sql_call_toolbar_model()
-
-        self.assertEqual(len(self.panel._queries), 1)
-        query = self.panel._queries[0]
-        self.assertTrue(HistoryEntry._meta.db_table in query["sql"])
-
-    @override_settings(
-        DEBUG_TOOLBAR_CONFIG={
-            "SKIP_TOOLBAR_QUERIES": True,
-            "TOOLBAR_STORE_CLASS": "debug_toolbar.store.DatabaseStore",
-        }
-    )
-    def test_no_sql_recording_combined_with_skip_toolbar_queries_true(self):
-        """
-        With the default SKIP_TOOLBAR_QUERIES=True, toolbar-table queries
-        stay hidden whether or not they're also inside
-        tracking.no_sql_recording().
-        """
-        self.assertEqual(len(self.panel._queries), 0)
-
-        patch_tracking_ddt_models()
-        with tracking.no_sql_recording():
-            sql_call_toolbar_model()
-
-        self.assertEqual(len(self.panel._queries), 0)
 
     @unittest.skipUnless(
         connection.vendor == "postgresql", "Test valid only on PostgreSQL"

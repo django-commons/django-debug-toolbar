@@ -461,9 +461,8 @@ class CacheStoreWithDatabaseBackendTestCase(CommonStoreTestsMixin, TestCase):
         don't appear in SQLPanel data.
 
         The _UntrackedCache wrapper prevents CachePanel tracking by setting
-        cache._djdt_panel = None. Additionally, SQL queries to the cache table
-        are filtered out because the cache table is dynamically added to
-        DDT_MODELS when CacheStore is configured with DatabaseCache.
+        cache._djdt_panel = None, and suppresses SQL recording around each
+        cache call.
         """
         # Set up a toolbar with SQLPanel
         request = RequestFactory().get("/")
@@ -544,8 +543,7 @@ class CacheStoreWithDatabaseBackendTestCase(CommonStoreTestsMixin, TestCase):
         """
         Return the queries that are pure transaction-control commands
         (BEGIN/COMMIT, or SAVEPOINT/RELEASE SAVEPOINT when already inside a
-        transaction, as happens under TestCase). These carry no table name,
-        so SKIP_TOOLBAR_QUERIES can never filter them by itself (issue #2338).
+        transaction, as happens under TestCase).
         """
         return [
             q
@@ -584,14 +582,12 @@ class CacheStoreWithDatabaseBackendTestCase(CommonStoreTestsMixin, TestCase):
             "SKIP_TOOLBAR_QUERIES": False,
         },
     )
-    def test_database_backend_transaction_control_hidden_even_with_skip_toolbar_queries_false(
+    def test_database_backend_transaction_control_tracked_with_skip_toolbar_queries_false(
         self,
     ):
         """
-        SKIP_TOOLBAR_QUERIES=False is meant to reveal queries that touch the
-        toolbar's own tables. It must not resurrect the table-less
-        BEGIN/COMMIT (or SAVEPOINT) control commands, while the actual
-        cache table queries should still be visible.
+        SKIP_TOOLBAR_QUERIES=False shows all of the toolbar's queries,
+        including the transaction-control commands.
         """
         request = RequestFactory().get("/")
         toolbar = DebugToolbar(request, lambda req: HttpResponse())
@@ -601,8 +597,8 @@ class CacheStoreWithDatabaseBackendTestCase(CommonStoreTestsMixin, TestCase):
         try:
             self.store.set("test_req")
 
-            leaked = self._transaction_control_queries(sql_panel._queries)
-            self.assertEqual(leaked, [])
+            control_queries = self._transaction_control_queries(sql_panel._queries)
+            self.assertNotEqual(control_queries, [])
 
             table_queries = [
                 q

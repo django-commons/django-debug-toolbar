@@ -485,9 +485,10 @@ Panel options
   Panel: SQL
 
   The debug toolbar can generate queries if ``TOOLBAR_STORE_CLASS`` is set to
-  use ``DatabaseStore``. This setting controls whether those queries are
-  tracked in the ``SQLPanel``. Set this to ``False`` to see the debug
-  toolbar's queries.
+  use ``DatabaseStore``, or ``CacheStore`` with a database cache backend.
+  This setting controls whether those queries, including the ``BEGIN`` and
+  ``COMMIT`` of their transactions, are tracked in the ``SQLPanel``. Set this
+  to ``False`` to see the debug toolbar's queries.
 
 * ``SQL_WARNING_THRESHOLD``
 

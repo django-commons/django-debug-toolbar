@@ -14,6 +14,7 @@ from django.utils.module_loading import import_string
 
 from debug_toolbar import settings as dt_settings
 from debug_toolbar.models import HistoryEntry
+from debug_toolbar.recording import suppress_sql_recording
 from debug_toolbar.sanitize import force_str
 
 BINARY_SENTINEL = "__djdt_binary__"
@@ -191,6 +192,7 @@ class DatabaseStore(BaseStore):
             HistoryEntry.objects.exclude(request_id__in=keep_ids).delete()
 
     @classmethod
+    @suppress_sql_recording()
     def request_ids(cls):
         """Return all stored request ids within the cache size limit"""
         cache_size = dt_settings.get_config()["RESULTS_CACHE_SIZE"]
@@ -199,16 +201,16 @@ class DatabaseStore(BaseStore):
         )
 
     @classmethod
+    @suppress_sql_recording()
     def exists(cls, request_id: str) -> bool:
         """Check if the given request_id exists in the store"""
         return HistoryEntry.objects.filter(request_id=request_id).exists()
 
     @classmethod
+    @suppress_sql_recording()
     def set(cls, request_id: str):
         """Set a request_id in the store and clean up old entries"""
-        from debug_toolbar.panels.sql.tracking import no_sql_recording
-
-        with no_sql_recording(), transaction.atomic():
+        with transaction.atomic():
             # Create the entry if it doesn't exist (ignore otherwise)
             _, created = HistoryEntry.objects.get_or_create(request_id=request_id)
 
@@ -217,21 +219,22 @@ class DatabaseStore(BaseStore):
                 cls._cleanup_old_entries()
 
     @classmethod
+    @suppress_sql_recording()
     def clear(cls):
         """Remove all requests from the store"""
         HistoryEntry.objects.all().delete()
 
     @classmethod
+    @suppress_sql_recording()
     def delete(cls, request_id: str):
         """Delete the stored request for the given request_id"""
         HistoryEntry.objects.filter(request_id=request_id).delete()
 
     @classmethod
+    @suppress_sql_recording()
     def save_panel(cls, request_id: str, panel_id: str, data: Any = None):
         """Save the panel data for the given request_id"""
-        from debug_toolbar.panels.sql.tracking import no_sql_recording
-
-        with no_sql_recording(), transaction.atomic():
+        with transaction.atomic():
             obj, _ = HistoryEntry.objects.get_or_create(request_id=request_id)
             store_data = obj.data
             store_data[panel_id] = serialize(data)
@@ -239,6 +242,7 @@ class DatabaseStore(BaseStore):
             obj.save()
 
     @classmethod
+    @suppress_sql_recording()
     def panel(cls, request_id: str, panel_id: str) -> Any:
         """Fetch the panel data for the given request_id"""
         try:
@@ -253,12 +257,15 @@ class DatabaseStore(BaseStore):
     @classmethod
     def panels(cls, request_id: str) -> Any:
         """Fetch all panel data for the given request_id"""
-        try:
-            data = HistoryEntry.objects.get(request_id=request_id).data
-            for panel_id, panel_data in data.items():
-                yield panel_id, deserialize(panel_data)
-        except HistoryEntry.DoesNotExist:
-            return {}
+        # Not a decorator: this is a generator, and suppressing must not
+        # stay active across the yields.
+        with suppress_sql_recording():
+            try:
+                data = HistoryEntry.objects.get(request_id=request_id).data
+            except HistoryEntry.DoesNotExist:
+                return
+        for panel_id, panel_data in data.items():
+            yield panel_id, deserialize(panel_data)
 
 
 class _UntrackedCache:
@@ -280,12 +287,10 @@ class _UntrackedCache:
 
         @functools.wraps(attr)
         def untracked(*args, **kwargs):
-            from debug_toolbar.panels.sql.tracking import no_sql_recording
-
             panel = getattr(self._cache, "_djdt_panel", None)
             self._cache._djdt_panel = None
             try:
-                with no_sql_recording():
+                with suppress_sql_recording():
                     return attr(*args, **kwargs)
             finally:
                 self._cache._djdt_panel = panel
@@ -298,40 +303,10 @@ class CacheStore(BaseStore):
     Store that uses Django's cache framework to persist debug toolbar data.
     """
 
-    _cache_table_registered = False
-
     @classmethod
     def _get_cache(cls):
         """Get the Django cache backend, wrapped to bypass toolbar tracking."""
-        cache = _UntrackedCache(caches[dt_settings.get_config()["CACHE_BACKEND"]])
-
-        # Register the cache table with DDT_MODELS to filter SQL queries
-        if not cls._cache_table_registered:
-            cls._register_cache_table_for_sql_filtering(cache._cache)
-            cls._cache_table_registered = True
-
-        return cache
-
-    @classmethod
-    def _register_cache_table_for_sql_filtering(cls, cache):
-        """
-        Add the cache table to DDT_MODELS.
-
-        This ensures that when using DatabaseCache, the cache table's SQL queries
-        don't appear in the SQLPanel.
-        """
-        # Only proceed if this is a DatabaseCache backend
-        if cache.__class__.__name__ != "DatabaseCache":
-            return
-
-        # Get the cache table name
-        cache_table = getattr(cache, "_table", None)
-        if cache_table:
-            # Import here to avoid circular dependency:
-            # store.py -> panels/sql/tracking.py -> panels/sql/forms.py -> toolbar.py -> store.py
-            from debug_toolbar.panels.sql import tracking
-
-            tracking.DDT_MODELS.add(cache_table)
+        return _UntrackedCache(caches[dt_settings.get_config()["CACHE_BACKEND"]])
 
     @classmethod
     def _key_prefix(cls) -> str:
