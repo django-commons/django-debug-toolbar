@@ -106,14 +106,16 @@ Toolbar options
 
 * ``EDITOR``
 
-  Default: ``'vscode'``
+  Default: ``''``
 
-  The editor to use to open file paths from the toolbar.
+  The editor to use to open file paths from the toolbar. File paths are not
+  linked if this setting is empty.
 
   Available editors:
 
     * ``'cursor'``
     * ``'emacs'``
+    * ``'espresso'``
     * ``'idea'``
     * ``'idea-remote'``
     * ``'macvim'``
