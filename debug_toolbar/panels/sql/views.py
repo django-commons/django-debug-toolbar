@@ -1,6 +1,7 @@
 from django.db import DatabaseError
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.template.loader import render_to_string
+from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 
 from debug_toolbar._compat import login_not_required
@@ -64,7 +65,7 @@ def sql_explain(request):
         try:
             result, headers = form.explain()
         except DatabaseError:
-            result_error = "EXPLAIN is not supported by your database."
+            result_error = _("EXPLAIN is not supported by your database.")
 
         context = {
             "result": result,
