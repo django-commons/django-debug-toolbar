@@ -19,6 +19,9 @@ const djdt = {
         const djDebug = getDebugElement();
         djdt.needUpdateOnFetch = djDebug.dataset.updateOnFetch === "True";
         $$.on(djDebug, "click", "#djDebugPanelList li a", function (event) {
+            if (this.getAttribute("href") !== "#") {
+                return;
+            }
             event.preventDefault();
             if (!this.className) {
                 return;
@@ -32,6 +35,7 @@ const djdt = {
 
                 $$.show(current);
                 this.parentElement.classList.add("djdt-active");
+                this.setAttribute("aria-expanded", "true");
 
                 const inner = current.querySelector(
                     ".djDebugPanelContent .djdt-scroll"
@@ -198,6 +202,23 @@ const djdt = {
         // showToolbar will continue to show it in the future if the
         // entire DOM is reloaded.
         $$.show(djDebug);
+        // The shadow DOM template renders #djDebug with the hidden attribute.
+        // Keep it until toolbar.css has loaded, to avoid unstyled content.
+        if (djDebug.hidden) {
+            function reveal() {
+                return djDebug.removeAttribute("hidden");
+            }
+
+            const stylesheet = djDebug
+                .getRootNode()
+                .querySelector('link[rel="stylesheet"]:not([media="print"])');
+            if (stylesheet && !stylesheet.sheet) {
+                stylesheet.addEventListener("load", reveal, { once: true });
+                stylesheet.addEventListener("error", reveal, { once: true });
+            } else {
+                reveal();
+            }
+        }
         const show =
             localStorage.getItem("djdt.show") || djDebug.dataset.defaultShow;
         if (show === "true") {
@@ -245,16 +266,23 @@ const djdt = {
         for (const el of djDebug.querySelectorAll("#djDebugToolbar li")) {
             el.classList.remove("djdt-active");
         }
+        for (const link of djDebug.querySelectorAll(
+            "#djDebugPanelList a[aria-controls]"
+        )) {
+            link.setAttribute("aria-expanded", "false");
+        }
     },
     ensureHandleVisibility() {
-        const djDebug = getDebugElement();
-        const handle = djDebug.querySelector("#djDebugToolbarHandle");
-        // set handle position
-        const handleTop = Math.min(
-            localStorage.getItem("djdt.top") || 265,
-            globalThis.innerHeight - handle.offsetWidth
-        );
-        handle.style.top = `${handleTop}px`;
+        requestAnimationFrame(() => {
+            const djDebug = getDebugElement();
+            const handle = djDebug.querySelector("#djDebugToolbarHandle");
+            // set handle position
+            const handleTop = Math.min(
+                localStorage.getItem("djdt.top") || 265,
+                globalThis.innerHeight - handle.offsetWidth
+            );
+            handle.style.top = `${handleTop}px`;
+        });
     },
     hideToolbar() {
         const djDebug = getDebugElement();

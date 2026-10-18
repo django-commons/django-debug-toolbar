@@ -1,6 +1,5 @@
 import os
 import re
-import time
 import unittest
 import warnings
 from unittest.mock import patch
@@ -37,7 +36,10 @@ from .views import regular_view
 
 try:
     from selenium import webdriver
-    from selenium.common.exceptions import NoSuchElementException
+    from selenium.common.exceptions import (
+        NoSuchElementException,
+        StaleElementReferenceException,
+    )
     from selenium.webdriver.common.by import By
     from selenium.webdriver.firefox.options import Options
     from selenium.webdriver.support import expected_conditions as EC
@@ -64,7 +66,7 @@ class BuggyPanel(Panel):
 
     @property
     def content(self):
-        raise Exception
+        raise Exception  # noqa: TRY002
 
 
 @override_settings(DEBUG=True)
@@ -88,6 +90,21 @@ class DebugToolbarTestCase(BaseTestCase):
             self.assertFalse(show_toolbar(self.request))
             self.assertTrue(show_toolbar_with_docker(self.request))
         mocked_gethostbyname.assert_called_once_with("host.docker.internal")
+
+    @patch("socket.gethostbyname", return_value="0.250.250.254")
+    @patch("socket.gethostname", return_value="container")
+    @patch(
+        "socket.gethostbyname_ex",
+        return_value=("container", [], ["192.168.215.7"]),
+    )
+    def test_show_toolbar_docker_unrelated_host_address(self, *mocks):
+        """Runtimes such as OrbStack resolve host.docker.internal to an
+        address outside of the container network, so the host address has to
+        be derived from the container's own address instead."""
+        self.request.META["REMOTE_ADDR"] = "192.168.215.1"
+        with self.settings(INTERNAL_IPS=[]):
+            self.assertFalse(show_toolbar(self.request))
+            self.assertTrue(show_toolbar_with_docker(self.request))
 
     def test_not_iterating_over_INTERNAL_IPS(self):
         """Verify that the middleware does not iterate over INTERNAL_IPS in some way.
@@ -309,6 +326,10 @@ class DebugToolbarTestCase(BaseTestCase):
             len(response.toolbar.get_panel_by_id("SQLPanel").get_stats()["queries"]), 2
         )
 
+    def test_timer_panel_first(self):
+        toolbar = DebugToolbar(self.request, self.get_response)
+        self.assertEqual(toolbar.enabled_panels[0].panel_id, "TimerPanel")
+
 
 @override_settings(DEBUG=True)
 class DebugToolbarIntegrationTestCase(IntegrationTestCase):
@@ -316,6 +337,35 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
         response = self.client.get("/execute_sql/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "djDebug")
+
+    def test_shadow_dom_enabled_by_default(self):
+        response = self.client.get("/regular/basic/")
+        self.assertContains(response, 'id="djDebugRoot"')
+        self.assertContains(response, '<template shadowrootmode="open">')
+
+    def test_font_face_stylesheet_is_outside_shadow_tree(self):
+        response = self.client.get("/regular/basic/")
+        html = response.content.decode()
+        fonts = html.find("debug_toolbar/css/fonts.css")
+        shadow = html.find("<template shadowrootmode")
+        self.assertNotEqual(fonts, -1)
+        self.assertNotEqual(shadow, -1)
+        self.assertLess(fonts, shadow)
+
+    def test_shadow_dom_toolbar_hidden_until_stylesheet_loads(self):
+        response = self.client.get("/regular/basic/")
+        self.assertContains(response, '<div id="djDebug" class="djdt-hidden" hidden')
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"USE_SHADOW_DOM": False})
+    def test_toolbar_not_hidden_without_shadow_dom(self):
+        response = self.client.get("/regular/basic/")
+        self.assertContains(response, '<div id="djDebug" class="djdt-hidden" dir=')
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"USE_SHADOW_DOM": False})
+    def test_shadow_dom_can_be_disabled(self):
+        response = self.client.get("/regular/basic/")
+        self.assertContains(response, 'id="djDebugRoot"')
+        self.assertNotContains(response, "shadowrootmode")
 
     @override_settings(DEFAULT_CHARSET="iso-8859-1")
     def test_non_utf8_charset(self):
@@ -657,7 +707,28 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
     def test_server_timing_headers(self):
         response = self.client.get("/execute_sql/")
         server_timing = response["Server-Timing"]
+        self.assertTrue(server_timing.startswith("TimerPanel_"), server_timing)
         expected_partials = [
+            r'TimerPanel_utime;dur=(\d)*(\.(\d)*)?;desc="User CPU time", ',
+            r'TimerPanel_stime;dur=(\d)*(\.(\d)*)?;desc="System CPU time", ',
+            r'TimerPanel_total;dur=(\d)*(\.(\d)*)?;desc="Total CPU time", ',
+            r'TimerPanel_total_time;dur=(\d)*(\.(\d)*)?;desc="Elapsed time", ',
+            r'TimerPanel_toolbar_time;dur=(\d)*(\.(\d)*)?;desc="Including DebugToolbar time", ',
+            r'SQLPanel_sql_time;dur=(\d)*(\.(\d)*)?;desc="SQL 1 queries", ',
+            r'CachePanel_total_time;dur=0;desc="Cache 0 Calls"',
+        ]
+        for expected in expected_partials:
+            self.assertTrue(re.compile(expected).search(server_timing))
+
+    def test_server_timing_headers_with_existing_value(self):
+        response = self.client.get("/server-timing/")
+        server_timing = response["Server-Timing"]
+        self.assertTrue(
+            server_timing.startswith('existing_key;dur=100;desc="Details", '),
+            server_timing,
+        )
+        expected_partials = [
+            'existing_key;dur=100;desc="Details"',
             r'TimerPanel_utime;dur=(\d)*(\.(\d)*)?;desc="User CPU time", ',
             r'TimerPanel_stime;dur=(\d)*(\.(\d)*)?;desc="System CPU time", ',
             r'TimerPanel_total;dur=(\d)*(\.(\d)*)?;desc="Total CPU time", ',
@@ -711,6 +782,27 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         options.set_preference("ui.prefersReducedMotion", 0)
         cls.selenium = webdriver.Firefox(options=options)
 
+        # The toolbar renders into an open shadow root, which find_element
+        # cannot see into, so fall back to searching within it.
+        find_element = cls.selenium.find_element
+        selectors = {
+            By.ID: "#{}",
+            By.CLASS_NAME: ".{}",
+            By.TAG_NAME: "{}",
+            By.CSS_SELECTOR: "{}",
+        }
+
+        def find_including_toolbar(by, value):
+            try:
+                return find_element(by, value)
+            except NoSuchElementException:
+                shadow_root = find_element(By.ID, "djDebugRoot").shadow_root
+                return shadow_root.find_element(
+                    By.CSS_SELECTOR, selectors[by].format(value)
+                )
+
+        cls.selenium.find_element = find_including_toolbar
+
     @classmethod
     def tearDownClass(cls):
         cls.selenium.quit()
@@ -722,6 +814,18 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
     @property
     def wait(self):
         return WebDriverWait(self.selenium, timeout=3)
+
+    def get_request_id(self):
+        """
+        Read the request id the toolbar is currently displaying.
+
+        The panels within the toolbar are replaced as requests complete, but
+        the element holding the request id is only updated in place, so it's
+        safe to read from directly.
+        """
+        return self.selenium.find_element(By.ID, "djDebug").get_attribute(
+            "data-request-id"
+        )
 
     def test_basic(self):
         self.get("/regular/basic/")
@@ -738,8 +842,8 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         table = self.wait.until(
             lambda selenium: version_panel.find_element(By.TAG_NAME, "table")
         )
-        self.assertIn("Name", table.text)
-        self.assertIn("Version", table.text)
+        self.assertIn("Name", table.get_attribute("textContent"))
+        self.assertIn("Version", table.get_attribute("textContent"))
 
     @override_settings(
         DEBUG_TOOLBAR_CONFIG={
@@ -767,16 +871,31 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         self.get("/regular_jinja/basic")
         # Make a new request so the history panel has more than one option.
         self.get("/execute_sql/")
-        template_panel = self.selenium.find_element(By.ID, HistoryPanel.panel_id)
         # Record the current side panel of buttons for later comparison.
+        previous_request_id = self.get_request_id()
         previous_button_panel = self.selenium.find_element(
             By.ID, "djDebugPanelList"
         ).text
 
         # Click to show the history panel
         self.selenium.find_element(By.CLASS_NAME, HistoryPanel.panel_id).click()
-        # Click to switch back to the jinja page view snapshot
-        list(template_panel.find_elements(By.CSS_SELECTOR, "button"))[-1].click()
+
+        # Click to switch back to the jinja page view snapshot. Keep clicking
+        # until the request id changes, since the click can land before
+        # history.js has registered its handler and be silently dropped, or
+        # the button can go stale as the panel is replaced.
+        def switch_to_oldest_snapshot(selenium):
+            buttons = selenium.find_element(By.ID, HistoryPanel.panel_id).find_elements(
+                By.CSS_SELECTOR, ".switchHistory"
+            )
+            if buttons:
+                try:
+                    buttons[-1].click()
+                except StaleElementReferenceException:
+                    pass
+            return self.get_request_id() != previous_request_id
+
+        self.wait.until(switch_to_oldest_snapshot)
 
         current_button_panel = self.selenium.find_element(
             By.ID, "djDebugPanelList"
@@ -885,8 +1004,8 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         table = self.wait.until(
             lambda selenium: sql_panel.find_element(By.TAG_NAME, "table")
         )
-        self.assertIn("Query", table.text)
-        self.assertIn("Action", table.text)
+        self.assertIn("Query", table.get_attribute("textContent"))
+        self.assertIn("Action", table.get_attribute("textContent"))
 
     @override_settings(DEBUG_TOOLBAR_CONFIG={"TOOLBAR_LANGUAGE": "pt-br"})
     def test_toolbar_language_will_render_to_locale_when_set(self):
@@ -903,8 +1022,8 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         table = self.wait.until(
             lambda selenium: sql_panel.find_element(By.TAG_NAME, "table")
         )
-        self.assertIn("Query", table.text)
-        self.assertIn("Linha", table.text)
+        self.assertIn("Query", table.get_attribute("textContent"))
+        self.assertIn("Linha", table.get_attribute("textContent"))
 
     @override_settings(DEBUG_TOOLBAR_CONFIG={"TOOLBAR_LANGUAGE": "en-us"})
     @override_settings(LANGUAGE_CODE="de")
@@ -922,8 +1041,8 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         table = self.wait.until(
             lambda selenium: sql_panel.find_element(By.TAG_NAME, "table")
         )
-        self.assertIn("Query", table.text)
-        self.assertIn("Action", table.text)
+        self.assertIn("Query", table.get_attribute("textContent"))
+        self.assertIn("Action", table.get_attribute("textContent"))
 
     def test_ajax_dont_refresh(self):
         self.get("/ajax/")
@@ -936,20 +1055,13 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
     @override_settings(DEBUG_TOOLBAR_CONFIG={"UPDATE_ON_FETCH": True})
     def test_ajax_refresh(self):
         self.get("/ajax/")
+        request_id = self.get_request_id()
         make_ajax = self.selenium.find_element(By.ID, "click_for_ajax")
         make_ajax.click()
-        # Sleep a tad to avoid a selenium.common.exceptions.StaleElementReferenceException
-        # when looking for the small text of the history panel
-        time.sleep(0.1)
-        # Need to wait until the ajax request is over and json_view is displayed on the toolbar
-        self.wait.until(
-            lambda selenium: (
-                self.selenium.find_element(
-                    By.CSS_SELECTOR, "#djdt-HistoryPanel a.HistoryPanel small"
-                ).text
-                == "/json_view/"
-            )
-        )
+        # The toolbar debounces the ajax response before fetching the new state,
+        # then swaps in every panel synchronously, so a changed request id means
+        # the history panel has finished being replaced.
+        self.wait.until(lambda selenium: self.get_request_id() != request_id)
         history_panel = self.selenium.find_element(By.ID, "djdt-HistoryPanel")
         self.assertNotIn("/ajax/", history_panel.text)
         self.assertIn("/json_view/", history_panel.text)
@@ -990,6 +1102,29 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         toolbar = self.selenium.find_element(By.ID, "djDebug")
         self.assertEqual(toolbar.get_attribute("data-user-theme"), "auto")
         self.assertEqual(toolbar.get_attribute("data-theme"), "light")
+
+    def reset_stored_toolbar_state(self):
+        self.get("/regular/basic/")
+        self.selenium.execute_script("localStorage.clear()")
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"SHOW_COLLAPSED": True})
+    def test_collapsed_toolbar_does_not_flash_unstyled_content(self):
+        """Firefox withholds animation frames until pending stylesheets load, so
+        a first frame that sees unstyled content means the toolbar forced layout
+        early and let an unstyled paint through."""
+        self.reset_stored_toolbar_state()
+        self.addCleanup(self.reset_stored_toolbar_state)
+
+        self.get("/flash_of_unstyled_content/")
+        self.wait.until(
+            lambda selenium: selenium.execute_script(
+                "return window.djdtStyledOnFirstFrame !== null"
+            )
+        )
+
+        self.assertTrue(
+            self.selenium.execute_script("return window.djdtStyledOnFirstFrame")
+        )
 
     def test_async_sql_action(self):
         self.get("/async_execute_sql/")

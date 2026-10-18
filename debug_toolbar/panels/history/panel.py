@@ -9,7 +9,7 @@ from django.urls import URLPattern, path
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from debug_toolbar.panels import Panel
+from debug_toolbar.panels import Panel, PanelHeaders
 from debug_toolbar.panels.history import views
 from debug_toolbar.panels.history.forms import HistoryStoreForm
 
@@ -20,14 +20,15 @@ class HistoryPanel(Panel):
     is_async = True
     title = _("History")
     nav_title = _("History")
+    nav_icon = "debug_toolbar/img/history.svg"
     template = "debug_toolbar/panels/history.html"
 
-    def get_headers(self, request: HttpRequest) -> dict:
-        headers: dict = super().get_headers(request)
+    def get_headers(self, request: HttpRequest) -> PanelHeaders:
+        headers: PanelHeaders = super().get_headers(request)
         observe_request = self.toolbar.get_observe_request()
         request_id = self.toolbar.request_id
         if request_id and observe_request(request):
-            headers["djdt-request-id"] = request_id
+            headers.update["djdt-request-id"] = request_id
         return headers
 
     @property
@@ -51,6 +52,21 @@ class HistoryPanel(Panel):
     @property
     def nav_subtitle(self) -> str:
         return self.get_stats().get("request_url", "")
+
+    @property
+    def title_bar(self) -> str:
+        """Render the refresh control shown in the panel's title bar."""
+        return render_to_string(
+            "debug_toolbar/panels/history_title_bar.html",
+            {
+                "refresh_form": HistoryStoreForm(
+                    initial={
+                        "request_id": self.toolbar.request_id,
+                        "exclude_history": True,
+                    }
+                ),
+            },
+        )
 
     def generate_stats(self, request: HttpRequest, response: HttpResponse) -> None:
         data: QueryDict | None = None
@@ -105,12 +121,6 @@ class HistoryPanel(Panel):
             {
                 "current_request_id": self.toolbar.request_id,
                 "toolbar_history": toolbar_history,
-                "refresh_form": HistoryStoreForm(
-                    initial={
-                        "request_id": self.toolbar.request_id,
-                        "exclude_history": True,
-                    }
-                ),
             },
         )
 

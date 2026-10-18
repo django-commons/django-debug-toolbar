@@ -14,6 +14,13 @@ help:
 
 .PHONY: help Makefile
 
+# Regenerate the brand PNG logos from their SVG sources. Run this after
+# changing any logo SVG in _static/brand/ so the bundled PNGs stay in sync.
+# Requires Google Chrome; override the binary with CHROME=<path>.
+.PHONY: regenerate-brand-pngs
+regenerate-brand-pngs:
+	./_static/brand/regenerate-pngs.sh
+
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile

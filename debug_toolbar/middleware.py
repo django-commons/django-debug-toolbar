@@ -34,11 +34,7 @@ def show_toolbar(request: HttpRequest) -> bool:
         return False
 
     # Test: settings
-    if request.META.get("REMOTE_ADDR") in settings.INTERNAL_IPS:
-        return True
-
-    # No test passed
-    return False
+    return request.META.get("REMOTE_ADDR") in settings.INTERNAL_IPS
 
 
 def show_toolbar_with_docker(request: HttpRequest) -> bool:
@@ -48,11 +44,9 @@ def show_toolbar_with_docker(request: HttpRequest) -> bool:
     if not settings.DEBUG:
         return False
 
-    # Test: settings
     if request.META.get("REMOTE_ADDR") in settings.INTERNAL_IPS:
         return True
 
-    # Test: Docker
     try:
         # This is a hack for docker installations. It attempts to look
         # up the IP address of the docker host.
@@ -68,7 +62,22 @@ def show_toolbar_with_docker(request: HttpRequest) -> bool:
         # It's fine if the lookup errored since they may not be using docker
         pass
 
-    # No test passed
+    # Some Docker runtimes (for example OrbStack) resolve host.docker.internal
+    # to an address that is unrelated to the container network, so the check
+    # above cannot derive the host address from it.
+    try:
+        # Make a reasonable guess at the gateway from the container's own
+        # interface. This assumes the process is running inside a container.
+        # If this were used outside a container this would grant access to
+        # anything that appears to come from the network's gateway (router).
+        container_ips = socket.gethostbyname_ex(socket.gethostname())[2]
+        gateways = {ip.rsplit(".", 1)[0] + ".1" for ip in container_ips}
+        if request.META.get("REMOTE_ADDR") in gateways:
+            return True
+    except socket.gaierror:
+        # It's fine if the lookup errored since they may not be using docker
+        pass
+
     return False
 
 
@@ -194,7 +203,9 @@ class DebugToolbarMiddleware:
         # included in the response.
         rendered = toolbar.render_toolbar()
 
-        for header, value in self.get_headers(request, toolbar.enabled_panels).items():
+        for header, value in self.get_headers(
+            request, response, toolbar.enabled_panels
+        ).items():
             response.headers[header] = value
 
         # Check for responses where the toolbar can't be inserted.
@@ -214,12 +225,19 @@ class DebugToolbarMiddleware:
         return response
 
     @staticmethod
-    def get_headers(request: HttpRequest, panels: list[Panel]) -> dict[str, str]:
-        headers = {}
+    def get_headers(
+        request: HttpRequest, response: HttpResponse, panels: list[Panel]
+    ) -> dict[str, str]:
+        update, append = {}, {}
         for panel in panels:
-            for header, value in panel.get_headers(request).items():
-                if header in headers:
-                    headers[header] += f", {value}"
-                else:
-                    headers[header] = value
-        return headers
+            panel_headers = panel.get_headers(request)
+            update |= panel_headers.update
+            for key, value in panel_headers.append.items():
+                if key not in append:
+                    append[key] = (
+                        [response.headers[key]] if key in response.headers else []
+                    )
+                append[key].append(value)
+        # Only include the append headers when no panel updated the value
+        # entirely.
+        return {key: ", ".join(values) for key, values in append.items()} | update

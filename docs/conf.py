@@ -22,7 +22,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 project = "Django Debug Toolbar"
 copyright = "{}, Django Debug Toolbar developers and contributors"
-copyright = copyright.format(datetime.date.today().year)
+copyright = copyright.format(datetime.datetime.now(datetime.timezone.utc).year)
 
 # The full version, including alpha/beta/rc tags
 release = "6.2.0"
@@ -56,7 +56,8 @@ html_theme = "sphinx_rtd_theme"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+# Holds the brand assets (logos) referenced by the design guidelines.
+html_static_path = ["_static"]
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/", None),

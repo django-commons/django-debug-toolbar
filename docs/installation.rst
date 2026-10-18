@@ -70,8 +70,8 @@ Second, ensure that your ``TEMPLATES`` setting contains a
         }
     ]
 
-Third, the Debug Toolbar requires an up to date browser and targets [Baseline
-Widely Available](https://web.dev/series/baseline-widely-available) to delivery
+Third, the Debug Toolbar requires an up to date browser and targets `Baseline
+Widely Available <https://web.dev/baseline/>`_ to deliver
 modern debug tools. Should you need to test in an older browser, simply disable
 the toolbar for those sessions.
 
@@ -162,6 +162,13 @@ option.
     ``SHOW_TOOLBAR_CALLBACK`` which attempts to automatically look up the
     Docker gateway IP and treat it as an allowable internal IP so that the
     toolbar is shown to you.
+
+    When the Docker host lookup fails, the ``show_toolbar_with_docker``
+    callback guesses the host's address from the container's own network. If
+    run outside a container that guess can resolve to another machine on your
+    network, granting it access to the toolbar's data. The
+    ``show_toolbar_with_docker`` callback should only be used inside a
+    container.
 
 7. Disable the toolbar when running tests (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

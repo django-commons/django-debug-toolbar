@@ -17,15 +17,17 @@ class RedirectsPanel(Panel):
     is_async = True
 
     nav_title = _("Intercept redirects")
+    nav_icon = "debug_toolbar/img/redirects.svg"
 
     def _process_response(self, response):
         """
         Common response processing logic.
         """
-        if 300 <= response.status_code < 400:
-            if redirect_to := response.get("Location"):
-                response = self.get_interception_response(response, redirect_to)
-                response.render()
+        if 300 <= response.status_code < 400 and (
+            redirect_to := response.get("Location")
+        ):
+            response = self.get_interception_response(response, redirect_to)
+            response.render()
         return response
 
     async def aprocess_request(self, request, response_coroutine):

@@ -19,6 +19,7 @@ class VersionsPanel(Panel):
         return "Django %s" % self.get_stats()["django_version"]
 
     title = _("Versions")
+    nav_icon = "debug_toolbar/img/versions.svg"
 
     template = "debug_toolbar/panels/versions.html"
 

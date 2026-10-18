@@ -2,10 +2,98 @@ Change log
 ==========
 
 Pending
--------
 
+* Added a ``test_release`` workflow to build and publish development
+  versions to TestPyPI.
+* Added support for Python 3.15.
+* Fixed the Profiling panel on Python 3.15.
+* Fixed Geist and Alef not loading in Chrome by moving ``@font-face`` out
+  the toolbar's shadow DOM.
+* Fixed the toolbar briefly appearing without its styles in Firefox while
+  ``toolbar.css`` loads inside the shadow DOM.
+* Deferred the toolbar handle's position calculation to an animation frame,
+  so it no longer forces a synchronous layout during initialization. On
+  pages with a large amount of CSS this could briefly show the page before
+  its styles were applied.
+* Updated documentation for use with hypermedia libraries: htmx v2, v4 and
+  Turbo.
+* Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
+  recorded. The panel shows the SQL for each execution.
+* Raised ``ImproperlyConfigured`` naming ``INSTALLED_APPS`` when the toolbar
+  is imported without ``debug_toolbar`` installed, instead of a
+  ``RuntimeError`` about the ``HistoryEntry`` model's ``app_label``.
+* Fixed the History panel crashing when captured request data includes a
+  key named ``items``. Django templates resolve dictionary keys before
+  methods, so ``data.items`` was that field's value rather than
+  ``dict.items()``.
+* Fixed the toolbar overwriting a ``Server-Timing`` header set by the view.
+  The toolbar's timings are now appended to the existing value.
+* ``Panel.get_headers()`` now returns a ``PanelHeaders`` instance with
+  separate ``append`` and ``update`` dictionaries instead of a ``dict``.
+  Third-party panels overriding it need to be updated.
+* Added open in editor functionality to templates panel using ``EDITOR``
+  setting.
+
+8.0.0 (2026-09-02)
+------------------
+
+* Refreshed the toolbar's visual design with self-hosted Alef (panel titles)
+  and Geist (body text) fonts, an updated color palette, and per-panel
+  navigation icons.
+* Added a new project logo and brand identity, designed by Robin of
+  `RBNX Studio <https://www.rbnx.studio>`_.
+* Added a "Docs" link to the toolbar that opens the documentation.
+* Changed the highlight color for the current request and other
+  "relevant to you" rows from yellow to a green tint, with a left border
+  accent for legibility in dark mode.
+* Added a design guidelines page to the documentation describing the project's
+  logo, color palette and typography.
+* Improved toolbar accessibility: visible keyboard focus, keyboard-operable
+  scroll regions, reduced-motion support, ``aria-expanded`` on panel toggles,
+  an ``aria-live`` status for history refreshes, and WCAG 2.1 AA contrast in
+  both themes.
+* Added a talk to the resources documentation.
+* Updated the example screenshot.
+* Updated the screenshot capture logic to find the toolbar elements in the
+  shadow DOM.
+* Track and display processing time of application, including the toolbar's
+  time, in the timer panel.
+* Fixed the History panel rendering a duplicate Refresh button below the one
+  in its title bar.
+* Fixed the History panel's Refresh button submitting its form when clicked
+  before the panel's script had loaded.
+* Documented the ``USE_SHADOW_DOM`` setting, which was added in 7.0.0 but was
+  missing from the configuration documentation, and added test coverage for it.
+
+7.1.1 (2026-08-14)
+------------------
+
+* Serialize ``TaskResult`` in the Tasks panel to accommodate the storage
+  mechanism.
+* Removed whitespace on Task panel's ``kwargs`` column.
+
+7.1.0 (2026-08-10)
+------------------
+
+* Added a Tasks panel that shows tasks queued during the request via
+  Django's built-in tasks framework (``django.tasks``, Django 6.0+). On
+  older versions of Django, the panel explains that upgrading is required.
 * Fixed the Django version check in the SQL panel test suite for Django's
   boolean parameter handling.
+* Fixed ``show_toolbar_with_docker`` on Docker runtimes such as OrbStack that
+  can resolve ``host.docker.internal`` to an address outside the container
+  network.
+* Restored the select and explain buttons for queries that run without
+  parameters.
+* Fixed the error shown when panel content fails to load, which could not
+  find the toolbar window inside the shadow root.
+* Stopped the history panel buttons from submitting their form when clicked
+  before the panel script has loaded, which navigated away from the page.
+* Added support for Django 6.1.
+* Improved cache hit/miss reporting in the Cache panel for ``cache.get()``
+  calls with a supplied default value, while documenting the remaining
+  ambiguity when a cached value equals the supplied default.
+
 
 7.0.0 (2026-06-17)
 ------------------
@@ -197,6 +285,7 @@ Pending
 * Fixed a crash which occurred when using non-``str`` static file values.
 * Documented experimental async support.
 * Improved troubleshooting doc for incorrect mime types for .js static files
+* Added toolbar time to the timer panel.
 
 Please see everything under 5.0.0-alpha as well.
 

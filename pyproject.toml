@@ -19,6 +19,7 @@ classifiers = [
   "Framework :: Django",
   "Framework :: Django :: 5.2",
   "Framework :: Django :: 6.0",
+  "Framework :: Django :: 6.1",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: BSD License",
   "Operating System :: OS Independent",
@@ -29,6 +30,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dynamic = [
@@ -55,7 +57,6 @@ dev = [
   "django-template-partials",
   "html5lib",
   "jinja2",
-  "pre-commit",
   "pygments",
   "selenium",
   "sqlparse",
@@ -67,9 +68,12 @@ docs = [
   "sphinx-rtd-theme>1",
   "sphinxcontrib-spelling",
 ]
+lint = [ "pre-commit" ]
 
 [tool.hatch]
+version.source = "code"
 version.path = "debug_toolbar/__init__.py"
+version.expression = "VERSION"
 build.targets.wheel.packages = [
   "debug_toolbar",
 ]
@@ -97,9 +101,10 @@ lint.extend-select = [
   "W",      # pycodestyle warnings
 ]
 lint.extend-ignore = [
-  "B905",  # Allow zip() without strict=
-  "E501",  # Ignore line length violations
-  "UP031", # It's not always wrong to use percent-formatting
+  "B905",   # Allow zip() without strict=
+  "E501",   # Ignore line length violations
+  "RUF012", # Allow mutable class attributes
+  "UP031",  # It's not always wrong to use percent-formatting
 ]
 lint.per-file-ignores."*/migrat*/*" = [
   "N806", # Allow using PascalCase model names in migrations
@@ -109,12 +114,12 @@ lint.isort.combine-as-imports = true
 lint.mccabe.max-complexity = 16
 
 [tool.coverage]
-run.branch = true
-run.parallel = true
-run.relative_files = true
 run.source = [
   "debug_toolbar",
 ]
+run.branch = true
+run.parallel = true
+run.relative_files = true
 paths.source = [
   "src",
   ".tox/*/site-packages",

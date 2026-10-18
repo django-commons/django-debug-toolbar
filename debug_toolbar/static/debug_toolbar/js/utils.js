@@ -102,7 +102,7 @@ export async function ajax(url, init) {
         }
         throw new Error(`${response.status}: ${response.statusText}`);
     } catch (error) {
-        const win = document.getElementById("djDebugWindow");
+        const win = getDebugElement().querySelector("#djDebugWindow");
         win.innerHTML = `<div class="djDebugPanelTitle"><h3>${error.message}</h3><button type="button" class="djDebugClose">»</button></div>`;
         $$.show(win);
         throw error;

@@ -104,6 +104,32 @@ Toolbar options
   This setting is a set of the full Python paths to each panel that you
   want disabled (but still displayed) by default.
 
+* ``EDITOR``
+
+  Default: ``''``
+
+  The editor to use to open file paths from the toolbar. File paths are not
+  linked if this setting is empty.
+
+  Available editors:
+
+    * ``'cursor'``
+    * ``'emacs'``
+    * ``'espresso'``
+    * ``'idea'``
+    * ``'idea-remote'``
+    * ``'macvim'``
+    * ``'nova'``
+    * ``'pycharm'``
+    * ``'pycharm-remote'``
+    * ``'sublime'``
+    * ``'vscode'``
+    * ``'vscode-insiders'``
+    * ``'vscode-remote'``
+    * ``'vscode-insiders-remote'``
+    * ``'vscodium'``
+    * ``'windsurf'``
+
 * ``INSERT_BEFORE``
 
   Default: ``'</body>'``
@@ -279,6 +305,21 @@ Toolbar options
   This controls whether the toolbar should update to the latest AJAX
   request when it occurs. This is especially useful when using htmx
   boosting or similar JavaScript techniques.
+
+.. _USE_SHADOW_DOM:
+
+* ``USE_SHADOW_DOM``
+
+  Default: ``True``
+
+  The toolbar renders inside a shadow DOM for better isolation from the rest
+  of the page.
+
+  Set this to ``False`` to render the toolbar directly in the page instead.
+  Custom panels that rely on styles defined outside the toolbar, or on DOM
+  lookups that reach into the toolbar, do not work across a shadow root and
+  may need this. See the note under `Theming support`_ for the related change
+  to CSS variable overrides.
 
 
 Panel options

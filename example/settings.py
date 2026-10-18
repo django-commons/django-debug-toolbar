@@ -18,13 +18,14 @@ INTERNAL_IPS = ["127.0.0.1", "::1"]
 # Application definition
 
 INSTALLED_APPS = [
-    *(["daphne"] if os.getenv("ASYNC_SERVER", False) else []),  # noqa: FBT003
+    *(["daphne"] if os.getenv("ASYNC_SERVER", "") else []),
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "example",
 ]
 
 MIDDLEWARE = [

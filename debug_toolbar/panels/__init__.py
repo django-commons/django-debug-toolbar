@@ -1,3 +1,5 @@
+from dataclasses import dataclass, field
+
 from django.core.handlers.asgi import ASGIRequest
 from django.template.loader import render_to_string
 from django.utils.functional import classproperty
@@ -5,6 +7,16 @@ from django.utils.functional import classproperty
 from debug_toolbar import settings as dt_settings
 from debug_toolbar._stubs import GetResponse
 from debug_toolbar.utils import get_name_from_obj
+
+
+@dataclass
+class PanelHeaders:
+    """
+    Allow panels to update headers or append to existing values.
+    """
+
+    append: dict[str, str] = field(default_factory=dict)
+    update: dict[str, str] = field(default_factory=dict)
 
 
 class Panel:
@@ -57,6 +69,13 @@ class Panel:
 
     # Titles and content
 
+    nav_icon = None
+    """
+    Optional static path to an icon shown next to :attr:`nav_title` in the
+    side bar, e.g. ``"debug_toolbar/img/history.svg"``. Defaults to ``None``
+    (no icon).
+    """
+
     @property
     def nav_title(self):
         """
@@ -96,6 +115,15 @@ class Panel:
         Mandatory, unless the panel sets :attr:`has_content` to ``False``.
         """
         raise NotImplementedError
+
+    @property
+    def title_bar(self):
+        """
+        Optional extra HTML rendered in the panel's title bar, next to the
+        :attr:`title`. Useful for panel-specific controls such as buttons.
+        Defaults to the empty string (nothing extra).
+        """
+        return ""
 
     @property
     def template(self):
@@ -230,7 +258,7 @@ class Panel:
         """
         return self.get_response(request)
 
-    def get_headers(self, request):
+    def get_headers(self, request) -> PanelHeaders:
         """
         Get headers the panel needs to set.
 
@@ -254,7 +282,7 @@ class Panel:
                 )
                 for key, record in stats.items()
             )
-        return headers
+        return PanelHeaders(append=headers)
 
     def generate_stats(self, request, response):
         """

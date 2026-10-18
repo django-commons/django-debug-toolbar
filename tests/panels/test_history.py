@@ -81,6 +81,7 @@ class HistoryViewsTestCase(IntegrationTestCase):
         "AlertsPanel",
         "CachePanel",
         "SignalsPanel",
+        "TasksPanel",
         "CommunityPanel",
         "ProfilingPanel",
     }
@@ -109,7 +110,7 @@ class HistoryViewsTestCase(IntegrationTestCase):
         """Validate the headers injected from the history panel."""
         DebugToolbar.get_observe_request.cache_clear()
         response = self.client.get("/json_view/")
-        request_id = list(get_store().request_ids())[0]
+        request_id = next(iter(get_store().request_ids()))
         self.assertEqual(response.headers["djdt-request-id"], request_id)
 
     def test_history_headers_unobserved(self):
@@ -127,7 +128,7 @@ class HistoryViewsTestCase(IntegrationTestCase):
     def test_history_sidebar(self):
         """Validate the history sidebar view."""
         self.client.get("/json_view/")
-        request_id = list(get_store().request_ids())[0]
+        request_id = next(iter(get_store().request_ids()))
         data = {"request_id": request_id, "exclude_history": True}
         response = self.client.get(reverse("djdt:history_sidebar"), data=data)
         self.assertEqual(response.status_code, 200)
@@ -142,7 +143,7 @@ class HistoryViewsTestCase(IntegrationTestCase):
         panel_keys = copy.copy(self.PANEL_KEYS)
         panel_keys.add(HistoryPanel.panel_id)
         panel_keys.add(RedirectsPanel.panel_id)
-        request_id = list(get_store().request_ids())[0]
+        request_id = next(iter(get_store().request_ids()))
         data = {"request_id": request_id}
         response = self.client.get(reverse("djdt:history_sidebar"), data=data)
         self.assertEqual(response.status_code, 200)
@@ -157,7 +158,7 @@ class HistoryViewsTestCase(IntegrationTestCase):
     def test_history_sidebar_expired_request_id(self):
         """Validate the history sidebar view."""
         self.client.get("/json_view/")
-        request_id = list(get_store().request_ids())[0]
+        request_id = next(iter(get_store().request_ids()))
         data = {"request_id": request_id, "exclude_history": True}
         response = self.client.get(reverse("djdt:history_sidebar"), data=data)
         self.assertEqual(response.status_code, 200)
@@ -175,7 +176,7 @@ class HistoryViewsTestCase(IntegrationTestCase):
         self.assertEqual(response.json(), {})
 
         # Querying with latest request_id
-        latest_request_id = list(get_store().request_ids())[0]
+        latest_request_id = next(iter(get_store().request_ids()))
         data = {"request_id": latest_request_id, "exclude_history": True}
         response = self.client.get(reverse("djdt:history_sidebar"), data=data)
         self.assertEqual(response.status_code, 200)
@@ -208,3 +209,26 @@ class HistoryViewsTestCase(IntegrationTestCase):
 
         for val in ["spam", "eggs"]:
             self.assertIn(val, data["requests"][1]["content"])
+
+    def test_history_refresh_json_items_key(self):
+        """
+        A JSON body with an "items" key must not shadow dict.items() when
+        rendering the request variables.
+
+        Regression test for
+        https://github.com/django-commons/django-debug-toolbar/issues/2453
+        """
+        self.client.post(
+            "/json_view/",
+            data={"items": "should-not-shadow", "foo": "bar"},
+            content_type="application/json",
+        )
+
+        response = self.client.get(
+            reverse("djdt:history_refresh"), data={"request_id": "foo"}
+        )
+        self.assertEqual(response.status_code, 200)
+        content = response.json()["requests"][0]["content"]
+        for key, value in [("items", "should-not-shadow"), ("foo", "bar")]:
+            self.assertIn(f"<td><code>{html.escape(repr(key))}</code></td>", content)
+            self.assertIn(f"<td><code>{html.escape(repr(value))}</code></td>", content)

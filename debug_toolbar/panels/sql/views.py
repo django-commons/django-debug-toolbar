@@ -1,3 +1,4 @@
+from django.db import DatabaseError
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
@@ -88,7 +89,7 @@ def sql_profile(request):
         result_error = None
         try:
             result, headers = form.profile()
-        except Exception:
+        except DatabaseError:
             result_error = (
                 "Profiling is either not available or not supported by your database."
             )

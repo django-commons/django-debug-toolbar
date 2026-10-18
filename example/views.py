@@ -1,10 +1,30 @@
 import asyncio
 
+import django
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.db import connection
 from django.http import JsonResponse
 from django.shortcuts import render
+
+from example.models import Widget
+
+TASKS_AVAILABLE = django.VERSION >= (6, 0)
+
+if TASKS_AVAILABLE:
+    from django.tasks import task
+
+    @task
+    def example_task(x=1, y=2):
+        return x + y
+
+
+def tasks_view(request):
+    if TASKS_AVAILABLE:
+        example_task.enqueue(1, y=2)
+        example_task.enqueue(3, y=4)
+    return render(request, "tasks.html", {"tasks_available": TASKS_AVAILABLE})
 
 
 def increment(request):
@@ -48,3 +68,14 @@ def cache_view(request):
     cache.get("foo")
     cache.get("baz")
     return render(request, "cache.html")
+
+
+def executemany_view(request):
+    Widget.objects.all().delete()
+    table_name = Widget._meta.db_table
+    with connection.cursor() as cursor:
+        cursor.executemany(
+            f"INSERT INTO {table_name} (value) VALUES (%s)",
+            [(1,), (2,), (3,)],
+        )
+    return render(request, "executemany.html")
