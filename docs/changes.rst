@@ -33,6 +33,8 @@ Pending
   Third-party panels overriding it need to be updated.
 * Fixed the SQL panel's Explain action returning a 500 on databases that
   don't support ``EXPLAIN``. It now shows an error instead.
+* Added open in editor functionality to templates panel using ``EDITOR``
+  setting.
 
 8.0.0 (2026-09-02)
 ------------------
