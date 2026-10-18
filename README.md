@@ -18,7 +18,7 @@
 | debug\_toolbar/migrations/\_\_init\_\_.py           |        0 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/models.py                            |       16 |        0 |        2 |        0 |    100% |           |
 | debug\_toolbar/panels/\_\_init\_\_.py               |       95 |        3 |       10 |        2 |     95% |56, 117, 136, 147-\>exit |
-| debug\_toolbar/panels/alerts.py                     |       70 |        0 |       28 |        1 |     99% | 134-\>132 |
+| debug\_toolbar/panels/alerts.py                     |       72 |        0 |       30 |        1 |     99% | 147-\>145 |
 | debug\_toolbar/panels/cache.py                      |      109 |        1 |       32 |        2 |     98% |90-\>exit, 102 |
 | debug\_toolbar/panels/community.py                  |        7 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/panels/headers.py                    |       23 |        0 |        2 |        0 |    100% |           |
@@ -54,7 +54,7 @@
 | debug\_toolbar/urls.py                              |        4 |        0 |        0 |        0 |    100% |           |
 | debug\_toolbar/utils.py                             |      219 |        7 |       70 |        8 |     95% |30, 61, 121, 125-\>128, 144-\>143, 195-196, 200, 216 |
 | debug\_toolbar/views.py                             |       20 |        0 |        2 |        0 |    100% |           |
-| **TOTAL**                                           | **2742** |  **109** |  **680** |   **70** | **95%** |           |
+| **TOTAL**                                           | **2744** |  **109** |  **682** |   **70** | **95%** |           |
 
 
 ## Setup coverage badge
