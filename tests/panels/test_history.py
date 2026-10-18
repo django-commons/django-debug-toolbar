@@ -209,3 +209,26 @@ class HistoryViewsTestCase(IntegrationTestCase):
 
         for val in ["spam", "eggs"]:
             self.assertIn(val, data["requests"][1]["content"])
+
+    def test_history_refresh_json_items_key(self):
+        """
+        A JSON body with an "items" key must not shadow dict.items() when
+        rendering the request variables.
+
+        Regression test for
+        https://github.com/django-commons/django-debug-toolbar/issues/2453
+        """
+        self.client.post(
+            "/json_view/",
+            data={"items": "should-not-shadow", "foo": "bar"},
+            content_type="application/json",
+        )
+
+        response = self.client.get(
+            reverse("djdt:history_refresh"), data={"request_id": "foo"}
+        )
+        self.assertEqual(response.status_code, 200)
+        content = response.json()["requests"][0]["content"]
+        for key, value in [("items", "should-not-shadow"), ("foo", "bar")]:
+            self.assertIn(f"<td><code>{html.escape(repr(key))}</code></td>", content)
+            self.assertIn(f"<td><code>{html.escape(repr(value))}</code></td>", content)
