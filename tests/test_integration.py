@@ -707,6 +707,7 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
     def test_server_timing_headers(self):
         response = self.client.get("/execute_sql/")
         server_timing = response["Server-Timing"]
+        self.assertTrue(server_timing.startswith("TimerPanel_"), server_timing)
         expected_partials = [
             r'TimerPanel_utime;dur=(\d)*(\.(\d)*)?;desc="User CPU time", ',
             r'TimerPanel_stime;dur=(\d)*(\.(\d)*)?;desc="System CPU time", ',
@@ -722,6 +723,10 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
     def test_server_timing_headers_with_existing_value(self):
         response = self.client.get("/server-timing/")
         server_timing = response["Server-Timing"]
+        self.assertTrue(
+            server_timing.startswith('existing_key;dur=100;desc="Details", '),
+            server_timing,
+        )
         expected_partials = [
             'existing_key;dur=100;desc="Details"',
             r'TimerPanel_utime;dur=(\d)*(\.(\d)*)?;desc="User CPU time", ',

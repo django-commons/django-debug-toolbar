@@ -233,8 +233,11 @@ class DebugToolbarMiddleware:
             panel_headers = panel.get_headers(request)
             update |= panel_headers.update
             for key, value in panel_headers.append.items():
-                append.setdefault(key, response.headers.get(key, ""))
-                append[key] += f", {value}"
+                if key not in append:
+                    append[key] = (
+                        [response.headers[key]] if key in response.headers else []
+                    )
+                append[key].append(value)
         # Only include the append headers when no panel updated the value
         # entirely.
-        return append | update
+        return {key: ", ".join(values) for key, values in append.items()} | update
