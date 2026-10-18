@@ -13,6 +13,7 @@ Roboto
 Runtime
 Signal
 Teal
+TestPyPI
 Transifex
 Velda
 Werkzeug
@@ -39,6 +40,7 @@ flamegraph
 flatpages
 frontend
 htmx
+hx
 inlining
 instantiation
 instrumentation

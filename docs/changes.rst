@@ -3,6 +3,21 @@ Change log
 
 Pending
 
+* Added a ``test_release`` workflow to build and publish development
+  versions to TestPyPI.
+* Added support for Python 3.15.
+* Fixed the Profiling panel on Python 3.15.
+* Fixed Geist and Alef not loading in Chrome by moving ``@font-face`` out
+  the toolbar's shadow DOM.
+* Fixed the toolbar briefly appearing without its styles in Firefox while
+  ``toolbar.css`` loads inside the shadow DOM.
+* Updated documentation for use with hypermedia libraries: htmx v2, v4 and
+  Turbo.
+* Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
+  recorded. The panel shows the SQL for each execution.
+* Raised ``ImproperlyConfigured`` naming ``INSTALLED_APPS`` when the toolbar
+  is imported without ``debug_toolbar`` installed, instead of a
+  ``RuntimeError`` about the ``HistoryEntry`` model's ``app_label``.
 * Fixed the History panel crashing when captured request data includes a
   key named ``items``. Django templates resolve dictionary keys before
   methods, so ``data.items`` was that field's value rather than
