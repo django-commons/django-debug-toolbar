@@ -3,7 +3,26 @@ Change log
 
 Pending
 
-* Fix ``Server-Timing`` header not being overridden if it already exists.
+* Added a ``test_release`` workflow to build and publish development
+  versions to TestPyPI.
+* Added support for Python 3.15.
+* Fixed the Profiling panel on Python 3.15.
+* Fixed Geist and Alef not loading in Chrome by moving ``@font-face`` out
+  the toolbar's shadow DOM.
+* Fixed the toolbar briefly appearing without its styles in Firefox while
+  ``toolbar.css`` loads inside the shadow DOM.
+* Updated documentation for use with hypermedia libraries: htmx v2, v4 and
+  Turbo.
+* Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
+  recorded. The panel shows the SQL for each execution.
+* Raised ``ImproperlyConfigured`` naming ``INSTALLED_APPS`` when the toolbar
+  is imported without ``debug_toolbar`` installed, instead of a
+  ``RuntimeError`` about the ``HistoryEntry`` model's ``app_label``.
+* Fixed the toolbar overwriting a ``Server-Timing`` header set by the view.
+  The toolbar's timings are now appended to the existing value.
+* ``Panel.get_headers()`` now returns a ``PanelHeaders`` instance with
+  separate ``append`` and ``update`` dictionaries instead of a ``dict``.
+  Third-party panels overriding it need to be updated.
 
 8.0.0 (2026-09-02)
 ------------------

@@ -343,6 +343,24 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
         self.assertContains(response, 'id="djDebugRoot"')
         self.assertContains(response, '<template shadowrootmode="open">')
 
+    def test_font_face_stylesheet_is_outside_shadow_tree(self):
+        response = self.client.get("/regular/basic/")
+        html = response.content.decode()
+        fonts = html.find("debug_toolbar/css/fonts.css")
+        shadow = html.find("<template shadowrootmode")
+        self.assertNotEqual(fonts, -1)
+        self.assertNotEqual(shadow, -1)
+        self.assertLess(fonts, shadow)
+
+    def test_shadow_dom_toolbar_hidden_until_stylesheet_loads(self):
+        response = self.client.get("/regular/basic/")
+        self.assertContains(response, '<div id="djDebug" class="djdt-hidden" hidden')
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"USE_SHADOW_DOM": False})
+    def test_toolbar_not_hidden_without_shadow_dom(self):
+        response = self.client.get("/regular/basic/")
+        self.assertContains(response, '<div id="djDebug" class="djdt-hidden" dir=')
+
     @override_settings(DEBUG_TOOLBAR_CONFIG={"USE_SHADOW_DOM": False})
     def test_shadow_dom_can_be_disabled(self):
         response = self.client.get("/regular/basic/")
