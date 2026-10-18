@@ -5,10 +5,10 @@ import datetime
 from time import perf_counter
 
 import django.test.testcases
-from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
 
 from debug_toolbar import settings as dt_settings
+from debug_toolbar.recording import record_sql
 from debug_toolbar.sanitize import force_str
 from debug_toolbar.utils import get_stack_trace, get_template_info
 
@@ -45,11 +45,6 @@ except (ImportError, ImproperlyConfigured):
 # by the TemplatePanel to prevent the toolbar from issuing
 # additional queries.
 allow_sql = contextvars.ContextVar("debug-toolbar-allow-sql", default=True)
-
-
-DDT_MODELS = {
-    m._meta.db_table for m in apps.get_app_config("debug_toolbar").get_models()
-}
 
 
 class SQLQueryTriggered(Exception):
@@ -280,11 +275,10 @@ class NormalCursorMixin(DjDTCursorWrapperMixin):
                     }
                 )
 
-            # Skip tracking for toolbar models by default.
-            # This can be overridden by setting SKIP_TOOLBAR_QUERIES = False
-            if not dt_settings.get_config()["SKIP_TOOLBAR_QUERIES"] or not any(
-                table in sql for table in DDT_MODELS
-            ):
+            # Skip the queries the toolbar runs to persist its own data by
+            # default. This can be overridden by setting
+            # SKIP_TOOLBAR_QUERIES = False
+            if record_sql.get() or not dt_settings.get_config()["SKIP_TOOLBAR_QUERIES"]:
                 # We keep `sql` to maintain backwards compatibility
                 self.logger.record(**kwargs)
 

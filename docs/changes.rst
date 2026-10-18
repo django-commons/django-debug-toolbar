@@ -33,6 +33,11 @@ Pending
   Third-party panels overriding it need to be updated.
 * Added open in editor functionality to templates panel using ``EDITOR``
   setting.
+* Stopped the ``BEGIN`` and ``COMMIT`` of the toolbar's own transactions
+  from showing up in the SQL panel when using ``DatabaseStore`` or a
+  ``CacheStore`` with a database cache backend. The toolbar no longer
+  detects its queries by table name, so queries a project makes on the
+  toolbar's models are shown in the SQL panel.
 
 8.0.0 (2026-09-02)
 ------------------
