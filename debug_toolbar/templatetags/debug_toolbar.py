@@ -34,3 +34,12 @@ def inline_svg(path, css_class="", label=""):
     if css_class:
         attrs = format_html('class="{}" {}', css_class, attrs)
     return mark_safe(svg.replace("<svg ", format_html("<svg {} ", attrs), 1))
+
+
+@register.filter
+def dict_items(value):
+    """
+    Return the items of a mapping. Use this instead of ``value.items`` since
+    the template engine resolves a key named ``items`` before the method.
+    """
+    return value.items() if hasattr(value, "items") else []

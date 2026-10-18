@@ -11,6 +11,10 @@ Pending
   the toolbar's shadow DOM.
 * Fixed the toolbar briefly appearing without its styles in Firefox while
   ``toolbar.css`` loads inside the shadow DOM.
+* Deferred the toolbar handle's position calculation to an animation frame,
+  so it no longer forces a synchronous layout during initialization. On
+  pages with a large amount of CSS this could briefly show the page before
+  its styles were applied.
 * Updated documentation for use with hypermedia libraries: htmx v2, v4 and
   Turbo.
 * Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
@@ -18,6 +22,10 @@ Pending
 * Raised ``ImproperlyConfigured`` naming ``INSTALLED_APPS`` when the toolbar
   is imported without ``debug_toolbar`` installed, instead of a
   ``RuntimeError`` about the ``HistoryEntry`` model's ``app_label``.
+* Fixed the History panel crashing when captured request data includes a
+  key named ``items``. Django templates resolve dictionary keys before
+  methods, so ``data.items`` was that field's value rather than
+  ``dict.items()``.
 * Fixed the toolbar overwriting a ``Server-Timing`` header set by the view.
   The toolbar's timings are now appended to the existing value.
 * ``Panel.get_headers()`` now returns a ``PanelHeaders`` instance with
@@ -83,6 +91,7 @@ Pending
 * Improved cache hit/miss reporting in the Cache panel for ``cache.get()``
   calls with a supplied default value, while documenting the remaining
   ambiguity when a cached value equals the supplied default.
+
 
 7.0.0 (2026-06-17)
 ------------------
