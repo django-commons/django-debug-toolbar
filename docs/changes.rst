@@ -4,7 +4,7 @@ Change log
 Pending
 
 * Added a ``test_release`` workflow to build and publish development
-  versions to TestPyPI
+  versions to TestPyPI.
 * Added support for Python 3.15.
 * Fixed the Profiling panel on Python 3.15.
 * Fixed Geist and Alef not loading in Chrome by moving ``@font-face`` out
