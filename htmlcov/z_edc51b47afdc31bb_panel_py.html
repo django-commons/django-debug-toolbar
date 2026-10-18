@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_d2adda62691f23ee_profiling_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.2">coverage.py v7.16.2</a>,
-            created at 2026-10-18 16:49 +0000
+            created at 2026-10-18 17:48 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -93,7 +93,7 @@
     <p class="run"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t"><span class="key">from</span> <span class="nam">django</span><span class="op">.</span><span class="nam">utils</span> <span class="key">import</span> <span class="nam">timezone</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t"><span class="key">from</span> <span class="nam">django</span><span class="op">.</span><span class="nam">utils</span><span class="op">.</span><span class="nam">translation</span> <span class="key">import</span> <span class="nam">gettext_lazy</span> <span class="key">as</span> <span class="nam">_</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t"><span class="key">from</span> <span class="nam">debug_toolbar</span><span class="op">.</span><span class="nam">panels</span> <span class="key">import</span> <span class="nam">Panel</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t"><span class="key">from</span> <span class="nam">debug_toolbar</span><span class="op">.</span><span class="nam">panels</span> <span class="key">import</span> <span class="nam">Panel</span><span class="op">,</span> <span class="nam">PanelHeaders</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t"><span class="key">from</span> <span class="nam">debug_toolbar</span><span class="op">.</span><span class="nam">panels</span><span class="op">.</span><span class="nam">history</span> <span class="key">import</span> <span class="nam">views</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t"><span class="key">from</span> <span class="nam">debug_toolbar</span><span class="op">.</span><span class="nam">panels</span><span class="op">.</span><span class="nam">history</span><span class="op">.</span><span class="nam">forms</span> <span class="key">import</span> <span class="nam">HistoryStoreForm</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -107,12 +107,12 @@
     <p class="run"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t">    <span class="nam">nav_icon</span> <span class="op">=</span> <span class="str">&quot;debug_toolbar/img/history.svg&quot;</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t">    <span class="nam">template</span> <span class="op">=</span> <span class="str">&quot;debug_toolbar/panels/history.html&quot;</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t26" href="#t26">26</a></span><span class="t">    <span class="key">def</span> <span class="nam">get_headers</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">request</span><span class="op">:</span> <span class="nam">HttpRequest</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="nam">dict</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t">        <span class="nam">headers</span><span class="op">:</span> <span class="nam">dict</span> <span class="op">=</span> <span class="nam">super</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">get_headers</span><span class="op">(</span><span class="nam">request</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t26" href="#t26">26</a></span><span class="t">    <span class="key">def</span> <span class="nam">get_headers</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">request</span><span class="op">:</span> <span class="nam">HttpRequest</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="nam">PanelHeaders</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t">        <span class="nam">headers</span><span class="op">:</span> <span class="nam">PanelHeaders</span> <span class="op">=</span> <span class="nam">super</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">get_headers</span><span class="op">(</span><span class="nam">request</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t28" href="#t28">28</a></span><span class="t">        <span class="nam">observe_request</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">toolbar</span><span class="op">.</span><span class="nam">get_observe_request</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t29" href="#t29">29</a></span><span class="t">        <span class="nam">request_id</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">toolbar</span><span class="op">.</span><span class="nam">request_id</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t30" href="#t30">30</a></span><span class="t">        <span class="key">if</span> <span class="nam">request_id</span> <span class="key">and</span> <span class="nam">observe_request</span><span class="op">(</span><span class="nam">request</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t31" href="#t31">31</a></span><span class="t">            <span class="nam">headers</span><span class="op">[</span><span class="str">&quot;djdt-request-id&quot;</span><span class="op">]</span> <span class="op">=</span> <span class="nam">request_id</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t31" href="#t31">31</a></span><span class="t">            <span class="nam">headers</span><span class="op">.</span><span class="nam">update</span><span class="op">[</span><span class="str">&quot;djdt-request-id&quot;</span><span class="op">]</span> <span class="op">=</span> <span class="nam">request_id</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t">        <span class="key">return</span> <span class="nam">headers</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t">    <span class="op">@</span><span class="nam">property</span>&nbsp;</span><span class="r"></span></p>
@@ -222,7 +222,7 @@
             <a class="nav" href="z_d2adda62691f23ee_profiling_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.2">coverage.py v7.16.2</a>,
-            created at 2026-10-18 16:49 +0000
+            created at 2026-10-18 17:48 +0000
         </p>
     </div>
 </footer>

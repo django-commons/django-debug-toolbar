@@ -55,8 +55,8 @@
             </div>
         </aside>
         <h2>
-            <span class="text">214 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">207<span class="text"> run</span></button>
+            <span class="text">219 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">212<span class="text"> run</span></button>
             <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">7<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
             <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">8<span class="text"> partial</span></button>
@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="index.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.2">coverage.py v7.16.2</a>,
-            created at 2026-10-18 16:49 +0000
+            created at 2026-10-18 17:48 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -500,6 +500,30 @@
     <p class="run"><span class="n"><a id="t416" href="#t416">416</a></span><span class="t">        <span class="key">return</span> <span class="nam">csp_nonce</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t417" href="#t417">417</a></span><span class="t">    <span class="com"># Django&#x27;s built-in CSP support uses get_nonce(request)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t418" href="#t418">418</a></span><span class="t">    <span class="key">return</span> <span class="nam">compat</span><span class="op">.</span><span class="nam">get_nonce</span><span class="op">(</span><span class="nam">request</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t419" href="#t419">419</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t420" href="#t420">420</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t421" href="#t421">421</a></span><span class="t"><span class="key">def</span> <span class="nam">get_editor_url</span><span class="op">(</span><span class="nam">file</span><span class="op">:</span> <span class="nam">str</span><span class="op">,</span> <span class="nam">line</span><span class="op">:</span> <span class="nam">int</span> <span class="op">=</span> <span class="num">1</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="nam">str</span> <span class="op">|</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t422" href="#t422">422</a></span><span class="t">    <span class="nam">formats</span> <span class="op">=</span> <span class="op">{</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t423" href="#t423">423</a></span><span class="t">        <span class="str">&quot;cursor&quot;</span><span class="op">:</span> <span class="str">&quot;cursor://file/{file}:{line}&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t424" href="#t424">424</a></span><span class="t">        <span class="str">&quot;emacs&quot;</span><span class="op">:</span> <span class="str">&quot;emacs://open?url=file://{file}&amp;line={line}&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t425" href="#t425">425</a></span><span class="t">        <span class="str">&quot;espresso&quot;</span><span class="op">:</span> <span class="str">&quot;x-espresso://open?filepath={file}&amp;lines={line}&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t426" href="#t426">426</a></span><span class="t">        <span class="str">&quot;idea&quot;</span><span class="op">:</span> <span class="str">&quot;idea://open?file={file}&amp;line={line}&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t427" href="#t427">427</a></span><span class="t">        <span class="str">&quot;idea-remote&quot;</span><span class="op">:</span> <span class="str">&quot;javascript:(()=&gt;{{let r=new XMLHttpRequest; r.open(&#x27;get&#x27;,&#x27;http://localhost:63342/api/file/?file={file}&amp;line={line}&#x27;);r.send();}})()&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t428" href="#t428">428</a></span><span class="t">        <span class="str">&quot;macvim&quot;</span><span class="op">:</span> <span class="str">&quot;mvim://open/?url=file://{file}&amp;line={line}&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t429" href="#t429">429</a></span><span class="t">        <span class="str">&quot;nova&quot;</span><span class="op">:</span> <span class="str">&quot;nova://open?path={file}&amp;line={line}&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t430" href="#t430">430</a></span><span class="t">        <span class="str">&quot;pycharm&quot;</span><span class="op">:</span> <span class="str">&quot;pycharm://open?file={file}&amp;line={line}&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t431" href="#t431">431</a></span><span class="t">        <span class="str">&quot;pycharm-remote&quot;</span><span class="op">:</span> <span class="str">&quot;javascript:(()=&gt;{{let r=new XMLHttpRequest; r.open(&#x27;get&#x27;,&#x27;http://localhost:63342/api/file/{file}:{line}&#x27;);r.send();}})()&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t432" href="#t432">432</a></span><span class="t">        <span class="str">&quot;sublime&quot;</span><span class="op">:</span> <span class="str">&quot;subl://open?url=file://{file}&amp;line={line}&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t433" href="#t433">433</a></span><span class="t">        <span class="str">&quot;vscode&quot;</span><span class="op">:</span> <span class="str">&quot;vscode://file/{file}:{line}&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t434" href="#t434">434</a></span><span class="t">        <span class="str">&quot;vscode-insiders&quot;</span><span class="op">:</span> <span class="str">&quot;vscode-insiders://file/{file}:{line}&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t435" href="#t435">435</a></span><span class="t">        <span class="str">&quot;vscode-remote&quot;</span><span class="op">:</span> <span class="str">&quot;vscode://vscode-remote/{file}:{line}&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t436" href="#t436">436</a></span><span class="t">        <span class="str">&quot;vscode-insiders-remote&quot;</span><span class="op">:</span> <span class="str">&quot;vscode-insiders://vscode-remote/{file}:{line}&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t437" href="#t437">437</a></span><span class="t">        <span class="str">&quot;vscodium&quot;</span><span class="op">:</span> <span class="str">&quot;vscodium://file/{file}:{line}&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t438" href="#t438">438</a></span><span class="t">        <span class="str">&quot;windsurf&quot;</span><span class="op">:</span> <span class="str">&quot;windsurf://file/{file}:{line}&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t439" href="#t439">439</a></span><span class="t">    <span class="op">}</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t440" href="#t440">440</a></span><span class="t">    <span class="nam">template</span> <span class="op">=</span> <span class="nam">formats</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">dt_settings</span><span class="op">.</span><span class="nam">get_config</span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="str">&quot;EDITOR&quot;</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t441" href="#t441">441</a></span><span class="t">    <span class="key">if</span> <span class="nam">template</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t442" href="#t442">442</a></span><span class="t">        <span class="key">return</span> <span class="nam">template</span><span class="op">.</span><span class="nam">format</span><span class="op">(</span><span class="nam">file</span><span class="op">=</span><span class="nam">file</span><span class="op">,</span> <span class="nam">line</span><span class="op">=</span><span class="nam">line</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -509,7 +533,7 @@
             <a class="nav" href="index.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.2">coverage.py v7.16.2</a>,
-            created at 2026-10-18 16:49 +0000
+            created at 2026-10-18 17:48 +0000
         </p>
     </div>
 </footer>
