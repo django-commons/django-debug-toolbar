@@ -13,6 +13,7 @@ Roboto
 Runtime
 Signal
 Teal
+TestPyPI
 Transifex
 Velda
 Werkzeug
