@@ -101,6 +101,12 @@ Cache
 
 Cache queries. Is incompatible with Django's per-site caching.
 
+Cache hit/miss statistics for ``cache.get()`` calls may not always be
+accurate. See the `discussion`_ for details and to share feedback about
+improving cache hit/miss tracking.
+
+.. _discussion: https://github.com/django-commons/django-debug-toolbar/discussions/2441
+
 Signals
 ~~~~~~~
 
@@ -398,6 +404,21 @@ There is no public CSS API at this time.
     .. automethod:: debug_toolbar.panels.Panel.run_checks
 
 .. autoclass:: debug_toolbar._stubs.GetResponse
+
+.. class:: debug_toolbar.panels.PanelHeaders
+
+    Allow panels to update headers or append to existing values.
+
+    .. attribute:: append
+       :type: dict[str, str]
+
+       Header values to append to any existing value for the same header,
+       separated by a comma.
+
+    .. attribute:: update
+       :type: dict[str, str]
+
+       Header values that replace any existing value for the same header.
 
 .. _javascript-api:
 

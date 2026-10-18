@@ -105,6 +105,7 @@ class TemplatesPanel(Panel):
     # Implement the Panel API
 
     nav_title = _("Templates")
+    nav_icon = "debug_toolbar/img/templates.svg"
 
     @property
     def title(self):

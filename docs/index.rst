@@ -14,3 +14,4 @@ Django Debug Toolbar
    changes
    contributing
    architecture
+   design_guidelines

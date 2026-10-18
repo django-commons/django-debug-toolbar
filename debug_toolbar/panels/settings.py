@@ -25,6 +25,7 @@ class SettingsPanel(Panel):
     is_async = True
 
     nav_title = _("Settings")
+    nav_icon = "debug_toolbar/img/settings.svg"
 
     def title(self):
         return _("Settings from %s") % self.get_stats()["settings"].get(

@@ -17,6 +17,7 @@ class RedirectsPanel(Panel):
     is_async = True
 
     nav_title = _("Intercept redirects")
+    nav_icon = "debug_toolbar/img/redirects.svg"
 
     def _process_response(self, response):
         """

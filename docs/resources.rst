@@ -58,6 +58,18 @@ Toolbar, it highlights performance issues the tool can help diagnose.
 * Published: July 11, 2024.
 * Duration: 23 minutes.
 
+Django Performance Optimization using Django Debug Toolbar
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Presented by **Velda Kiara**, this talk walks through using the Django Debug
+Toolbar to identify and optimize performance bottlenecks in Django
+applications.
+
+* `Watch on YouTube <https://youtu.be/mVg3pKEV75M>`__
+* `View the presentation on Canva <https://www.canva.com/design/DAGbnGp-jJI/42wClCqb0pFS6YQpOY6N-w/view>`__
+* Published: October 22, 2025.
+* Duration: 30 minutes.
+
 Want to Add Your Content Here?
 ------------------------------
 
