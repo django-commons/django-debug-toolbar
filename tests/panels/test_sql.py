@@ -579,21 +579,19 @@ class SQLPanelTestCase(BaseTestCase):
         queries = self.panel.get_stats()["queries"][1:]
         self.assertEqual(len(queries), len(querysets))
         for name, query in zip(querysets, queries):
-            # A savepoint keeps one failing query from aborting the rest.
+            # A transaction keeps one failing query from aborting the rest.
             with self.subTest(name), transaction.atomic():
-                # Each form closes its cursor after one call, so build one
-                # per action, like the sql_select and sql_explain views do.
                 data = {
                     "request_id": self.toolbar.request_id,
                     "djdt_query_id": query["djdt_query_id"],
                 }
-                form = SQLSelectForm(data)
-                self.assertTrue(form.is_valid(), form.errors)
-                result, _ = form.select()
+                select_form = SQLSelectForm(data)
+                self.assertTrue(select_form.is_valid(), select_form.errors)
+                result, _ = select_form.select()
                 self.assertEqual(len(result), 1)
-                form = SQLSelectForm(data)
-                self.assertTrue(form.is_valid(), form.errors)
-                result, _ = form.explain()
+                explain_form = SQLSelectForm(data)
+                self.assertTrue(explain_form.is_valid(), explain_form.errors)
+                result, _ = explain_form.explain()
                 self.assertTrue(result)
 
     @unittest.skipUnless(
