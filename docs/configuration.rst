@@ -421,7 +421,7 @@ Panel options
     WHERE "auth_user"."username" = '''test_username'''
     LIMIT 21
 
-* ``PROFILER_CAPTURE_NON_PROJECT_THRESHOLD``
+* ``PROFILER_CAPTURE_THRESHOLD``
 
   Default: ``0.0001``
 
@@ -432,10 +432,14 @@ Panel options
   faster render of the profiling panel, but will exclude data.
 
   This value is the cumulative time threshold to include a function call in the
-  profiling stats results.
+  profiling stats results. It's possible to do more complex comparisons by
+  subclassing ``ProfilingPanel`` and overriding
+  ``ProfilingPanel.include_in_func_list()``.
 
-  It's possible to do more complex comparisons by subclassing
-  ``ProfilingPanel`` and overriding ``ProfilingPanel.include_in_func_list()``.
+  When ``PROFILER_CAPTURE_PROJECT_CODE`` is enabled,
+  project code is always included, so this threshold effectively only applies
+  to code outside your project, such as Django, Python or third-party
+  libraries.
 
 * ``PROFILER_CAPTURE_PROJECT_CODE``
 

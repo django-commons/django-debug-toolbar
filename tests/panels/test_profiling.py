@@ -44,11 +44,11 @@ class ProfilingPanelTestCase(BaseTestCase):
         # ensure traces aren't escaped
         self.assertIn('<span class="djdt-path">', content)
 
-    def test_capture_non_project_threshold(self):
+    def test_capture_threshold(self):
         """
-        Test that non project capture threshold excludes calls
+        Test that the capture threshold excludes non project calls
         """
-        self.panel.capture_non_project_threshold = 1
+        self.panel.capture_threshold = 1
         self._get_response = lambda request: regular_view(request, "profiling")
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)
@@ -65,7 +65,7 @@ class ProfilingPanelTestCase(BaseTestCase):
         self.panel.capture_project_code = False
         # Set this high to exclude all other function calls and with the
         # project auto-capture turned off, no results should be included.
-        self.panel.capture_non_project_threshold = 1
+        self.panel.capture_threshold = 1
         self._get_response = lambda request: regular_view(request, "profiling")
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)

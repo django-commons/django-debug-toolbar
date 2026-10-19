@@ -40,7 +40,7 @@ Pending
   ``enctype="multipart/form-data"`` to identify forms without an ``id``
   by their ``class``, ``name`` and ``action`` attributes.
 * Replaced ``PROFILER_THRESHOLD_RATIO`` with
-  ``PROFILER_CAPTURE_NON_PROJECT_THRESHOLD`` to allow more accurate profiling
+  ``PROFILER_CAPTURE_THRESHOLD`` to allow more accurate profiling
   results.
 * Adds a ``ProfilingPanel.include_in_func_list()`` to allow developers to
   customize the logic on what functions are included in the stats results.
