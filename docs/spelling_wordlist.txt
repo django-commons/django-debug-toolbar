@@ -1,6 +1,7 @@
 Alef
 Canva
 Cyan
+Datastar
 Geist
 Hatchling
 Hotwire
