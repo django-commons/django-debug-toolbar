@@ -4,16 +4,41 @@ Change log
 Pending
 
 * Added Datastar Signals to the third-party panel list.
+* Added a ``test_release`` workflow to build and publish development
+  versions to TestPyPI.
 * Added support for Python 3.15.
 * Fixed the Profiling panel on Python 3.15.
 * Fixed Geist and Alef not loading in Chrome by moving ``@font-face`` out
   the toolbar's shadow DOM.
 * Fixed the toolbar briefly appearing without its styles in Firefox while
   ``toolbar.css`` loads inside the shadow DOM.
+* Deferred the toolbar handle's position calculation to an animation frame,
+  so it no longer forces a synchronous layout during initialization. On
+  pages with a large amount of CSS this could briefly show the page before
+  its styles were applied.
 * Updated documentation for use with hypermedia libraries: htmx v2, v4 and
   Turbo.
 * Fixed ``cursor.executemany()`` raising from the SQL panel instead of being
   recorded. The panel shows the SQL for each execution.
+* Raised ``ImproperlyConfigured`` naming ``INSTALLED_APPS`` when the toolbar
+  is imported without ``debug_toolbar`` installed, instead of a
+  ``RuntimeError`` about the ``HistoryEntry`` model's ``app_label``.
+* Fixed the History panel crashing when captured request data includes a
+  key named ``items``. Django templates resolve dictionary keys before
+  methods, so ``data.items`` was that field's value rather than
+  ``dict.items()``.
+* Fixed the toolbar overwriting a ``Server-Timing`` header set by the view.
+  The toolbar's timings are now appended to the existing value.
+* ``Panel.get_headers()`` now returns a ``PanelHeaders`` instance with
+  separate ``append`` and ``update`` dictionaries instead of a ``dict``.
+  Third-party panels overriding it need to be updated.
+* Fixed the SQL panel's Explain action returning a 500 on databases that
+  don't support ``EXPLAIN``. It now shows an error instead.
+* Added open in editor functionality to templates panel using ``EDITOR``
+  setting.
+* Improved the Alerts panel's warning for forms missing
+  ``enctype="multipart/form-data"`` to identify forms without an ``id``
+  by their ``class``, ``name`` and ``action`` attributes.
 
 8.0.0 (2026-09-02)
 ------------------
@@ -74,6 +99,7 @@ Pending
 * Improved cache hit/miss reporting in the Cache panel for ``cache.get()``
   calls with a supplied default value, while documenting the remaining
   ambiguity when a cached value equals the supplied default.
+
 
 7.0.0 (2026-06-17)
 ------------------

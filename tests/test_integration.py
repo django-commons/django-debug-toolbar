@@ -9,7 +9,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core import signing
 from django.core.cache import cache
 from django.core.cache.backends.base import CacheKeyWarning
-from django.db import connection
+from django.db import DatabaseError, connection
 from django.http import HttpResponse
 from django.template.loader import get_template
 from django.test import RequestFactory
@@ -26,6 +26,7 @@ from debug_toolbar.panels.cache import CachePanel
 from debug_toolbar.panels.history import HistoryPanel
 from debug_toolbar.panels.request import RequestPanel
 from debug_toolbar.panels.sql import SQLPanel
+from debug_toolbar.panels.sql.forms import SQLSelectForm
 from debug_toolbar.panels.templates import TemplatesPanel
 from debug_toolbar.panels.versions import VersionsPanel
 from debug_toolbar.store import get_store
@@ -621,6 +622,26 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 200)
 
+    def test_sql_explain_unsupported(self):
+        """
+        A database that can't EXPLAIN shows an error instead of a 500.
+        """
+        self.client.get("/execute_sql/")
+        request_id = list(get_store().request_ids())[-1]
+        toolbar = DebugToolbar.fetch(request_id, SQLPanel.panel_id)
+        panel = toolbar.get_panel_by_id(SQLPanel.panel_id)
+        djdt_query_id = panel.get_stats()["queries"][-1]["djdt_query_id"]
+
+        data = {
+            "signed": SignedDataForm.sign(
+                {"request_id": request_id, "djdt_query_id": djdt_query_id}
+            )
+        }
+        with patch.object(SQLSelectForm, "explain", side_effect=DatabaseError):
+            response = self.client.post("/__debug__/sql_explain/", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("EXPLAIN is not supported", response.json()["content"])
+
     def test_sql_profile_checks_show_toolbar(self):
         self.client.get("/execute_sql/")
         request_ids = list(get_store().request_ids())
@@ -707,12 +728,32 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
     def test_server_timing_headers(self):
         response = self.client.get("/execute_sql/")
         server_timing = response["Server-Timing"]
+        self.assertTrue(server_timing.startswith("TimerPanel_"), server_timing)
         expected_partials = [
             r'TimerPanel_utime;dur=(\d)*(\.(\d)*)?;desc="User CPU time", ',
             r'TimerPanel_stime;dur=(\d)*(\.(\d)*)?;desc="System CPU time", ',
             r'TimerPanel_total;dur=(\d)*(\.(\d)*)?;desc="Total CPU time", ',
             r'TimerPanel_total_time;dur=(\d)*(\.(\d)*)?;desc="Elapsed time", ',
             r'TimerPanel_toolbar_time;dur=(\d)*(\.(\d)*)?;desc="Including DebugToolbar time", ',
+            r'SQLPanel_sql_time;dur=(\d)*(\.(\d)*)?;desc="SQL 1 queries", ',
+            r'CachePanel_total_time;dur=0;desc="Cache 0 Calls"',
+        ]
+        for expected in expected_partials:
+            self.assertTrue(re.compile(expected).search(server_timing))
+
+    def test_server_timing_headers_with_existing_value(self):
+        response = self.client.get("/server-timing/")
+        server_timing = response["Server-Timing"]
+        self.assertTrue(
+            server_timing.startswith('existing_key;dur=100;desc="Details", '),
+            server_timing,
+        )
+        expected_partials = [
+            'existing_key;dur=100;desc="Details"',
+            r'TimerPanel_utime;dur=(\d)*(\.(\d)*)?;desc="User CPU time", ',
+            r'TimerPanel_stime;dur=(\d)*(\.(\d)*)?;desc="System CPU time", ',
+            r'TimerPanel_total;dur=(\d)*(\.(\d)*)?;desc="Total CPU time", ',
+            r'TimerPanel_total_time;dur=(\d)*(\.(\d)*)?;desc="Elapsed time", ',
             r'SQLPanel_sql_time;dur=(\d)*(\.(\d)*)?;desc="SQL 1 queries", ',
             r'CachePanel_total_time;dur=0;desc="Cache 0 Calls"',
         ]
@@ -1082,6 +1123,29 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         toolbar = self.selenium.find_element(By.ID, "djDebug")
         self.assertEqual(toolbar.get_attribute("data-user-theme"), "auto")
         self.assertEqual(toolbar.get_attribute("data-theme"), "light")
+
+    def reset_stored_toolbar_state(self):
+        self.get("/regular/basic/")
+        self.selenium.execute_script("localStorage.clear()")
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"SHOW_COLLAPSED": True})
+    def test_collapsed_toolbar_does_not_flash_unstyled_content(self):
+        """Firefox withholds animation frames until pending stylesheets load, so
+        a first frame that sees unstyled content means the toolbar forced layout
+        early and let an unstyled paint through."""
+        self.reset_stored_toolbar_state()
+        self.addCleanup(self.reset_stored_toolbar_state)
+
+        self.get("/flash_of_unstyled_content/")
+        self.wait.until(
+            lambda selenium: selenium.execute_script(
+                "return window.djdtStyledOnFirstFrame !== null"
+            )
+        )
+
+        self.assertTrue(
+            self.selenium.execute_script("return window.djdtStyledOnFirstFrame")
+        )
 
     def test_async_sql_action(self):
         self.get("/async_execute_sql/")

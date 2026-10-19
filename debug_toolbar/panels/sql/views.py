@@ -1,6 +1,7 @@
 from django.db import DatabaseError
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.template.loader import render_to_string
+from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 
 from debug_toolbar._compat import login_not_required
@@ -58,9 +59,17 @@ def sql_explain(request):
 
     if form.is_valid():
         query = form.cleaned_data["query"]
-        result, headers = form.explain()
+        result = None
+        headers = None
+        result_error = None
+        try:
+            result, headers = form.explain()
+        except DatabaseError:
+            result_error = _("EXPLAIN is not supported by your database.")
+
         context = {
             "result": result,
+            "result_error": result_error,
             "sql": reformat_sql(query["sql"], with_toggle=False),
             "duration": query["duration"],
             "headers": headers,

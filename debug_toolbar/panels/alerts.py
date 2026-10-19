@@ -69,6 +69,9 @@ class AlertsPanel(Panel):
         "form_missing_enctype": _(
             'Form contains file input, but does not have the attribute enctype="multipart/form-data".'
         ),
+        "form_attrs_missing_enctype": _(
+            'Form with attributes {form_attrs} contains file input, but does not have the attribute enctype="multipart/form-data".'
+        ),
         "input_refs_form_missing_enctype": _(
             'Input element references form with id "{form_id}", but the form does not have the attribute enctype="multipart/form-data".'
         ),
@@ -119,6 +122,16 @@ class AlertsPanel(Panel):
                 if form_id := form["form_attrs"].get("id"):
                     alert = self.messages["form_id_missing_enctype"].format(
                         form_id=form_id
+                    )
+                elif form_attrs := " ".join(
+                    f'{attr}="{form["form_attrs"][attr]}"'
+                    for attr in ("class", "name", "action")
+                    if form["form_attrs"].get(attr)
+                ):
+                    # Identify the form by its attributes to help
+                    # locate it in the page.
+                    alert = self.messages["form_attrs_missing_enctype"].format(
+                        form_attrs=form_attrs
                     )
                 else:
                     alert = self.messages["form_missing_enctype"]
