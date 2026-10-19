@@ -88,6 +88,7 @@ stacktrace
 stacktraces
 startup
 staticfiles
+subclassing
 theming
 timeline
 tox
