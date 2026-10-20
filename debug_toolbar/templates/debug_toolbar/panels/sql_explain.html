@@ -13,23 +13,30 @@
       <dt>{% translate "Database" %}</dt>
       <dd>{{ alias }}</dd>
     </dl>
-    <table>
-      <thead>
-        <tr>
-          {% for h in headers %}
-            <th>{{ h|upper }}</th>
-          {% endfor %}
-        </tr>
-      </thead>
-      <tbody>
-        {% for row in result %}
+    {% if result_error %}
+      <dl>
+        <dt>{% translate "Error" %}</dt>
+        <dd>{{ result_error }}</dd>
+      </dl>
+    {% else %}
+      <table>
+        <thead>
           <tr>
-            {% for column in row %}
-              <td>{% if forloop.last %}<code>{% endif %}{{ column|escape }}{% if forloop.last %}</code>{% endif %}</td>
+            {% for h in headers %}
+              <th>{{ h|upper }}</th>
             {% endfor %}
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {% for row in result %}
+            <tr>
+              {% for column in row %}
+                <td>{% if forloop.last %}<code>{% endif %}{{ column|escape }}{% if forloop.last %}</code>{% endif %}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
   </div>
 </div>

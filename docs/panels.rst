@@ -191,6 +191,16 @@ Third-party panels
 
 If you'd like to add a panel to this list, please submit a pull request!
 
+Datastar Signals
+~~~~~~~~~~~~~~~~
+
+URL: https://github.com/MarcusL11/django-debug-toolbar-datastar
+
+Path: ``django_datastar_toolbar.panels.DatastarStorePanel``
+
+Shows the current page's Datastar signals as JSON. Search highlights
+matching names and paths. The page must load the full Datastar bundle.
+
 Flame Graphs
 ~~~~~~~~~~~~
 
@@ -404,6 +414,21 @@ There is no public CSS API at this time.
     .. automethod:: debug_toolbar.panels.Panel.run_checks
 
 .. autoclass:: debug_toolbar._stubs.GetResponse
+
+.. class:: debug_toolbar.panels.PanelHeaders
+
+    Allow panels to update headers or append to existing values.
+
+    .. attribute:: append
+       :type: dict[str, str]
+
+       Header values to append to any existing value for the same header,
+       separated by a comma.
+
+    .. attribute:: update
+       :type: dict[str, str]
+
+       Header values that replace any existing value for the same header.
 
 .. _javascript-api:
 

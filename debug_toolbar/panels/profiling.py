@@ -184,7 +184,9 @@ class ProfilingPanel(Panel):
         self.stats = Stats(self.profiler)
         self.stats.calc_callees()
 
-        root_func = cProfile.label(super().process_request.__code__)
+        # This tuple replaces cProfile.label(), which was removed in Python 3.15.
+        code = super().process_request.__code__
+        root_func = (code.co_filename, code.co_firstlineno, code.co_name)
 
         if root_func in self.stats.stats:
             root = FunctionCall(self.stats, root_func, depth=0)

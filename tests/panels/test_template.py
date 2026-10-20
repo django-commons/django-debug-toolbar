@@ -1,7 +1,7 @@
 from unittest import expectedFailure
 
 from django.contrib.auth.models import User
-from django.template import Context, RequestContext, Template
+from django.template import Context, Origin, RequestContext, Template
 from django.test import override_settings
 from django.utils.functional import SimpleLazyObject
 
@@ -150,6 +150,39 @@ class TemplatesPanelTestCase(BaseTestCase):
 
         response = self.client.get(url, data)
         self.assertEqual(response.status_code, 200)
+
+    def test_get_stats_without_editor_configured(self):
+        response = self.panel.process_request(self.request)
+        Template("", origin=Origin("test.html")).render(Context({}))
+        self.panel.generate_stats(self.request, response)
+        stats = self.panel.get_stats()
+        self.assertIsNone(stats["templates"][0]["template"]["editor_url"])
+        self.assertFalse(stats["editor_configured"])
+
+    @override_settings(
+        DEBUG_TOOLBAR_CONFIG={"EDITOR": "vscode"},
+    )
+    def test_get_stats_with_editor_configured(self):
+        response = self.panel.process_request(self.request)
+        Template("", origin=Origin("test.html")).render(Context({}))
+        self.panel.generate_stats(self.request, response)
+        stats = self.panel.get_stats()
+        self.assertEqual(
+            stats["templates"][0]["template"]["editor_url"],
+            "vscode://file/test.html:1",
+        )
+        self.assertTrue(stats["editor_configured"])
+
+    @override_settings(
+        DEBUG_TOOLBAR_CONFIG={"EDITOR": "vscode"},
+    )
+    def test_get_stats_excludes_editor_with_no_template(self):
+        response = self.panel.process_request(self.request)
+        Template("").render(Context({}))
+        self.panel.generate_stats(self.request, response)
+        stats = self.panel.get_stats()
+        self.assertNotIn("editor_url", stats["templates"][0]["template"])
+        self.assertTrue(stats["editor_configured"])
 
 
 @override_settings(
