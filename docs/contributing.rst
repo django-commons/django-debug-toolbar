@@ -128,6 +128,13 @@ commit is made. Set up pre-commit before committing with::
 
     $ pre-commit install
 
+The minimum Python version in ``pyproject.toml`` applies to
+django-debug-toolbar **end users**. Developer tooling (including pre-commit and the hooks in
+``.pre-commit-config.yaml``) runs in their own environments
+and may expect a **currently supported** Python version even when the package
+still supports older releases. If developer tooling fails
+with a Python version error, try a newer supported Python.
+
 If necessary you can bypass pre-commit locally with::
 
     $ git commit --no-verify
