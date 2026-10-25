@@ -32,7 +32,7 @@
 | debug\_toolbar/panels/settings.py                   |       19 |        2 |        0 |        0 |     89% |     14-15 |
 | debug\_toolbar/panels/signals.py                    |       46 |        3 |       14 |        3 |     90% |58, 76-77, 86-\>88 |
 | debug\_toolbar/panels/sql/\_\_init\_\_.py           |        2 |        0 |        0 |        0 |    100% |           |
-| debug\_toolbar/panels/sql/forms.py                  |       81 |        9 |       16 |        5 |     84% |23-28, 38, 43-\>49, 45, 50, 66-67 |
+| debug\_toolbar/panels/sql/forms.py                  |       81 |        9 |       16 |        5 |     84% |24-29, 39, 44-\>50, 46, 51, 67-68 |
 | debug\_toolbar/panels/sql/panel.py                  |      176 |       10 |       50 |        4 |     93% |52, 80, 232-237, 278-279, 320-\>exit |
 | debug\_toolbar/panels/sql/tracking.py               |      141 |        4 |       40 |        2 |     97% |142-\>146, 156, 253-254, 292 |
 | debug\_toolbar/panels/sql/utils.py                  |       89 |        0 |       32 |        1 |     99% | 32-\>exit |
