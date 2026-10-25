@@ -1,7 +1,8 @@
+from functools import cached_property
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db import connections
-from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from debug_toolbar.panels.sql.utils import reformat_sql

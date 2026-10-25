@@ -1,11 +1,11 @@
 import uuid
 from collections import defaultdict
+from functools import cached_property
 
 from asgiref.sync import sync_to_async
 from django.db import connections
 from django.template.loader import render_to_string
 from django.urls import path
-from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _, ngettext
 
 from debug_toolbar import settings as dt_settings
