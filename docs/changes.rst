@@ -3,6 +3,8 @@ Change log
 
 Pending
 
+* Clarified in the contributing documentation that developer tooling may
+  require a newer supported Python.
 * Added Datastar Signals to the third-party panel list.
 * Added a ``test_release`` workflow to build and publish development
   versions to TestPyPI.
