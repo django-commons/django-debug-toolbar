@@ -39,6 +39,8 @@ Pending
 * Improved the Alerts panel's warning for forms missing
   ``enctype="multipart/form-data"`` to identify forms without an ``id``
   by their ``class``, ``name`` and ``action`` attributes.
+* Replaced the deprecated ``django.utils.functional.cached_property`` with
+  ``functools.cached_property`` in the SQL panel.
 
 8.0.0 (2026-09-02)
 ------------------
