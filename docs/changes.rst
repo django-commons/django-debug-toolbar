@@ -3,6 +3,8 @@ Change log
 
 Pending
 
+* Clarified in the contributing documentation that developer tooling may
+  require a newer supported Python.
 * Added Datastar Signals to the third-party panel list.
 * Added a ``test_release`` workflow to build and publish development
   versions to TestPyPI.
@@ -44,6 +46,8 @@ Pending
   results.
 * Adds a ``ProfilingPanel.include_in_func_list()`` to allow developers to
   customize the logic on what functions are included in the stats results.
+* Replaced the deprecated ``django.utils.functional.cached_property`` with
+  ``functools.cached_property`` in the SQL panel.
 
 8.0.0 (2026-09-02)
 ------------------
