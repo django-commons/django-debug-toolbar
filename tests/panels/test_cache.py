@@ -45,6 +45,13 @@ class CachePanelTestCase(BaseTestCase):
         self.assertEqual(self.panel.hits, 4)
         self.assertEqual(self.panel.misses, 2)
 
+    def test_get_many_with_iterator(self):
+        cache.cache.clear()
+        cache.cache.set("foo", 1)
+        self.assertEqual(cache.cache.get_many(k for k in ["foo", "bar"]), {"foo": 1})
+        self.assertEqual(cache.cache.get_many(keys=iter(["foo", "bar"])), {"foo": 1})
+        self.assertEqual(self.panel.hits, 2)
+
     def test_get_default_counts_as_miss(self):
         """
         Using get that fetches a cached value that's the same as the default
