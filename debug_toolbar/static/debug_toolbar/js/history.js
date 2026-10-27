@@ -16,7 +16,7 @@ function difference(setA, setB) {
 function pluckData(nodes, key) {
     return [...nodes].map((obj) => obj.dataset[key]);
 }
-
+// add helper function preserveRequest or something to preserve the current request before we delete everything
 function refreshHistory() {
     const formTarget = djDebug.querySelector(".refreshHistory");
     const container = djDebug.querySelector("#djdtHistoryRequests");
@@ -38,6 +38,15 @@ function refreshHistory() {
             for (const request of data.requests) {
                 container.innerHTML = request.content + container.innerHTML;
             }
+            const history_rows = Array.from(container.rows);
+            const target_id = djDebug.getAttribute("data-request-id")
+            history_rows.forEach(row => {
+                const row_request_id = row.dataset.requestId;
+                if (row_request_id === target_id) {
+                    row.classList.add("djdt-highlighted");
+                }
+            });
+            // call the helper function that we defined above
         })
         .then(() => {
             const allIds = new Set(
@@ -80,6 +89,7 @@ function refreshHistory() {
         });
 }
 
+// write a helper function that selects the url that we are on and adds the appropriate subtitle
 function switchHistory(newRequestId) {
     const formTarget = djDebug.querySelector(
         `.switchHistory[data-request-id='${newRequestId}']`
@@ -99,6 +109,7 @@ function switchHistory(newRequestId) {
                 `button[data-request-id="${newRequestId}"]`
             ).innerHTML = "Switch [EXPIRED]";
         }
+        // else statements that updates the subtitle
         replaceToolbarState(newRequestId, data);
     });
 }
