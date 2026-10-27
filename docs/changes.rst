@@ -59,6 +59,9 @@ Pending
   ``CacheStore`` with a database cache backend. The toolbar no longer
   detects its queries by table name, so queries a project makes on the
   toolbar's models are shown in the SQL panel.
+* Fixed the Cache panel raising ``TypeError`` when ``cache.get_many()`` is
+  called with a generator or another iterator of keys. The misses of such
+  a call aren't counted, since the call consumes the keys.
 
 8.0.0 (2026-09-02)
 ------------------

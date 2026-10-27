@@ -1,4 +1,5 @@
 import functools
+from collections.abc import Sized
 from time import perf_counter
 
 from asgiref.local import Local
@@ -130,7 +131,9 @@ class CachePanel(Panel):
         elif name == "get_many":
             keys = kwargs["keys"] if "keys" in kwargs else args[0]
             self.hits += len(return_value)
-            self.misses += len(keys) - len(return_value)
+            # An iterator of keys was consumed by the call and can't be counted.
+            if isinstance(keys, Sized):
+                self.misses += len(keys) - len(return_value)
         time_taken *= 1000
 
         self.total_time += time_taken
