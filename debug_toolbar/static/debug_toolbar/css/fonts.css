@@ -16,3 +16,7 @@
     font-display: swap;
     src: url("../fonts/Geist.woff2") format("woff2");
 }
+
+#djDebugRoot {
+    padding: 0;
+}

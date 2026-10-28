@@ -66,4 +66,18 @@ describe("djdt.init() in the shadow DOM", () => {
         await init();
         expect(djDebug.hidden).toBe(false);
     });
+
+    it("resets padding on the host", async () => {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        shadow.prepend(link);
+
+        const loaded = new Promise((resolve, reject) => {
+            link.addEventListener("load", resolve);
+            link.addEventListener("error", reject);
+        });
+        link.href = toolbarCssUrl;
+        await loaded;
+        expect(getComputedStyle(host).padding).toBe("0px");
+    });
 });
