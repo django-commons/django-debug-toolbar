@@ -50,6 +50,9 @@ Pending
   customize the logic on what functions are included in the stats results.
 * Replaced the deprecated ``django.utils.functional.cached_property`` with
   ``functools.cached_property`` in the SQL panel.
+* Switched the toolbar's CSS to logical properties (for example
+  ``margin-inline-start`` instead of ``margin-left``) as groundwork for
+  right-to-left support, and added a test that flags direction-specific CSS.
 
 8.0.0 (2026-09-02)
 ------------------
