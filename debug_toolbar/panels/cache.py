@@ -131,9 +131,7 @@ class CachePanel(Panel):
         elif name == "get_many":
             keys = kwargs["keys"] if "keys" in kwargs else args[0]
             self.hits += len(return_value)
-            # An iterator of keys was consumed by the call and can't be counted.
-            if isinstance(keys, Sized):
-                self.misses += len(keys) - len(return_value)
+            self.misses += len(keys) - len(return_value)
         time_taken *= 1000
 
         self.total_time += time_taken
@@ -157,6 +155,13 @@ class CachePanel(Panel):
         # attribute to None before invoking the original method, which will cause the
         # monkey-patched cache methods to skip recording additional calls made during
         # the course of this call, and then reset it back afterward.
+        if name == "get_many":
+            # The call would consume an iterator of keys, leaving nothing to count or show.
+            if "keys" in kwargs:
+                if not isinstance(kwargs["keys"], Sized):
+                    kwargs = {**kwargs, "keys": list(kwargs["keys"])}
+            elif args and not isinstance(args[0], Sized):
+                args = (list(args[0]), *args[1:])
         cache._djdt_panel = None
         try:
             start_time = perf_counter()

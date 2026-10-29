@@ -51,6 +51,12 @@ class CachePanelTestCase(BaseTestCase):
         self.assertEqual(cache.cache.get_many(k for k in ["foo", "bar"]), {"foo": 1})
         self.assertEqual(cache.cache.get_many(keys=iter(["foo", "bar"])), {"foo": 1})
         self.assertEqual(self.panel.hits, 2)
+        self.assertEqual(self.panel.misses, 2)
+        self.assertEqual(self.panel.calls[-2]["args"], (["foo", "bar"],))
+        self.assertEqual(self.panel.calls[-1]["kwargs"], {"keys": ["foo", "bar"]})
+        # Keys that can be counted are passed through as given.
+        cache.cache.get_many(("foo",))
+        self.assertEqual(self.panel.calls[-1]["args"], (("foo",),))
 
     def test_get_default_counts_as_miss(self):
         """

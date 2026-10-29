@@ -51,8 +51,7 @@ Pending
 * Replaced the deprecated ``django.utils.functional.cached_property`` with
   ``functools.cached_property`` in the SQL panel.
 * Fixed the Cache panel raising ``TypeError`` when ``cache.get_many()`` is
-  called with a generator or another iterator of keys. The misses of such
-  a call aren't counted, since the call consumes the keys.
+  called with a generator or another iterator of keys.
 
 8.0.0 (2026-09-02)
 ------------------
