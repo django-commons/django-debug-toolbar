@@ -73,6 +73,11 @@
 }
 
 /* Debug Toolbar CSS Reset, adapted from Eric Meyer's CSS Reset */
+:host,
+#djDebugRoot {
+    padding: 0;
+}
+
 #djDebug {
     color: var(--djdt-font-color);
     background: var(--djdt-background-color);
