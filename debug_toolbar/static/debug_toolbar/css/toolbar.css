@@ -155,7 +155,7 @@
     vertical-align: baseline;
     background-color: transparent;
     font-family: var(--djdt-font-family-primary);
-    text-align: left;
+    text-align: start;
     text-shadow: none;
     white-space: normal;
     transition: none;
@@ -214,7 +214,7 @@
     position: fixed;
     top: 0;
     bottom: 0;
-    right: 0;
+    inset-inline-end: 0;
     opacity: 0.9;
     overflow-y: auto;
 }
@@ -258,7 +258,7 @@
 }
 
 #djDebug #djDebugToolbar input[type="checkbox"] {
-    float: right;
+    float: inline-end;
     margin-block: 10px;
     margin-inline: 10px 15px;
 }
@@ -270,7 +270,8 @@
     text-decoration: none;
     display: block;
     font-size: 16px;
-    padding: 7px 10px 8px 25px;
+    padding-block: 7px 8px;
+    padding-inline: 25px 10px;
     color: #fff;
 }
 
@@ -315,7 +316,7 @@
     content: "▶";
     font-family: var(--djdt-font-family-primary);
     position: absolute;
-    left: 0;
+    inset-inline-start: 0;
     top: 50%;
     transform: translateY(-50%);
     color: #eee;
@@ -334,12 +335,14 @@
     text-decoration: none;
 }
 
+/* The handle stays pinned to the physical right edge: transform-origin has no
+   logical keywords, and toolbar.js only adjusts its vertical position. */
 #djDebug #djDebugToolbarHandle {
     position: fixed;
     transform: translateY(-100%) rotate(-90deg);
     transform-origin: right bottom;
     top: 0;
-    right: 0;
+    right: 0; /* rtl-ok */
     z-index: 100000000;
 }
 
@@ -396,9 +399,9 @@
     position: fixed;
     margin: 0;
     top: 0;
-    right: 240px;
+    inset-inline-end: 240px;
     bottom: 0;
-    left: 0px;
+    inset-inline-start: 0;
     background-color: var(--djdt-panel-content-background-color);
     color: #666;
     z-index: 100000000;
@@ -412,10 +415,9 @@
     position: absolute;
     background-color: var(--djdt-panel-title-background-color);
     color: var(--djdt-panel-title-color);
-    padding-left: 20px;
+    padding-inline-start: 20px;
     top: 0;
-    right: 0;
-    left: 0;
+    inset-inline: 0;
     height: 50px;
     display: flex;
     align-items: center;
@@ -442,11 +444,11 @@
 #djDebug .djDebugPanelContent {
     position: absolute;
     top: 50px;
-    right: 0;
+    inset-inline: 0;
     bottom: 0;
-    left: 0;
     height: auto;
-    padding: 5px 0 0 20px;
+    padding-block: 5px 0;
+    padding-inline: 20px 0;
 }
 
 #djDebug .djDebugPanelContent .djdt-loader {
@@ -474,7 +476,8 @@
     display: block;
     /* border-box keeps the padding inside height: 100% */
     box-sizing: border-box;
-    padding: 0 10px 50px 0;
+    padding-block: 0 50px;
+    padding-inline: 0 10px;
 }
 
 #djDebug h3 {
@@ -512,7 +515,7 @@
     border-bottom: 1px solid var(--djdt-table-border-color);
 }
 #djDebug .djdt-panelContent tbody td.djdt-time {
-    text-align: right;
+    text-align: end;
     min-width: 50px;
 }
 
@@ -521,7 +524,7 @@
     color: var(--djdt-table-header-color);
     border-bottom: 1px solid var(--djdt-table-border-color);
     background-color: var(--djdt-table-header-background-color);
-    text-align: left;
+    text-align: start;
     text-transform: uppercase;
     font-weight: 600;
     font-size: 11px;
@@ -541,7 +544,7 @@
 #djDebug .djdt-panelContent .djDebugClose {
     position: absolute;
     top: 4px;
-    right: 15px;
+    inset-inline-end: 15px;
     line-height: 16px;
     border: 3px solid #4d4d4d;
     border-radius: 50%;
@@ -574,7 +577,7 @@
 }
 
 #djDebug .djdt-panelContent dd {
-    margin-left: 10px;
+    margin-inline-start: 10px;
 }
 
 #djDebug a.toggleTemplate {
@@ -614,7 +617,7 @@
 }
 
 #djDebug .djSQLDetailsDiv tbody th {
-    text-align: left;
+    text-align: start;
 }
 
 #djDebug span.djDebugLineChart {
@@ -623,7 +626,7 @@
     position: absolute;
     bottom: 0;
     top: 0;
-    left: 0;
+    inset-inline-start: 0;
     display: block;
     z-index: 1000000001;
 }
@@ -638,6 +641,7 @@
     color: var(--djdt-font-color);
 } /* Error */
 
+/* rtl-lint: off -- generated Pygments styles; their left/right padding is symmetric */
 /*
 Styles for pygments HTMLFormatter
 
@@ -645,6 +649,7 @@ Styles for pygments HTMLFormatter
 - Each line needs to be prefixed with #djDebug .highlight as well.
 - The .w definition needs to include:
     white-space: pre-wrap
+- Keep the surrounding rtl-lint: off/on comments.
 
 To regenerate:
 
@@ -1156,6 +1161,7 @@ To regenerate:
 #djDebug[data-theme="dark"] .highlight .il {
     color: #bd93f9;
 } /* Literal.Number.Integer.Long */
+/* rtl-lint: on */
 
 #djDebug svg.djDebugLineChart {
     width: 100%;
@@ -1184,7 +1190,7 @@ To regenerate:
 #djDebug .djdt-panelContent table .djdt-toggle {
     width: 14px;
     padding-top: 3px;
-    padding-right: 0;
+    padding-inline-end: 0;
 }
 #djDebug .djdt-panelContent table .djdt-actions {
     min-width: 82px;
@@ -1288,7 +1294,7 @@ To regenerate:
     cursor: pointer;
 }
 #djToggleThemeButton > svg {
-    margin-left: auto;
+    margin-inline-start: auto;
 }
 #djDebug[data-user-theme="light"] #djToggleThemeButton svg.theme-light,
 #djDebug[data-user-theme="dark"] #djToggleThemeButton svg.theme-dark,
@@ -1318,7 +1324,7 @@ To regenerate:
 
 #djDebug .djdt-community-panel ul {
     list-style-type: disc;
-    padding-left: 1.25em;
+    padding-inline-start: 1.25em;
     margin: 1em 0;
 }
 
