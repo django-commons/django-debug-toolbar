@@ -32,6 +32,11 @@ repos:
       hooks:
           - id: rst-backticks
           - id: rst-directive-colons
+    - repo: https://github.com/codingjoe/relint
+      rev: 3.6.1
+      hooks:
+          - id: relint
+            args: []
     - repo: https://github.com/biomejs/pre-commit
       rev: v2.6.3
       hooks:
