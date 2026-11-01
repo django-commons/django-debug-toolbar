@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.http import QueryDict
 from django.test import RequestFactory
 
@@ -37,6 +39,14 @@ class RequestPanelTestCase(BaseTestCase):
         content = self.panel.content
         self.assertIn("nôt åscíì", content)
         self.assertValidHTML(content)
+
+    def test_no_missing_template_variables(self):
+        self.request.POST = ["not", "a", "dict"]
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+        with patch("django.template.base.logger.debug") as debug:
+            self.assertTrue(self.panel.content)
+        debug.assert_not_called()
 
     def test_query_dict_for_request_in_method_get(self):
         """
@@ -122,7 +132,8 @@ class RequestPanelTestCase(BaseTestCase):
             (2, 3): "tuple_key",
         }
         data = {
-            "list": [(1, "value"), ("data", ["foo", "bar", 1]), ((2, 3), "tuple_key")]
+            "list": [(1, "value"), ("data", ["foo", "bar", 1]), ((2, 3), "tuple_key")],
+            "raw": None,
         }
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)
@@ -133,7 +144,7 @@ class RequestPanelTestCase(BaseTestCase):
             "b": "b-value",
             "a": "a-value",
         }
-        data = {"list": [("a", "a-value"), ("b", "b-value")]}
+        data = {"list": [("a", "a-value"), ("b", "b-value")], "raw": None}
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)
         panel_stats = self.panel.get_stats()

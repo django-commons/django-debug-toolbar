@@ -323,6 +323,17 @@ class SQLPanel(Panel):
             trace_colors = defaultdict(lambda: next(colors))
 
             for query in stats.get("queries", []):
+                # The template checks these, but not every query has them.
+                for key in (
+                    "similar_count",
+                    "duplicate_count",
+                    "in_trans",
+                    "starts_trans",
+                    "ends_trans",
+                    "iso_level",
+                    "trans_status",
+                ):
+                    query.setdefault(key, None)
                 query["sql"] = reformat_sql(query["sql"], with_toggle=True)
                 query["form"] = SignedDataForm(
                     auto_id=None,
