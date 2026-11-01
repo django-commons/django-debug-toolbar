@@ -38,14 +38,12 @@ function refreshHistory() {
             for (const request of data.requests) {
                 container.innerHTML = request.content + container.innerHTML;
             }
-            const history_rows = [...container.rows];
             const target_id = djDebug.getAttribute("data-request-id");
-            history_rows.forEach((row) => {
-                const row_request_id = row.dataset.requestId;
-                if (row_request_id === target_id) {
+            for (const row of container.rows) {
+                if (row.dataset.requestId === target_id) {
                     row.classList.add("djdt-highlighted");
                 }
-            });
+            }
             // call the helper function that we defined above
         })
         .then(() => {
