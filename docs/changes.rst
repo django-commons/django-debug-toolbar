@@ -16,6 +16,8 @@ Pending
   the toolbar's shadow DOM.
 * Fixed the toolbar briefly appearing without its styles in Firefox while
   ``toolbar.css`` loads inside the shadow DOM.
+* Fixed page layouts inheriting padding on ``#djDebugRoot`` by resetting its
+  padding to zero.
 * Deferred the toolbar handle's position calculation to an animation frame,
   so it no longer forces a synchronous layout during initialization. On
   pages with a large amount of CSS this could briefly show the page before
