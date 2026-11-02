@@ -38,12 +38,8 @@ function refreshHistory() {
             for (const request of data.requests) {
                 container.innerHTML = request.content + container.innerHTML;
             }
-            const target_id = djDebug.getAttribute("data-request-id");
-            for (const row of container.rows) {
-                if (row.dataset.requestId === target_id) {
-                    row.classList.add("djdt-highlighted");
-                }
-            }
+            container
+                .querySelector(`tr[data-request-id="${djDebug.dataset.requestId}"]`).classList.add("djdt-highlighted");
         })
         .then(() => {
             const allIds = new Set(
@@ -86,10 +82,9 @@ function refreshHistory() {
         });
 }
 
-function getRequestUrl(requestId = djDebug.getAttribute("data-request-id")) {
+function getRequestUrl(requestId = djDebug.dataset.requestId) {
     return djDebug
-        .querySelector(`#djdtHistoryRequests [data-request-id="${requestId}"]`)
-        .getAttribute("data-request-url");
+        .querySelector(`#djdtHistoryRequests [data-request-id="${requestId}"]`).dataset.requestUrl;
 }
 
 function switchHistory(newRequestId) {
