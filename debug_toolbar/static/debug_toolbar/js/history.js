@@ -39,7 +39,10 @@ function refreshHistory() {
                 container.innerHTML = request.content + container.innerHTML;
             }
             container
-                .querySelector(`tr[data-request-id="${djDebug.dataset.requestId}"]`).classList.add("djdt-highlighted");
+                .querySelector(
+                    `tr[data-request-id="${djDebug.dataset.requestId}"]`
+                )
+                .classList.add("djdt-highlighted");
         })
         .then(() => {
             const allIds = new Set(
@@ -83,8 +86,9 @@ function refreshHistory() {
 }
 
 function getRequestUrl(requestId = djDebug.dataset.requestId) {
-    return djDebug
-        .querySelector(`#djdtHistoryRequests [data-request-id="${requestId}"]`).dataset.requestUrl;
+    return djDebug.querySelector(
+        `#djdtHistoryRequests [data-request-id="${requestId}"]`
+    ).dataset.requestUrl;
 }
 
 function switchHistory(newRequestId) {
