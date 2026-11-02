@@ -86,8 +86,9 @@ function refreshHistory() {
         });
 }
 
-function getRequestUrl(requestId=djDebug.getAttribute("data-request-id")) {
-    return djDebug.querySelector(`#djdtHistoryRequests [data-request-id="${requestId}"]`)
+function getRequestUrl(requestId = djDebug.getAttribute("data-request-id")) {
+    return djDebug
+        .querySelector(`#djdtHistoryRequests [data-request-id="${requestId}"]`)
         .getAttribute("data-request-url");
 }
 
@@ -110,7 +111,8 @@ function switchHistory(newRequestId) {
                 `button[data-request-id="${newRequestId}"]`
             ).innerHTML = "Switch [EXPIRED]";
         } else {
-            djDebug.querySelector(".HistoryPanel small").innerText = getRequestUrl(newRequestId);
+            djDebug.querySelector(".HistoryPanel small").innerText =
+                getRequestUrl(newRequestId);
         }
         replaceToolbarState(newRequestId, data);
     });
