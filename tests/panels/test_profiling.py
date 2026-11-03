@@ -89,6 +89,37 @@ class ProfilingPanelTestCase(BaseTestCase):
         self.assertNotIn("render", content)
         self.assertValidHTML(content)
 
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"PROFILER_CAPTURE_THRESHOLD": 1})
+    def test_capture_threshold_is_read_from_config(self):
+        """
+        Test that PROFILER_CAPTURE_THRESHOLD is honored when it is overridden.
+
+        The threshold is high enough here to exclude every function call made
+        by the test suite, including the ones belonging to the project.
+        """
+        self._get_response = lambda request: regular_view(request, "profiling")
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+        content = self.panel.content
+        self.assertIn("regular_view", content)
+        self.assertNotIn("render", content)
+        self.assertValidHTML(content)
+
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"PROFILER_CAPTURE_PROJECT_CODE": False})
+    def test_capture_project_code_disabled_from_config(self):
+        """
+        Test that PROFILER_CAPTURE_PROJECT_CODE is honored when it is
+        overridden.
+        """
+        self.panel.capture_threshold = 1
+        self._get_response = lambda request: regular_view(request, "profiling")
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+        content = self.panel.content
+        self.assertNotIn("regular_view", content)
+        self.assertNotIn("render", content)
+        self.assertValidHTML(content)
+
     @unittest.skipUnless(
         sys.version_info < (3, 12, 0),
         "Python 3.12 no longer contains a frame for list comprehensions.",

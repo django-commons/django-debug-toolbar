@@ -50,6 +50,9 @@ Pending
   results.
 * Adds a ``ProfilingPanel.include_in_func_list()`` to allow developers to
   customize the logic on what functions are included in the stats results.
+* Fixed ``PROFILER_CAPTURE_THRESHOLD`` and ``PROFILER_CAPTURE_PROJECT_CODE``
+  being read once when the Profiling panel was imported. Both settings are
+  now read when the panel runs, so changing them after startup takes effect.
 * Replaced the deprecated ``django.utils.functional.cached_property`` with
   ``functools.cached_property`` in the SQL panel.
 

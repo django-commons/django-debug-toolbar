@@ -149,6 +149,33 @@ class FunctionCall:
         }
 
 
+class _ConfigBackedAttribute:
+    """
+    Attribute that falls back to a ``DEBUG_TOOLBAR_CONFIG`` key.
+
+    The setting is looked up lazily so that changes made after the panel module
+    has been imported -- for example ``override_settings`` in a test -- are
+    honored. Assigning to the attribute, either on the class or on an instance,
+    takes precedence over the setting.
+    """
+
+    def __init__(self, key):
+        self.key = key
+
+    def __set_name__(self, owner, name):
+        self.name = name
+
+    def __get__(self, instance, owner=None):
+        if instance is None:
+            return self
+        if self.name in instance.__dict__:
+            return instance.__dict__[self.name]
+        return dt_settings.get_config()[self.key]
+
+    def __set__(self, instance, value):
+        instance.__dict__[self.name] = value
+
+
 class ProfilingPanel(Panel):
     """
     Panel that displays profiling information.
@@ -159,8 +186,9 @@ class ProfilingPanel(Panel):
     nav_icon = "debug_toolbar/img/profiling.svg"
 
     template = "debug_toolbar/panels/profiling.html"
-    capture_project_code = dt_settings.get_config()["PROFILER_CAPTURE_PROJECT_CODE"]
-    capture_threshold = dt_settings.get_config()["PROFILER_CAPTURE_THRESHOLD"]
+
+    capture_project_code = _ConfigBackedAttribute("PROFILER_CAPTURE_PROJECT_CODE")
+    capture_threshold = _ConfigBackedAttribute("PROFILER_CAPTURE_THRESHOLD")
 
     def process_request(self, request):
         self.profiler = cProfile.Profile()
