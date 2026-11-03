@@ -1,0 +1,24 @@
+# Direction-specific CSS in the toolbar. A declaration can opt out with a
+# trailing /* rtl-ok */ comment, and the generated Pygments styles sit
+# between /* rtl-lint: off */ and /* rtl-lint: on */ comments.
+- name: Physical left/right CSS property
+  pattern: '(?im)(?:^|[{;])[ \t]*(?:(?:scroll-)?(?:margin|padding)-(?:left|right)|border-(?:left|right)[\w-]*|border-(?:top|bottom)-(?:left|right)-radius|left|right)[ \t]*:(?![^\n]*/\*\s*rtl-ok\b)(?!(?:(?!rtl-lint: off)[\s\S])*rtl-lint: on)'
+  hint: |
+    Use the logical property instead (margin-inline-start, padding-inline-end,
+    inset-inline-end, border-start-start-radius, ...) so the toolbar's layout
+    follows its writing direction, or add /* rtl-ok */ when a physical side is
+    intended.
+  filePattern: debug_toolbar/static/debug_toolbar/css/.*\.css$
+- name: Physical left/right CSS value
+  pattern: '(?im)(?:^|[{;])[ \t]*(?:text-align|float|clear)[ \t]*:[ \t]*(?:left|right)\b(?![^\n]*/\*\s*rtl-ok\b)(?!(?:(?!rtl-lint: off)[\s\S])*rtl-lint: on)'
+  hint: |
+    Use start/end (text-align) or inline-start/inline-end (float, clear), or add
+    /* rtl-ok */ when a physical side is intended.
+  filePattern: debug_toolbar/static/debug_toolbar/css/.*\.css$
+- name: Four-value shorthand with different left and right
+  pattern: '(?im)(?:^|[{;])[ \t]*(?:margin|padding|inset|scroll-margin|scroll-padding)[ \t]*:[ \t]*[^\s;}]+[ \t]+([^\s;}]+)[ \t]+[^\s;}]+[ \t]+(?!\1(?![^\s;}]))[^\s;}]+(?![^\n]*/\*\s*rtl-ok\b)(?!(?:(?!rtl-lint: off)[\s\S])*rtl-lint: on)'
+  hint: |
+    The right and left values differ, so they swap meaning in right-to-left
+    layouts. Split it into padding-block and padding-inline (likewise for
+    margin and inset), or add /* rtl-ok */ when a physical side is intended.
+  filePattern: debug_toolbar/static/debug_toolbar/css/.*\.css$
