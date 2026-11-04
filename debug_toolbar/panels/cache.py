@@ -1,4 +1,5 @@
 import functools
+from collections.abc import Sized
 from time import perf_counter
 
 from asgiref.local import Local
@@ -154,6 +155,13 @@ class CachePanel(Panel):
         # attribute to None before invoking the original method, which will cause the
         # monkey-patched cache methods to skip recording additional calls made during
         # the course of this call, and then reset it back afterward.
+        if name == "get_many":
+            # The call would consume an iterator of keys, leaving nothing to count or show.
+            if "keys" in kwargs:
+                if not isinstance(kwargs["keys"], Sized):
+                    kwargs = {**kwargs, "keys": list(kwargs["keys"])}
+            elif args and not isinstance(args[0], Sized):
+                args = (list(args[0]), *args[1:])
         cache._djdt_panel = None
         try:
             start_time = perf_counter()
