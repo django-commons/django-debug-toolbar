@@ -38,6 +38,11 @@ function refreshHistory() {
             for (const request of data.requests) {
                 container.innerHTML = request.content + container.innerHTML;
             }
+            container
+                .querySelector(
+                    `tr[data-request-id="${djDebug.dataset.requestId}"]`
+                )
+                .classList.add("djdt-highlighted");
         })
         .then(() => {
             const allIds = new Set(
