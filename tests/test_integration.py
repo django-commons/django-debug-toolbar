@@ -414,6 +414,19 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
             )
             self.assertEqual(response.status_code, 404)
 
+    @override_settings(DEBUG_TOOLBAR_CONFIG={"DISABLE_PANELS": set()})
+    def test_render_panel_no_missing_template_variables(self):
+        self.client.get("/execute_sql/")
+        request_id = list(get_store().request_ids())[-1]
+        for panel in DebugToolbar.fetch(request_id).enabled_panels:
+            data = {"request_id": request_id, "panel_id": panel.panel_id}
+            with (
+                self.subTest(panel=panel.panel_id),
+                self.assertNoMissingTemplateVariables(),
+            ):
+                response = self.client.get("/__debug__/render_panel/", data)
+                self.assertEqual(response.status_code, 200)
+
     def test_middleware_render_toolbar_json(self):
         """Verify the toolbar is rendered and data is stored for a json request."""
         store = get_store()
@@ -440,7 +453,8 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
             "template_origin": signing.dumps(template.template.origin.name),
         }
 
-        response = self.client.get(url, data)
+        with self.assertNoMissingTemplateVariables():
+            response = self.client.get(url, data)
         self.assertEqual(response.status_code, 200)
         response = self.client.get(
             url, data, headers={"x-requested-with": "XMLHttpRequest"}
@@ -492,7 +506,8 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
             )
         }
 
-        response = self.client.post(url, data)
+        with self.assertNoMissingTemplateVariables():
+            response = self.client.post(url, data)
         self.assertEqual(response.status_code, 200)
         response = self.client.post(
             url, data, headers={"x-requested-with": "XMLHttpRequest"}
@@ -524,7 +539,8 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
             )
         }
 
-        response = self.client.post(url, data)
+        with self.assertNoMissingTemplateVariables():
+            response = self.client.post(url, data)
         self.assertEqual(response.status_code, 200)
         response = self.client.post(
             url, data, headers={"x-requested-with": "XMLHttpRequest"}
@@ -660,7 +676,8 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
             )
         }
 
-        response = self.client.post(url, data)
+        with self.assertNoMissingTemplateVariables():
+            response = self.client.post(url, data)
         self.assertEqual(response.status_code, 200)
         response = self.client.post(
             url, data, headers={"x-requested-with": "XMLHttpRequest"}
@@ -713,6 +730,17 @@ class DebugToolbarIntegrationTestCase(IntegrationTestCase):
         )
         # Verify the a panel was not rendered
         self.assertNotIn(b"Response headers", response.content)
+
+    def test_toolbar_no_missing_template_variables(self):
+        for render_panels in (False, True):
+            config = {"DISABLE_PANELS": set(), "RENDER_PANELS": render_panels}
+            with (
+                self.subTest(render_panels=render_panels),
+                self.settings(DEBUG_TOOLBAR_CONFIG=config),
+                self.assertNoMissingTemplateVariables(),
+            ):
+                response = self.client.get("/execute_sql/")
+                self.assertContains(response, 'id="djDebug"')
 
     def test_view_returns_template_response(self):
         response = self.client.get("/template_response/basic/")

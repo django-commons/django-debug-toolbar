@@ -38,6 +38,13 @@ class RequestPanelTestCase(BaseTestCase):
         self.assertIn("nôt åscíì", content)
         self.assertValidHTML(content)
 
+    def test_no_missing_template_variables(self):
+        self.request.POST = ["not", "a", "dict"]
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+        with self.assertNoMissingTemplateVariables():
+            self.assertTrue(self.panel.content)
+
     def test_query_dict_for_request_in_method_get(self):
         """
         Test verifies the correctness of the statistics generation method
@@ -122,7 +129,8 @@ class RequestPanelTestCase(BaseTestCase):
             (2, 3): "tuple_key",
         }
         data = {
-            "list": [(1, "value"), ("data", ["foo", "bar", 1]), ((2, 3), "tuple_key")]
+            "list": [(1, "value"), ("data", ["foo", "bar", 1]), ((2, 3), "tuple_key")],
+            "raw": None,
         }
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)
@@ -133,7 +141,7 @@ class RequestPanelTestCase(BaseTestCase):
             "b": "b-value",
             "a": "a-value",
         }
-        data = {"list": [("a", "a-value"), ("b", "b-value")]}
+        data = {"list": [("a", "a-value"), ("b", "b-value")], "raw": None}
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)
         panel_stats = self.panel.get_stats()
