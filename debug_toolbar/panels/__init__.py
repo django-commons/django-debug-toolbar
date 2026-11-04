@@ -33,9 +33,11 @@ class Panel:
 
     def _get_history_rerender_context(self) -> dict[str, str]:
         # Always rerender the button.
-        context = {"button": render_to_string(
-            "debug_toolbar/includes/panel_button.html", {"panel": self}
-        )}
+        context = {
+            "button": render_to_string(
+                "debug_toolbar/includes/panel_button.html", {"panel": self}
+            )
+        }
         if self.is_historical:
             context["content"] = render_to_string(
                 "debug_toolbar/includes/panel_content.html", {"panel": self}
