@@ -85,12 +85,6 @@ function refreshHistory() {
         });
 }
 
-function getRequestUrl(requestId = djDebug.dataset.requestId) {
-    return djDebug.querySelector(
-        `#djdtHistoryRequests [data-request-id="${requestId}"]`
-    ).dataset.requestUrl;
-}
-
 function switchHistory(newRequestId) {
     const formTarget = djDebug.querySelector(
         `.switchHistory[data-request-id='${newRequestId}']`
@@ -109,9 +103,6 @@ function switchHistory(newRequestId) {
             container.querySelector(
                 `button[data-request-id="${newRequestId}"]`
             ).innerHTML = "Switch [EXPIRED]";
-        } else {
-            djDebug.querySelector(".HistoryPanel small").innerText =
-                getRequestUrl(newRequestId);
         }
         replaceToolbarState(newRequestId, data);
     });

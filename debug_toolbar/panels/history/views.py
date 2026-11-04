@@ -26,6 +26,10 @@ def history_sidebar(
             # When the request_id has been popped already due to
             # RESULTS_CACHE_SIZE
             return JsonResponse(context)
+        context = {
+            panel.panel_id: panel._get_history_rerender_context()
+            for panel in toolbar.panels
+        }
         for panel in toolbar.panels:
             if exclude_history and not panel.is_historical:
                 continue
