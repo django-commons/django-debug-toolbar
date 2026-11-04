@@ -29,7 +29,7 @@ def history_sidebar(
         for panel in toolbar.panels:
             if exclude_history and not panel.is_historical:
                 continue
-            panel_context = {"panel": panel}
+            panel_context = {"panel": panel, "toolbar": toolbar}
             context[panel.panel_id] = {
                 "button": render_to_string(
                     "debug_toolbar/includes/panel_button.html", panel_context
@@ -62,6 +62,7 @@ def history_refresh(
                     "content": render_to_string(
                         "debug_toolbar/panels/history_tr.html",
                         {
+                            "current_request_id": form.cleaned_data["request_id"],
                             "request_id": request_id,
                             "history_context": {
                                 "history_stats": toolbar.store.panel(

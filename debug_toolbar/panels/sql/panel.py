@@ -108,6 +108,16 @@ def _process_query_groups(query_groups, databases, colors, name):
         db_info[f"{name}_count"] = counts[alias]
 
 
+class _Query(dict):
+    """
+    Not every query has every key the template checks, so return None for a
+    missing key instead of failing the template's variable lookup.
+    """
+
+    def __missing__(self, key):
+        return None
+
+
 class SQLPanel(Panel):
     """
     Panel that displays information about the SQL queries run while processing
@@ -323,17 +333,6 @@ class SQLPanel(Panel):
             trace_colors = defaultdict(lambda: next(colors))
 
             for query in stats.get("queries", []):
-                # The template checks these, but not every query has them.
-                for key in (
-                    "similar_count",
-                    "duplicate_count",
-                    "in_trans",
-                    "starts_trans",
-                    "ends_trans",
-                    "iso_level",
-                    "trans_status",
-                ):
-                    query.setdefault(key, None)
                 query["sql"] = reformat_sql(query["sql"], with_toggle=True)
                 query["form"] = SignedDataForm(
                     auto_id=None,
@@ -347,4 +346,5 @@ class SQLPanel(Panel):
                 query["stacktrace"] = render_stacktrace(query["stacktrace"])
                 query["trace_color"] = trace_colors[query["stacktrace"]]
 
-            return render_to_string(self.template, stats)
+            queries = [_Query(query) for query in stats.get("queries", [])]
+            return render_to_string(self.template, stats | {"queries": queries})

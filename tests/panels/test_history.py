@@ -186,6 +186,24 @@ class HistoryViewsTestCase(IntegrationTestCase):
             self.PANEL_KEYS,
         )
 
+    def test_history_sidebar_render_panels(self):
+        """
+        The sidebar leaves the panels to be loaded on demand unless
+        RENDER_PANELS is set, like the toolbar does.
+        """
+        for render_panels in (False, True):
+            with (
+                self.subTest(render_panels=render_panels),
+                self.settings(DEBUG_TOOLBAR_CONFIG={"RENDER_PANELS": render_panels}),
+                self.assertNoMissingTemplateVariables(),
+            ):
+                self.client.get("/json_view/")
+                request_id = list(get_store().request_ids())[-1]
+                data = {"request_id": request_id}
+                response = self.client.get(reverse("djdt:history_sidebar"), data=data)
+                content = response.json()["VersionsPanel"]["content"]
+                self.assertEqual("djdt-loader" in content, not render_panels)
+
     def test_history_refresh(self):
         """Verify refresh history response has request variables."""
         self.client.get("/json_view/", {"foo": "bar"}, content_type="application/json")
@@ -209,6 +227,19 @@ class HistoryViewsTestCase(IntegrationTestCase):
 
         for val in ["spam", "eggs"]:
             self.assertIn(val, data["requests"][1]["content"])
+
+    def test_history_refresh_highlights_current_request(self):
+        """Verify refresh history highlights the current request."""
+        self.client.get("/json_view/")
+        self.client.get("/json_view/")
+        request_ids = list(get_store().request_ids())
+
+        data = {"request_id": request_ids[0]}
+        with self.assertNoMissingTemplateVariables():
+            response = self.client.get(reverse("djdt:history_refresh"), data=data)
+        current, other = response.json()["requests"]
+        self.assertIn("djdt-highlighted", current["content"])
+        self.assertNotIn("djdt-highlighted", other["content"])
 
     def test_history_refresh_json_items_key(self):
         """

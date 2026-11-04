@@ -622,9 +622,8 @@ class SQLPanelTestCase(BaseTestCase):
         sql_call()
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)
-        with patch("django.template.base.logger.debug") as debug:
+        with self.assertNoMissingTemplateVariables():
             self.assertTrue(self.panel.content)
-        debug.assert_not_called()
 
     @override_settings(DEBUG_TOOLBAR_CONFIG={"ENABLE_STACKTRACES_LOCALS": True})
     def test_insert_locals(self):

@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 from django.http import QueryDict
 from django.test import RequestFactory
 
@@ -44,9 +42,8 @@ class RequestPanelTestCase(BaseTestCase):
         self.request.POST = ["not", "a", "dict"]
         response = self.panel.process_request(self.request)
         self.panel.generate_stats(self.request, response)
-        with patch("django.template.base.logger.debug") as debug:
+        with self.assertNoMissingTemplateVariables():
             self.assertTrue(self.panel.content)
-        debug.assert_not_called()
 
     def test_query_dict_for_request_in_method_get(self):
         """
