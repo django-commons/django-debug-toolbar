@@ -38,6 +38,7 @@ function refreshHistory() {
             for (const request of data.requests) {
                 container.innerHTML = request.content + container.innerHTML;
             }
+            // Re-highlight the row with the currently selected requestId
             container
                 .querySelector(
                     `tr[data-request-id="${djDebug.dataset.requestId}"]`
