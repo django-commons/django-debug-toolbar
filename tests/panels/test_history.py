@@ -71,6 +71,7 @@ class HistoryPanelTestCase(BaseTestCase):
 class HistoryViewsTestCase(IntegrationTestCase):
     PANEL_KEYS = {
         "VersionsPanel",
+        "HistoryPanel",
         "TimerPanel",
         "SettingsPanel",
         "HeadersPanel",
@@ -84,6 +85,7 @@ class HistoryViewsTestCase(IntegrationTestCase):
         "TasksPanel",
         "CommunityPanel",
         "ProfilingPanel",
+        "RedirectsPanel",
     }
 
     def test_history_panel_integration_content(self):
