@@ -26,22 +26,16 @@ def history_sidebar(
             # When the request_id has been popped already due to
             # RESULTS_CACHE_SIZE
             return JsonResponse(context)
-        context = {
-            panel.panel_id: panel._get_history_rerender_context()
-            for panel in toolbar.panels
-        }
         for panel in toolbar.panels:
-            if exclude_history and not panel.is_historical:
-                continue
-            panel_context = {"panel": panel}
-            context[panel.panel_id] = {
-                "button": render_to_string(
-                    "debug_toolbar/includes/panel_button.html", panel_context
-                ),
-                "content": render_to_string(
-                    "debug_toolbar/includes/panel_content.html", panel_context
-                ),
-            }
+            panel_context = panel._get_history_rerender_context()
+
+            if not exclude_history and not panel.is_historical:
+                panel_context["content"] = render_to_string(
+                    "debug_toolbar/includes/panel_content.html",
+                    {"panel": panel},
+                )
+
+            context[panel.panel_id] = panel_context
         return JsonResponse(context)
     return HttpResponseBadRequest(f"Form errors: {form.errors}")
 
