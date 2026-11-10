@@ -59,6 +59,5 @@ class RequestPanel(Panel):
             pass
         self.record_stats(view_info)
 
-        if hasattr(request, "session"):
-            session_data = dict(request.session)
-            self.record_stats({"session": sanitize_and_sort_request_vars(session_data)})
+        session_data = dict(getattr(request, "session", {}))
+        self.record_stats({"session": sanitize_and_sort_request_vars(session_data)})

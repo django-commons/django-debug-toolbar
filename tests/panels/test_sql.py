@@ -618,6 +618,13 @@ class SQLPanelTestCase(BaseTestCase):
         self.assertIn("café", content)
         self.assertValidHTML(content)
 
+    def test_no_missing_template_variables(self):
+        sql_call()
+        response = self.panel.process_request(self.request)
+        self.panel.generate_stats(self.request, response)
+        with self.assertNoMissingTemplateVariables():
+            self.assertTrue(self.panel.content)
+
     @override_settings(DEBUG_TOOLBAR_CONFIG={"ENABLE_STACKTRACES_LOCALS": True})
     def test_insert_locals(self):
         """
