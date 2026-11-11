@@ -31,15 +31,7 @@ class Panel:
         self.get_response = get_response
         self.from_store = False
 
-    def _get_history_rerender_context(
-        self, *, exclude_history: bool
-    ) -> dict[str, str] | None:
-        if (
-            exclude_history
-            and not self.is_historical
-            and self.panel_id != "HistoryPanel"
-        ):
-            return None
+    def _get_history_rerender_context(self) -> dict[str, str]:
         # Always rerender the button.
         context = {
             "button": render_to_string(
