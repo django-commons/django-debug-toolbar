@@ -27,15 +27,10 @@ def history_sidebar(
             # RESULTS_CACHE_SIZE
             return JsonResponse(context)
         for panel in toolbar.panels:
-            panel_context = panel._get_history_rerender_context()
-
-            if not exclude_history and not panel.is_historical:
-                panel_context["content"] = render_to_string(
-                    "debug_toolbar/includes/panel_content.html",
-                    {"panel": panel},
-                )
-
-            context[panel.panel_id] = panel_context
+            if panel_context := panel._get_history_rerender_context(
+                exclude_history=exclude_history
+            ):
+                context[panel.panel_id] = panel_context
         return JsonResponse(context)
     return HttpResponseBadRequest(f"Form errors: {form.errors}")
 
