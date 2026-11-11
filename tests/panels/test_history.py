@@ -85,7 +85,6 @@ class HistoryViewsTestCase(IntegrationTestCase):
         "TasksPanel",
         "CommunityPanel",
         "ProfilingPanel",
-        "RedirectsPanel",
     }
 
     def test_history_panel_integration_content(self):
