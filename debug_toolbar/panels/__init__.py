@@ -76,7 +76,7 @@ class Panel:
     (no icon).
     """
 
-    shortcut_key = None
+    shortcut_key: str | None = None
     """
     Optional single letter used after ``g`` to open this panel, for example
     ``"s"``. Defaults to ``None`` (no shortcut).
@@ -87,22 +87,20 @@ class Panel:
 
     @property
     def active_shortcut_key(self):
-        """
-        Letter actually advertised for this panel.
-
-        ``None`` when :attr:`shortcut_key` is unset, the panel cannot be
-        opened, or an earlier enabled panel already uses the same letter.
-        """
-        key = self.shortcut_key
-        if not isinstance(key, str) or len(key) != 1 or not key.isalpha():
-            return None
-        key = key.lower()
         if not self.enabled or not self.has_content:
             return None
+
+        shortcut = self.shortcut_key
+        if shortcut is None:
+            return None
+        if len(shortcut) != 1 or not shortcut.isalpha():
+            return None
+
+        shortcut = shortcut.lower()
         for panel in self.toolbar.panels:
             if panel is self:
-                return key
-            if panel.active_shortcut_key == key:
+                return shortcut
+            if panel.active_shortcut_key == shortcut:
                 return None
         return None
 
