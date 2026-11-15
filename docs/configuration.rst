@@ -193,6 +193,13 @@ Toolbar options
 
   If changed to ``True``, the toolbar will be collapsed by default.
 
+* ``ENABLE_KEYBOARD_SHORTCUTS``
+
+  Default: ``True``
+
+  When ``False``, panel keyboard shortcuts (``?`` and ``g`` then a letter) are
+  disabled. Escape still closes the toolbar as before.
+
 .. _SHOW_TOOLBAR_CALLBACK:
 
 * ``SHOW_TOOLBAR_CALLBACK``

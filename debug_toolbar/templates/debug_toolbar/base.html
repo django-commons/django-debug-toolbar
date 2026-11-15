@@ -20,7 +20,8 @@
         data-sidebar-url="{{ history_url }}"
         {% endif %}
         data-default-show="{% if toolbar.config.SHOW_COLLAPSED %}false{% else %}true{% endif %}"
-        data-update-on-fetch="{{ toolbar.config.UPDATE_ON_FETCH }}">
+        data-update-on-fetch="{{ toolbar.config.UPDATE_ON_FETCH }}"
+        data-keyboard-shortcuts="{{ toolbar.config.ENABLE_KEYBOARD_SHORTCUTS }}">
       <div class="djdt-hidden" id="djDebugToolbarHandle">
         <div title="{% translate 'Show toolbar' %}" id="djShowToolBarButton">
           <img src="{% static 'debug_toolbar/img/Green.svg' %}" alt="Django Debug Toolbar" width="10" height="10">
@@ -49,6 +50,7 @@
         {% include "debug_toolbar/includes/panel_content.html" %}
       {% endfor %}
       <div id="djDebugWindow" class="djdt-panelContent djdt-hidden"></div>
+      {% if toolbar.config.ENABLE_KEYBOARD_SHORTCUTS %}
       <div id="djDebugShortcuts" class="djdt-panelContent djdt-hidden" role="dialog" aria-labelledby="djDebugShortcutsTitle">
         <div class="djDebugPanelTitle">
           <h3 id="djDebugShortcutsTitle">{% translate "Shortcuts" %}</h3>
@@ -60,6 +62,7 @@
           </div>
         </div>
       </div>
+      {% endif %}
       <div id="djdtStatus" role="status" aria-live="polite" class="djdt-sr-only"></div>
     </div>
   {% if use_shadow_dom %}</template>{% endif %}

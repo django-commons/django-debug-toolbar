@@ -93,6 +93,10 @@ function toggleShortcuts() {
     }
 }
 
+function keyboardShortcutsEnabled() {
+    return getDebugElement().dataset.keyboardShortcuts === "True";
+}
+
 function navigateWithPrefixShortcut(letter) {
     const link = getDebugElement().querySelector(
         `a[aria-keyshortcuts="g ${letter}"]`
@@ -144,6 +148,9 @@ function handleFollowupKey(event) {
 
 function onKeyDown(event) {
     if (handleEscapeKey(event)) {
+        return;
+    }
+    if (!keyboardShortcutsEnabled()) {
         return;
     }
     if (hasModifier(event) || isEditableTarget(event)) {

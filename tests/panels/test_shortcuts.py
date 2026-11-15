@@ -45,6 +45,17 @@ class BuiltInShortcutTestCase(IntegrationTestCase):
 
 
 @override_settings(
+    DEBUG=True, DEBUG_TOOLBAR_CONFIG={"ENABLE_KEYBOARD_SHORTCUTS": False}
+)
+class DisabledShortcutTestCase(IntegrationTestCase):
+    def test_shortcuts_can_be_disabled(self):
+        response = self.client.get("/regular/basic/")
+        self.assertContains(response, 'data-keyboard-shortcuts="False"')
+        self.assertNotContains(response, "aria-keyshortcuts")
+        self.assertNotContains(response, 'id="djDebugShortcuts"')
+
+
+@override_settings(
     DEBUG=True,
     DEBUG_TOOLBAR_PANELS=[
         "tests.panels.test_shortcuts.FirstPanel",
