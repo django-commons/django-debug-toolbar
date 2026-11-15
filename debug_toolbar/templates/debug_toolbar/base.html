@@ -49,6 +49,17 @@
         {% include "debug_toolbar/includes/panel_content.html" %}
       {% endfor %}
       <div id="djDebugWindow" class="djdt-panelContent djdt-hidden"></div>
+      <div id="djDebugShortcuts" class="djdt-panelContent djdt-hidden" role="dialog" aria-labelledby="djDebugShortcutsTitle">
+        <div class="djDebugPanelTitle">
+          <h3 id="djDebugShortcutsTitle">{% translate "Shortcuts" %}</h3>
+          <button type="button" class="djDebugClose" aria-label="{% translate 'Close' %}">×</button>
+        </div>
+        <div class="djDebugPanelContent">
+          <div class="djdt-scroll">
+            <table id="djDebugShortcutsList"></table>
+          </div>
+        </div>
+      </div>
       <div id="djdtStatus" role="status" aria-live="polite" class="djdt-sr-only"></div>
     </div>
   {% if use_shadow_dom %}</template>{% endif %}

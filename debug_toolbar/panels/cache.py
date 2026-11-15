@@ -61,6 +61,7 @@ class CachePanel(Panel):
     """
 
     template = "debug_toolbar/panels/cache.html"
+    shortcut_key = "c"
 
     is_async = True
 

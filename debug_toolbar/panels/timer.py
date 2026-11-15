@@ -18,6 +18,7 @@ class TimerPanel(Panel):
     """
 
     is_async = True
+    shortcut_key = "i"
 
     def nav_subtitle(self):
         stats = self.get_stats()

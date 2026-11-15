@@ -377,6 +377,13 @@ Any views defined for the third-party panel use the following decorators:
   the response with the :ref:`TOOLBAR_LANGUAGE <TOOLBAR_LANGUAGE>` rather than
   :setting:`LANGUAGE_CODE`.
 
+A panel may set ``shortcut_key`` to a single letter. With the toolbar open,
+``g`` then that letter opens the panel. The default is no shortcut.
+
+If two enabled panels use the same letter, the one earlier in
+``DEBUG_TOOLBAR_PANELS`` keeps the shortcut. The later panel is still shown,
+without a shortcut.
+
 There is no public CSS API at this time.
 
 .. autoclass:: debug_toolbar.panels.Panel

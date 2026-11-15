@@ -73,6 +73,7 @@ class TemplatesPanel(Panel):
     """
 
     is_async = True
+    shortcut_key = "t"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

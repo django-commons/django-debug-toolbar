@@ -9,6 +9,7 @@ class CommunityPanel(Panel):
     """
 
     is_async = True
+    shortcut_key = "y"
     template = "debug_toolbar/panels/community.html"
     title = _("Community")
     nav_icon = "debug_toolbar/img/community.svg"

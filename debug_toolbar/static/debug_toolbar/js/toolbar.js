@@ -6,10 +6,157 @@ import {
     replaceToolbarState,
 } from "./utils.js";
 
-function onKeyDown(event) {
-    if (event.keyCode === 27) {
-        djdt.hideOneLevel();
+const ESCAPE_KEY = "Escape";
+const SHORTCUTS_TOGGLE_KEY = "?";
+const SHORTCUT_PREFIX_KEY = "g";
+const SHORTCUT_PREFIX_TIMEOUT_MS = 1000;
+const EDITABLE_TAGS = new Set(["INPUT", "TEXTAREA", "SELECT"]);
+
+let shortcutPrefixArmed = false;
+let shortcutPrefixTimer = null;
+
+function isEditableTarget({ target: element }) {
+    if (!element || !element.tagName) {
+        return false;
     }
+    return EDITABLE_TAGS.has(element.tagName) || element.isContentEditable;
+}
+
+function hasModifier(event) {
+    return event.altKey || event.ctrlKey || event.metaKey;
+}
+
+function disarmShortcutPrefix() {
+    shortcutPrefixArmed = false;
+    if (shortcutPrefixTimer !== null) {
+        clearTimeout(shortcutPrefixTimer);
+        shortcutPrefixTimer = null;
+    }
+}
+
+function armShortcutPrefix() {
+    shortcutPrefixArmed = true;
+    shortcutPrefixTimer = setTimeout(
+        disarmShortcutPrefix,
+        SHORTCUT_PREFIX_TIMEOUT_MS
+    );
+}
+
+function isShortcutsDialogVisible() {
+    const dialog = getDebugElement().querySelector("#djDebugShortcuts");
+    return $$.visible(dialog);
+}
+
+function shortcutRows() {
+    const djDebug = getDebugElement();
+    const rows = [
+        [SHORTCUTS_TOGGLE_KEY, "Show shortcuts"],
+        ["Esc", "Close"],
+    ];
+    for (const link of djDebug.querySelectorAll("a[aria-keyshortcuts]")) {
+        const keys = link.getAttribute("aria-keyshortcuts");
+        const title = link.getAttribute("title") || link.textContent.trim();
+        rows.push([keys.replace(" ", " then "), title]);
+    }
+    return rows;
+}
+
+function showShortcuts() {
+    const djDebug = getDebugElement();
+    const list = djDebug.querySelector("#djDebugShortcutsList");
+    list.replaceChildren();
+    for (const [keys, label] of shortcutRows()) {
+        const row = document.createElement("tr");
+        const keyCell = document.createElement("td");
+        const labelCell = document.createElement("td");
+        keyCell.textContent = keys;
+        labelCell.textContent = label;
+        row.append(keyCell, labelCell);
+        list.append(row);
+    }
+    djdt.hidePanels();
+    $$.show(djDebug.querySelector("#djDebugShortcuts"));
+}
+
+function hideShortcuts() {
+    const dialog = getDebugElement().querySelector("#djDebugShortcuts");
+    if (dialog) {
+        $$.hide(dialog);
+    }
+}
+
+function toggleShortcuts() {
+    if (isShortcutsDialogVisible()) {
+        hideShortcuts();
+    } else {
+        showShortcuts();
+    }
+}
+
+function navigateWithPrefixShortcut(letter) {
+    const link = getDebugElement().querySelector(
+        `a[aria-keyshortcuts="g ${letter}"]`
+    );
+    if (!link) {
+        return;
+    }
+    hideShortcuts();
+    link.click();
+}
+
+function handleEscapeKey(event) {
+    if (event.key !== ESCAPE_KEY) {
+        return false;
+    }
+    djdt.hideOneLevel();
+    return true;
+}
+
+function handleShortcutsToggleKey(event) {
+    if (event.key !== SHORTCUTS_TOGGLE_KEY) {
+        return false;
+    }
+    event.preventDefault();
+    disarmShortcutPrefix();
+    toggleShortcuts();
+    return true;
+}
+
+function handlePrefixKey(event) {
+    if (event.key !== SHORTCUT_PREFIX_KEY) {
+        return false;
+    }
+    if (!shortcutPrefixArmed) {
+        armShortcutPrefix();
+        return true;
+    }
+    return false;
+}
+
+function handleFollowupKey(event) {
+    if (!shortcutPrefixArmed || event.key.length !== 1) {
+        return;
+    }
+    const letter = event.key.toLowerCase();
+    disarmShortcutPrefix();
+    navigateWithPrefixShortcut(letter);
+}
+
+function onKeyDown(event) {
+    if (handleEscapeKey(event)) {
+        return;
+    }
+    if (hasModifier(event) || isEditableTarget(event)) {
+        disarmShortcutPrefix();
+        return;
+    }
+    if (handleShortcutsToggleKey(event)) {
+        return;
+    }
+    if (handlePrefixKey(event)) {
+        return;
+    }
+    handleFollowupKey(event);
 }
 
 const djdt = {
@@ -287,6 +434,7 @@ const djdt = {
     hideToolbar() {
         const djDebug = getDebugElement();
         djdt.hidePanels();
+        hideShortcuts();
 
         $$.hide(djDebug.querySelector("#djDebugToolbar"));
 
@@ -300,6 +448,11 @@ const djdt = {
     },
     hideOneLevel() {
         const djDebug = getDebugElement();
+        const shortcuts = djDebug.querySelector("#djDebugShortcuts");
+        if (shortcuts && $$.visible(shortcuts)) {
+            $$.hide(shortcuts);
+            return;
+        }
         const win = djDebug.querySelector("#djDebugWindow");
         if ($$.visible(win)) {
             $$.hide(win);

@@ -20,6 +20,7 @@ class TasksPanel(Panel):
     """
 
     template = "debug_toolbar/panels/tasks.html"
+    shortcut_key = "k"
 
     is_async = True
 

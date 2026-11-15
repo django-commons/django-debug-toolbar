@@ -31,7 +31,7 @@ class SettingsIntegrationTestCase(IntegrationTestCase):
         self.assertContains(
             response,
             '<a href="#" title="Settings from None" class="SettingsPanel"'
-            ' aria-controls="SettingsPanel" aria-expanded="false">',
+            ' aria-controls="SettingsPanel" aria-expanded="false" aria-keyshortcuts="g l">',
         )
         self.assertContains(
             response,

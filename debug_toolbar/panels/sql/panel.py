@@ -115,6 +115,7 @@ class SQLPanel(Panel):
     """
 
     is_async = True
+    shortcut_key = "s"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
