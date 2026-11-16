@@ -214,6 +214,8 @@ class TemplatesPanel(Panel):
                         template_data.get("context", [])
                     )
                 info["context"] = "\n".join(template_data["context_list"])
+            else:
+                info["context"] = None
             template_context.append(info)
 
         # Fetch context_processors/template_dirs from any template
@@ -249,5 +251,7 @@ class TemplatesPanel(Panel):
             origin_name = template["template"]["origin_name"]
             if origin_name and origin_name != UNKNOWN_SOURCE:
                 template["template"]["editor_url"] = get_editor_url(origin_name)
+            else:
+                template["template"]["editor_url"] = None
         stats["editor_configured"] = bool(dt_settings.get_config()["EDITOR"])
         return stats

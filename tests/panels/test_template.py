@@ -181,8 +181,16 @@ class TemplatesPanelTestCase(BaseTestCase):
         Template("").render(Context({}))
         self.panel.generate_stats(self.request, response)
         stats = self.panel.get_stats()
-        self.assertNotIn("editor_url", stats["templates"][0]["template"])
+        self.assertIsNone(stats["templates"][0]["template"]["editor_url"])
         self.assertTrue(stats["editor_configured"])
+
+    def test_no_missing_template_variables(self):
+        self.toolbar.config["SHOW_TEMPLATE_CONTEXT"] = False
+        response = self.panel.process_request(self.request)
+        Template("").render(Context({}))
+        self.panel.generate_stats(self.request, response)
+        with self.assertNoMissingTemplateVariables():
+            self.assertTrue(self.panel.content)
 
 
 @override_settings(

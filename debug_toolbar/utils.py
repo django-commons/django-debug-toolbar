@@ -226,7 +226,7 @@ def sanitize_and_sort_request_vars(
     request data with sensitive values redacted.
     """
     if not isinstance(variable, (dict, QueryDict)):
-        return {"raw": variable}
+        return {"raw": variable, "list": None}
 
     # Get sorted keys if possible, otherwise just list them
     keys = _get_sorted_keys(variable)
@@ -237,7 +237,7 @@ def sanitize_and_sort_request_vars(
     else:
         result = _process_dict(variable, keys)
 
-    return {"list": result}
+    return {"list": result, "raw": None}
 
 
 def _get_sorted_keys(variable):

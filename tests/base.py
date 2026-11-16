@@ -1,8 +1,12 @@
 import contextvars
+import logging
+from contextlib import contextmanager
+from unittest.mock import patch
 
 import html5lib
 from asgiref.local import Local
 from django.http import HttpResponse
+from django.template import VariableDoesNotExist
 from django.test import (
     AsyncClient,
     AsyncRequestFactory,
@@ -64,7 +68,33 @@ rf = RequestFactory()
 arf = AsyncRequestFactory()
 
 
-class BaseMixin:
+class MissingTemplateVariablesMixin:
+    @contextmanager
+    def assertNoMissingTemplateVariables(self):
+        """
+        Fail if a toolbar template looks up a missing variable within the block.
+
+        Django logs each failed lookup to the django.template logger with the
+        VariableDoesNotExist exception. The test settings disable that logger,
+        so enable it and only let through failed lookups in toolbar templates.
+        """
+
+        def is_missing_variable(record):
+            template_name = record.args[1]
+            return template_name.startswith("debug_toolbar/") and isinstance(
+                record.exc_info[1], VariableDoesNotExist
+            )
+
+        logger = logging.getLogger("django.template")
+        with (
+            patch.object(logger, "disabled", new=False),
+            patch.object(logger, "filters", new=[is_missing_variable]),
+            self.assertNoLogs(logger, "DEBUG"),
+        ):
+            yield
+
+
+class BaseMixin(MissingTemplateVariablesMixin):
     _is_async = False
     client_class = ToolbarTestClient
     async_client_class = AsyncToolbarTestClient
@@ -124,7 +154,7 @@ class BaseMultiDBTestCase(BaseMixin, TransactionTestCase):
     databases = {"default", "replica"}
 
 
-class IntegrationTestCase(TestCase):
+class IntegrationTestCase(MissingTemplateVariablesMixin, TestCase):
     """Base TestCase for tests involving clients making requests."""
 
     def setUp(self):
