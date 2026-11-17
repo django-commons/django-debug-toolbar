@@ -198,7 +198,7 @@ Toolbar options
   Default: ``True``
 
   When ``False``, panel keyboard shortcuts (``?`` and ``g`` then a letter) are
-  disabled. Escape still closes the toolbar as before.
+  disabled.
 
 .. _SHOW_TOOLBAR_CALLBACK:
 
