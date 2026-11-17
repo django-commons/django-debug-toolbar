@@ -80,29 +80,7 @@ class Panel:
     """
     Optional single letter used after ``g`` to open this panel, for example
     ``"s"``. Defaults to ``None`` (no shortcut).
-
-    When two enabled panels use the same letter, the one earlier in
-    ``DEBUG_TOOLBAR_PANELS`` keeps it.
     """
-
-    @property
-    def active_shortcut_key(self):
-        if not self.enabled or not self.has_content:
-            return None
-
-        shortcut = self.shortcut_key
-        if shortcut is None:
-            return None
-        if len(shortcut) != 1 or not shortcut.isalpha():
-            return None
-
-        shortcut = shortcut.lower()
-        for panel in self.toolbar.panels:
-            if panel is self:
-                return shortcut
-            if panel.active_shortcut_key == shortcut:
-                return None
-        return None
 
     @property
     def nav_title(self):

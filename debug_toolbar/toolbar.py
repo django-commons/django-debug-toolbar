@@ -53,6 +53,7 @@ class DebugToolbar:
                 get_response = panel.process_request
         self.process_request = get_response
         self._panels = {panel.panel_id: panel for panel in reversed(panels)}
+        self.resolve_shortcut_keys()
         self.stats = {}
         self.server_timing_stats = {}
         self.request_id = request_id
@@ -99,6 +100,24 @@ class DebugToolbar:
         Get the panel with the given id, which is the class name by default.
         """
         return self._panels[panel_id]
+
+    def resolve_shortcut_keys(self) -> None:
+        claimed: set[str] = set()
+        for panel in self._panels.values():
+            key = panel.shortcut_key
+            if (
+                key is not None
+                and len(key) == 1
+                and key.isalpha()
+                and panel.has_content
+                and panel.enabled
+            ):
+                key = key.lower()
+                if key in claimed:
+                    key = None
+                else:
+                    claimed.add(key)
+            panel.shortcut_key = key
 
     # Handle rendering the toolbar in HTML
 
@@ -259,6 +278,7 @@ class StoredDebugToolbar(DebugToolbar):
             data = toolbar.store.panel(toolbar.request_id, panel.panel_id)
             panel.load_stats_from_store(data)
             toolbar._panels[panel.panel_id] = panel
+        toolbar.resolve_shortcut_keys()
         return toolbar
 
 
