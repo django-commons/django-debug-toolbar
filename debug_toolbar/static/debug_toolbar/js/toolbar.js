@@ -6,76 +6,13 @@ import {
     replaceToolbarState,
 } from "./utils.js";
 
-const ESCAPE_KEY = "Escape";
-const SHORTCUTS_TOGGLE_KEY = "?";
-const SHORTCUT_PREFIX_KEY = "g";
-const SHORTCUT_PREFIX_TIMEOUT_MS = 1000;
 const EDITABLE_TAGS = new Set(["INPUT", "TEXTAREA", "SELECT"]);
 
-let shortcutPrefixArmed = false;
-let shortcutPrefixTimer = null;
+// Timestamp of the last "g" keypress, or 0 when no shortcut prefix is armed.
+let shortcutPrefixAt = 0;
 
-function isEditableTarget({ target: element }) {
-    if (!element || !element.tagName) {
-        return false;
-    }
-    return EDITABLE_TAGS.has(element.tagName) || element.isContentEditable;
-}
-
-function hasModifier(event) {
-    return event.altKey || event.ctrlKey || event.metaKey;
-}
-
-function disarmShortcutPrefix() {
-    shortcutPrefixArmed = false;
-    if (shortcutPrefixTimer !== null) {
-        clearTimeout(shortcutPrefixTimer);
-        shortcutPrefixTimer = null;
-    }
-}
-
-function armShortcutPrefix() {
-    shortcutPrefixArmed = true;
-    shortcutPrefixTimer = setTimeout(
-        disarmShortcutPrefix,
-        SHORTCUT_PREFIX_TIMEOUT_MS
-    );
-}
-
-function isShortcutsDialogVisible() {
-    const dialog = getDebugElement().querySelector("#djDebugShortcuts");
-    return $$.visible(dialog);
-}
-
-function shortcutRows() {
-    const djDebug = getDebugElement();
-    const rows = [
-        [SHORTCUTS_TOGGLE_KEY, "Show shortcuts"],
-        ["Esc", "Close"],
-    ];
-    for (const link of djDebug.querySelectorAll("a[aria-keyshortcuts]")) {
-        const keys = link.getAttribute("aria-keyshortcuts");
-        const title = link.getAttribute("title") || link.textContent.trim();
-        rows.push([keys.replace(" ", " then "), title]);
-    }
-    return rows;
-}
-
-function showShortcuts() {
-    const djDebug = getDebugElement();
-    const list = djDebug.querySelector("#djDebugShortcutsList");
-    list.replaceChildren();
-    for (const [keys, label] of shortcutRows()) {
-        const row = document.createElement("tr");
-        const keyCell = document.createElement("td");
-        const labelCell = document.createElement("td");
-        keyCell.textContent = keys;
-        labelCell.textContent = label;
-        row.append(keyCell, labelCell);
-        list.append(row);
-    }
-    djdt.hidePanels();
-    $$.show(djDebug.querySelector("#djDebugShortcuts"));
+function prefixArmed() {
+    return Date.now() - shortcutPrefixAt < 1000;
 }
 
 function hideShortcuts() {
@@ -86,84 +23,78 @@ function hideShortcuts() {
 }
 
 function toggleShortcuts() {
-    if (isShortcutsDialogVisible()) {
-        hideShortcuts();
-    } else {
-        showShortcuts();
+    const djDebug = getDebugElement();
+    const dialog = djDebug.querySelector("#djDebugShortcuts");
+    if ($$.visible(dialog)) {
+        $$.hide(dialog);
+        return;
     }
-}
-
-function keyboardShortcutsEnabled() {
-    return getDebugElement().dataset.keyboardShortcuts === "True";
-}
-
-function navigateWithPrefixShortcut(letter) {
-    const link = getDebugElement().querySelector(
-        `a[aria-keyshortcuts="g ${letter}"]`
+    const rows = [
+        ["?", "Show shortcuts"],
+        ["Esc", "Close"],
+    ];
+    for (const link of djDebug.querySelectorAll("a[aria-keyshortcuts]")) {
+        rows.push([
+            link.getAttribute("aria-keyshortcuts").replace(" ", " then "),
+            link.getAttribute("title") || link.textContent.trim(),
+        ]);
+    }
+    const list = djDebug.querySelector("#djDebugShortcutsList");
+    list.replaceChildren(
+        ...rows.map(([keys, label]) => {
+            const row = document.createElement("tr");
+            const keyCell = document.createElement("td");
+            const labelCell = document.createElement("td");
+            keyCell.textContent = keys;
+            labelCell.textContent = label;
+            row.append(keyCell, labelCell);
+            return row;
+        })
     );
-    if (!link) {
-        return;
-    }
-    hideShortcuts();
-    link.click();
-}
-
-function handleEscapeKey(event) {
-    if (event.key !== ESCAPE_KEY) {
-        return false;
-    }
-    djdt.hideOneLevel();
-    return true;
-}
-
-function handleShortcutsToggleKey(event) {
-    if (event.key !== SHORTCUTS_TOGGLE_KEY) {
-        return false;
-    }
-    event.preventDefault();
-    disarmShortcutPrefix();
-    toggleShortcuts();
-    return true;
-}
-
-function handlePrefixKey(event) {
-    if (event.key !== SHORTCUT_PREFIX_KEY) {
-        return false;
-    }
-    if (!shortcutPrefixArmed) {
-        armShortcutPrefix();
-        return true;
-    }
-    return false;
-}
-
-function handleFollowupKey(event) {
-    if (!shortcutPrefixArmed || event.key.length !== 1) {
-        return;
-    }
-    const letter = event.key.toLowerCase();
-    disarmShortcutPrefix();
-    navigateWithPrefixShortcut(letter);
+    djdt.hidePanels();
+    $$.show(dialog);
 }
 
 function onKeyDown(event) {
-    if (handleEscapeKey(event)) {
+    if (event.key === "Escape") {
+        djdt.hideOneLevel();
         return;
     }
-    if (!keyboardShortcutsEnabled()) {
+    if (getDebugElement().dataset.keyboardShortcuts !== "True") {
         return;
     }
-    if (hasModifier(event) || isEditableTarget(event)) {
-        disarmShortcutPrefix();
+    if (event.altKey || event.ctrlKey || event.metaKey) {
+        shortcutPrefixAt = 0;
         return;
     }
-    if (handleShortcutsToggleKey(event)) {
+    if (
+        EDITABLE_TAGS.has(event.target?.tagName) ||
+        event.target?.isContentEditable
+    ) {
+        shortcutPrefixAt = 0;
         return;
     }
-    if (handlePrefixKey(event)) {
+    if (event.key === "?") {
+        event.preventDefault();
+        shortcutPrefixAt = 0;
+        toggleShortcuts();
         return;
     }
-    handleFollowupKey(event);
+    if (event.key === "g" && !prefixArmed()) {
+        shortcutPrefixAt = Date.now();
+        return;
+    }
+    const letter = event.key.toLowerCase();
+    if (letter.length === 1 && prefixArmed()) {
+        shortcutPrefixAt = 0;
+        const link = getDebugElement().querySelector(
+            `a[aria-keyshortcuts="g ${letter}"]`
+        );
+        if (link) {
+            hideShortcuts();
+            link.click();
+        }
+    }
 }
 
 const djdt = {
