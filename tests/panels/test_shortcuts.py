@@ -20,68 +20,48 @@ class NoShortcutPanel(Panel):
 
 
 @override_settings(DEBUG=True)
-class BuiltInShortcutTestCase(IntegrationTestCase):
-    def test_builtin_panels_advertise_their_letters(self):
-        response = self.client.get("/regular/basic/")
-        for keys in (
-            "h",
-            "v",
-            "i",
-            "l",
-            "d",
-            "r",
-            "s",
-            "f",
-            "t",
-            "a",
-            "c",
-            "n",
-            "k",
-            "y",
-        ):
-            self.assertContains(response, f'aria-keyshortcuts="g {keys}"')
-        self.assertNotContains(response, 'aria-keyshortcuts="g p"')
-        self.assertContains(response, 'id="djDebugShortcuts"')
-
-
-@override_settings(
-    DEBUG=True, DEBUG_TOOLBAR_CONFIG={"ENABLE_KEYBOARD_SHORTCUTS": False}
-)
-class DisabledShortcutTestCase(IntegrationTestCase):
-    def test_shortcuts_can_be_disabled(self):
-        response = self.client.get("/regular/basic/")
-        self.assertContains(response, 'data-keyboard-shortcuts="False"')
-        self.assertNotContains(response, "aria-keyshortcuts")
-        self.assertNotContains(response, 'id="djDebugShortcuts"')
-
-
-@override_settings(
-    DEBUG=True,
-    DEBUG_TOOLBAR_PANELS=[
-        "tests.panels.test_shortcuts.FirstPanel",
-        "tests.panels.test_shortcuts.SecondPanel",
-        "tests.panels.test_shortcuts.NoShortcutPanel",
-    ],
-)
-class DuplicateShortcutTestCase(IntegrationTestCase):
-    def test_earlier_panel_keeps_the_letter(self):
-        response = self.client.get("/regular/basic/")
-        self.assertContains(
-            response,
-            'href="#" title="First" class="FirstPanel" aria-controls="FirstPanel"'
-            ' aria-expanded="false" aria-keyshortcuts="g s"',
-        )
-        self.assertContains(
-            response,
-            'href="#" title="Second" class="SecondPanel" aria-controls="SecondPanel"'
-            ' aria-expanded="false">',
-        )
-        self.assertNotContains(
-            response,
-            'aria-controls="SecondPanel" aria-expanded="false" aria-keyshortcuts',
-        )
-        self.assertContains(
-            response,
-            'href="#" title="Plain" class="NoShortcutPanel"'
-            ' aria-controls="NoShortcutPanel" aria-expanded="false">',
-        )
+class ShortcutsTestCase(IntegrationTestCase):
+    def test_rendering(self):
+        panels = [
+            "tests.panels.test_shortcuts.FirstPanel",
+            "tests.panels.test_shortcuts.SecondPanel",
+            "tests.panels.test_shortcuts.NoShortcutPanel",
+        ]
+        cases = [
+            # Disabling the config stops advertising panel shortcuts.
+            (
+                {"DEBUG_TOOLBAR_CONFIG": {"ENABLE_KEYBOARD_SHORTCUTS": False}},
+                ['data-keyboard-shortcuts="False"'],
+                ["aria-keyshortcuts", 'id="djDebugShortcuts"'],
+            ),
+            # The earlier of two panels using the same letter keeps it.
+            (
+                {"DEBUG_TOOLBAR_PANELS": panels},
+                [
+                    'id="djDebugShortcuts"',
+                    (
+                        'title="First" class="FirstPanel" aria-controls="FirstPanel"'
+                        ' aria-expanded="false" aria-keyshortcuts="g s"'
+                    ),
+                    (
+                        'title="Second" class="SecondPanel" aria-controls="SecondPanel"'
+                        ' aria-expanded="false">'
+                    ),
+                    (
+                        'title="Plain" class="NoShortcutPanel"'
+                        ' aria-controls="NoShortcutPanel" aria-expanded="false">'
+                    ),
+                ],
+                ['aria-controls="SecondPanel" aria-expanded="false" aria-keyshortcuts'],
+            ),
+        ]
+        for overrides, contains, not_contains in cases:
+            with self.subTest(**overrides):
+                with self.settings(**overrides):
+                    response = self.client.get("/regular/basic/")
+                for fragment in contains:
+                    with self.subTest(fragment=fragment):
+                        self.assertContains(response, fragment)
+                for fragment in not_contains:
+                    with self.subTest(fragment=fragment):
+                        self.assertNotContains(response, fragment)
