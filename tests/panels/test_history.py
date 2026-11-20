@@ -71,6 +71,7 @@ class HistoryPanelTestCase(BaseTestCase):
 class HistoryViewsTestCase(IntegrationTestCase):
     PANEL_KEYS = {
         "VersionsPanel",
+        "HistoryPanel",
         "TimerPanel",
         "SettingsPanel",
         "HeadersPanel",
@@ -84,7 +85,12 @@ class HistoryViewsTestCase(IntegrationTestCase):
         "TasksPanel",
         "CommunityPanel",
         "ProfilingPanel",
+        "RedirectsPanel",
     }
+    NON_HISTORICAL_PANELS = [
+        "HistoryPanel",
+        "RedirectsPanel",
+    ]
 
     def test_history_panel_integration_content(self):
         """Verify the history panel's content renders properly.."""
@@ -126,7 +132,10 @@ class HistoryViewsTestCase(IntegrationTestCase):
         DebugToolbar.get_observe_request.cache_clear()
 
     def test_history_sidebar(self):
-        """Validate the history sidebar view."""
+        """
+        Validate the history sidebar view.
+        Validate that every panel panel has 'button' and historical panels have 'content' as well.
+        """
         self.client.get("/json_view/")
         request_id = next(iter(get_store().request_ids()))
         data = {"request_id": request_id, "exclude_history": True}
@@ -136,9 +145,15 @@ class HistoryViewsTestCase(IntegrationTestCase):
             set(response.json()),
             self.PANEL_KEYS,
         )
+        for panel, panel_context in response.json().items():
+            self.assertIn("button", panel_context)
+            if panel in self.NON_HISTORICAL_PANELS:
+                self.assertNotIn("content", panel_context)
+            else:
+                self.assertIn("content", panel_context)
 
     def test_history_sidebar_includes_history(self):
-        """Validate the history sidebar view."""
+        """Validate the history sidebar view. Validate that every panel has 'button' and 'content'."""
         self.client.get("/json_view/")
         panel_keys = copy.copy(self.PANEL_KEYS)
         panel_keys.add(HistoryPanel.panel_id)
@@ -151,6 +166,9 @@ class HistoryViewsTestCase(IntegrationTestCase):
             set(response.json()),
             panel_keys,
         )
+        for panel_context in response.json().values():
+            self.assertIn("button", panel_context)
+            self.assertIn("content", panel_context)
 
     @override_settings(
         DEBUG_TOOLBAR_CONFIG={"RENDER_PANELS": False, "RESULTS_CACHE_SIZE": 1}
