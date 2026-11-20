@@ -147,7 +147,9 @@ class HistoryViewsTestCase(IntegrationTestCase):
         )
         for panel, panel_context in response.json().items():
             self.assertIn("button", panel_context)
-            if panel not in self.NON_HISTORICAL_PANELS:
+            if panel in self.NON_HISTORICAL_PANELS:
+                self.assertNotIn("content", panel_context)
+            else:
                 self.assertIn("content", panel_context)
 
     def test_history_sidebar_includes_history(self):
