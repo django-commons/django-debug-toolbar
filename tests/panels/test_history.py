@@ -132,7 +132,10 @@ class HistoryViewsTestCase(IntegrationTestCase):
         DebugToolbar.get_observe_request.cache_clear()
 
     def test_history_sidebar(self):
-        """Validate the history sidebar view."""
+        """
+        Validate the history sidebar view.
+        Validate that every panel panel has 'button' and historical panels have 'content' as well.
+        """
         self.client.get("/json_view/")
         request_id = next(iter(get_store().request_ids()))
         data = {"request_id": request_id, "exclude_history": True}
@@ -148,7 +151,7 @@ class HistoryViewsTestCase(IntegrationTestCase):
                 self.assertIn("content", panel_context)
 
     def test_history_sidebar_includes_history(self):
-        """Validate the history sidebar view."""
+        """Validate the history sidebar view. Validate that every panel has 'button' and 'content'."""
         self.client.get("/json_view/")
         panel_keys = copy.copy(self.PANEL_KEYS)
         panel_keys.add(HistoryPanel.panel_id)
