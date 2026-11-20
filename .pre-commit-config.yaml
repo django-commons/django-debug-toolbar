@@ -1,4 +1,8 @@
 exclude: "package.json|package-lock.json"
+# Use the Node on PATH. pre-commit otherwise ignores Node installed by
+# version managers like nvm and downloads the latest release through nodeenv.
+default_language_version:
+    node: system
 repos:
     - repo: https://github.com/pre-commit/pre-commit-hooks
       rev: v6.0.0
