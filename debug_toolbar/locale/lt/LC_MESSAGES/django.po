@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django Debug Toolbar\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-16 19:11-0500\n"
+"POT-Creation-Date: 2026-02-09 19:07-0600\n"
 "PO-Revision-Date: 2010-11-30 00:00+0000\n"
 "Last-Translator: Karolis Ryselis <karolis@esperonus.com>, 2025-2026\n"
 "Language-Team: Lithuanian (http://app.transifex.com/django-debug-toolbar/django-debug-toolbar/language/lt/)\n"
@@ -54,11 +54,11 @@ msgstr "Įvesties elementas nurodo formą su ID „{form_id}“, tačiau ši for
 msgid "Alerts"
 msgstr "Įspėjimai"
 
-#: panels/cache.py:170
+#: panels/cache.py:169
 msgid "Cache"
 msgstr "Podėlis"
 
-#: panels/cache.py:177
+#: panels/cache.py:176
 #, python-format
 msgid "%(cache_calls)d call in %(time).2fms"
 msgid_plural "%(cache_calls)d calls in %(time).2fms"
@@ -67,7 +67,7 @@ msgstr[1] "%(cache_calls)d kvietimai per %(time).2f ms"
 msgstr[2] "%(cache_calls)d kvietimų per %(time).2f ms"
 msgstr[3] "%(cache_calls)d kvietimų per %(time).2f ms"
 
-#: panels/cache.py:186
+#: panels/cache.py:185
 #, python-format
 msgid "Cache calls from %(count)d backend"
 msgid_plural "Cache calls from %(count)d backends"
@@ -84,7 +84,7 @@ msgstr "Bendruomenė"
 msgid "Headers"
 msgstr "Antraštės"
 
-#: panels/history/panel.py:20 panels/history/panel.py:21
+#: panels/history/panel.py:21 panels/history/panel.py:22
 msgid "History"
 msgstr "Istorija"
 
@@ -92,7 +92,7 @@ msgstr "Istorija"
 msgid "Profiling"
 msgstr "Profiliavimas"
 
-#: panels/redirects.py:18
+#: panels/redirects.py:19
 msgid "Intercept redirects"
 msgstr "Perimti nukreipimus"
 
@@ -108,11 +108,11 @@ msgstr "<nėra rodinio>"
 msgid "<unavailable>"
 msgstr "<neprieinamas>"
 
-#: panels/settings.py:19
+#: panels/settings.py:27
 msgid "Settings"
 msgstr "Nustatymai"
 
-#: panels/settings.py:22
+#: panels/settings.py:30
 #, python-format
 msgid "Settings from %s"
 msgstr "Nustatymai iš %s"
@@ -250,7 +250,9 @@ msgstr "Procesorius: %(cum)0.2f ms (%(total)0.2f ms)"
 msgid "Total: %0.2fms"
 msgstr "Iš viso: %0.2f ms"
 
-#: panels/timer.py:38 templates/debug_toolbar/panels/history.html:9
+#: panels/timer.py:38 templates/debug_toolbar/panels/cache.html:43
+#: templates/debug_toolbar/panels/history.html:9
+#: templates/debug_toolbar/panels/sql.html:36
 #: templates/debug_toolbar/panels/sql_explain.html:11
 #: templates/debug_toolbar/panels/sql_profile.html:12
 #: templates/debug_toolbar/panels/sql_select.html:11
@@ -263,7 +265,7 @@ msgstr "Naudotojo procesoriaus laikas"
 
 #: panels/timer.py:46
 #, python-format
-msgid "%(utime)0.3f msec"
+msgid "%(utime)0.3f ms"
 msgstr "%(utime)0.3f ms"
 
 #: panels/timer.py:47
@@ -272,7 +274,7 @@ msgstr "Sistemos procesoriaus laikas"
 
 #: panels/timer.py:47
 #, python-format
-msgid "%(stime)0.3f msec"
+msgid "%(stime)0.3f ms"
 msgstr "%(stime)0.3f ms"
 
 #: panels/timer.py:48
@@ -281,7 +283,7 @@ msgstr "Visas procesoriaus laikas"
 
 #: panels/timer.py:48
 #, python-format
-msgid "%(total)0.3f msec"
+msgid "%(total)0.3f ms"
 msgstr "%(total)0.3f ms"
 
 #: panels/timer.py:49
@@ -290,7 +292,7 @@ msgstr "Praėjęs laikas"
 
 #: panels/timer.py:49
 #, python-format
-msgid "%(total_time)0.3f msec"
+msgid "%(total_time)0.3f ms"
 msgstr "%(total_time)0.3f ms"
 
 #: panels/timer.py:51
@@ -365,11 +367,6 @@ msgstr "Komandos"
 #: templates/debug_toolbar/panels/cache.html:39
 msgid "Calls"
 msgstr "Kreipiniai"
-
-#: templates/debug_toolbar/panels/cache.html:43
-#: templates/debug_toolbar/panels/sql.html:36
-msgid "Time (ms)"
-msgstr "Laikas (ms)"
 
 #: templates/debug_toolbar/panels/cache.html:44
 msgid "Type"
@@ -453,224 +450,224 @@ msgstr "Atsakymo antraštės"
 
 #: templates/debug_toolbar/panels/headers.html:41
 msgid "WSGI environ"
-msgstr ""
+msgstr "WSGI aplinka"
 
 #: templates/debug_toolbar/panels/headers.html:43
 msgid ""
 "Since the WSGI environ inherits the environment of the server, only a "
 "significant subset is shown below."
-msgstr ""
+msgstr "Kadangi WSGI aplinka paveldi serverio aplinką, žemiau rodomas tik reikšmingas poaibis."
 
 #: templates/debug_toolbar/panels/history.html:10
 msgid "Method"
-msgstr ""
+msgstr "Metodas"
 
 #: templates/debug_toolbar/panels/history.html:11
 #: templates/debug_toolbar/panels/staticfiles.html:43
 msgid "Path"
-msgstr ""
+msgstr "Kelias"
 
 #: templates/debug_toolbar/panels/history.html:12
 msgid "Request Variables"
-msgstr ""
+msgstr "Užklausos kintamieji"
 
 #: templates/debug_toolbar/panels/history.html:13
 msgid "Status"
-msgstr ""
+msgstr "Būsena"
 
 #: templates/debug_toolbar/panels/history.html:14
 #: templates/debug_toolbar/panels/sql.html:37
 msgid "Action"
-msgstr ""
+msgstr "Veiksmas"
 
 #: templates/debug_toolbar/panels/history_tr.html:22
 #: templates/debug_toolbar/panels/request_variables.html:11
 msgid "Variable"
-msgstr ""
+msgstr "Kintamasis"
 
 #: templates/debug_toolbar/panels/profiling.html:5
 msgid "Call"
-msgstr ""
+msgstr "Kreipinys"
 
 #: templates/debug_toolbar/panels/profiling.html:6
 msgid "CumTime"
-msgstr ""
+msgstr "Suminis laikas"
 
 #: templates/debug_toolbar/panels/profiling.html:7
 #: templates/debug_toolbar/panels/profiling.html:9
 msgid "Per"
-msgstr ""
+msgstr "Per kvietimą"
 
 #: templates/debug_toolbar/panels/profiling.html:8
 msgid "TotTime"
-msgstr ""
+msgstr "Bendras laikas"
 
 #: templates/debug_toolbar/panels/profiling.html:10
 msgid "Count"
-msgstr ""
+msgstr "Kreipinių kiekis"
 
 #: templates/debug_toolbar/panels/request.html:3
 msgid "View information"
-msgstr ""
+msgstr "Peržiūrėti informaciją"
 
 #: templates/debug_toolbar/panels/request.html:7
 msgid "View function"
-msgstr ""
+msgstr "Rodinio funkcija"
 
 #: templates/debug_toolbar/panels/request.html:10
 msgid "URL name"
-msgstr ""
+msgstr "URL pavadinimas"
 
 #: templates/debug_toolbar/panels/request.html:24
 msgid "Cookies"
-msgstr ""
+msgstr "Slapukai"
 
 #: templates/debug_toolbar/panels/request.html:27
 msgid "No cookies"
-msgstr ""
+msgstr "Nėra slapukų"
 
 #: templates/debug_toolbar/panels/request.html:31
 msgid "Session data"
-msgstr ""
+msgstr "Sesijos duomenys"
 
 #: templates/debug_toolbar/panels/request.html:34
 msgid "No session data"
-msgstr ""
+msgstr "Nėra sesijos duomenų"
 
 #: templates/debug_toolbar/panels/request.html:38
 msgid "GET data"
-msgstr ""
+msgstr "GET duomenys"
 
 #: templates/debug_toolbar/panels/request.html:41
 msgid "No GET data"
-msgstr ""
+msgstr "Nėra GET duomenų"
 
 #: templates/debug_toolbar/panels/request.html:45
 msgid "POST data"
-msgstr ""
+msgstr "POST duomenys"
 
 #: templates/debug_toolbar/panels/request.html:48
 msgid "No POST data"
-msgstr ""
+msgstr "Nėra POST duomenų"
 
 #: templates/debug_toolbar/panels/settings.html:5
 msgid "Setting"
-msgstr ""
+msgstr "Nustatymas"
 
 #: templates/debug_toolbar/panels/signals.html:5
 msgid "Signal"
-msgstr ""
+msgstr "Signalas"
 
 #: templates/debug_toolbar/panels/signals.html:6
 msgid "Receivers"
-msgstr ""
+msgstr "Gavėjai"
 
 #: templates/debug_toolbar/panels/sql.html:6
 #, python-format
 msgid "%(num)s query"
 msgid_plural "%(num)s queries"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "%(num)s užklausa"
+msgstr[1] "%(num)s užklausos"
+msgstr[2] "%(num)s užklausos"
+msgstr[3] "%(num)s užklausų"
 
 #: templates/debug_toolbar/panels/sql.html:8
 #, python-format
 msgid ""
 "including <abbr title=\"Similar queries are queries with the same SQL, but "
 "potentially different parameters.\">%(count)s similar</abbr>"
-msgstr ""
+msgstr "įskaitant <abbr title=\"Panašios užklausos yra užklausos su tuo pačiu SQL, bet galimai skirtingais parametrais.\">%(count)s panašių</abbr>"
 
 #: templates/debug_toolbar/panels/sql.html:12
 #, python-format
 msgid ""
 "and <abbr title=\"Duplicate queries are identical to each other: they "
 "execute exactly the same SQL and parameters.\">%(dupes)s duplicates</abbr>"
-msgstr ""
+msgstr "ir <abbr title=\"Dubliuotos užklausos yra identiškos: vykdo tiksliai tą patį SQL su tais pačiais parametrais.\">%(dupes)s dublių</abbr>"
 
 #: templates/debug_toolbar/panels/sql.html:34
 msgid "Query"
-msgstr ""
+msgstr "Užklausa"
 
 #: templates/debug_toolbar/panels/sql.html:35
 #: templates/debug_toolbar/panels/timer.html:36
 msgid "Timeline"
-msgstr ""
+msgstr "Laiko juosta"
 
 #: templates/debug_toolbar/panels/sql.html:52
 #, python-format
 msgid "%(count)s similar queries."
-msgstr ""
+msgstr "%(count)s panašios užklausos."
 
 #: templates/debug_toolbar/panels/sql.html:58
 #, python-format
 msgid "Duplicated %(dupes)s times."
-msgstr ""
+msgstr "Pasikartojo %(dupes)s kartų."
 
 #: templates/debug_toolbar/panels/sql.html:95
 msgid "Connection:"
-msgstr ""
+msgstr "Prisijungimas:"
 
 #: templates/debug_toolbar/panels/sql.html:97
 msgid "Isolation level:"
-msgstr ""
+msgstr "Izoliavimo lygis:"
 
 #: templates/debug_toolbar/panels/sql.html:100
 msgid "Transaction status:"
-msgstr ""
+msgstr "Tranzakcijos būsena:"
 
 #: templates/debug_toolbar/panels/sql.html:114
 msgid "(unknown)"
-msgstr ""
+msgstr "(nežinomas)"
 
 #: templates/debug_toolbar/panels/sql.html:123
 msgid "No SQL queries were recorded during this request."
-msgstr ""
+msgstr "Šios užklausos vykdymo metu nebuvo įrašyta SQL užklausų."
 
 #: templates/debug_toolbar/panels/sql_explain.html:3
 msgid "SQL explained"
-msgstr ""
+msgstr "Paaiškintas SQL"
 
 #: templates/debug_toolbar/panels/sql_explain.html:9
 #: templates/debug_toolbar/panels/sql_profile.html:10
 #: templates/debug_toolbar/panels/sql_select.html:9
 msgid "Executed SQL"
-msgstr ""
+msgstr "Įvykdytas SQL"
 
 #: templates/debug_toolbar/panels/sql_explain.html:13
 #: templates/debug_toolbar/panels/sql_profile.html:14
 #: templates/debug_toolbar/panels/sql_select.html:13
 msgid "Database"
-msgstr ""
+msgstr "Duomenų bazė"
 
 #: templates/debug_toolbar/panels/sql_profile.html:3
 msgid "SQL profiled"
-msgstr ""
+msgstr "Profiliuotas SQL"
 
 #: templates/debug_toolbar/panels/sql_profile.html:37
 msgid "Error"
-msgstr ""
+msgstr "Klaida"
 
 #: templates/debug_toolbar/panels/sql_select.html:3
 msgid "SQL selected"
-msgstr ""
+msgstr "Pasirinktas SQL"
 
 #: templates/debug_toolbar/panels/sql_select.html:36
 msgid "Empty set"
-msgstr ""
+msgstr "Tuščias rinkinys"
 
 #: templates/debug_toolbar/panels/staticfiles.html:3
 msgid "Static file path"
 msgid_plural "Static file paths"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "Statinio failo kelias"
+msgstr[1] "Statinių failų keliai"
+msgstr[2] "Statinių failų keliai"
+msgstr[3] "Statinių failų keliai"
 
 #: templates/debug_toolbar/panels/staticfiles.html:7
 #, python-format
 msgid "(prefix %(prefix)s)"
-msgstr ""
+msgstr "(priešdėlis %(prefix)s)"
 
 #: templates/debug_toolbar/panels/staticfiles.html:11
 #: templates/debug_toolbar/panels/staticfiles.html:22
@@ -679,115 +676,130 @@ msgstr ""
 #: templates/debug_toolbar/panels/templates.html:30
 #: templates/debug_toolbar/panels/templates.html:47
 msgid "None"
-msgstr ""
+msgstr "Nėra"
 
 #: templates/debug_toolbar/panels/staticfiles.html:14
 msgid "Static file app"
 msgid_plural "Static file apps"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "Statinių failų programėlė"
+msgstr[1] "Statinių failų programėlės"
+msgstr[2] "Statinių failų programėlės"
+msgstr[3] "Statinių failų programėlės"
 
 #: templates/debug_toolbar/panels/staticfiles.html:25
 msgid "Static file"
 msgid_plural "Static files"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "Statinis failas"
+msgstr[1] "Statiniai failai"
+msgstr[2] "Statiniai failai"
+msgstr[3] "Statiniai failai"
 
 #: templates/debug_toolbar/panels/staticfiles.html:39
 #, python-format
 msgid "%(payload_count)s file"
 msgid_plural "%(payload_count)s files"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "%(payload_count)s failas"
+msgstr[1] "%(payload_count)s failai"
+msgstr[2] "%(payload_count)s failo"
+msgstr[3] "%(payload_count)s failų"
 
 #: templates/debug_toolbar/panels/staticfiles.html:44
 msgid "Location"
-msgstr ""
+msgstr "Vieta"
 
 #: templates/debug_toolbar/panels/template_source.html:3
 msgid "Template source:"
-msgstr ""
+msgstr "Šablono šaltinis:"
 
 #: templates/debug_toolbar/panels/templates.html:2
 msgid "Template path"
 msgid_plural "Template paths"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "Šablonų kelias"
+msgstr[1] "Šablonų keliai"
+msgstr[2] "Šablonų kelio"
+msgstr[3] "Šablonų kelių"
 
 #: templates/debug_toolbar/panels/templates.html:13
 msgid "Template"
 msgid_plural "Templates"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "Šablonas"
+msgstr[1] "Šablonai"
+msgstr[2] "Šablonai"
+msgstr[3] "Šablonai"
 
 #: templates/debug_toolbar/panels/templates.html:22
 #: templates/debug_toolbar/panels/templates.html:40
 msgid "Toggle context"
-msgstr ""
+msgstr "Perjungti kontekstą"
 
 #: templates/debug_toolbar/panels/templates.html:33
 msgid "Context processor"
 msgid_plural "Context processors"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "Konteksto doroklė"
+msgstr[1] "Konteksto doroklės"
+msgstr[2] "Konteksto doroklės"
+msgstr[3] "Konteksto doroklių"
 
 #: templates/debug_toolbar/panels/timer.html:2
 msgid "Resource usage"
-msgstr ""
+msgstr "Resursų naudojimas"
 
 #: templates/debug_toolbar/panels/timer.html:10
 msgid "Resource"
-msgstr ""
+msgstr "Resursas"
 
 #: templates/debug_toolbar/panels/timer.html:26
 msgid "Browser timing"
-msgstr ""
+msgstr "Naršyklės laikai"
 
 #: templates/debug_toolbar/panels/timer.html:35
 msgid "Timing attribute"
-msgstr ""
+msgstr "Laiko matavimo atributas"
 
 #: templates/debug_toolbar/panels/timer.html:37
-msgid "Milliseconds since navigation start (+length)"
-msgstr ""
+msgid "Time since navigation start (+duration)"
+msgstr "Laikas nuo navigacijos pradžios (+trukmė)"
 
 #: templates/debug_toolbar/panels/versions.html:10
 msgid "Package"
-msgstr ""
+msgstr "Paketas"
 
 #: templates/debug_toolbar/panels/versions.html:11
 msgid "Name"
-msgstr ""
+msgstr "Pavadinimas"
 
 #: templates/debug_toolbar/panels/versions.html:12
 msgid "Version"
-msgstr ""
+msgstr "Versija"
 
-#: templates/debug_toolbar/redirect.html:10
+#: templates/debug_toolbar/redirect.html:61
+msgid "WARNING:"
+msgstr "ĮSPĖJIMAS:"
+
+#: templates/debug_toolbar/redirect.html:62
+#, python-format
+msgid ""
+"\n"
+"      The RedirectsPanel is deprecated and will be removed in a future version. The HistoryPanel\n"
+"      now provides the ability to view toolbar data for redirected requests. If you still have a\n"
+"      use case for this panel, please comment on this <a target=\"_blank\" rel=\"noopener noreferrer\"\n"
+"      href=\"%(issue_url)s\">issue</a>.\n"
+"      "
+msgstr "\n    RedirectsPanel skydelis yra pasenęs ir bus pašalintas ateities versijoje. HistoryPanel\n    dabar suteikia galimybę peržiūrėti įrankių juostos duomenis nukreiptoms užklausoms. Jeigu vis tiek turite\n    panaudojimo atvejį šiam skydeliui, pakomentuokite šią <a target=\"_blank\" rel=\"noopener noreferrer\"\n      href=\"%(issue_url)s\">problemą</a>."
+
+#: templates/debug_toolbar/redirect.html:70
 msgid "Location:"
-msgstr ""
+msgstr "Vieta:"
 
-#: templates/debug_toolbar/redirect.html:12
+#: templates/debug_toolbar/redirect.html:72
 msgid ""
 "The Django Debug Toolbar has intercepted a redirect to the above URL for "
 "debug viewing purposes. You can click the above link to continue with the "
 "redirect as normal."
-msgstr ""
+msgstr "„Django Debug Toolbar“ perėmė užklausą į aukščiau nurodytą URL derinimo peržiūros tikslais. Galite paspausti aukščiau esančią nuorodą norėdami tęsti peradresavimą kaip įprasta."
 
-#: views.py:18
+#: views.py:21
 msgid ""
 "Data for this panel isn't available anymore. Please reload the page and "
 "retry."
-msgstr ""
+msgstr "Šio skydelio duomenys nebepasiekiami. Perkraukite puslapį ir bandykite dar kartą."
