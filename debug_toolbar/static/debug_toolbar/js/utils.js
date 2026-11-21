@@ -129,7 +129,9 @@ export function replaceToolbarState(newRequestId, data) {
     for (const panelId of Object.keys(data)) {
         const panel = djDebug.querySelector(`#${panelId}`);
         if (panel) {
-            panel.outerHTML = data[panelId].content;
+            if (Object.hasOwn(data[panelId], "content")) {
+                panel.outerHTML = data[panelId].content;
+            }
             djDebug.querySelector(`#djdt-${panelId}`).outerHTML =
                 data[panelId].button;
         }

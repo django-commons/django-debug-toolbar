@@ -214,7 +214,7 @@ Path: ``pyflame.djdt.panel.FlamegraphPanel``
 
 Displays a flame graph for visualizing the performance profile of the request,
 using Brendan Gregg's `flamegraph.pl script
-<https://github.com/brendangregg/FlameGraph/flamegraph.pl>`_ to perform the
+<https://github.com/brendangregg/FlameGraph/blob/master/flamegraph.pl>`_ to perform the
 heavy lifting.
 
 LDAP Tracing

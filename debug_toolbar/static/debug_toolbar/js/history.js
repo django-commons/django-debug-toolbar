@@ -38,6 +38,16 @@ function refreshHistory() {
             for (const request of data.requests) {
                 container.innerHTML = request.content + container.innerHTML;
             }
+
+            const selectedRow = container.querySelector(
+                `tr[data-request-id="${djDebug.dataset.requestId}"]`
+            );
+            // Make sure the request has not been dropped from the
+            // store due to RESULTS_CACHE_SIZE.
+            if (selectedRow) {
+                // Re-highlight the row with the currently selected requestId.
+                selectedRow.classList.add("djdt-highlighted");
+            }
         })
         .then(() => {
             const allIds = new Set(

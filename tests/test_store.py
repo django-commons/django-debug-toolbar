@@ -423,7 +423,7 @@ class CacheStoreWithDatabaseBackendTestCase(CommonStoreTestsMixin, TestCase):
     def setUpClass(cls):
         super().setUpClass()
         # Create the database cache table
-        call_command("createcachetable", "test_cache_store_table", verbosity=0)
+        call_command("createcachetable", verbosity=0)
         cls.store = store.CacheStore
 
     @classmethod
