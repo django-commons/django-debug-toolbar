@@ -78,8 +78,7 @@ class Panel:
 
     shortcut_key: str | None = None
     """
-    Optional single letter used after ``g`` to open this panel, for example
-    ``"s"``. Defaults to ``None`` (no shortcut).
+    Optional single letter used after ``g`` to open this panel.
     """
 
     @property
