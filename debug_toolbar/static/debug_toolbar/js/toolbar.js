@@ -15,13 +15,6 @@ function prefixArmed() {
     return Date.now() - shortcutPrefixAt < 1000;
 }
 
-function hideShortcuts() {
-    const dialog = getDebugElement().querySelector("#djDebugShortcuts");
-    if (dialog) {
-        $$.hide(dialog);
-    }
-}
-
 function toggleShortcuts() {
     const djDebug = getDebugElement();
     const dialog = djDebug.querySelector("#djDebugShortcuts");
@@ -40,17 +33,12 @@ function toggleShortcuts() {
         ]);
     }
     const list = djDebug.querySelector("#djDebugShortcutsList");
-    list.replaceChildren(
-        ...rows.map(([keys, label]) => {
-            const row = document.createElement("tr");
-            const keyCell = document.createElement("td");
-            const labelCell = document.createElement("td");
-            keyCell.textContent = keys;
-            labelCell.textContent = label;
-            row.append(keyCell, labelCell);
-            return row;
-        })
-    );
+    list.replaceChildren();
+    for (const [keys, label] of rows) {
+        const row = list.insertRow();
+        row.insertCell().textContent = keys;
+        row.insertCell().textContent = label;
+    }
     djdt.hidePanels();
     $$.show(dialog);
 }
@@ -60,14 +48,14 @@ function onKeyDown(event) {
         djdt.hideOneLevel();
         return;
     }
-    if (getDebugElement().dataset.keyboardShortcuts !== "True") {
-        return;
-    }
-    if (event.altKey || event.ctrlKey || event.metaKey) {
-        shortcutPrefixAt = 0;
+    const djDebug = getDebugElement();
+    if (djDebug.dataset.keyboardShortcuts !== "True") {
         return;
     }
     if (
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
         EDITABLE_TAGS.has(event.target?.tagName) ||
         event.target?.isContentEditable
     ) {
@@ -87,11 +75,11 @@ function onKeyDown(event) {
     const letter = event.key.toLowerCase();
     if (letter.length === 1 && prefixArmed()) {
         shortcutPrefixAt = 0;
-        const link = getDebugElement().querySelector(
+        const link = djDebug.querySelector(
             `a[aria-keyshortcuts="g ${letter}"]`
         );
         if (link) {
-            hideShortcuts();
+            // Clicking the panel link also closes the shortcuts dialog.
             link.click();
         }
     }
@@ -372,7 +360,6 @@ const djdt = {
     hideToolbar() {
         const djDebug = getDebugElement();
         djdt.hidePanels();
-        hideShortcuts();
 
         $$.hide(djDebug.querySelector("#djDebugToolbar"));
 
