@@ -12,6 +12,7 @@ class RequestPanel(Panel):
     """
 
     template = "debug_toolbar/panels/request.html"
+    shortcut_key = "r"
 
     title = _("Request")
     nav_icon = "debug_toolbar/img/request.svg"

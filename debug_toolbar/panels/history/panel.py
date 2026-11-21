@@ -18,6 +18,7 @@ class HistoryPanel(Panel):
     """A panel to display History"""
 
     is_async = True
+    shortcut_key = "h"
     title = _("History")
     nav_title = _("History")
     nav_icon = "debug_toolbar/img/history.svg"

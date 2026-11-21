@@ -27,6 +27,7 @@ from debug_toolbar.panels import Panel
 
 class SignalsPanel(Panel):
     template = "debug_toolbar/panels/signals.html"
+    shortcut_key = "n"
 
     is_async = True
 

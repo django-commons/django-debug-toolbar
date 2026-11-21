@@ -29,6 +29,7 @@ class HeadersPanel(Panel):
     }
 
     title = _("Headers")
+    shortcut_key = "d"
     nav_icon = "debug_toolbar/img/headers.svg"
 
     is_async = True

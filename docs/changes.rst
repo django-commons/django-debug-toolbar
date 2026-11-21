@@ -54,6 +54,9 @@ Pending
   ``functools.cached_property`` in the SQL panel.
 * Fixed the dead link to ``flamegraph.pl`` in the Flame Graph panel
   documentation.
+* Added keyboard shortcuts to the toolbar: ``?`` shows the available
+  shortcuts and ``g`` followed by a panel letter opens it. Set
+  ``ENABLE_KEYBOARD_SHORTCUTS`` to ``False`` to disable them.
 
 8.0.0 (2026-09-02)
 ------------------

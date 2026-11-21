@@ -23,6 +23,7 @@ class SettingsPanel(Panel):
     template = "debug_toolbar/panels/settings.html"
 
     is_async = True
+    shortcut_key = "l"
 
     nav_title = _("Settings")
     nav_icon = "debug_toolbar/img/settings.svg"

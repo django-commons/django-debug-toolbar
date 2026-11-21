@@ -155,6 +155,7 @@ class ProfilingPanel(Panel):
     """
 
     is_async = False
+    shortcut_key = "p"
     title = _("Profiling")
     nav_icon = "debug_toolbar/img/profiling.svg"
 

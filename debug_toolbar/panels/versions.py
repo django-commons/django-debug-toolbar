@@ -13,6 +13,7 @@ class VersionsPanel(Panel):
     """
 
     is_async = True
+    shortcut_key = "v"
 
     @property
     def nav_subtitle(self):

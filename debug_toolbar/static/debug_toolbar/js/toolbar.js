@@ -6,9 +6,82 @@ import {
     replaceToolbarState,
 } from "./utils.js";
 
+const EDITABLE_TAGS = new Set(["INPUT", "TEXTAREA", "SELECT"]);
+
+// Timestamp of the last "g" keypress, or 0 when no shortcut prefix is armed.
+let shortcutPrefixAt = 0;
+
+function prefixArmed() {
+    return Date.now() - shortcutPrefixAt < 1000;
+}
+
+function toggleShortcuts() {
+    const djDebug = getDebugElement();
+    const dialog = djDebug.querySelector("#djDebugShortcuts");
+    if ($$.visible(dialog)) {
+        $$.hide(dialog);
+        return;
+    }
+    const rows = [
+        ["?", "Show shortcuts"],
+        ["Esc", "Close"],
+    ];
+    for (const link of djDebug.querySelectorAll("a[aria-keyshortcuts]")) {
+        rows.push([
+            link.getAttribute("aria-keyshortcuts").replace(" ", " then "),
+            link.getAttribute("title") || link.textContent.trim(),
+        ]);
+    }
+    const list = djDebug.querySelector("#djDebugShortcutsList");
+    list.replaceChildren();
+    for (const [keys, label] of rows) {
+        const row = list.insertRow();
+        row.insertCell().textContent = keys;
+        row.insertCell().textContent = label;
+    }
+    djdt.hidePanels();
+    $$.show(dialog);
+}
+
 function onKeyDown(event) {
-    if (event.keyCode === 27) {
+    if (event.key === "Escape") {
         djdt.hideOneLevel();
+        return;
+    }
+    const djDebug = getDebugElement();
+    if (djDebug.dataset.keyboardShortcuts !== "True") {
+        return;
+    }
+    if (
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        EDITABLE_TAGS.has(event.target?.tagName) ||
+        event.target?.isContentEditable
+    ) {
+        shortcutPrefixAt = 0;
+        return;
+    }
+    if (event.key === "?") {
+        event.preventDefault();
+        shortcutPrefixAt = 0;
+        toggleShortcuts();
+        return;
+    }
+    if (event.key === "g" && !prefixArmed()) {
+        shortcutPrefixAt = Date.now();
+        return;
+    }
+    const letter = event.key.toLowerCase();
+    if (letter.length === 1 && prefixArmed()) {
+        shortcutPrefixAt = 0;
+        const link = djDebug.querySelector(
+            `a[aria-keyshortcuts="g ${letter}"]`
+        );
+        if (link) {
+            // Clicking the panel link also closes the shortcuts dialog.
+            link.click();
+        }
     }
 }
 
@@ -300,6 +373,11 @@ const djdt = {
     },
     hideOneLevel() {
         const djDebug = getDebugElement();
+        const shortcuts = djDebug.querySelector("#djDebugShortcuts");
+        if (shortcuts && $$.visible(shortcuts)) {
+            $$.hide(shortcuts);
+            return;
+        }
         const win = djDebug.querySelector("#djDebugWindow");
         if ($$.visible(win)) {
             $$.hide(win);

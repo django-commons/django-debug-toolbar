@@ -76,6 +76,11 @@ class Panel:
     (no icon).
     """
 
+    shortcut_key: str | None = None
+    """
+    Optional single letter used after ``g`` to open this panel.
+    """
+
     @property
     def nav_title(self):
         """

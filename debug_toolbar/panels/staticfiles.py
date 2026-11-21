@@ -38,6 +38,7 @@ class StaticFilesPanel(panels.Panel):
     """
 
     is_async = True
+    shortcut_key = "f"
     name = "Static files"
     template = "debug_toolbar/panels/staticfiles.html"
 

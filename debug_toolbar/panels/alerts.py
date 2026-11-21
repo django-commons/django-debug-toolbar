@@ -78,6 +78,7 @@ class AlertsPanel(Panel):
     }
 
     title = _("Alerts")
+    shortcut_key = "a"
     nav_icon = "debug_toolbar/img/alerts.svg"
 
     is_async = True
