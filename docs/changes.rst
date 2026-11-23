@@ -3,6 +3,9 @@ Change log
 
 Pending
 
+9.0.0 (2026-11-23)
+------------------
+
 * Added bottom padding to main panel so the last items on the page (usually
   table rows) are not stuck to the bottom of the screen while scrolling.
 * Clarified in the contributing documentation that developer tooling may
